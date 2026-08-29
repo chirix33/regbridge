@@ -1,0 +1,538 @@
+{
+  "$defs": {
+    "ApplicationType": {
+      "enum": [
+        "NDA",
+        "ANDA",
+        "IND",
+        "DMF"
+      ],
+      "title": "ApplicationType",
+      "type": "string"
+    },
+    "Authority": {
+      "enum": [
+        "FDA"
+      ],
+      "title": "Authority",
+      "type": "string"
+    },
+    "Bindingness": {
+      "enum": [
+        "requirement",
+        "validation",
+        "recommendation",
+        "informative"
+      ],
+      "title": "Bindingness",
+      "type": "string"
+    },
+    "Center": {
+      "enum": [
+        "CDER"
+      ],
+      "title": "Center",
+      "type": "string"
+    },
+    "Decision": {
+      "enum": [
+        "REUSE_AS_LEGACY_REFERENCE",
+        "REUSE_WITH_NEW_CONTEXT",
+        "REUSE_AFTER_METADATA_REPAIR",
+        "BREAK_LIFECYCLE_AND_RESUBMIT",
+        "DO_NOT_REUSE",
+        "HUMAN_REGULATORY_REVIEW"
+      ],
+      "title": "Decision",
+      "type": "string"
+    },
+    "EvidenceSpan": {
+      "additionalProperties": false,
+      "properties": {
+        "applicability": {
+          "$ref": "#/$defs/SourceScope"
+        },
+        "bindingness": {
+          "$ref": "#/$defs/Bindingness"
+        },
+        "extraction_method": {
+          "$ref": "#/$defs/ExtractionMethod"
+        },
+        "id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "locator": {
+          "minLength": 1,
+          "title": "Locator",
+          "type": "string"
+        },
+        "review_status": {
+          "$ref": "#/$defs/ReviewStatus"
+        },
+        "source_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "source_id",
+        "locator",
+        "text",
+        "bindingness",
+        "applicability",
+        "source_sha256",
+        "extraction_method",
+        "review_status"
+      ],
+      "title": "EvidenceSpan",
+      "type": "object"
+    },
+    "ExtractionMethod": {
+      "enum": [
+        "manual",
+        "deterministic",
+        "model_candidate"
+      ],
+      "title": "ExtractionMethod",
+      "type": "string"
+    },
+    "Finding": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_ids": {
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "rationale": {
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "rule_id": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rule Id"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        },
+        "source": {
+          "$ref": "#/$defs/TraceStepKind"
+        }
+      },
+      "required": [
+        "id",
+        "severity",
+        "rationale",
+        "evidence_ids",
+        "source"
+      ],
+      "title": "Finding",
+      "type": "object"
+    },
+    "RepairAction": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "default": [],
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "type": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "description"
+      ],
+      "title": "RepairAction",
+      "type": "object"
+    },
+    "ReuseOperation": {
+      "enum": [
+        "reference-existing-content",
+        "create-new-target-artifact"
+      ],
+      "title": "ReuseOperation",
+      "type": "string"
+    },
+    "ReviewStatus": {
+      "enum": [
+        "candidate",
+        "reviewed",
+        "authoritative_for_demo",
+        "rejected"
+      ],
+      "title": "ReviewStatus",
+      "type": "string"
+    },
+    "Severity": {
+      "enum": [
+        "informational",
+        "low",
+        "medium",
+        "high",
+        "blocking",
+        "unresolved"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "SourceArtifact": {
+      "additionalProperties": false,
+      "properties": {
+        "content_type": {
+          "pattern": "^[a-z0-9][a-z0-9.+-]*/[a-z0-9][a-z0-9.+-]*$",
+          "title": "Content Type",
+          "type": "string"
+        },
+        "file_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "File Sha256",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "source_leaf_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Source Leaf Id",
+          "type": "string"
+        },
+        "source_locator": {
+          "minLength": 1,
+          "title": "Source Locator",
+          "type": "string"
+        },
+        "source_standard": {
+          "$ref": "#/$defs/StandardVersion"
+        },
+        "title": {
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "source_standard",
+        "source_leaf_id",
+        "source_locator",
+        "content_type",
+        "file_sha256"
+      ],
+      "title": "SourceArtifact",
+      "type": "object"
+    },
+    "SourceScope": {
+      "additionalProperties": false,
+      "properties": {
+        "application_types": {
+          "items": {
+            "$ref": "#/$defs/ApplicationType"
+          },
+          "minItems": 1,
+          "title": "Application Types",
+          "type": "array"
+        },
+        "source_standards": {
+          "items": {
+            "$ref": "#/$defs/StandardVersion"
+          },
+          "minItems": 1,
+          "title": "Source Standards",
+          "type": "array"
+        },
+        "target_standards": {
+          "items": {
+            "$ref": "#/$defs/StandardVersion"
+          },
+          "minItems": 1,
+          "title": "Target Standards",
+          "type": "array"
+        },
+        "valid_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid From"
+        },
+        "valid_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid To"
+        }
+      },
+      "required": [
+        "application_types",
+        "source_standards",
+        "target_standards"
+      ],
+      "title": "SourceScope",
+      "type": "object"
+    },
+    "StandardVersion": {
+      "enum": [
+        "eCTD-3.2.2",
+        "eCTD-4.0"
+      ],
+      "title": "StandardVersion",
+      "type": "string"
+    },
+    "TargetContext": {
+      "additionalProperties": false,
+      "properties": {
+        "analysis_date": {
+          "format": "date",
+          "title": "Analysis Date",
+          "type": "string"
+        },
+        "application_type": {
+          "$ref": "#/$defs/ApplicationType"
+        },
+        "authority": {
+          "$ref": "#/$defs/Authority"
+        },
+        "center": {
+          "$ref": "#/$defs/Center"
+        },
+        "reuse_operation": {
+          "$ref": "#/$defs/ReuseOperation"
+        },
+        "source_standard": {
+          "$ref": "#/$defs/StandardVersion"
+        },
+        "standards_snapshot_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Standards Snapshot Id",
+          "type": "string"
+        },
+        "target_standard": {
+          "$ref": "#/$defs/StandardVersion"
+        }
+      },
+      "required": [
+        "authority",
+        "center",
+        "application_type",
+        "source_standard",
+        "target_standard",
+        "analysis_date",
+        "reuse_operation",
+        "standards_snapshot_id"
+      ],
+      "title": "TargetContext",
+      "type": "object"
+    },
+    "TraceStep": {
+      "additionalProperties": false,
+      "properties": {
+        "component": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Component",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "default": [],
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "kind": {
+          "$ref": "#/$defs/TraceStepKind"
+        },
+        "occurred_at": {
+          "format": "date-time",
+          "title": "Occurred At",
+          "type": "string"
+        },
+        "sequence": {
+          "minimum": 1,
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "summary": {
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sequence",
+        "kind",
+        "component",
+        "summary",
+        "occurred_at"
+      ],
+      "title": "TraceStep",
+      "type": "object"
+    },
+    "TraceStepKind": {
+      "enum": [
+        "deterministic",
+        "model_assisted",
+        "synthesis"
+      ],
+      "title": "TraceStepKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "confidence": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Confidence",
+      "type": "number"
+    },
+    "decision": {
+      "$ref": "#/$defs/Decision"
+    },
+    "evidence": {
+      "items": {
+        "$ref": "#/$defs/EvidenceSpan"
+      },
+      "title": "Evidence",
+      "type": "array"
+    },
+    "findings": {
+      "items": {
+        "$ref": "#/$defs/Finding"
+      },
+      "title": "Findings",
+      "type": "array"
+    },
+    "human_approval_required": {
+      "title": "Human Approval Required",
+      "type": "boolean"
+    },
+    "id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "title": "Id",
+      "type": "string"
+    },
+    "rationale": {
+      "minLength": 1,
+      "title": "Rationale",
+      "type": "string"
+    },
+    "repair": {
+      "$ref": "#/$defs/RepairAction"
+    },
+    "severity": {
+      "$ref": "#/$defs/Severity"
+    },
+    "source_artifact": {
+      "$ref": "#/$defs/SourceArtifact"
+    },
+    "target_context": {
+      "$ref": "#/$defs/TargetContext"
+    },
+    "trace": {
+      "items": {
+        "$ref": "#/$defs/TraceStep"
+      },
+      "minItems": 1,
+      "title": "Trace",
+      "type": "array"
+    },
+    "triggered_rule_ids": {
+      "items": {
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+        "type": "string"
+      },
+      "title": "Triggered Rule Ids",
+      "type": "array"
+    },
+    "unresolved_uncertainty": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Unresolved Uncertainty",
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "source_artifact",
+    "target_context",
+    "decision",
+    "severity",
+    "triggered_rule_ids",
+    "findings",
+    "evidence",
+    "rationale",
+    "repair",
+    "confidence",
+    "unresolved_uncertainty",
+    "human_approval_required",
+    "trace"
+  ],
+  "title": "AnalysisResult",
+  "type": "object"
+}

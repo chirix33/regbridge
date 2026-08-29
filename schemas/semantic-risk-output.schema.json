@@ -1,0 +1,105 @@
+{
+  "$defs": {
+    "SemanticFinding": {
+      "additionalProperties": false,
+      "properties": {
+        "basis": {
+          "enum": [
+            "observation",
+            "inference"
+          ],
+          "title": "Basis",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        },
+        "summary": {
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "basis",
+        "summary",
+        "severity",
+        "evidence_ids"
+      ],
+      "title": "SemanticFinding",
+      "type": "object"
+    },
+    "Severity": {
+      "enum": [
+        "informational",
+        "low",
+        "medium",
+        "high",
+        "blocking",
+        "unresolved"
+      ],
+      "title": "Severity",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "abstain_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Abstain Reason"
+    },
+    "abstained": {
+      "title": "Abstained",
+      "type": "boolean"
+    },
+    "confidence": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Confidence",
+      "type": "number"
+    },
+    "findings": {
+      "items": {
+        "$ref": "#/$defs/SemanticFinding"
+      },
+      "title": "Findings",
+      "type": "array"
+    },
+    "fixture_version": {
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "title": "Fixture Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "fixture_version",
+    "abstained",
+    "abstain_reason",
+    "findings",
+    "confidence"
+  ],
+  "title": "SemanticRiskOutput",
+  "type": "object"
+}

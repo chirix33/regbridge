@@ -1,0 +1,210 @@
+{
+  "$defs": {
+    "ApplicationType": {
+      "enum": [
+        "NDA",
+        "ANDA",
+        "IND",
+        "DMF"
+      ],
+      "title": "ApplicationType",
+      "type": "string"
+    },
+    "Bindingness": {
+      "enum": [
+        "requirement",
+        "validation",
+        "recommendation",
+        "informative"
+      ],
+      "title": "Bindingness",
+      "type": "string"
+    },
+    "EvidenceSpan": {
+      "additionalProperties": false,
+      "properties": {
+        "applicability": {
+          "$ref": "#/$defs/SourceScope"
+        },
+        "bindingness": {
+          "$ref": "#/$defs/Bindingness"
+        },
+        "extraction_method": {
+          "$ref": "#/$defs/ExtractionMethod"
+        },
+        "id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "locator": {
+          "minLength": 1,
+          "title": "Locator",
+          "type": "string"
+        },
+        "review_status": {
+          "$ref": "#/$defs/ReviewStatus"
+        },
+        "source_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "source_id",
+        "locator",
+        "text",
+        "bindingness",
+        "applicability",
+        "source_sha256",
+        "extraction_method",
+        "review_status"
+      ],
+      "title": "EvidenceSpan",
+      "type": "object"
+    },
+    "ExtractionMethod": {
+      "enum": [
+        "manual",
+        "deterministic",
+        "model_candidate"
+      ],
+      "title": "ExtractionMethod",
+      "type": "string"
+    },
+    "JsonValue": {},
+    "ReviewStatus": {
+      "enum": [
+        "candidate",
+        "reviewed",
+        "authoritative_for_demo",
+        "rejected"
+      ],
+      "title": "ReviewStatus",
+      "type": "string"
+    },
+    "SourceScope": {
+      "additionalProperties": false,
+      "properties": {
+        "application_types": {
+          "items": {
+            "$ref": "#/$defs/ApplicationType"
+          },
+          "minItems": 1,
+          "title": "Application Types",
+          "type": "array"
+        },
+        "source_standards": {
+          "items": {
+            "$ref": "#/$defs/StandardVersion"
+          },
+          "minItems": 1,
+          "title": "Source Standards",
+          "type": "array"
+        },
+        "target_standards": {
+          "items": {
+            "$ref": "#/$defs/StandardVersion"
+          },
+          "minItems": 1,
+          "title": "Target Standards",
+          "type": "array"
+        },
+        "valid_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid From"
+        },
+        "valid_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid To"
+        }
+      },
+      "required": [
+        "application_types",
+        "source_standards",
+        "target_standards"
+      ],
+      "title": "SourceScope",
+      "type": "object"
+    },
+    "StandardVersion": {
+      "enum": [
+        "eCTD-3.2.2",
+        "eCTD-4.0"
+      ],
+      "title": "StandardVersion",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "context": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Context",
+      "type": "object"
+    },
+    "evidence": {
+      "items": {
+        "$ref": "#/$defs/EvidenceSpan"
+      },
+      "title": "Evidence",
+      "type": "array"
+    },
+    "fixture_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "title": "Fixture Id",
+      "type": "string"
+    },
+    "prompt_template_version": {
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "title": "Prompt Template Version",
+      "type": "string"
+    },
+    "task": {
+      "minLength": 1,
+      "title": "Task",
+      "type": "string"
+    }
+  },
+  "required": [
+    "fixture_id",
+    "task",
+    "context",
+    "evidence",
+    "prompt_template_version"
+  ],
+  "title": "ModelRequest",
+  "type": "object"
+}

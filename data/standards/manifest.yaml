@@ -1,0 +1,39 @@
+manifest_version: 1.0.0
+snapshot_id: fda-cder-demo-v1
+description: >-
+  M0 FDA/CDER registry snapshot. Source inclusion review covers identity, provenance,
+  applicability metadata, local immutability, and digest only; no executable rule is
+  authorized by this manifest entry alone.
+sources:
+  - id: fda-ectd-v4-tcg-v1.5
+    title: Electronic Common Technical Document (eCTD) v4.0 Technical Conformance Guide
+    authority: FDA
+    jurisdiction: United States
+    issuing_organization: U.S. Food and Drug Administration
+    center: CDER
+    version: "1.5 (June 2026)"
+    published_at: 2026-06-01
+    effective_from: 2026-07-09
+    source_url: "https://www.fda.gov/media/179700/download?attachment="
+    retrieved_at: 2026-08-29T00:49:08Z
+    local_path: snapshots/fda-ectd-v4-technical-conformance-guide-v1.5.pdf
+    sha256: dccd247940cdf5bc7cbf6a5e31b8f2547ad7f61650ae1a138113feb315f8002e
+    bindingness: informative
+    scope:
+      application_types: [NDA]
+      source_standards: [eCTD-3.2.2]
+      target_standards: [eCTD-4.0]
+      valid_from: 2026-07-09
+      valid_to: null
+    review_status: reviewed
+    review_locator: "Cover page, document metadata, and section 1.1 (Purpose)"
+    reviewer_note: >-
+      Registry inclusion review only. The PDF identity, version, FDA provenance, selected
+      CDER/NDA demonstration scope, local file, and SHA-256 were checked. Individual evidence
+      spans and rules require separate review before they can be authoritative_for_demo.
+    notes: >-
+      FDA and both CDER/CBER issue this source. RegBridge intentionally limits the registered
+      applicability to its FDA/CDER, NDA-first demonstration scope. The source contains mixed
+      normative language, so manifest-level bindingness is informative; evidence spans will
+      carry their own reviewed bindingness.
+

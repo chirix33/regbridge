@@ -1,0 +1,281 @@
+{
+  "$defs": {
+    "ApplicationType": {
+      "enum": [
+        "NDA",
+        "ANDA",
+        "IND",
+        "DMF"
+      ],
+      "title": "ApplicationType",
+      "type": "string"
+    },
+    "Authority": {
+      "enum": [
+        "FDA"
+      ],
+      "title": "Authority",
+      "type": "string"
+    },
+    "Bindingness": {
+      "enum": [
+        "requirement",
+        "validation",
+        "recommendation",
+        "informative"
+      ],
+      "title": "Bindingness",
+      "type": "string"
+    },
+    "Center": {
+      "enum": [
+        "CDER"
+      ],
+      "title": "Center",
+      "type": "string"
+    },
+    "RegulatorySource": {
+      "additionalProperties": false,
+      "properties": {
+        "authority": {
+          "$ref": "#/$defs/Authority"
+        },
+        "bindingness": {
+          "$ref": "#/$defs/Bindingness"
+        },
+        "center": {
+          "$ref": "#/$defs/Center"
+        },
+        "effective_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Effective From"
+        },
+        "id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "issuing_organization": {
+          "minLength": 2,
+          "title": "Issuing Organization",
+          "type": "string"
+        },
+        "jurisdiction": {
+          "minLength": 2,
+          "title": "Jurisdiction",
+          "type": "string"
+        },
+        "local_path": {
+          "pattern": "^snapshots/[a-zA-Z0-9][a-zA-Z0-9._/-]*$",
+          "title": "Local Path",
+          "type": "string"
+        },
+        "notes": {
+          "minLength": 1,
+          "title": "Notes",
+          "type": "string"
+        },
+        "published_at": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Published At"
+        },
+        "retrieved_at": {
+          "format": "date-time",
+          "title": "Retrieved At",
+          "type": "string"
+        },
+        "review_locator": {
+          "minLength": 1,
+          "title": "Review Locator",
+          "type": "string"
+        },
+        "review_status": {
+          "$ref": "#/$defs/ReviewStatus"
+        },
+        "reviewer_note": {
+          "minLength": 1,
+          "title": "Reviewer Note",
+          "type": "string"
+        },
+        "scope": {
+          "$ref": "#/$defs/SourceScope"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "source_url": {
+          "format": "uri",
+          "maxLength": 2083,
+          "minLength": 1,
+          "title": "Source Url",
+          "type": "string"
+        },
+        "title": {
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "version": {
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "authority",
+        "jurisdiction",
+        "issuing_organization",
+        "center",
+        "version",
+        "source_url",
+        "retrieved_at",
+        "local_path",
+        "sha256",
+        "bindingness",
+        "scope",
+        "review_status",
+        "review_locator",
+        "reviewer_note",
+        "notes"
+      ],
+      "title": "RegulatorySource",
+      "type": "object"
+    },
+    "ReviewStatus": {
+      "enum": [
+        "candidate",
+        "reviewed",
+        "authoritative_for_demo",
+        "rejected"
+      ],
+      "title": "ReviewStatus",
+      "type": "string"
+    },
+    "SourceScope": {
+      "additionalProperties": false,
+      "properties": {
+        "application_types": {
+          "items": {
+            "$ref": "#/$defs/ApplicationType"
+          },
+          "minItems": 1,
+          "title": "Application Types",
+          "type": "array"
+        },
+        "source_standards": {
+          "items": {
+            "$ref": "#/$defs/StandardVersion"
+          },
+          "minItems": 1,
+          "title": "Source Standards",
+          "type": "array"
+        },
+        "target_standards": {
+          "items": {
+            "$ref": "#/$defs/StandardVersion"
+          },
+          "minItems": 1,
+          "title": "Target Standards",
+          "type": "array"
+        },
+        "valid_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid From"
+        },
+        "valid_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid To"
+        }
+      },
+      "required": [
+        "application_types",
+        "source_standards",
+        "target_standards"
+      ],
+      "title": "SourceScope",
+      "type": "object"
+    },
+    "StandardVersion": {
+      "enum": [
+        "eCTD-3.2.2",
+        "eCTD-4.0"
+      ],
+      "title": "StandardVersion",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "description": {
+      "minLength": 1,
+      "title": "Description",
+      "type": "string"
+    },
+    "manifest_version": {
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "title": "Manifest Version",
+      "type": "string"
+    },
+    "snapshot_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "title": "Snapshot Id",
+      "type": "string"
+    },
+    "sources": {
+      "items": {
+        "$ref": "#/$defs/RegulatorySource"
+      },
+      "minItems": 1,
+      "title": "Sources",
+      "type": "array"
+    }
+  },
+  "required": [
+    "manifest_version",
+    "snapshot_id",
+    "description",
+    "sources"
+  ],
+  "title": "StandardsManifest",
+  "type": "object"
+}

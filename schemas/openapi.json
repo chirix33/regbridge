@@ -1,0 +1,355 @@
+{
+  "components": {
+    "schemas": {
+      "ApplicationType": {
+        "enum": [
+          "NDA",
+          "ANDA",
+          "IND",
+          "DMF"
+        ],
+        "title": "ApplicationType",
+        "type": "string"
+      },
+      "Authority": {
+        "enum": [
+          "FDA"
+        ],
+        "title": "Authority",
+        "type": "string"
+      },
+      "Center": {
+        "enum": [
+          "CDER"
+        ],
+        "title": "Center",
+        "type": "string"
+      },
+      "HealthResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "model_mode": {
+            "$ref": "#/components/schemas/LlmMode"
+          },
+          "service": {
+            "const": "regbridge",
+            "title": "Service",
+            "type": "string"
+          },
+          "standards_snapshot_id": {
+            "title": "Standards Snapshot Id",
+            "type": "string"
+          },
+          "status": {
+            "const": "ok",
+            "title": "Status",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "service",
+          "version",
+          "model_mode",
+          "standards_snapshot_id"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "LlmMode": {
+        "enum": [
+          "fixture",
+          "live",
+          "disabled"
+        ],
+        "title": "LlmMode",
+        "type": "string"
+      },
+      "ReviewStatus": {
+        "enum": [
+          "candidate",
+          "reviewed",
+          "authoritative_for_demo",
+          "rejected"
+        ],
+        "title": "ReviewStatus",
+        "type": "string"
+      },
+      "ScopeResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "authority": {
+            "$ref": "#/components/schemas/Authority"
+          },
+          "available_features": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Available Features",
+            "type": "array"
+          },
+          "center": {
+            "$ref": "#/components/schemas/Center"
+          },
+          "disclaimer": {
+            "title": "Disclaimer",
+            "type": "string"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "model_mode": {
+            "$ref": "#/components/schemas/LlmMode"
+          },
+          "network_required": {
+            "title": "Network Required",
+            "type": "boolean"
+          },
+          "planned_archetypes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Planned Archetypes",
+            "type": "array"
+          },
+          "product_name": {
+            "const": "RegBridge",
+            "title": "Product Name",
+            "type": "string"
+          },
+          "product_type": {
+            "enum": [
+              "research prototype",
+              "risk analyzer",
+              "decision support"
+            ],
+            "title": "Product Type",
+            "type": "string"
+          },
+          "research_question": {
+            "title": "Research Question",
+            "type": "string"
+          },
+          "source_standards": {
+            "items": {
+              "$ref": "#/components/schemas/StandardVersion"
+            },
+            "title": "Source Standards",
+            "type": "array"
+          },
+          "standards_snapshot_id": {
+            "title": "Standards Snapshot Id",
+            "type": "string"
+          },
+          "supported_application_types": {
+            "items": {
+              "$ref": "#/components/schemas/ApplicationType"
+            },
+            "title": "Supported Application Types",
+            "type": "array"
+          },
+          "target_standards": {
+            "items": {
+              "$ref": "#/components/schemas/StandardVersion"
+            },
+            "title": "Target Standards",
+            "type": "array"
+          }
+        },
+        "required": [
+          "product_name",
+          "product_type",
+          "research_question",
+          "authority",
+          "center",
+          "supported_application_types",
+          "source_standards",
+          "target_standards",
+          "standards_snapshot_id",
+          "model_mode",
+          "network_required",
+          "available_features",
+          "planned_archetypes",
+          "disclaimer",
+          "limitations"
+        ],
+        "title": "ScopeResponse",
+        "type": "object"
+      },
+      "StandardSourceSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "authority": {
+            "$ref": "#/components/schemas/Authority"
+          },
+          "center": {
+            "$ref": "#/components/schemas/Center"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "review_status": {
+            "$ref": "#/components/schemas/ReviewStatus"
+          },
+          "reviewer_note": {
+            "title": "Reviewer Note",
+            "type": "string"
+          },
+          "sha256": {
+            "title": "Sha256",
+            "type": "string"
+          },
+          "source_url": {
+            "format": "uri",
+            "maxLength": 2083,
+            "minLength": 1,
+            "title": "Source Url",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "version",
+          "authority",
+          "center",
+          "source_url",
+          "sha256",
+          "review_status",
+          "reviewer_note"
+        ],
+        "title": "StandardSourceSummary",
+        "type": "object"
+      },
+      "StandardVersion": {
+        "enum": [
+          "eCTD-3.2.2",
+          "eCTD-4.0"
+        ],
+        "title": "StandardVersion",
+        "type": "string"
+      },
+      "StandardsSnapshotResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "manifest_version": {
+            "title": "Manifest Version",
+            "type": "string"
+          },
+          "snapshot_id": {
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/StandardSourceSummary"
+            },
+            "title": "Sources",
+            "type": "array"
+          }
+        },
+        "required": [
+          "snapshot_id",
+          "manifest_version",
+          "description",
+          "sources"
+        ],
+        "title": "StandardsSnapshotResponse",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Decision-support contracts for evidence-grounded, version-aware analysis. RegBridge is not FDA-certified and does not predict submission acceptance.",
+    "summary": "FDA/CDER-scoped legacy eCTD reuse risk-analyzer research prototype.",
+    "title": "RegBridge API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/config/scope": {
+      "get": {
+        "operationId": "scope_api_v1_config_scope_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScopeResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Scope",
+        "tags": [
+          "configuration"
+        ]
+      }
+    },
+    "/api/v1/standards/snapshots": {
+      "get": {
+        "operationId": "standards_snapshots_api_v1_standards_snapshots_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StandardsSnapshotResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Standards Snapshots",
+        "tags": [
+          "standards"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health",
+        "tags": [
+          "system"
+        ]
+      }
+    }
+  }
+}
