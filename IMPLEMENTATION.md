@@ -9,7 +9,7 @@ RegBridge is an FDA/CDER-scoped research prototype that analyzes whether content
 Existing submission tooling can determine whether a file or lifecycle reference is syntactically possible. RegBridge focuses on the next decision: whether reuse is structurally, contextually, and evidentially defensible under the selected standards snapshot. It combines:
 
 1. deterministic parsing of the legacy package;
-2. a reviewed, version-aware regulatory knowledge graph;
+2. a source-grounded, version-aware regulatory knowledge graph;
 3. executable constraints for explicit structural and metadata requirements;
 4. evidence-bounded model analysis for ambiguous content risk;
 5. a traceable decision, minimal repair, and human-review boundary.
@@ -46,7 +46,7 @@ Wikontic may be used as **methodological inspiration**, especially for candidate
 - a controlled legacy eCTD v3.2.2 fixture or uploaded ZIP/directory;
 - `index.xml`, `us-regional.xml`, optional `stf.xml`, and referenced files within the allowed fixture profile;
 - an explicit target context containing target standard version, FDA center, application type, analysis date, and intended reuse operation;
-- a pinned, reviewed standards snapshot;
+- a pinned, source-verified standards snapshot;
 - optional live OpenAI-compatible model configuration.
 
 ### Outputs
@@ -62,7 +62,9 @@ Wikontic may be used as **methodological inspiration**, especially for candidate
 
 ### Trust boundary
 
-Uploaded packages and model responses are untrusted. Standards snapshots and rule definitions become trusted only after schema validation and explicit review status. A graph edge is not authoritative merely because an extraction model produced it.
+Uploaded packages and model responses are untrusted. Standards snapshots and rule definitions become usable only after schema validation and the documented author-review process below. A graph edge is not reliable merely because an extraction model produced it.
+
+The MVP does not assume access to a regulatory professional with eCTD experience. Its regulatory representations are research-team operationalizations grounded in pinned official sources, not expert-validated regulatory ground truth. This limitation must remain visible in the interface, evaluation, paper, and video.
 
 ## 5. Proposed architecture
 
@@ -146,7 +148,7 @@ Use this target structure unless an existing repository convention makes a small
     └── tables/
 ```
 
-Generated results should be separated from reviewed benchmark labels. Commit only small canonical result snapshots needed for reproducibility; do not commit secrets, caches, uploaded user files, or large model traces.
+Generated results should be separated from author-adjudicated benchmark reference labels. Commit only small canonical result snapshots needed for reproducibility; do not commit secrets, caches, uploaded user files, or large model traces.
 
 ## 7. Domain model
 
@@ -200,13 +202,48 @@ Every node and edge has a stable identifier and type. Regulatory graph assertion
 - source document, version, and locator;
 - bindingness and severity;
 - extraction method (`manual`, `deterministic`, or `model_candidate`);
-- review status (`candidate`, `reviewed`, `authoritative_for_demo`, or `rejected`);
+- review status (`candidate`, `source_verified`, `author_adjudicated_for_demo`, or `rejected`);
+- verification basis (`direct_standard_encoding`, `mechanical_derivation`, `author_interpretation`, `semantic_inference`, or `synthetic_assumption`);
+- expert-validation flag, which is `false` unless a qualified external reviewer actually reviews the item;
 - confidence for probabilistic assertions;
 - exact evidence-span identifier.
 
-Only reviewed assertions may support deterministic demo conclusions. `authoritative_for_demo` means reviewed for the frozen research snapshot, not generally authoritative regulatory advice.
+`author_adjudicated_for_demo` means that the research team has checked the source and accepted a specific operationalization for the frozen benchmark. It does not mean that FDA, an eCTD professional, or another external authority has endorsed it. Codex, an extraction model, or the semantic-analysis model may create `candidate` assertions but may never promote their review status.
 
-### 7.4 Parsed legacy leaf
+### 7.4 Evidence and rule governance
+
+The research team may assign review statuses through a documented process:
+
+1. `candidate` — newly extracted, generated, or drafted and not permitted to drive an enforceable conclusion.
+2. `source_verified` — an author has confirmed the official source snapshot, digest, transcription, locator, version, and applicability metadata. This status is primarily for evidence spans and direct source facts.
+3. `author_adjudicated_for_demo` — after source verification, an author has accepted the formalized rule or assertion for the controlled research benchmark. This is an internal research approval, not expert regulatory validation.
+4. `rejected` — unsupported, incorrectly encoded, duplicated, contradicted, or outside the declared scope.
+
+For an `EvidenceSpan`, source verification confirms only that the evidence and its provenance are represented accurately. For a `Rule`, author adjudication additionally confirms that the encoded predicate, applicability, severity, decision, and repair are a defensible research operationalization of that evidence.
+
+Each review event must record:
+
+- reviewer identifier and role;
+- review date;
+- reviewed object and version;
+- source snapshot and digest;
+- decision and rationale;
+- unresolved assumptions or conflicts;
+- whether an independent second-author check occurred;
+- `expert_validated`, which defaults to `false`.
+
+Use a two-pass author review when feasible: first verify the source and locator, then re-check the formalized rule against the source in a separate pass. A coauthor without specialist eCTD experience may perform the second pass for transcription, logic, and reproducibility, but this must not be described as regulatory-expert validation.
+
+Rules also declare an enforcement mode:
+
+- `hard` — permitted only for direct standard encodings or mechanical derivations with exact official evidence and no material interpretive gap;
+- `advisory` — used for author interpretations, recommendations, and context-sensitive guidance; may add risk or escalate to `HUMAN_REGULATORY_REVIEW`, but cannot alone produce a definitive compliance conclusion;
+- `semantic_signal` — used for model-assisted observations such as stale wording or hyperlinks; must cite supplied evidence and cannot override a hard rule;
+- `disabled` — retained for auditability but excluded from decisions.
+
+If the research team cannot determine whether a rule is a direct encoding or an interpretation, classify it as `advisory`. The architecture should permit later external expert review without requiring it for the MVP.
+
+### 7.5 Parsed legacy leaf
 
 Capture at least:
 
@@ -243,7 +280,9 @@ scope:
   application_types: [NDA]
   source_standards: [eCTD-3.2.2]
   target_standards: [eCTD-4.0]
-review_status: reviewed
+review_status: source_verified
+verification_basis: direct_standard_encoding
+expert_validated: false
 notes: ...
 ```
 
@@ -257,7 +296,7 @@ The initial registry should include only official materials necessary to support
 4. Optionally use a model to propose triples from prose.
 5. Validate candidate triples against allowed node types, edge types, domain/range, qualifiers, and evidence requirements.
 6. Normalize identifiers and deduplicate without merging different versions or scopes.
-7. Require explicit review before a candidate can support a deterministic rule.
+7. Source-verify evidence and author-adjudicate any rule before it can participate in the controlled demonstration.
 8. Build the graph and run integrity checks.
 9. Export a frozen graph snapshot and build manifest for evaluations.
 
@@ -267,7 +306,9 @@ Borrow the useful discipline of ontology-aware extraction from Wikontic, but add
 - no rule without version and applicability qualifiers;
 - no silent merge across standard versions;
 - no `REQUIRES` or `PROHIBITS` edge inferred solely from weak language;
-- no candidate edge treated as enforceable before review.
+- no candidate edge treated as enforceable before author adjudication;
+- no author interpretation or semantic inference assigned `hard` enforcement mode;
+- no internal author review described as FDA, professional, or expert validation.
 
 ### 8.3 Graph integrity checks
 
@@ -277,8 +318,10 @@ Fail the build when:
 - an evidence span points to an unknown source digest;
 - an edge violates its domain or range;
 - a heading availability assertion has no standard version;
-- two reviewed assertions conflict at the same scope without an explicit conflict record;
+- two source-verified or author-adjudicated assertions conflict at the same scope without an explicit conflict record;
 - a decision-triggering rule points to an unknown decision or repair;
+- a `hard` rule is based on `author_interpretation`, `semantic_inference`, or `synthetic_assumption`;
+- `expert_validated` is true without a recorded external reviewer and review event;
 - identifiers are unstable across two builds from identical inputs.
 
 ## 9. Rule and constraint engine
@@ -302,21 +345,26 @@ severity: blocking
 decision: BREAK_LIFECYCLE_AND_RESUBMIT
 repair: relocate_to_nearest_available_parent
 evidence_ids: [evidence-heading-map-001]
-review_status: authoritative_for_demo
+review_status: author_adjudicated_for_demo
+verification_basis: direct_standard_encoding
+expert_validated: false
+enforcement_mode: hard
 ```
+
+The example expresses an author-adjudicated research encoding of a directly verifiable structural fact. It must not be described as an expert-certified FDA rule.
 
 ### Rule precedence
 
 Use a deterministic, tested precedence policy:
 
-1. explicit prohibition or unrecoverable target conflict → `DO_NOT_REUSE`;
-2. lifecycle-breaking structural requirement → `BREAK_LIFECYCLE_AND_RESUBMIT`;
-3. repairable exact metadata conflict → `REUSE_AFTER_METADATA_REPAIR`;
+1. author-adjudicated `hard` prohibition or unrecoverable target conflict → `DO_NOT_REUSE`;
+2. author-adjudicated `hard` lifecycle-breaking structural requirement → `BREAK_LIFECYCLE_AND_RESUBMIT`;
+3. author-adjudicated `hard` repairable exact metadata conflict → `REUSE_AFTER_METADATA_REPAIR`;
 4. new contextual material needed but original may remain → `REUSE_WITH_NEW_CONTEXT`;
 5. no material finding and sufficient evidence → `REUSE_AS_LEGACY_REFERENCE`;
 6. missing, contradictory, low-confidence, or out-of-scope evidence → `HUMAN_REGULATORY_REVIEW`.
 
-This is not a simple numeric maximum. A semantic model finding may escalate a permissive result to human review or a stricter supported outcome, but it cannot reduce the severity of a deterministic finding. Multiple triggered rules must all remain visible even when one controls the primary decision.
+This is not a simple numeric maximum. An `advisory` rule or `semantic_signal` may escalate a permissive result to `HUMAN_REGULATORY_REVIEW`, but it cannot independently produce `DO_NOT_REUSE`, `BREAK_LIFECYCLE_AND_RESUBMIT`, or a claim of noncompliance. A semantic finding cannot reduce the severity of a deterministic hard finding. Multiple triggered rules must all remain visible even when one controls the primary decision.
 
 Use severities `informational`, `low`, `medium`, `high`, `blocking`, and `unresolved`. Keep severity distinct from the decision label.
 
@@ -347,7 +395,7 @@ LLM_MODEL=
 LLM_TIMEOUT_SECONDS=60
 ```
 
-Tests and the default demo must use `fixture`. The live path must be opt-in and must not change benchmark gold data.
+Tests and the default demo must use `fixture`. The live path must be opt-in and must not change benchmark reference labels.
 
 ### 10.2 Prompt and output constraints
 
@@ -373,7 +421,7 @@ For each selected legacy leaf:
 5. construct a minimal evidence packet for semantic analysis;
 6. validate the model response and discard unsupported findings;
 7. synthesize the final decision using precedence and abstention policy;
-8. generate a minimal repair from reviewed rule actions, not free-form speculation;
+8. generate a minimal repair from author-adjudicated rule actions, not free-form speculation;
 9. persist a complete trace and return a redacted API representation;
 10. expose the relevant graph neighborhood for explanation.
 
@@ -394,7 +442,7 @@ Variants should change leaf titles, file names, sibling placement, and target ma
 
 ### Case B — legacy metadata tension
 
-Variants should distinguish an existing legacy reference from creation of a new target artifact. Include exact matching, missing values, discouraged values, and an out-of-scope keyword. The gold rationale must explicitly state why lifecycle context changes the recommendation.
+Variants should distinguish an existing legacy reference from creation of a new target artifact. Include exact matching, missing values, discouraged values, and an out-of-scope keyword. The author-adjudicated reference rationale must explicitly state why lifecycle context changes the recommendation.
 
 ### Case C — stale content or hyperlink
 
@@ -410,23 +458,29 @@ Each benchmark item should contain:
   "archetype": "unavailable-heading",
   "input_fixture": "...",
   "target_context_id": "...",
-  "gold_decision": "BREAK_LIFECYCLE_AND_RESUBMIT",
-  "gold_severity": "blocking",
+  "reference_decision": "BREAK_LIFECYCLE_AND_RESUBMIT",
+  "reference_severity": "blocking",
   "required_rule_ids": ["FDA-DEMO-HEADING-001"],
   "acceptable_evidence_ids": ["evidence-heading-map-001"],
   "required_repair_type": "relocate_to_nearest_available_parent",
   "human_review_required": false,
-  "rationale": "...",
+  "reference_rationale": "...",
+  "adjudication": {
+    "status": "author_adjudicated_for_demo",
+    "expert_validated": false,
+    "reviewer_id": "author-01",
+    "reviewed_at": "2026-08-29T00:00:00Z"
+  },
   "split": "test",
   "provenance": "synthetic-mutation-spec-v1"
 }
 ```
 
-Freeze train/development/test partitions before final experiments. If examples are used for prompt development, they cannot remain hidden test cases.
+These are author-adjudicated **reference labels**, not expert regulatory ground truth. Every label must map to official evidence, a declared synthetic assumption, or an explicit ambiguity policy. Freeze train/development/test partitions before final experiments. If examples are used for prompt development, they cannot remain hidden test cases.
 
 ## 13. Baselines
 
-All systems use the same source snapshot, case inputs, labels, and evaluation harness.
+All systems use the same source snapshot, case inputs, author-adjudicated reference labels, and evaluation harness.
 
 ### B0 — long-context document agent
 
@@ -452,7 +506,7 @@ For model-based systems, hold model, decoding parameters, schema, and maximum re
 
 ### 14.1 Primary metrics
 
-- **Unsafe false-negative rate:** fraction of gold high-risk/blocking cases predicted as safe reuse. This is the primary safety metric.
+- **Unsafe false-negative rate:** fraction of author-adjudicated reference high-risk/blocking cases predicted as safe reuse. This is the primary safety metric within the controlled benchmark; it is not an estimate of real FDA acceptance risk.
 - **High-risk recall:** recall for cases requiring lifecycle break, non-reuse, or human review due to material uncertainty.
 - **Macro-F1:** balanced performance across the six decision labels.
 
@@ -594,7 +648,7 @@ Deliver:
 
 - backend/frontend scaffolds and repeatable commands;
 - core Pydantic models, enums, schemas, and configuration;
-- standards manifest format and one reviewed example source;
+- standards manifest format and one source-verified example source;
 - offline model fixture interface;
 - visible disclaimer and scope endpoint.
 
@@ -605,7 +659,8 @@ Exit criteria: lint/test/build commands work from a clean checkout with no model
 Deliver:
 
 - secure v3.2.2 parser for the scoped fixture profile;
-- heading/version graph model and first reviewed rules;
+- heading/version graph model and first author-adjudicated rules;
+- documented source-verification and author-adjudication records for the first rules;
 - deterministic unavailable-heading analysis;
 - API and UI showing decision, evidence, repair, and graph neighborhood;
 - positive, negative, ambiguous, and hostile-input tests.
@@ -629,7 +684,7 @@ Exit criteria: all three archetypes, including clean and abstention examples, us
 Deliver:
 
 - B0 long-context, B1 flat retrieval, and B2 rule-only baselines;
-- frozen benchmark split and gold labels;
+- frozen benchmark split and author-adjudicated reference labels;
 - shared runner, metrics, run manifest, and paper-table exports;
 - deterministic offline evaluation plus one optional declared live-model run.
 
@@ -653,7 +708,8 @@ Deliver:
 
 - final plots/tables tied to evaluation manifests;
 - architecture figure and three case screenshots;
-- limitations, ethics, source ledger, and reproducibility text;
+- limitations, ethics, source ledger, adjudication protocol, and reproducibility text;
+- explicit disclosure that the MVP has not been validated by an eCTD regulatory professional;
 - five-minute video script and contingency path;
 - release tag/checksum or archived source snapshot.
 
@@ -679,7 +735,8 @@ A release candidate requires:
 - clean frontend lint, type-check, component, and critical end-to-end suites;
 - a successful production frontend build;
 - a deterministic graph build and fixture-mode evaluation rerun;
-- no unreviewed graph assertion supporting an enforceable conclusion;
+- no candidate graph assertion supporting an enforceable conclusion;
+- no interpretive or semantic rule operating in `hard` mode;
 - no decision without source evidence or a documented abstention;
 - no benchmark leakage into the proposed system or unfair baseline configuration;
 - a source ledger, limitations statement, run manifest, and demo script;
@@ -695,7 +752,7 @@ The following are deliberately deferred until the core vertical slices work:
 - automated regulatory-source refresh;
 - production authentication, multi-tenancy, and cloud deployment;
 - automatic v4.0 package generation or document rewriting;
-- expert user study beyond a small formative evaluation.
+- external regulatory-expert validation or an expert user study.
 
 Codex should not treat these as blockers. Ask the user only if one becomes necessary to meet a current milestone or substantiate a paper claim.
 

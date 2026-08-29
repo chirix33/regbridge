@@ -46,9 +46,11 @@ The MVP does not attempt to provide:
 - legal, medical, or regulatory advice;
 - integration with enterprise RIM or document-management systems;
 - ingestion of confidential sponsor submissions;
-- an automatically generated ontology accepted without expert review.
+- an automatically generated ontology treated as validated without source verification and author adjudication.
 
 Use public, synthetic, or deliberately de-identified fixtures only. Do not add real sponsor data, personal data, trade secrets, or credentials to the repository.
+
+The MVP does not assume access to a regulatory professional with eCTD experience. Its rules and benchmark labels are research-team operationalizations grounded in official sources, not expert-validated regulatory ground truth. Preserve that limitation in the system, paper, and demonstration.
 
 ## 4. Core reasoning contract
 
@@ -58,9 +60,9 @@ RegBridge is a hybrid system. Keep the responsibilities separate.
 
 - XML parsing, namespace handling, file resolution, checksums, and structural validation;
 - lifecycle and reference relationships that are explicitly represented in source data;
-- exact heading availability and mapping facts encoded in the reviewed standards snapshot;
+- exact heading availability and mapping facts encoded in the source-verified standards snapshot;
 - exact keyword and metadata constraints;
-- constraint precedence and final enforcement of hard findings;
+- constraint precedence and final enforcement of eligible hard findings;
 - provenance validation and evidence-presence checks.
 
 ### Model-assisted components may own
@@ -71,7 +73,18 @@ RegBridge is a hybrid system. Keep the responsibilities separate.
 - ranking of already-supported explanations or repair suggestions;
 - classification into an allowed schema when evidence is supplied.
 
-The model must return structured output, cite evidence identifiers supplied in its prompt, and be able to abstain. It may not invent standards, silently fill missing provenance, override a deterministic hard rule, or downgrade a hard risk. All model-originated graph facts remain `candidate` or `reviewed`; they are never implicitly `authoritative`.
+The model must return structured output, cite evidence identifiers supplied in its prompt, and be able to abstain. It may not invent standards, silently fill missing provenance, override a deterministic hard rule, or downgrade a hard risk. All model-originated graph facts remain `candidate`; neither Codex nor a model may promote an assertion to `source_verified` or `author_adjudicated_for_demo`.
+
+Use the governance vocabulary defined in `IMPLEMENTATION.md`:
+
+- `candidate` — proposed but not permitted to drive an enforceable conclusion;
+- `source_verified` — an author has checked the pinned official source, digest, locator, transcription, version, and scope;
+- `author_adjudicated_for_demo` — the research team has accepted a formalization for the controlled benchmark;
+- `rejected` — unsupported, incorrect, duplicated, contradicted, or outside scope.
+
+`author_adjudicated_for_demo` is an internal research status. It does not represent FDA approval, professional eCTD validation, or regulatory ground truth. Keep `expert_validated: false` unless a qualified external reviewer actually performs and records a review.
+
+Only rules based on `direct_standard_encoding` or `mechanical_derivation`, backed by exact official evidence and author-adjudicated for the demo, may use `enforcement_mode: hard`. Rules based on `author_interpretation` must be `advisory`; model-assisted `semantic_inference` must be a `semantic_signal`. Advisory and semantic findings may escalate to `HUMAN_REGULATORY_REVIEW`, but cannot alone declare noncompliance, `DO_NOT_REUSE`, or `BREAK_LIFECYCLE_AND_RESUBMIT`.
 
 ## 5. Decision vocabulary
 
@@ -117,13 +130,13 @@ Implement and preserve these comparison systems:
 - **B2 — Rule-only analyzer:** uses the same deterministic rules and parsed fields but no model-assisted semantic analysis.
 - **Proposed — RegBridge:** typed version-aware graph, executable constraints, and evidence-bounded model analysis.
 
-Comparisons must use the same case split, regulatory snapshot, evidence corpus, allowed output labels, and—where a model is involved—the same model, temperature, and token budget where practicable. Do not give RegBridge privileged gold annotations at inference time. Do not weaken baselines artificially.
+Comparisons must use the same case split, regulatory snapshot, evidence corpus, allowed output labels, and—where a model is involved—the same model, temperature, and token budget where practicable. Do not give RegBridge privileged author-adjudicated reference labels at inference time. Do not weaken baselines artificially.
 
 The principal safety metric is **unsafe false-negative rate**. Also report macro-F1 or balanced decision accuracy, high-risk recall, heading-mapping accuracy, evidence-citation accuracy, repair-recommendation accuracy, abstention/calibration, latency, and model usage. Preserve raw per-case outputs so all aggregate claims can be audited.
 
 ## 8. Source and provenance policy
 
-Regulatory conclusions must be grounded in pinned official FDA or ICH materials. Secondary sources may help discovery or user-interface explanation, but they cannot be the sole authority for an executable regulatory rule.
+Regulatory findings must be grounded in pinned official FDA or ICH materials. Secondary sources may help discovery or user-interface explanation, but they cannot be the sole source for an executable regulatory rule.
 
 For every standards artifact, record at least:
 
@@ -135,16 +148,19 @@ For every standards artifact, record at least:
 - relevant page, section, table, or XML node locator;
 - bindingness (`requirement`, `validation`, `recommendation`, or `informative`);
 - applicability qualifiers such as FDA center, application type, standard version, and validity interval;
-- review status and reviewer note.
+- review status and reviewer note;
+- verification basis and enforcement mode;
+- `expert_validated`, defaulting to `false`;
+- author-review event, rationale, date, and unresolved assumptions.
 
-Never silently replace a standards snapshot. Add a new version and make applicability explicit. A rule without supporting evidence must fail validation and cannot participate in a release evaluation.
+Never silently replace a standards snapshot. Add a new version and make applicability explicit. A rule without supporting evidence must fail validation and cannot participate in a release evaluation. Author verification must never be described as expert, FDA, or professional validation.
 
 ## 9. Engineering rules
 
 - Build in the milestone order in `IMPLEMENTATION.md`, using end-to-end vertical slices.
 - Keep domain models independent of FastAPI routes, React components, storage, and model vendors.
 - Keep rule definitions declarative and versioned; do not bury regulatory policy in route handlers or prompts.
-- Make graph construction deterministic from reviewed inputs. Treat graph visualization as a view, not as the source of truth.
+- Make graph construction deterministic from source-verified and author-adjudicated inputs. Treat graph visualization as a view, not as the source of truth.
 - Validate all external and model-produced data at boundaries with typed schemas.
 - Make tests network-free by default. Live-model tests must be explicitly opted into.
 - Pin dependencies and provide single-command local setup, test, lint, evaluation, and demo-start workflows.
@@ -172,7 +188,7 @@ While implementing:
 - update documentation when an interface, schema, rule, metric, or claim changes;
 - do not overwrite unrelated user changes;
 - do not stop for minor implementation choices already bounded by the specification;
-- ask the user before expanding regulatory scope, changing benchmark labels, using non-public data, adding a paid infrastructure dependency, or making a stronger regulatory claim.
+- ask the user before expanding regulatory scope, changing benchmark reference labels, setting `expert_validated: true`, using non-public data, adding a paid infrastructure dependency, or making a stronger regulatory claim.
 
 After each milestone:
 
@@ -192,8 +208,11 @@ The implementation is complete only when all of the following hold:
 - tests cover parsing, schemas, rules, graph construction, decision precedence, provenance, model fixtures, APIs, and the critical UI journey;
 - security tests cover hostile paths and XXE-style XML input;
 - a frozen benchmark and machine-readable run manifest produce repeatable result tables;
+- benchmark labels are described as author-adjudicated reference labels rather than expert regulatory ground truth;
+- no candidate assertion supports an enforceable decision;
+- no interpretive or semantic rule operates in `hard` mode;
 - no release result depends on a network call or an unpinned standards page;
-- the interface displays the research-prototype disclaimer and scope limitations;
+- the interface displays the research-prototype disclaimer, scope limitations, and absence of regulatory-expert validation;
 - the repository contains enough result and provenance exports to support the two-page demonstration paper and five-minute video without manually reconstructing claims.
 
 Passing a happy-path demo alone is not completion. The system must also show a clean negative, an abstention, and a baseline failure that can be explained from recorded evidence.
