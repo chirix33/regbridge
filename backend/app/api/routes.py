@@ -38,7 +38,7 @@ DISCLAIMER = (
     "RegBridge is an FDA/CDER-scoped research prototype for risk analysis and decision support. "
     "It is not FDA-certified, does not provide regulatory advice, and does not predict or "
     "guarantee filing or application acceptance. Use public, synthetic, or deliberately "
-    "de-identified materials only. The controlled M1 scenario and labels are author-"
+    "de-identified materials only. The controlled M1/M2 scenarios and labels are author-"
     "adjudicated and have not been validated by a regulatory expert."
 )
 
@@ -103,6 +103,11 @@ def scope(
             "secure-ectd-322-parser",
             "explicit-heading-rule",
             "graph-neighborhood",
+            "metadata-lifecycle-rules",
+            "pdf-evidence-extraction",
+            "fixture-semantic-inspection",
+            "openai-compatible-semantic-adapter",
+            "shared-decision-synthesis",
         ),
         planned_archetypes=(
             "unavailable-heading",
@@ -114,7 +119,7 @@ def scope(
             "FDA/CDER and the reviewed demonstration snapshot only.",
             "No submission-package generation, acceptance prediction, or regulatory advice.",
             "FDA forward compatibility is currently not operational.",
-            "M1 is a prospective controlled research scenario, not operational guidance.",
+            "M1 and M2 are prospective controlled research scenarios, not operational guidance.",
             "Author-adjudicated labels and rules have not been validated by a regulatory expert.",
         ),
     )
@@ -191,7 +196,7 @@ async def parse_application(
 
 
 @router.post("/api/v1/analyses", response_model=AnalysisResponse, tags=["analysis"])
-def create_analysis(
+async def create_analysis(
     request: AnalysisRequest,
     service: AnalysisDependency,
 ) -> AnalysisResponse:
@@ -199,7 +204,7 @@ def create_analysis(
     if inventory is None:
         raise HTTPException(status_code=404, detail="parsed inventory not found")
     try:
-        result = service.analyze(inventory, request.leaf_id, request.target_context)
+        result = await service.analyze_async(inventory, request.leaf_id, request.target_context)
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
     return AnalysisResponse(analysis=result)

@@ -1,0 +1,137 @@
+rules_version: 1.0.0
+snapshot_id: fda-cder-demo-v1
+rules:
+  - id: FDA-CDER-M2-DISCOURAGED-MANUFACTURER-ALL-001
+    version: "1.0.0"
+    title: General manufacturer value is discouraged when differentiation is unnecessary
+    description: >-
+      Report the nonbinding recommendation when a legacy manufacturer attribute normalizes
+      to "all"; this advisory never independently forces repair or claims noncompliance.
+    bindingness: recommendation
+    review_status: author_adjudicated_for_demo
+    verification_basis: direct_standard_encoding
+    enforcement_mode: advisory
+    expert_validated: false
+    scenario_mode: prospective_forward_compatibility
+    scope: &m2_scope
+      authority: FDA
+      center: CDER
+      application_types: [NDA]
+      source_standard: eCTD-3.2.2
+      target_standard: eCTD-4.0
+    predicate_type: discouraged-manufacturer-value
+    keyword_name: manufacturer
+    normalized_value: all
+    decision: null
+    severity: medium
+    repair_type: null
+    repair_description: null
+    evidence_ids: [ev-m4-manufacturer-general-values]
+    review_event: &m2_review
+      id: adjudication-m2-manufacturer-rules-author-01
+      reviewer_id: author-01
+      reviewer_role: research-author
+      reviewed_at: 2026-08-30T02:45:07Z
+      object_id: FDA-CDER-M2-DISCOURAGED-MANUFACTURER-ALL-001
+      object_version: "1.0.0"
+      source_snapshot_id: fda-cder-demo-v1
+      source_sha256: cc5672cdc3feb352d01c2cbfc823ea6cc3d45e657f3a4ca806cf486b41933cde
+      supporting_source_sha256s:
+        - cc5672cdc3feb352d01c2cbfc823ea6cc3d45e657f3a4ca806cf486b41933cde
+        - dccd247940cdf5bc7cbf6a5e31b8f2547ad7f61650ae1a138113feb315f8002e
+      decision: accepted
+      rationale: >-
+        author-01 approved the separate advisory, preserve, normalize, and hyperlink rules
+        for the controlled prospective FDA/CDER M2 demonstration.
+      unresolved_assumptions: []
+      independent_second_author_check: false
+      expert_validated: false
+  - id: FDA-CDER-M2-PRESERVE-EXISTING-CONTEXT-002
+    version: "1.0.0"
+    title: Preserve exact keywords for an explicitly retained legacy context group
+    description: >-
+      Establish controlled prospective technical eligibility only when preservation intent is
+      explicit, keywords match, deterministic checks pass, and hyperlinks are absent or
+      author-verified for the fixture.
+    bindingness: requirement
+    review_status: author_adjudicated_for_demo
+    verification_basis: mechanical_derivation
+    enforcement_mode: hard
+    expert_validated: false
+    scenario_mode: prospective_forward_compatibility
+    scope: *m2_scope
+    predicate_type: preserve-existing-lifecycle
+    keyword_name: manufacturer
+    normalized_value: all
+    decision: REUSE_AS_LEGACY_REFERENCE
+    severity: medium
+    repair_type: PRESERVE_EXACT_CONTEXT_GROUP_KEYWORDS
+    repair_description: >-
+      Preserve the exact context-group keyword codes and values. This is controlled technical
+      eligibility only and is not an FDA acceptance determination.
+    evidence_ids:
+      - ev-m4-manufacturer-general-values
+      - ev-tcg-replacement-context-same
+      - ev-tcg-hyperlinks-relevant-to-context
+    review_event:
+      <<: *m2_review
+      id: adjudication-m2-preserve-rule-author-01
+      object_id: FDA-CDER-M2-PRESERVE-EXISTING-CONTEXT-002
+  - id: FDA-CDER-M2-NORMALIZE-MANUFACTURER-003
+    version: "1.0.0"
+    title: Explicit metadata normalization requires a new context group
+    description: >-
+      When author-declared intent is to remove or replace manufacturer="all", create a new
+      context group and suspend the old group while reusing the eligible document identifier.
+    bindingness: requirement
+    review_status: author_adjudicated_for_demo
+    verification_basis: mechanical_derivation
+    enforcement_mode: hard
+    expert_validated: false
+    scenario_mode: prospective_forward_compatibility
+    scope: *m2_scope
+    predicate_type: normalize-manufacturer-metadata
+    keyword_name: manufacturer
+    normalized_value: all
+    decision: REUSE_WITH_NEW_CONTEXT
+    severity: blocking
+    repair_type: CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD
+    repair_description: >-
+      Create a new context group, suspend the old one, and reuse the unchanged document by
+      identifier. Omit the optional manufacturer keyword when partitioning is unnecessary;
+      otherwise use only the explicitly supplied stable distinguishing value.
+    evidence_ids:
+      - ev-m4-manufacturer-general-values
+      - ev-tcg-replacement-context-same
+      - ev-tcg-new-context-and-reuse
+    review_event:
+      <<: *m2_review
+      id: adjudication-m2-normalize-rule-author-01
+      object_id: FDA-CDER-M2-NORMALIZE-MANUFACTURER-003
+  - id: FDA-CDER-M2-HYPERLINK-RELEVANCE-004
+    version: "1.0.0"
+    title: Existing hyperlinks require context-relevance review
+    description: >-
+      Hyperlink relevance inferred by a model remains a semantic signal. Irrelevant,
+      contradictory, unverified, or incompletely inspected hyperlinks require human review.
+    bindingness: recommendation
+    review_status: author_adjudicated_for_demo
+    verification_basis: semantic_inference
+    enforcement_mode: semantic_signal
+    expert_validated: false
+    scenario_mode: prospective_forward_compatibility
+    scope: *m2_scope
+    predicate_type: hyperlink-relevance-gate
+    keyword_name: manufacturer
+    normalized_value: all
+    decision: HUMAN_REGULATORY_REVIEW
+    severity: unresolved
+    repair_type: VERIFY_HYPERLINK_RELEVANCE
+    repair_description: >-
+      Have a human verify each hyperlink against the selected target context and update or
+      remove stale references before relying on reuse eligibility.
+    evidence_ids: [ev-tcg-hyperlinks-relevant-to-context]
+    review_event:
+      <<: *m2_review
+      id: adjudication-m2-hyperlink-policy-author-01
+      object_id: FDA-CDER-M2-HYPERLINK-RELEVANCE-004

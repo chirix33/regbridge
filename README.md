@@ -8,9 +8,9 @@ It is not FDA-certified, is not a substitute for regulatory review, and does not
 guarantee filing or application acceptance. Use only public, synthetic, or deliberately
 de-identified materials. Do not upload confidential sponsor submissions.
 
-## Current delivery state: M1
+## Current delivery state: M2
 
-M1 completes the first end-to-end unavailable-heading vertical slice:
+M2 completes one shared end-to-end analyzer path for all three archetypes:
 
 - FastAPI health, FDA/CDER scope, and frozen-snapshot endpoints;
 - React/TypeScript/Tailwind scope UI with a visible research disclaimer;
@@ -25,12 +25,21 @@ M1 completes the first end-to-end unavailable-heading vertical slice:
 - the author-adjudicated explicit mappings `3.2.S.1.1`, `3.2.S.1.2`, and `3.2.S.1.3` →
   `3.2.S.1`;
 - deterministic positive, clean-negative, ambiguous-abstention, and current-operational paths;
-- an interactive UI for parsed inventory, decision, evidence, repair, uncertainty, graph, and trace.
+- lifecycle-sensitive `manufacturer="all"` advisory, preservation, normalization, and intent-
+  missing paths;
+- bounded PDF text and hyperlink extraction with author-verified fixture-link governance;
+- strict offline fixtures, a disabled-model abstention, and an opt-in OpenAI-compatible structured
+  adapter with redacted run metadata;
+- deterministic decision precedence, SQLite result/graph trace persistence, and exactly 30
+  unfrozen benchmark drafts (ten per archetype);
+- an interactive shared UI for parsed inventory, findings, evidence, model record, repair,
+  uncertainty, graph, and chronological trace.
 
-M1 is a **prospective forward-compatibility research scenario**. FDA forward compatibility is
+M1/M2 are a **prospective forward-compatibility research scenario**. FDA forward compatibility is
 currently **`not_operational`**, which is visible in the API and UI. Current-operational mode does
-not execute the prospective rule. The rule and benchmark labels are author-adjudicated by
-`author-01`; `expert_validated` remains `false`.
+not execute prospective rules or semantic inspection. The executable M1/M2 rules and canonical
+Case B label are author-adjudicated by `author-01`; the other benchmark drafts remain candidates
+until M3. `expert_validated` remains `false`.
 
 ## Prerequisites
 
@@ -67,7 +76,7 @@ make check
 lint, type checking, component tests, and a production build. No default check uses the network or
 requires a model key.
 
-## Run the M1 application
+## Run the M2 application
 
 On Windows, one command starts the local API and UI:
 
@@ -91,7 +100,9 @@ Useful endpoints:
 - supported scope and disclaimer: <http://127.0.0.1:8000/api/v1/config/scope>
 - frozen source snapshot: <http://127.0.0.1:8000/api/v1/standards/snapshots>
 - controlled fixture catalog: <http://127.0.0.1:8000/api/v1/fixtures>
-- interactive Case A: <http://127.0.0.1:5173/case-a>
+- unavailable-heading case: <http://127.0.0.1:5173/case-a>
+- metadata/lifecycle case: <http://127.0.0.1:5173/case-b>
+- semantic PDF/hyperlink case: <http://127.0.0.1:5173/case-c>
 
 The server binds only to `127.0.0.1`. Authentication and public deployment are out of scope.
 

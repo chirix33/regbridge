@@ -24,6 +24,54 @@
       "title": "Center",
       "type": "string"
     },
+    "ManufacturerPartitioning": {
+      "enum": [
+        "unnecessary",
+        "required",
+        "unknown"
+      ],
+      "title": "ManufacturerPartitioning",
+      "type": "string"
+    },
+    "MetadataMigrationIntent": {
+      "enum": [
+        "preserve-existing-lifecycle",
+        "normalize-metadata",
+        "unspecified"
+      ],
+      "title": "MetadataMigrationIntent",
+      "type": "string"
+    },
+    "MetadataPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "intent": {
+          "$ref": "#/$defs/MetadataMigrationIntent"
+        },
+        "manufacturer_partitioning": {
+          "$ref": "#/$defs/ManufacturerPartitioning",
+          "default": "unknown"
+        },
+        "replacement_manufacturer_value": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Replacement Manufacturer Value"
+        }
+      },
+      "required": [
+        "intent"
+      ],
+      "title": "MetadataPlan",
+      "type": "object"
+    },
     "ReuseOperation": {
       "enum": [
         "reference-existing-content",
@@ -64,6 +112,17 @@
     },
     "center": {
       "$ref": "#/$defs/Center"
+    },
+    "metadata_plan": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/MetadataPlan"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     },
     "reuse_operation": {
       "$ref": "#/$defs/ReuseOperation"

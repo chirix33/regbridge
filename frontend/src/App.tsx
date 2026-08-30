@@ -20,6 +20,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<ScopePage />} />
           <Route path="/case-a" element={<HeadingCasePage />} />
+          <Route path="/case-b" element={<HeadingCasePage />} />
+          <Route path="/case-c" element={<HeadingCasePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

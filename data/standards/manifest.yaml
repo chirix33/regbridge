@@ -1,4 +1,4 @@
-manifest_version: 1.1.0
+manifest_version: 1.2.0
 snapshot_id: fda-cder-demo-v1
 description: >-
   Source-verified FDA/CDER snapshot for the controlled prospective eCTD v3.2.2-to-v4.0
@@ -99,3 +99,50 @@ sources:
     notes: >-
       RegBridge limits applicability to its FDA/CDER, NDA-first controlled prospective
       demonstration. Current FDA forward compatibility is not operational.
+  - id: fda-m4-ctd-organization-october-2017
+    title: M4 Organization of the Common Technical Document for the Registration of Pharmaceuticals for Human Use Guidance for Industry
+    authority: FDA
+    jurisdiction: United States
+    issuing_organization: U.S. Food and Drug Administration
+    center: CDER
+    version: "October 2017"
+    published_at: 2017-10-01
+    effective_from: null
+    source_url: "https://www.fda.gov/media/71551/download"
+    retrieved_at: 2026-08-30T02:45:07Z
+    local_path: snapshots/fda-m4-ctd-organization-october-2017.pdf
+    sha256: cc5672cdc3feb352d01c2cbfc823ea6cc3d45e657f3a4ca806cf486b41933cde
+    bindingness: recommendation
+    scope:
+      application_types: [NDA]
+      source_standards: [eCTD-3.2.2]
+      target_standards: [eCTD-4.0]
+      valid_from: null
+      valid_to: null
+    review_status: source_verified
+    verification_basis: direct_standard_encoding
+    enforcement_mode: disabled
+    expert_validated: false
+    review_events:
+      - id: review-m4-october-2017-author-01
+        reviewer_id: author-01
+        reviewer_role: research-author
+        reviewed_at: 2026-08-30T02:45:07Z
+        object_id: fda-m4-ctd-organization-october-2017
+        object_version: "October 2017"
+        source_snapshot_id: fda-cder-demo-v1
+        source_sha256: cc5672cdc3feb352d01c2cbfc823ea6cc3d45e657f3a4ca806cf486b41933cde
+        decision: accepted
+        rationale: >-
+          author-01 approved the pinned source, digest, Appendix A transcription, locator,
+          and controlled prospective FDA/CDER applicability for M2.
+        unresolved_assumptions: []
+        independent_second_author_check: false
+        expert_validated: false
+    review_locator: "Appendix A, PDF page 25 / printed page 22"
+    reviewer_note: >-
+      author-01 verified the nonbinding manufacturer-keyword recommendation used by M2.
+      This is author verification, not regulatory-expert validation.
+    notes: >-
+      Scoped to the controlled prospective FDA/CDER research demonstration. The guidance
+      contains nonbinding recommendations and does not make manufacturer="all" noncompliant.

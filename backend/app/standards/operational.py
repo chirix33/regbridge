@@ -44,8 +44,7 @@ class OperationalAvailability(DomainModel):
 class OperationalStatusRegistry:
     def __init__(self, record_path: Path | None = None) -> None:
         self.record_path = (
-            record_path
-            or REPOSITORY_ROOT / "data" / "standards" / "operational-status.yaml"
+            record_path or REPOSITORY_ROOT / "data" / "standards" / "operational-status.yaml"
         )
 
     def load(self) -> OperationalAvailability:

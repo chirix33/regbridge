@@ -1,0 +1,18 @@
+{
+  "fixture_version": "1.0.0",
+  "abstained": false,
+  "abstain_reason": null,
+  "findings": [
+    {
+      "id": "semantic-stale-applicant",
+      "basis": "observation",
+      "summary": "The PDF names Old Applicant Laboratories while the parsed target dossier names Northstar Therapeutics.",
+      "severity": "high",
+      "evidence_ids": [
+        "leaf-c-stale-applicant-text-p1-1"
+      ],
+      "category": "applicant_name_mismatch"
+    }
+  ],
+  "confidence": 0.98
+}

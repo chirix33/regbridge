@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     reg_bridge_env: str = "development"
     reg_bridge_host: str = "127.0.0.1"
     reg_bridge_port: int = Field(default=8000, ge=1, le=65535)
+    reg_bridge_database_path: Path = REPOSITORY_ROOT / "results" / "regbridge.sqlite3"
     reg_bridge_cors_origins: list[str] = [
         "http://127.0.0.1:5173",
         "http://localhost:5173",

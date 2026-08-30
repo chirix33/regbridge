@@ -11,6 +11,8 @@ from app.domain.enums import (
     Decision,
     EnforcementMode,
     ExtractionMethod,
+    ManufacturerPartitioning,
+    MetadataMigrationIntent,
     OperationalStatus,
     ReuseOperation,
     ReviewDecision,
@@ -40,11 +42,36 @@ class TargetContext(DomainModel):
     reuse_operation: ReuseOperation
     standards_snapshot_id: StableId
     scenario_mode: ScenarioMode
+    metadata_plan: "MetadataPlan | None" = None
 
     @model_validator(mode="after")
     def validate_version_transition(self) -> "TargetContext":
         if self.source_standard == self.target_standard:
             raise ValueError("source_standard and target_standard must differ")
+        return self
+
+
+class MetadataPlan(DomainModel):
+    intent: MetadataMigrationIntent
+    manufacturer_partitioning: ManufacturerPartitioning = ManufacturerPartitioning.UNKNOWN
+    replacement_manufacturer_value: str | None = Field(default=None, max_length=120)
+
+    @model_validator(mode="after")
+    def validate_plan(self) -> "MetadataPlan":
+        replacement = (
+            " ".join(self.replacement_manufacturer_value.split())
+            if self.replacement_manufacturer_value
+            else None
+        )
+        if self.intent != MetadataMigrationIntent.NORMALIZE_METADATA and replacement:
+            raise ValueError("replacement value is allowed only for normalize-metadata intent")
+        if self.manufacturer_partitioning == ManufacturerPartitioning.REQUIRED:
+            if self.intent == MetadataMigrationIntent.NORMALIZE_METADATA and not replacement:
+                raise ValueError("required manufacturer partitioning needs an explicit value")
+            if replacement and replacement.casefold() in {"all", "applicant", "not specified"}:
+                raise ValueError("replacement must be a stable distinguishing value")
+        if self.manufacturer_partitioning == ManufacturerPartitioning.UNNECESSARY and replacement:
+            raise ValueError("unnecessary partitioning must omit the manufacturer keyword")
         return self
 
 
@@ -178,6 +205,16 @@ class EvidenceSpan(DomainModel):
         return self
 
 
+class DossierEvidence(DomainModel):
+    id: StableId
+    artifact_id: StableId
+    kind: Annotated[str, Field(pattern=r"^(text|hyperlink|metadata)$")]
+    locator: str = Field(min_length=1)
+    text: str = Field(min_length=1, max_length=4000)
+    file_sha256: Sha256
+    extraction_method: ExtractionMethod = ExtractionMethod.DETERMINISTIC
+
+
 class SourceArtifact(DomainModel):
     id: StableId
     title: str = Field(min_length=1)
@@ -202,6 +239,8 @@ class Finding(DomainModel):
     rationale: str = Field(min_length=1)
     evidence_ids: tuple[StableId, ...] = Field(min_length=1)
     source: TraceStepKind
+    verification_basis: VerificationBasis = VerificationBasis.SYNTHETIC_ASSUMPTION
+    enforcement_mode: EnforcementMode = EnforcementMode.DISABLED
 
 
 class TraceStep(DomainModel):
@@ -211,6 +250,18 @@ class TraceStep(DomainModel):
     summary: str = Field(min_length=1)
     evidence_ids: tuple[StableId, ...] = ()
     occurred_at: AwareDatetime
+
+
+class ModelRunRecord(DomainModel):
+    mode: Annotated[str, Field(pattern=r"^(fixture|live|disabled)$")]
+    status: Annotated[str, Field(pattern=r"^(completed|abstained|failed|not_applicable)$")]
+    prompt_template_version: str = Field(pattern=r"^\d+\.\d+\.\d+$")
+    model_name: str | None = None
+    request_digest: Sha256 | None = None
+    input_tokens: int | None = Field(default=None, ge=0)
+    output_tokens: int | None = Field(default=None, ge=0)
+    latency_ms: float = Field(ge=0)
+    validation_error: str | None = Field(default=None, max_length=500)
 
 
 class AnalysisResult(DomainModel):
@@ -224,13 +275,20 @@ class AnalysisResult(DomainModel):
     severity: Severity
     triggered_rule_ids: tuple[StableId, ...]
     findings: tuple[Finding, ...]
-    evidence: tuple[EvidenceSpan, ...]
+    evidence: tuple[EvidenceSpan | DossierEvidence, ...]
     rationale: str = Field(min_length=1)
     repair: RepairAction
     confidence: float = Field(ge=0.0, le=1.0)
     unresolved_uncertainty: tuple[str, ...]
     human_approval_required: bool
     trace: tuple[TraceStep, ...] = Field(min_length=1)
+    model_run: ModelRunRecord = ModelRunRecord(
+        mode="disabled",
+        status="not_applicable",
+        prompt_template_version="1.0.0",
+        model_name="contract-default",
+        latency_ms=0,
+    )
 
     @model_validator(mode="after")
     def validate_human_review_contract(self) -> "AnalysisResult":

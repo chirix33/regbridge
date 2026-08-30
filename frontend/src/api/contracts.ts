@@ -49,6 +49,20 @@ export interface FixtureSummary {
   title: string;
   description: string;
   expected_class: "positive" | "negative" | "ambiguous";
+  archetype: "unavailable-heading" | "legacy-metadata-tension" | "stale-content-or-hyperlink";
+  default_metadata_intent: MetadataIntent | null;
+  manufacturer_partitioning: ManufacturerPartitioning | null;
+  replacement_manufacturer_value: string | null;
+  author_verified_relevant_hyperlink_ids: string[];
+}
+
+export type MetadataIntent = "preserve-existing-lifecycle" | "normalize-metadata" | "unspecified";
+export type ManufacturerPartitioning = "unnecessary" | "required" | "unknown";
+
+export interface MetadataPlan {
+  intent: MetadataIntent;
+  manufacturer_partitioning: ManufacturerPartitioning;
+  replacement_manufacturer_value: string | null;
 }
 
 export interface FixtureListResponse {
@@ -64,6 +78,15 @@ export interface ParsedLeaf {
   content_type: string;
   file_sha256: string;
   source_locator: string;
+  keywords: Array<{
+    name: string;
+    raw_value: string;
+    normalized_value: string;
+    source_locator: string;
+  }>;
+  text_span_count: number;
+  hyperlink_count: number;
+  extraction_status: "completed" | "failed" | "bounded";
 }
 
 export interface ApplicationInventory {
@@ -79,7 +102,7 @@ export interface ApplicationInventory {
   warnings: Array<{ code: string; message: string; locator: string }>;
 }
 
-export interface EvidenceSpan {
+export interface RegulatoryEvidenceSpan {
   id: string;
   source_id: string;
   locator: string;
@@ -92,6 +115,18 @@ export interface EvidenceSpan {
   expert_validated: boolean;
 }
 
+export interface DossierEvidence {
+  id: string;
+  artifact_id: string;
+  kind: "text" | "hyperlink" | "metadata";
+  locator: string;
+  text: string;
+  file_sha256: string;
+  extraction_method: "deterministic";
+}
+
+export type EvidenceSpan = RegulatoryEvidenceSpan | DossierEvidence;
+
 export interface AnalysisResult {
   id: string;
   source_artifact: {
@@ -102,13 +137,23 @@ export interface AnalysisResult {
     source_locator: string;
     file_sha256: string;
   };
-  target_context: { scenario_mode: ScenarioMode };
+  target_context: { scenario_mode: ScenarioMode; metadata_plan: MetadataPlan | null };
   operational_status: "not_operational";
   scenario_disclosure: string;
   expert_validated: false;
   decision: string;
   severity: string;
   triggered_rule_ids: string[];
+  findings: Array<{
+    id: string;
+    rule_id: string | null;
+    severity: string;
+    rationale: string;
+    evidence_ids: string[];
+    source: string;
+    verification_basis: string;
+    enforcement_mode: string;
+  }>;
   evidence: EvidenceSpan[];
   rationale: string;
   repair: { type: string; description: string; evidence_ids: string[] };
@@ -122,6 +167,16 @@ export interface AnalysisResult {
     summary: string;
     evidence_ids: string[];
   }>;
+  model_run: {
+    mode: LlmMode;
+    status: "completed" | "abstained" | "failed" | "not_applicable";
+    prompt_template_version: string;
+    model_name: string | null;
+    input_tokens: number | null;
+    output_tokens: number | null;
+    latency_ms: number;
+    validation_error: string | null;
+  };
 }
 
 export interface GraphNeighborhood {

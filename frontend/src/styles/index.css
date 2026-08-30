@@ -370,7 +370,7 @@ summary:focus-visible {
 
 .case-controls {
   display: grid;
-  grid-template-columns: 1.3fr 1fr 1fr auto;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   gap: 20px;
   align-items: end;
   margin: 20px 0;
@@ -398,7 +398,8 @@ summary:focus-visible {
   text-transform: uppercase;
 }
 
-.case-controls select {
+.case-controls select,
+.case-controls > label > input {
   width: 100%;
   min-height: 44px;
   margin-top: 8px;
@@ -407,6 +408,44 @@ summary:focus-visible {
   border-radius: 8px;
   color: #223f36;
   background: white;
+}
+
+.finding-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.finding-list article {
+  padding: 15px;
+  border-left: 4px solid #bd5c32;
+  border-radius: 8px;
+  background: #f4f7f5;
+}
+
+.finding-list p {
+  margin: 7px 0;
+  color: #4f665e;
+  line-height: 1.5;
+}
+
+.finding-list span,
+.model-run p {
+  color: #6d7b76;
+  font-size: 0.76rem;
+}
+
+.workspace-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.workspace-links a {
+  color: #8a4528;
+  font-weight: 750;
+  text-underline-offset: 4px;
 }
 
 .case-controls fieldset {

@@ -20,6 +20,56 @@
       "title": "Bindingness",
       "type": "string"
     },
+    "DossierEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "extraction_method": {
+          "$ref": "#/$defs/ExtractionMethod",
+          "default": "deterministic"
+        },
+        "file_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "File Sha256",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "pattern": "^(text|hyperlink|metadata)$",
+          "title": "Kind",
+          "type": "string"
+        },
+        "locator": {
+          "minLength": 1,
+          "title": "Locator",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "artifact_id",
+        "kind",
+        "locator",
+        "text",
+        "file_sha256"
+      ],
+      "title": "DossierEvidence",
+      "type": "object"
+    },
     "EnforcementMode": {
       "enum": [
         "hard",
@@ -333,7 +383,14 @@
     },
     "evidence": {
       "items": {
-        "$ref": "#/$defs/EvidenceSpan"
+        "anyOf": [
+          {
+            "$ref": "#/$defs/EvidenceSpan"
+          },
+          {
+            "$ref": "#/$defs/DossierEvidence"
+          }
+        ]
       },
       "title": "Evidence",
       "type": "array"

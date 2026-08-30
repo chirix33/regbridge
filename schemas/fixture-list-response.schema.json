@@ -3,6 +3,33 @@
     "FixtureSummary": {
       "additionalProperties": false,
       "properties": {
+        "archetype": {
+          "pattern": "^(unavailable-heading|legacy-metadata-tension|stale-content-or-hyperlink)$",
+          "title": "Archetype",
+          "type": "string"
+        },
+        "author_verified_relevant_hyperlink_ids": {
+          "default": [],
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "type": "string"
+          },
+          "title": "Author Verified Relevant Hyperlink Ids",
+          "type": "array"
+        },
+        "default_metadata_intent": {
+          "anyOf": [
+            {
+              "pattern": "^(preserve-existing-lifecycle|normalize-metadata|unspecified)$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Default Metadata Intent"
+        },
         "description": {
           "minLength": 1,
           "title": "Description",
@@ -18,6 +45,31 @@
           "title": "Id",
           "type": "string"
         },
+        "manufacturer_partitioning": {
+          "anyOf": [
+            {
+              "pattern": "^(unnecessary|required|unknown)$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Manufacturer Partitioning"
+        },
+        "replacement_manufacturer_value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Replacement Manufacturer Value"
+        },
         "title": {
           "minLength": 1,
           "title": "Title",
@@ -28,7 +80,8 @@
         "id",
         "title",
         "description",
-        "expected_class"
+        "expected_class",
+        "archetype"
       ],
       "title": "FixtureSummary",
       "type": "object"

@@ -51,7 +51,14 @@
           },
           "evidence": {
             "items": {
-              "$ref": "#/components/schemas/EvidenceSpan"
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/EvidenceSpan"
+                },
+                {
+                  "$ref": "#/components/schemas/DossierEvidence"
+                }
+              ]
             },
             "title": "Evidence",
             "type": "array"
@@ -76,6 +83,16 @@
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
             "title": "Id",
             "type": "string"
+          },
+          "model_run": {
+            "$ref": "#/components/schemas/ModelRunRecord",
+            "default": {
+              "latency_ms": 0.0,
+              "mode": "disabled",
+              "model_name": "contract-default",
+              "prompt_template_version": "1.0.0",
+              "status": "not_applicable"
+            }
           },
           "operational_status": {
             "$ref": "#/components/schemas/OperationalStatus"
@@ -285,6 +302,56 @@
         "title": "Decision",
         "type": "string"
       },
+      "DossierEvidence": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "extraction_method": {
+            "$ref": "#/components/schemas/ExtractionMethod",
+            "default": "deterministic"
+          },
+          "file_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "File Sha256",
+            "type": "string"
+          },
+          "id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "pattern": "^(text|hyperlink|metadata)$",
+            "title": "Kind",
+            "type": "string"
+          },
+          "locator": {
+            "minLength": 1,
+            "title": "Locator",
+            "type": "string"
+          },
+          "text": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "artifact_id",
+          "kind",
+          "locator",
+          "text",
+          "file_sha256"
+        ],
+        "title": "DossierEvidence",
+        "type": "object"
+      },
       "EdgeType": {
         "enum": [
           "LOCATED_UNDER",
@@ -293,7 +360,9 @@
           "MAPS_TO",
           "SUPPORTED_BY",
           "REQUIRES_REPAIR",
-          "TRIGGERS_DECISION"
+          "TRIGGERS_DECISION",
+          "HAS_KEYWORD",
+          "CITES"
         ],
         "title": "EdgeType",
         "type": "string"
@@ -396,6 +465,10 @@
       "Finding": {
         "additionalProperties": false,
         "properties": {
+          "enforcement_mode": {
+            "$ref": "#/components/schemas/EnforcementMode",
+            "default": "disabled"
+          },
           "evidence_ids": {
             "items": {
               "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
@@ -432,6 +505,10 @@
           },
           "source": {
             "$ref": "#/components/schemas/TraceStepKind"
+          },
+          "verification_basis": {
+            "$ref": "#/components/schemas/VerificationBasis",
+            "default": "synthetic_assumption"
           }
         },
         "required": [
@@ -464,6 +541,32 @@
       "FixtureSummary": {
         "additionalProperties": false,
         "properties": {
+          "archetype": {
+            "pattern": "^(unavailable-heading|legacy-metadata-tension|stale-content-or-hyperlink)$",
+            "title": "Archetype",
+            "type": "string"
+          },
+          "author_verified_relevant_hyperlink_ids": {
+            "default": [],
+            "items": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+              "type": "string"
+            },
+            "title": "Author Verified Relevant Hyperlink Ids",
+            "type": "array"
+          },
+          "default_metadata_intent": {
+            "anyOf": [
+              {
+                "pattern": "^(preserve-existing-lifecycle|normalize-metadata|unspecified)$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Metadata Intent"
+          },
           "description": {
             "minLength": 1,
             "title": "Description",
@@ -479,6 +582,29 @@
             "title": "Id",
             "type": "string"
           },
+          "manufacturer_partitioning": {
+            "anyOf": [
+              {
+                "pattern": "^(unnecessary|required|unknown)$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Manufacturer Partitioning"
+          },
+          "replacement_manufacturer_value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Replacement Manufacturer Value"
+          },
           "title": {
             "minLength": 1,
             "title": "Title",
@@ -489,7 +615,8 @@
           "id",
           "title",
           "description",
-          "expected_class"
+          "expected_class",
+          "archetype"
         ],
         "title": "FixtureSummary",
         "type": "object"
@@ -746,6 +873,145 @@
         "title": "LlmMode",
         "type": "string"
       },
+      "ManufacturerPartitioning": {
+        "enum": [
+          "unnecessary",
+          "required",
+          "unknown"
+        ],
+        "title": "ManufacturerPartitioning",
+        "type": "string"
+      },
+      "MetadataMigrationIntent": {
+        "enum": [
+          "preserve-existing-lifecycle",
+          "normalize-metadata",
+          "unspecified"
+        ],
+        "title": "MetadataMigrationIntent",
+        "type": "string"
+      },
+      "MetadataPlan": {
+        "additionalProperties": false,
+        "properties": {
+          "intent": {
+            "$ref": "#/components/schemas/MetadataMigrationIntent"
+          },
+          "manufacturer_partitioning": {
+            "$ref": "#/components/schemas/ManufacturerPartitioning",
+            "default": "unknown"
+          },
+          "replacement_manufacturer_value": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Replacement Manufacturer Value"
+          }
+        },
+        "required": [
+          "intent"
+        ],
+        "title": "MetadataPlan",
+        "type": "object"
+      },
+      "ModelRunRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "input_tokens": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Input Tokens"
+          },
+          "latency_ms": {
+            "minimum": 0.0,
+            "title": "Latency Ms",
+            "type": "number"
+          },
+          "mode": {
+            "pattern": "^(fixture|live|disabled)$",
+            "title": "Mode",
+            "type": "string"
+          },
+          "model_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Name"
+          },
+          "output_tokens": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output Tokens"
+          },
+          "prompt_template_version": {
+            "pattern": "^\\d+\\.\\d+\\.\\d+$",
+            "title": "Prompt Template Version",
+            "type": "string"
+          },
+          "request_digest": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Request Digest"
+          },
+          "status": {
+            "pattern": "^(completed|abstained|failed|not_applicable)$",
+            "title": "Status",
+            "type": "string"
+          },
+          "validation_error": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Validation Error"
+          }
+        },
+        "required": [
+          "mode",
+          "status",
+          "prompt_template_version",
+          "latency_ms"
+        ],
+        "title": "ModelRunRecord",
+        "type": "object"
+      },
       "NodeType": {
         "enum": [
           "artifact",
@@ -755,7 +1021,10 @@
           "evidence",
           "rule",
           "repair",
-          "decision"
+          "decision",
+          "keyword",
+          "dossier_evidence",
+          "model_finding"
         ],
         "title": "NodeType",
         "type": "string"
@@ -794,6 +1063,39 @@
         "title": "ParseWarning",
         "type": "object"
       },
+      "ParsedKeyword": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "pattern": "^[a-z][a-z0-9-]*$",
+            "title": "Name",
+            "type": "string"
+          },
+          "normalized_value": {
+            "minLength": 1,
+            "title": "Normalized Value",
+            "type": "string"
+          },
+          "raw_value": {
+            "minLength": 1,
+            "title": "Raw Value",
+            "type": "string"
+          },
+          "source_locator": {
+            "minLength": 1,
+            "title": "Source Locator",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "raw_value",
+          "normalized_value",
+          "source_locator"
+        ],
+        "title": "ParsedKeyword",
+        "type": "object"
+      },
       "ParsedLeaf": {
         "additionalProperties": false,
         "properties": {
@@ -814,6 +1116,16 @@
             ],
             "title": "Declared Checksum"
           },
+          "extraction_status": {
+            "default": "completed",
+            "enum": [
+              "completed",
+              "failed",
+              "bounded"
+            ],
+            "title": "Extraction Status",
+            "type": "string"
+          },
           "file_sha256": {
             "pattern": "^[a-f0-9]{64}$",
             "title": "File Sha256",
@@ -829,10 +1141,24 @@
             "title": "Href",
             "type": "string"
           },
+          "hyperlink_count": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Hyperlink Count",
+            "type": "integer"
+          },
           "id": {
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
             "title": "Id",
             "type": "string"
+          },
+          "keywords": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ParsedKeyword"
+            },
+            "title": "Keywords",
+            "type": "array"
           },
           "modified_leaf_id": {
             "anyOf": [
@@ -853,6 +1179,12 @@
             "minLength": 1,
             "title": "Source Locator",
             "type": "string"
+          },
+          "text_span_count": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Text Span Count",
+            "type": "integer"
           },
           "title": {
             "minLength": 1,
@@ -1410,6 +1742,16 @@
           },
           "center": {
             "$ref": "#/components/schemas/Center"
+          },
+          "metadata_plan": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MetadataPlan"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "reuse_operation": {
             "$ref": "#/components/schemas/ReuseOperation"

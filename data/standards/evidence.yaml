@@ -1,4 +1,4 @@
-evidence_version: 1.0.0
+evidence_version: 1.1.0
 snapshot_id: fda-cder-demo-v1
 evidence:
   - id: ev-ctoc-321-remains
@@ -50,6 +50,34 @@ evidence:
     verification_basis: direct_standard_encoding
     enforcement_mode: disabled
     expert_validated: false
+  - id: ev-m4-manufacturer-general-values
+    source_id: fda-m4-ctd-organization-october-2017
+    locator: "Appendix A / PDF page 25 / printed page 22"
+    text: >-
+      The manufacturer keyword is optional and is not recommended when manufacturer, site,
+      or process differentiation is unnecessary; general umbrella values such as "all",
+      "applicant", or "not specified" provide no benefit. When differentiation is useful,
+      a stable firm, site, route, or process-distinguishing value may be used.
+    bindingness: recommendation
+    source_sha256: cc5672cdc3feb352d01c2cbfc823ea6cc3d45e657f3a4ca806cf486b41933cde
+    extraction_method: manual
+    review_status: source_verified
+    verification_basis: direct_standard_encoding
+    enforcement_mode: disabled
+    expert_validated: false
+  - id: ev-tcg-hyperlinks-relevant-to-context
+    source_id: fda-ectd-v4-tcg-v1.5
+    locator: "Section 1.5.5 / PDF page 12"
+    text: >-
+      When referencing an existing document, it is important to ensure that all document
+      hyperlinks are relevant to the new context of use.
+    bindingness: recommendation
+    source_sha256: dccd247940cdf5bc7cbf6a5e31b8f2547ad7f61650ae1a138113feb315f8002e
+    extraction_method: manual
+    review_status: source_verified
+    verification_basis: direct_standard_encoding
+    enforcement_mode: disabled
+    expert_validated: false
 review_events:
   - id: review-m1-ctoc-evidence-author-01
     reviewer_id: author-01
@@ -78,6 +106,34 @@ review_events:
     rationale: >-
       author-01 approved the TCG evidence transcriptions, locators, digest, and controlled
       prospective FDA/CDER applicability recorded in this file.
+    unresolved_assumptions: []
+    independent_second_author_check: false
+    expert_validated: false
+  - id: review-m2-m4-evidence-author-01
+    reviewer_id: author-01
+    reviewer_role: research-author
+    reviewed_at: 2026-08-30T02:45:07Z
+    object_id: m2-m4-manufacturer-evidence
+    object_version: "1.0.0"
+    source_snapshot_id: fda-cder-demo-v1
+    source_sha256: cc5672cdc3feb352d01c2cbfc823ea6cc3d45e657f3a4ca806cf486b41933cde
+    decision: accepted
+    rationale: >-
+      author-01 approved the exact M4 evidence span, locator, digest, and controlled scope.
+    unresolved_assumptions: []
+    independent_second_author_check: false
+    expert_validated: false
+  - id: review-m2-tcg-hyperlink-evidence-author-01
+    reviewer_id: author-01
+    reviewer_role: research-author
+    reviewed_at: 2026-08-30T02:45:07Z
+    object_id: m2-tcg-hyperlink-evidence
+    object_version: "1.0.0"
+    source_snapshot_id: fda-cder-demo-v1
+    source_sha256: dccd247940cdf5bc7cbf6a5e31b8f2547ad7f61650ae1a138113feb315f8002e
+    decision: accepted
+    rationale: >-
+      author-01 approved the exact TCG hyperlink evidence span, locator, digest, and scope.
     unresolved_assumptions: []
     independent_second_author_check: false
     expert_validated: false

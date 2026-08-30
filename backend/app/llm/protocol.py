@@ -2,7 +2,7 @@ from typing import Protocol, TypeVar
 
 from pydantic import BaseModel
 
-from app.llm.models import ModelRequest
+from app.llm.models import ModelCompletion, ModelRequest
 
 ModelOutput = TypeVar("ModelOutput", bound=BaseModel)
 
@@ -12,4 +12,4 @@ class StructuredModel(Protocol):
         self,
         request: ModelRequest,
         output_type: type[ModelOutput],
-    ) -> ModelOutput: ...
+    ) -> ModelCompletion[ModelOutput]: ...

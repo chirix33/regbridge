@@ -1,0 +1,52 @@
+version: 1.0.0
+snapshot_id: fda-cder-demo-v1
+status: draft-unfrozen
+cases:
+  - {case_id: case-a-001, archetype: unavailable-heading, input_fixture: case-a-removed-3211, target_context_id: prospective-reference, mutation_spec: exact-3211, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-mutation-spec-v1}
+  - {case_id: case-a-002, archetype: unavailable-heading, input_fixture: case-a-removed-3212, target_context_id: prospective-reference, mutation_spec: exact-3212, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-mutation-spec-v1}
+  - {case_id: case-a-003, archetype: unavailable-heading, input_fixture: case-a-removed-3213, target_context_id: prospective-reference, mutation_spec: exact-3213, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-mutation-spec-v1}
+  - {case_id: case-a-004, archetype: unavailable-heading, input_fixture: case-a-removed-3211, target_context_id: prospective-reference, mutation_spec: rename-title-and-file, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-mutation-spec-v1}
+  - {case_id: case-a-005, archetype: unavailable-heading, input_fixture: case-a-removed-3212, target_context_id: prospective-reference, mutation_spec: add-benign-sibling-leaf, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-mutation-spec-v1}
+  - {case_id: case-a-006, archetype: unavailable-heading, input_fixture: case-a-clean-321, target_context_id: prospective-reference, mutation_spec: available-parent-clean-negative, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-mutation-spec-v1}
+  - {case_id: case-a-007, archetype: unavailable-heading, input_fixture: case-a-clean-321, target_context_id: prospective-reference, mutation_spec: clean-title-perturbation, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-mutation-spec-v1}
+  - {case_id: case-a-008, archetype: unavailable-heading, input_fixture: case-a-ambiguous-3214, target_context_id: prospective-reference, mutation_spec: unmapped-heading-abstention, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-mutation-spec-v1}
+  - {case_id: case-a-009, archetype: unavailable-heading, input_fixture: case-a-ambiguous-3214, target_context_id: prospective-reference, mutation_spec: unmapped-filename-perturbation, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-mutation-spec-v1}
+  - {case_id: case-a-010, archetype: unavailable-heading, input_fixture: case-a-removed-3211, target_context_id: current-operational, mutation_spec: operational-guard, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-mutation-spec-v1}
+
+  - case_id: case-b-001
+    archetype: legacy-metadata-tension
+    input_fixture: case-b-normalize-all
+    target_context_id: normalize-unnecessary-reference
+    mutation_spec: canonical-normalize-all
+    reference_decision: REUSE_WITH_NEW_CONTEXT
+    reference_severity: blocking
+    required_rule_ids: [FDA-CDER-M2-DISCOURAGED-MANUFACTURER-ALL-001, FDA-CDER-M2-NORMALIZE-MANUFACTURER-003]
+    acceptable_evidence_ids: [ev-m4-manufacturer-general-values, ev-tcg-replacement-context-same, ev-tcg-new-context-and-reuse]
+    required_repair_type: CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD
+    human_review_required: true
+    reference_rationale: Explicit normalization changes the keyword context; omit the unnecessary optional keyword and reuse the unchanged document by identifier in a new context group.
+    adjudication_status: author_adjudicated_for_demo
+    expert_validated: false
+    reviewer_id: author-01
+    split: unassigned
+    provenance: user-approved-canonical-case-b-v1
+  - {case_id: case-b-002, archetype: legacy-metadata-tension, input_fixture: case-b-preserve-all, target_context_id: preserve-reference, mutation_spec: exact-preservation, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-mutation-spec-v1}
+  - {case_id: case-b-003, archetype: legacy-metadata-tension, input_fixture: case-b-unspecified-all, target_context_id: unspecified-reference, mutation_spec: missing-migration-intent, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-mutation-spec-v1}
+  - {case_id: case-b-004, archetype: legacy-metadata-tension, input_fixture: case-b-normalize-all, target_context_id: normalize-required-explicit, mutation_spec: stable-replacement-value, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-mutation-spec-v1}
+  - {case_id: case-b-005, archetype: legacy-metadata-tension, input_fixture: case-b-normalize-all, target_context_id: normalize-unknown, mutation_spec: unknown-partitioning-abstention, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-mutation-spec-v1}
+  - {case_id: case-b-006, archetype: legacy-metadata-tension, input_fixture: case-b-clean-specific, target_context_id: prospective-reference, mutation_spec: stable-exact-value, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-mutation-spec-v1}
+  - {case_id: case-b-007, archetype: legacy-metadata-tension, input_fixture: case-b-clean-specific, target_context_id: create-new-target, mutation_spec: new-target-artifact-scope, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-mutation-spec-v1}
+  - {case_id: case-b-008, archetype: legacy-metadata-tension, input_fixture: case-b-out-of-scope-product-all, target_context_id: prospective-reference, mutation_spec: out-of-scope-product-keyword, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-mutation-spec-v1}
+  - {case_id: case-b-009, archetype: legacy-metadata-tension, input_fixture: case-b-unspecified-all, target_context_id: preserve-reference, mutation_spec: whitespace-case-normalization, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-mutation-spec-v1}
+  - {case_id: case-b-010, archetype: legacy-metadata-tension, input_fixture: case-b-normalize-all, target_context_id: current-operational, mutation_spec: operational-guard, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-mutation-spec-v1}
+
+  - {case_id: case-c-001, archetype: stale-content-or-hyperlink, input_fixture: case-c-stale-heading, target_context_id: prospective-reference, mutation_spec: obsolete-heading-text, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-pdf-spec-v1}
+  - {case_id: case-c-002, archetype: stale-content-or-hyperlink, input_fixture: case-c-stale-applicant, target_context_id: prospective-reference, mutation_spec: obsolete-applicant-name, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-pdf-spec-v1}
+  - {case_id: case-c-003, archetype: stale-content-or-hyperlink, input_fixture: case-c-irrelevant-link, target_context_id: prospective-reference, mutation_spec: unverified-external-link, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-pdf-spec-v1}
+  - {case_id: case-c-004, archetype: stale-content-or-hyperlink, input_fixture: case-c-clean, target_context_id: prospective-reference, mutation_spec: clean-current-text, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-pdf-spec-v1}
+  - {case_id: case-c-005, archetype: stale-content-or-hyperlink, input_fixture: case-c-relevant-link, target_context_id: prospective-reference, mutation_spec: author-verified-internal-link, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-pdf-spec-v1}
+  - {case_id: case-c-006, archetype: stale-content-or-hyperlink, input_fixture: case-c-ambiguous, target_context_id: prospective-reference, mutation_spec: ambiguous-historical-wording, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-pdf-spec-v1}
+  - {case_id: case-c-007, archetype: stale-content-or-hyperlink, input_fixture: case-c-stale-heading, target_context_id: prospective-reference, mutation_spec: filename-title-perturbation, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-pdf-spec-v1}
+  - {case_id: case-c-008, archetype: stale-content-or-hyperlink, input_fixture: case-c-stale-applicant, target_context_id: prospective-reference, mutation_spec: applicant-word-order-perturbation, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-pdf-spec-v1}
+  - {case_id: case-c-009, archetype: stale-content-or-hyperlink, input_fixture: case-c-clean, target_context_id: prospective-reference, mutation_spec: benign-historical-statement, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-pdf-spec-v1}
+  - {case_id: case-c-010, archetype: stale-content-or-hyperlink, input_fixture: case-c-irrelevant-link, target_context_id: current-operational, mutation_spec: operational-guard, adjudication_status: candidate, expert_validated: false, split: unassigned, provenance: synthetic-pdf-spec-v1}

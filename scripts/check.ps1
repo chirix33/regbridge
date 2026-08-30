@@ -36,4 +36,4 @@ finally {
     Pop-Location
 }
 
-Write-Output "M1 verification passed."
+Write-Output "M2 verification passed."

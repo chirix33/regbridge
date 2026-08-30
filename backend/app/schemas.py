@@ -13,15 +13,17 @@ from app.api.contracts import (
 )
 from app.config import REPOSITORY_ROOT
 from app.domain.models import AnalysisResult, StandardsManifest, TargetContext
+from app.evaluation.drafts import BenchmarkDraftSet
 from app.graph.models import GraphNeighborhood
 from app.llm.models import ModelRequest, SemanticRiskOutput
 from app.main import create_app
 from app.parsers.models import ApplicationInventory
-from app.rules.models import HeadingRule
+from app.rules.models import HeadingRule, MetadataRule
 from app.standards.operational import OperationalAvailability
 
 SCHEMA_MODELS: dict[str, type[BaseModel]] = {
     "analysis-result.schema.json": AnalysisResult,
+    "benchmark-draft-set.schema.json": BenchmarkDraftSet,
     "analysis-request.schema.json": AnalysisRequest,
     "analysis-response.schema.json": AnalysisResponse,
     "application-inventory.schema.json": ApplicationInventory,
@@ -30,6 +32,7 @@ SCHEMA_MODELS: dict[str, type[BaseModel]] = {
     "graph-response.schema.json": GraphResponse,
     "heading-rule.schema.json": HeadingRule,
     "model-request.schema.json": ModelRequest,
+    "metadata-rule.schema.json": MetadataRule,
     "operational-availability.schema.json": OperationalAvailability,
     "scope-response.schema.json": ScopeResponse,
     "semantic-risk-output.schema.json": SemanticRiskOutput,

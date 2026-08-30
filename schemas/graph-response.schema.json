@@ -8,7 +8,9 @@
         "MAPS_TO",
         "SUPPORTED_BY",
         "REQUIRES_REPAIR",
-        "TRIGGERS_DECISION"
+        "TRIGGERS_DECISION",
+        "HAS_KEYWORD",
+        "CITES"
       ],
       "title": "EdgeType",
       "type": "string"
@@ -208,7 +210,10 @@
         "evidence",
         "rule",
         "repair",
-        "decision"
+        "decision",
+        "keyword",
+        "dossier_evidence",
+        "model_finding"
       ],
       "title": "NodeType",
       "type": "string"

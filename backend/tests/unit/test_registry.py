@@ -12,7 +12,7 @@ def test_source_verified_manifest_loads_and_verifies_frozen_sources() -> None:
     manifest = StandardsRegistry().load()
 
     assert manifest.snapshot_id == "fda-cder-demo-v1"
-    assert len(manifest.sources) == 2
+    assert len(manifest.sources) == 3
     assert all(source.review_status == ReviewStatus.SOURCE_VERIFIED for source in manifest.sources)
     assert all(source.expert_validated is False for source in manifest.sources)
 

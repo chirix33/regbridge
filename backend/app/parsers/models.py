@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import Field, model_validator
 
 from app.domain.enums import LifecycleOperation, StandardVersion
@@ -8,6 +10,30 @@ class ParseWarning(DomainModel):
     code: StableId
     message: str = Field(min_length=1)
     locator: str = Field(min_length=1)
+
+
+class ParsedKeyword(DomainModel):
+    name: str = Field(pattern=r"^[a-z][a-z0-9-]*$")
+    raw_value: str = Field(min_length=1)
+    normalized_value: str = Field(min_length=1)
+    source_locator: str = Field(min_length=1)
+
+
+class ParsedTextSpan(DomainModel):
+    id: StableId
+    page: int = Field(ge=1)
+    text: str = Field(min_length=1, max_length=4000)
+    locator: str = Field(min_length=1)
+
+
+class ParsedHyperlink(DomainModel):
+    id: StableId
+    page: int = Field(ge=1)
+    target_type: Literal["uri", "internal", "unsupported"]
+    target: str = Field(min_length=1, max_length=2000)
+    locator: str = Field(min_length=1)
+    target_exists: bool | None = None
+    author_verified_relevant: bool = False
 
 
 class ParsedLeaf(DomainModel):
@@ -21,6 +47,12 @@ class ParsedLeaf(DomainModel):
     file_sha256: Sha256
     declared_checksum: Sha256 | None = None
     source_locator: str = Field(min_length=1)
+    keywords: tuple[ParsedKeyword, ...] = ()
+    text_span_count: int = Field(default=0, ge=0)
+    hyperlink_count: int = Field(default=0, ge=0)
+    extraction_status: Literal["completed", "failed", "bounded"] = "completed"
+    text_spans: tuple[ParsedTextSpan, ...] = Field(default=(), exclude=True)
+    hyperlinks: tuple[ParsedHyperlink, ...] = Field(default=(), exclude=True)
 
     @model_validator(mode="after")
     def validate_checksum(self) -> "ParsedLeaf":
@@ -56,3 +88,15 @@ class FixtureSummary(DomainModel):
     title: str = Field(min_length=1)
     description: str = Field(min_length=1)
     expected_class: str = Field(pattern=r"^(positive|negative|ambiguous)$")
+    archetype: str = Field(
+        pattern=r"^(unavailable-heading|legacy-metadata-tension|stale-content-or-hyperlink)$"
+    )
+    default_metadata_intent: str | None = Field(
+        default=None,
+        pattern=r"^(preserve-existing-lifecycle|normalize-metadata|unspecified)$",
+    )
+    manufacturer_partitioning: str | None = Field(
+        default=None, pattern=r"^(unnecessary|required|unknown)$"
+    )
+    replacement_manufacturer_value: str | None = None
+    author_verified_relevant_hyperlink_ids: tuple[StableId, ...] = ()

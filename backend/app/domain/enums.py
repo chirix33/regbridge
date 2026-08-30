@@ -26,6 +26,18 @@ class ReuseOperation(StrEnum):
     CREATE_NEW_TARGET_ARTIFACT = "create-new-target-artifact"
 
 
+class MetadataMigrationIntent(StrEnum):
+    PRESERVE_EXISTING_LIFECYCLE = "preserve-existing-lifecycle"
+    NORMALIZE_METADATA = "normalize-metadata"
+    UNSPECIFIED = "unspecified"
+
+
+class ManufacturerPartitioning(StrEnum):
+    UNNECESSARY = "unnecessary"
+    REQUIRED = "required"
+    UNKNOWN = "unknown"
+
+
 class Decision(StrEnum):
     REUSE_AS_LEGACY_REFERENCE = "REUSE_AS_LEGACY_REFERENCE"
     REUSE_WITH_NEW_CONTEXT = "REUSE_WITH_NEW_CONTEXT"
@@ -103,6 +115,9 @@ class NodeType(StrEnum):
     RULE = "rule"
     REPAIR = "repair"
     DECISION = "decision"
+    KEYWORD = "keyword"
+    DOSSIER_EVIDENCE = "dossier_evidence"
+    MODEL_FINDING = "model_finding"
 
 
 class EdgeType(StrEnum):
@@ -113,6 +128,8 @@ class EdgeType(StrEnum):
     SUPPORTED_BY = "SUPPORTED_BY"
     REQUIRES_REPAIR = "REQUIRES_REPAIR"
     TRIGGERS_DECISION = "TRIGGERS_DECISION"
+    HAS_KEYWORD = "HAS_KEYWORD"
+    CITES = "CITES"
 
 
 class ExtractionMethod(StrEnum):

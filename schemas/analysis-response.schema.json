@@ -14,7 +14,14 @@
         },
         "evidence": {
           "items": {
-            "$ref": "#/$defs/EvidenceSpan"
+            "anyOf": [
+              {
+                "$ref": "#/$defs/EvidenceSpan"
+              },
+              {
+                "$ref": "#/$defs/DossierEvidence"
+              }
+            ]
           },
           "title": "Evidence",
           "type": "array"
@@ -39,6 +46,20 @@
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
           "title": "Id",
           "type": "string"
+        },
+        "model_run": {
+          "$ref": "#/$defs/ModelRunRecord",
+          "default": {
+            "input_tokens": null,
+            "latency_ms": 0.0,
+            "mode": "disabled",
+            "model_name": "contract-default",
+            "output_tokens": null,
+            "prompt_template_version": "1.0.0",
+            "request_digest": null,
+            "status": "not_applicable",
+            "validation_error": null
+          }
         },
         "operational_status": {
           "$ref": "#/$defs/OperationalStatus"
@@ -156,6 +177,56 @@
       "title": "Decision",
       "type": "string"
     },
+    "DossierEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "extraction_method": {
+          "$ref": "#/$defs/ExtractionMethod",
+          "default": "deterministic"
+        },
+        "file_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "File Sha256",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "pattern": "^(text|hyperlink|metadata)$",
+          "title": "Kind",
+          "type": "string"
+        },
+        "locator": {
+          "minLength": 1,
+          "title": "Locator",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "artifact_id",
+        "kind",
+        "locator",
+        "text",
+        "file_sha256"
+      ],
+      "title": "DossierEvidence",
+      "type": "object"
+    },
     "EnforcementMode": {
       "enum": [
         "hard",
@@ -254,6 +325,10 @@
     "Finding": {
       "additionalProperties": false,
       "properties": {
+        "enforcement_mode": {
+          "$ref": "#/$defs/EnforcementMode",
+          "default": "disabled"
+        },
         "evidence_ids": {
           "items": {
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
@@ -291,6 +366,10 @@
         },
         "source": {
           "$ref": "#/$defs/TraceStepKind"
+        },
+        "verification_basis": {
+          "$ref": "#/$defs/VerificationBasis",
+          "default": "synthetic_assumption"
         }
       },
       "required": [
@@ -301,6 +380,151 @@
         "source"
       ],
       "title": "Finding",
+      "type": "object"
+    },
+    "ManufacturerPartitioning": {
+      "enum": [
+        "unnecessary",
+        "required",
+        "unknown"
+      ],
+      "title": "ManufacturerPartitioning",
+      "type": "string"
+    },
+    "MetadataMigrationIntent": {
+      "enum": [
+        "preserve-existing-lifecycle",
+        "normalize-metadata",
+        "unspecified"
+      ],
+      "title": "MetadataMigrationIntent",
+      "type": "string"
+    },
+    "MetadataPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "intent": {
+          "$ref": "#/$defs/MetadataMigrationIntent"
+        },
+        "manufacturer_partitioning": {
+          "$ref": "#/$defs/ManufacturerPartitioning",
+          "default": "unknown"
+        },
+        "replacement_manufacturer_value": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Replacement Manufacturer Value"
+        }
+      },
+      "required": [
+        "intent"
+      ],
+      "title": "MetadataPlan",
+      "type": "object"
+    },
+    "ModelRunRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "input_tokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Input Tokens"
+        },
+        "latency_ms": {
+          "minimum": 0,
+          "title": "Latency Ms",
+          "type": "number"
+        },
+        "mode": {
+          "pattern": "^(fixture|live|disabled)$",
+          "title": "Mode",
+          "type": "string"
+        },
+        "model_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model Name"
+        },
+        "output_tokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Output Tokens"
+        },
+        "prompt_template_version": {
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "title": "Prompt Template Version",
+          "type": "string"
+        },
+        "request_digest": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Request Digest"
+        },
+        "status": {
+          "pattern": "^(completed|abstained|failed|not_applicable)$",
+          "title": "Status",
+          "type": "string"
+        },
+        "validation_error": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Validation Error"
+        }
+      },
+      "required": [
+        "mode",
+        "status",
+        "prompt_template_version",
+        "latency_ms"
+      ],
+      "title": "ModelRunRecord",
       "type": "object"
     },
     "OperationalStatus": {
@@ -633,6 +857,17 @@
         },
         "center": {
           "$ref": "#/$defs/Center"
+        },
+        "metadata_plan": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MetadataPlan"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         },
         "reuse_operation": {
           "$ref": "#/$defs/ReuseOperation"

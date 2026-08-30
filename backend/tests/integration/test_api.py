@@ -86,6 +86,50 @@ def test_case_a_runs_through_parse_analysis_and_graph_endpoints() -> None:
     assert any(edge["type"] == "MAPS_TO" for edge in graph.json()["graph"]["edges"])
 
 
+def test_m2_metadata_and_semantic_cases_use_the_same_api_path() -> None:
+    cases = (
+        (
+            "case-b-normalize-all",
+            {
+                "intent": "normalize-metadata",
+                "manufacturer_partitioning": "unnecessary",
+                "replacement_manufacturer_value": None,
+            },
+            "REUSE_WITH_NEW_CONTEXT",
+        ),
+        ("case-c-stale-heading", None, "HUMAN_REGULATORY_REVIEW"),
+        ("case-c-clean", None, "REUSE_AS_LEGACY_REFERENCE"),
+    )
+    for fixture_id, metadata_plan, expected in cases:
+        inventory = client.post(
+            "/api/v1/applications/parse", params={"fixture_id": fixture_id}
+        ).json()
+        response = client.post(
+            "/api/v1/analyses",
+            json={
+                "inventory_id": inventory["id"],
+                "leaf_id": inventory["leaves"][0]["id"],
+                "target_context": {
+                    "authority": "FDA",
+                    "center": "CDER",
+                    "application_type": "NDA",
+                    "source_standard": "eCTD-3.2.2",
+                    "target_standard": "eCTD-4.0",
+                    "analysis_date": "2026-08-29",
+                    "reuse_operation": "reference-existing-content",
+                    "standards_snapshot_id": "fda-cder-demo-v1",
+                    "scenario_mode": "prospective_forward_compatibility",
+                    "metadata_plan": metadata_plan,
+                },
+            },
+        )
+        assert response.status_code == 200
+        analysis = response.json()["analysis"]
+        assert analysis["decision"] == expected
+        assert analysis["operational_status"] == "not_operational"
+        assert analysis["model_run"]["mode"] == "fixture"
+
+
 def test_raw_zip_upload_uses_the_same_parser_endpoint() -> None:
     fixture_root = REPOSITORY_ROOT / "data" / "demo-cases" / "case-a-clean-321"
     payload = BytesIO()

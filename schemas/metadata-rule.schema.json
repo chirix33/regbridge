@@ -1,0 +1,394 @@
+{
+  "$defs": {
+    "ApplicationType": {
+      "enum": [
+        "NDA",
+        "ANDA",
+        "IND",
+        "DMF"
+      ],
+      "title": "ApplicationType",
+      "type": "string"
+    },
+    "Authority": {
+      "enum": [
+        "FDA"
+      ],
+      "title": "Authority",
+      "type": "string"
+    },
+    "Bindingness": {
+      "enum": [
+        "requirement",
+        "validation",
+        "recommendation",
+        "informative"
+      ],
+      "title": "Bindingness",
+      "type": "string"
+    },
+    "Center": {
+      "enum": [
+        "CDER"
+      ],
+      "title": "Center",
+      "type": "string"
+    },
+    "Decision": {
+      "enum": [
+        "REUSE_AS_LEGACY_REFERENCE",
+        "REUSE_WITH_NEW_CONTEXT",
+        "REUSE_AFTER_METADATA_REPAIR",
+        "BREAK_LIFECYCLE_AND_RESUBMIT",
+        "DO_NOT_REUSE",
+        "HUMAN_REGULATORY_REVIEW"
+      ],
+      "title": "Decision",
+      "type": "string"
+    },
+    "EnforcementMode": {
+      "enum": [
+        "hard",
+        "advisory",
+        "semantic_signal",
+        "disabled"
+      ],
+      "title": "EnforcementMode",
+      "type": "string"
+    },
+    "ReviewDecision": {
+      "enum": [
+        "accepted",
+        "rejected"
+      ],
+      "title": "ReviewDecision",
+      "type": "string"
+    },
+    "ReviewEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "decision": {
+          "$ref": "#/$defs/ReviewDecision"
+        },
+        "expert_validated": {
+          "default": false,
+          "title": "Expert Validated",
+          "type": "boolean"
+        },
+        "external_reviewer_qualification": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "External Reviewer Qualification"
+        },
+        "id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "independent_second_author_check": {
+          "default": false,
+          "title": "Independent Second Author Check",
+          "type": "boolean"
+        },
+        "object_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Object Id",
+          "type": "string"
+        },
+        "object_version": {
+          "minLength": 1,
+          "title": "Object Version",
+          "type": "string"
+        },
+        "rationale": {
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "format": "date-time",
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewer_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Reviewer Id",
+          "type": "string"
+        },
+        "reviewer_role": {
+          "minLength": 1,
+          "title": "Reviewer Role",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "source_snapshot_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Source Snapshot Id",
+          "type": "string"
+        },
+        "supporting_source_sha256s": {
+          "default": [],
+          "items": {
+            "pattern": "^[a-f0-9]{64}$",
+            "type": "string"
+          },
+          "title": "Supporting Source Sha256S",
+          "type": "array"
+        },
+        "unresolved_assumptions": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Unresolved Assumptions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "reviewer_id",
+        "reviewer_role",
+        "reviewed_at",
+        "object_id",
+        "object_version",
+        "source_snapshot_id",
+        "source_sha256",
+        "decision",
+        "rationale"
+      ],
+      "title": "ReviewEvent",
+      "type": "object"
+    },
+    "ReviewStatus": {
+      "enum": [
+        "candidate",
+        "source_verified",
+        "author_adjudicated_for_demo",
+        "rejected"
+      ],
+      "title": "ReviewStatus",
+      "type": "string"
+    },
+    "RuleScope": {
+      "additionalProperties": false,
+      "properties": {
+        "application_types": {
+          "items": {
+            "$ref": "#/$defs/ApplicationType"
+          },
+          "minItems": 1,
+          "title": "Application Types",
+          "type": "array"
+        },
+        "authority": {
+          "$ref": "#/$defs/Authority"
+        },
+        "center": {
+          "$ref": "#/$defs/Center"
+        },
+        "source_standard": {
+          "$ref": "#/$defs/StandardVersion"
+        },
+        "target_standard": {
+          "$ref": "#/$defs/StandardVersion"
+        }
+      },
+      "required": [
+        "authority",
+        "center",
+        "application_types",
+        "source_standard",
+        "target_standard"
+      ],
+      "title": "RuleScope",
+      "type": "object"
+    },
+    "ScenarioMode": {
+      "enum": [
+        "prospective_forward_compatibility",
+        "current_operational"
+      ],
+      "title": "ScenarioMode",
+      "type": "string"
+    },
+    "Severity": {
+      "enum": [
+        "informational",
+        "low",
+        "medium",
+        "high",
+        "blocking",
+        "unresolved"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "StandardVersion": {
+      "enum": [
+        "eCTD-3.2.2",
+        "eCTD-4.0"
+      ],
+      "title": "StandardVersion",
+      "type": "string"
+    },
+    "VerificationBasis": {
+      "enum": [
+        "direct_standard_encoding",
+        "mechanical_derivation",
+        "author_interpretation",
+        "semantic_inference",
+        "synthetic_assumption"
+      ],
+      "title": "VerificationBasis",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "bindingness": {
+      "$ref": "#/$defs/Bindingness"
+    },
+    "decision": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Decision"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "description": {
+      "minLength": 1,
+      "title": "Description",
+      "type": "string"
+    },
+    "enforcement_mode": {
+      "$ref": "#/$defs/EnforcementMode"
+    },
+    "evidence_ids": {
+      "items": {
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Evidence Ids",
+      "type": "array"
+    },
+    "expert_validated": {
+      "default": false,
+      "title": "Expert Validated",
+      "type": "boolean"
+    },
+    "id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "title": "Id",
+      "type": "string"
+    },
+    "keyword_name": {
+      "const": "manufacturer",
+      "title": "Keyword Name",
+      "type": "string"
+    },
+    "normalized_value": {
+      "const": "all",
+      "title": "Normalized Value",
+      "type": "string"
+    },
+    "predicate_type": {
+      "enum": [
+        "discouraged-manufacturer-value",
+        "preserve-existing-lifecycle",
+        "normalize-manufacturer-metadata",
+        "hyperlink-relevance-gate"
+      ],
+      "title": "Predicate Type",
+      "type": "string"
+    },
+    "repair_description": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Repair Description"
+    },
+    "repair_type": {
+      "anyOf": [
+        {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Repair Type"
+    },
+    "review_event": {
+      "$ref": "#/$defs/ReviewEvent"
+    },
+    "review_status": {
+      "$ref": "#/$defs/ReviewStatus"
+    },
+    "scenario_mode": {
+      "$ref": "#/$defs/ScenarioMode"
+    },
+    "scope": {
+      "$ref": "#/$defs/RuleScope"
+    },
+    "severity": {
+      "$ref": "#/$defs/Severity"
+    },
+    "title": {
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    },
+    "verification_basis": {
+      "$ref": "#/$defs/VerificationBasis"
+    },
+    "version": {
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "title",
+    "description",
+    "bindingness",
+    "review_status",
+    "verification_basis",
+    "enforcement_mode",
+    "scenario_mode",
+    "scope",
+    "predicate_type",
+    "keyword_name",
+    "normalized_value",
+    "severity",
+    "evidence_ids",
+    "review_event"
+  ],
+  "title": "MetadataRule",
+  "type": "object"
+}

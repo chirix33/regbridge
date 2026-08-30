@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ectd:ectd xmlns:ectd="urn:ich:ectd:v3.2.2" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <m3-2-s-1 product="all">
+    <leaf ID="leaf-b-product-all" operation="new" xlink:href="documents/case-b-out-of-scope-product-all.pdf">
+      <title>Product keyword control</title>
+    </leaf>
+  </m3-2-s-1>
+</ectd:ectd>

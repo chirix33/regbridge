@@ -1,6 +1,6 @@
 import type { GraphNeighborhood as GraphData } from "../api/contracts";
 
-const nodeOrder = ["artifact", "heading", "standard_version", "rule", "evidence", "repair", "decision"];
+const nodeOrder = ["artifact", "heading", "keyword", "dossier_evidence", "standard_version", "rule", "model_finding", "evidence", "repair", "decision"];
 
 export function GraphNeighborhood({ graph }: { graph: GraphData }) {
   const grouped = nodeOrder

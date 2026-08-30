@@ -37,6 +37,100 @@
       "title": "ParseWarning",
       "type": "object"
     },
+    "ParsedHyperlink": {
+      "additionalProperties": false,
+      "properties": {
+        "author_verified_relevant": {
+          "default": false,
+          "title": "Author Verified Relevant",
+          "type": "boolean"
+        },
+        "id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "locator": {
+          "minLength": 1,
+          "title": "Locator",
+          "type": "string"
+        },
+        "page": {
+          "minimum": 1,
+          "title": "Page",
+          "type": "integer"
+        },
+        "target": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Target",
+          "type": "string"
+        },
+        "target_exists": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Exists"
+        },
+        "target_type": {
+          "enum": [
+            "uri",
+            "internal",
+            "unsupported"
+          ],
+          "title": "Target Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "page",
+        "target_type",
+        "target",
+        "locator"
+      ],
+      "title": "ParsedHyperlink",
+      "type": "object"
+    },
+    "ParsedKeyword": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "title": "Name",
+          "type": "string"
+        },
+        "normalized_value": {
+          "minLength": 1,
+          "title": "Normalized Value",
+          "type": "string"
+        },
+        "raw_value": {
+          "minLength": 1,
+          "title": "Raw Value",
+          "type": "string"
+        },
+        "source_locator": {
+          "minLength": 1,
+          "title": "Source Locator",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "raw_value",
+        "normalized_value",
+        "source_locator"
+      ],
+      "title": "ParsedKeyword",
+      "type": "object"
+    },
     "ParsedLeaf": {
       "additionalProperties": false,
       "properties": {
@@ -58,6 +152,16 @@
           "default": null,
           "title": "Declared Checksum"
         },
+        "extraction_status": {
+          "default": "completed",
+          "enum": [
+            "completed",
+            "failed",
+            "bounded"
+          ],
+          "title": "Extraction Status",
+          "type": "string"
+        },
         "file_sha256": {
           "pattern": "^[a-f0-9]{64}$",
           "title": "File Sha256",
@@ -73,10 +177,32 @@
           "title": "Href",
           "type": "string"
         },
+        "hyperlink_count": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Hyperlink Count",
+          "type": "integer"
+        },
+        "hyperlinks": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ParsedHyperlink"
+          },
+          "title": "Hyperlinks",
+          "type": "array"
+        },
         "id": {
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
           "title": "Id",
           "type": "string"
+        },
+        "keywords": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ParsedKeyword"
+          },
+          "title": "Keywords",
+          "type": "array"
         },
         "modified_leaf_id": {
           "anyOf": [
@@ -99,6 +225,20 @@
           "title": "Source Locator",
           "type": "string"
         },
+        "text_span_count": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Text Span Count",
+          "type": "integer"
+        },
+        "text_spans": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ParsedTextSpan"
+          },
+          "title": "Text Spans",
+          "type": "array"
+        },
         "title": {
           "minLength": 1,
           "title": "Title",
@@ -116,6 +256,40 @@
         "source_locator"
       ],
       "title": "ParsedLeaf",
+      "type": "object"
+    },
+    "ParsedTextSpan": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "locator": {
+          "minLength": 1,
+          "title": "Locator",
+          "type": "string"
+        },
+        "page": {
+          "minimum": 1,
+          "title": "Page",
+          "type": "integer"
+        },
+        "text": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "page",
+        "text",
+        "locator"
+      ],
+      "title": "ParsedTextSpan",
       "type": "object"
     },
     "StandardVersion": {

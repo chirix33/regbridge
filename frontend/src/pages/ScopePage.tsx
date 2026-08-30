@@ -88,11 +88,11 @@ export function ScopePage() {
           <div>
             <strong>FDA forward compatibility: {scopeData.operational_status}</strong>
             <span>
-              M1 is a clearly labeled prospective research scenario · expert validated: no
+              M1/M2 are clearly labeled prospective research scenarios · expert validated: no
             </span>
           </div>
           <Link className="primary-link" to="/case-a">
-            Run M1 heading case <ArrowRight aria-hidden="true" />
+            Open shared analyzer <ArrowRight aria-hidden="true" />
           </Link>
         </section>
 
@@ -111,7 +111,7 @@ export function ScopePage() {
                   <span className="step-number">0{index + 1}</span>
                   <div>
                     <strong>{archetypeLabels[archetype] ?? archetype}</strong>
-                    <span>{index === 0 ? "Begins in M1" : "Scheduled for M2"}</span>
+                    <span>{index === 0 ? "M1 implemented" : "M2 implemented"}</span>
                   </div>
                 </li>
               ))}
@@ -154,12 +154,17 @@ export function ScopePage() {
           <Book aria-hidden="true" />
           <div>
             <p className="panel-kicker">Current milestone boundary</p>
-            <h2 id="boundary-title">The first evidence-grounded decision path is live.</h2>
+            <h2 id="boundary-title">All three archetypes share one analyzer path.</h2>
             <p>
-              M1 securely parses controlled legacy packages and connects exact heading facts,
-              author-adjudicated constraints, evidence, repair, and a typed graph. It remains a
-              prospective research scenario because FDA forward compatibility is not operational.
+              M2 adds lifecycle-sensitive metadata constraints, bounded PDF text and hyperlink
+              extraction, evidence-bounded semantic inspection, deterministic precedence, and
+              persistent traces. FDA forward compatibility remains not operational.
             </p>
+            <div className="workspace-links">
+              <Link to="/case-a">Heading case</Link>
+              <Link to="/case-b">Metadata case</Link>
+              <Link to="/case-c">Semantic PDF case</Link>
+            </div>
           </div>
         </section>
       </main>

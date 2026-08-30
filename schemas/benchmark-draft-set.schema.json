@@ -1,0 +1,227 @@
+{
+  "$defs": {
+    "BenchmarkDraft": {
+      "additionalProperties": false,
+      "properties": {
+        "acceptable_evidence_ids": {
+          "default": [],
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "type": "string"
+          },
+          "title": "Acceptable Evidence Ids",
+          "type": "array"
+        },
+        "adjudication_status": {
+          "$ref": "#/$defs/ReviewStatus"
+        },
+        "archetype": {
+          "enum": [
+            "unavailable-heading",
+            "legacy-metadata-tension",
+            "stale-content-or-hyperlink"
+          ],
+          "title": "Archetype",
+          "type": "string"
+        },
+        "case_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "expert_validated": {
+          "default": false,
+          "title": "Expert Validated",
+          "type": "boolean"
+        },
+        "human_review_required": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Human Review Required"
+        },
+        "input_fixture": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Input Fixture",
+          "type": "string"
+        },
+        "mutation_spec": {
+          "minLength": 1,
+          "title": "Mutation Spec",
+          "type": "string"
+        },
+        "provenance": {
+          "minLength": 1,
+          "title": "Provenance",
+          "type": "string"
+        },
+        "reference_decision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Decision"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "reference_rationale": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reference Rationale"
+        },
+        "reference_severity": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Severity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "required_repair_type": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Required Repair Type"
+        },
+        "required_rule_ids": {
+          "default": [],
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "type": "string"
+          },
+          "title": "Required Rule Ids",
+          "type": "array"
+        },
+        "reviewer_id": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reviewer Id"
+        },
+        "split": {
+          "const": "unassigned",
+          "default": "unassigned",
+          "title": "Split",
+          "type": "string"
+        },
+        "target_context_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Target Context Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "archetype",
+        "input_fixture",
+        "target_context_id",
+        "mutation_spec",
+        "adjudication_status",
+        "provenance"
+      ],
+      "title": "BenchmarkDraft",
+      "type": "object"
+    },
+    "Decision": {
+      "enum": [
+        "REUSE_AS_LEGACY_REFERENCE",
+        "REUSE_WITH_NEW_CONTEXT",
+        "REUSE_AFTER_METADATA_REPAIR",
+        "BREAK_LIFECYCLE_AND_RESUBMIT",
+        "DO_NOT_REUSE",
+        "HUMAN_REGULATORY_REVIEW"
+      ],
+      "title": "Decision",
+      "type": "string"
+    },
+    "ReviewStatus": {
+      "enum": [
+        "candidate",
+        "source_verified",
+        "author_adjudicated_for_demo",
+        "rejected"
+      ],
+      "title": "ReviewStatus",
+      "type": "string"
+    },
+    "Severity": {
+      "enum": [
+        "informational",
+        "low",
+        "medium",
+        "high",
+        "blocking",
+        "unresolved"
+      ],
+      "title": "Severity",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "cases": {
+      "items": {
+        "$ref": "#/$defs/BenchmarkDraft"
+      },
+      "maxItems": 30,
+      "minItems": 30,
+      "title": "Cases",
+      "type": "array"
+    },
+    "snapshot_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "title": "Snapshot Id",
+      "type": "string"
+    },
+    "status": {
+      "const": "draft-unfrozen",
+      "title": "Status",
+      "type": "string"
+    },
+    "version": {
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "version",
+    "snapshot_id",
+    "status",
+    "cases"
+  ],
+  "title": "BenchmarkDraftSet",
+  "type": "object"
+}

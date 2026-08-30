@@ -1,0 +1,18 @@
+{
+  "fixture_version": "1.0.0",
+  "abstained": false,
+  "abstain_reason": null,
+  "findings": [
+    {
+      "id": "semantic-ambiguous-reference",
+      "basis": "inference",
+      "summary": "The wording indicates a prior placement but does not identify enough context to determine whether the reference is current.",
+      "severity": "medium",
+      "evidence_ids": [
+        "leaf-c-ambiguous-text-p1-1"
+      ],
+      "category": "ambiguous_reference"
+    }
+  ],
+  "confidence": 0.55
+}

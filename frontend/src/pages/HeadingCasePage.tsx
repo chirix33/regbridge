@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   ArrowLeft,
   ArrowRight,
@@ -15,6 +15,8 @@ import type {
   ApplicationInventory,
   FixtureSummary,
   GraphNeighborhood as GraphData,
+  ManufacturerPartitioning,
+  MetadataIntent,
   ScenarioMode,
 } from "../api/contracts";
 import { Disclaimer } from "../components/Disclaimer";
@@ -24,12 +26,38 @@ const disclosure =
   "Prospective FDA/CDER forward-compatibility research scenario. FDA forward compatibility " +
   "is not operational, and this author-adjudicated demonstration is not regulatory-expert validated.";
 
-const subtitle =
-  "Run a controlled heading-placement scenario and inspect the evidence-backed decision trace.";
+const routeConfig = {
+  "/case-a": {
+    archetype: "unavailable-heading",
+    eyebrow: "M1 · unavailable target heading",
+    title: "Inspect the placement. Follow the evidence. Preserve the document.",
+    subtitle: "Run a controlled heading-placement scenario and inspect the evidence-backed decision trace.",
+    control: "Choose a structural variant",
+  },
+  "/case-b": {
+    archetype: "legacy-metadata-tension",
+    eyebrow: "M2 · legacy metadata tension",
+    title: "Declare the lifecycle intent. Keep the advisory visible.",
+    subtitle: "Compare exact preservation, explicit normalization, and the abstention boundary for manufacturer metadata.",
+    control: "Choose a metadata variant",
+  },
+  "/case-c": {
+    archetype: "stale-content-or-hyperlink",
+    eyebrow: "M2 · stale content or hyperlink",
+    title: "Technical reuse can pass while the document is stale.",
+    subtitle: "Inspect bounded PDF text and hyperlink evidence through the same production analysis path.",
+    control: "Choose a semantic variant",
+  },
+} as const;
 
 export function HeadingCasePage() {
+  const location = useLocation();
+  const config = routeConfig[location.pathname as keyof typeof routeConfig] ?? routeConfig["/case-a"];
   const [fixtures, setFixtures] = useState<FixtureSummary[]>([]);
-  const [fixtureId, setFixtureId] = useState("case-a-removed-3211");
+  const [fixtureId, setFixtureId] = useState("");
+  const [metadataIntent, setMetadataIntent] = useState<MetadataIntent>("unspecified");
+  const [partitioning, setPartitioning] = useState<ManufacturerPartitioning>("unknown");
+  const [replacementValue, setReplacementValue] = useState("");
   const [mode, setMode] = useState<ScenarioMode>("prospective_forward_compatibility");
   const [inventory, setInventory] = useState<ApplicationInventory | null>(null);
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
@@ -39,8 +67,34 @@ export function HeadingCasePage() {
   const resultsRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    void getFixtures().then((response) => setFixtures(response.fixtures)).catch((reason: Error) => setError(reason.message));
-  }, []);
+    void getFixtures()
+      .then((response) => {
+        const matching = response.fixtures.filter((fixture) => fixture.archetype === config.archetype);
+        setFixtures(matching);
+        const first = matching[0];
+        if (first) {
+          setFixtureId(first.id);
+          setMetadataIntent(first.default_metadata_intent ?? "unspecified");
+          setPartitioning(first.manufacturer_partitioning ?? "unknown");
+          setReplacementValue(first.replacement_manufacturer_value ?? "");
+          setInventory(null);
+          setAnalysis(null);
+          setGraph(null);
+        }
+      })
+      .catch((reason: Error) => setError(reason.message));
+  }, [config.archetype]);
+
+  function selectFixture(id: string, available = fixtures) {
+    setFixtureId(id);
+    const selected = available.find((fixture) => fixture.id === id);
+    setMetadataIntent(selected?.default_metadata_intent ?? "unspecified");
+    setPartitioning(selected?.manufacturer_partitioning ?? "unknown");
+    setReplacementValue(selected?.replacement_manufacturer_value ?? "");
+    setInventory(null);
+    setAnalysis(null);
+    setGraph(null);
+  }
 
   useEffect(() => {
     if (!analysis || !resultsRef.current) {
@@ -62,7 +116,14 @@ export function HeadingCasePage() {
       if (!leaf) {
         throw new Error("The parsed package contains no analyzable leaf.");
       }
-      const result = await createAnalysis(parsed.id, leaf.id, mode);
+      const metadataPlan = config.archetype === "legacy-metadata-tension" && leaf.keywords.some((item) => item.name === "manufacturer" && item.normalized_value === "all")
+        ? {
+            intent: metadataIntent,
+            manufacturer_partitioning: partitioning,
+            replacement_manufacturer_value: replacementValue.trim() || null,
+          }
+        : null;
+      const result = await createAnalysis(parsed.id, leaf.id, mode, metadataPlan);
       setAnalysis(result);
       setGraph(await getAnalysisGraph(result.id));
     } catch (reason) {
@@ -87,25 +148,51 @@ export function HeadingCasePage() {
       <main id="main-content">
         <section className="case-hero">
           <Link className="back-link" to="/"><ArrowLeft aria-hidden="true" /> Research scope</Link>
-          <div className="eyebrow"><Flask aria-hidden="true" /> M1 · unavailable target heading</div>
-          <h1>Inspect the placement. Follow the evidence. Preserve the document.</h1>
-          <p>{subtitle}</p>
+          <div className="eyebrow"><Flask aria-hidden="true" /> {config.eyebrow}</div>
+          <h1>{config.title}</h1>
+          <p>{config.subtitle}</p>
         </section>
         <Disclaimer text={disclosure} />
 
         <section className="case-controls" aria-labelledby="case-controls-title">
           <div>
             <p className="panel-kicker">Controlled input</p>
-            <h2 id="case-controls-title">Choose a structural variant</h2>
+            <h2 id="case-controls-title">{config.control}</h2>
           </div>
           <label>
             Controlled test case
-            <select value={fixtureId} onChange={(event) => setFixtureId(event.target.value)}>
+            <select value={fixtureId} onChange={(event) => selectFixture(event.target.value)}>
               {fixtures.map((fixture) => (
                 <option value={fixture.id} key={fixture.id}>{fixture.title}</option>
               ))}
             </select>
           </label>
+          {config.archetype === "legacy-metadata-tension" && (
+            <label>
+              Metadata intent
+              <select value={metadataIntent} onChange={(event) => setMetadataIntent(event.target.value as MetadataIntent)}>
+                <option value="preserve-existing-lifecycle">Preserve existing lifecycle</option>
+                <option value="normalize-metadata">Normalize metadata</option>
+                <option value="unspecified">Unspecified</option>
+              </select>
+            </label>
+          )}
+          {config.archetype === "legacy-metadata-tension" && metadataIntent === "normalize-metadata" && (
+            <label>
+              Manufacturer partitioning
+              <select value={partitioning} onChange={(event) => setPartitioning(event.target.value as ManufacturerPartitioning)}>
+                <option value="unnecessary">Unnecessary - omit keyword</option>
+                <option value="required">Required - supply stable value</option>
+                <option value="unknown">Unknown - request review</option>
+              </select>
+            </label>
+          )}
+          {metadataIntent === "normalize-metadata" && partitioning === "required" && (
+            <label>
+              Stable manufacturer value
+              <input value={replacementValue} onChange={(event) => setReplacementValue(event.target.value)} />
+            </label>
+          )}
           <fieldset>
             <legend>Analysis mode</legend>
             <label>
@@ -140,6 +227,8 @@ export function HeadingCasePage() {
             <div><span>Leaf</span><strong>{selectedLeaf.id}</strong></div>
             <div><span>Heading</span><strong>{selectedLeaf.heading}</strong></div>
             <div><span>Operation</span><strong>{selectedLeaf.operation}</strong></div>
+            <div><span>PDF evidence</span><strong>{selectedLeaf.text_span_count} text · {selectedLeaf.hyperlink_count} links · {selectedLeaf.extraction_status}</strong></div>
+            {selectedLeaf.keywords.map((keyword) => <div key={keyword.name}><span>{keyword.name}</span><strong>{keyword.raw_value}</strong></div>)}
             <div><span>Package digest</span><code>{inventory.package_sha256.slice(0, 16)}…</code></div>
           </section>
         )}
@@ -167,6 +256,21 @@ export function HeadingCasePage() {
               <p>{analysis.repair.description}</p>
             </section>
 
+            <section className="result-section" aria-labelledby="findings-title">
+              <p className="panel-kicker">Observed, deterministic, and semantic</p>
+              <h2 id="findings-title">Triggered findings</h2>
+              <div className="finding-list">
+                {analysis.findings.map((finding) => (
+                  <article key={finding.id}>
+                    <strong>{finding.source.replaceAll("_", " ")} · {finding.enforcement_mode}</strong>
+                    <p>{finding.rationale}</p>
+                    <span>{finding.verification_basis} · {finding.severity}</span>
+                  </article>
+                ))}
+                {!analysis.findings.length && <p>No material finding was returned.</p>}
+              </div>
+            </section>
+
             <section className="result-section" aria-labelledby="evidence-title">
               <div className="result-heading">
                 <p className="panel-kicker">Source-verified support</p>
@@ -177,8 +281,11 @@ export function HeadingCasePage() {
                   <details className="evidence-card" key={item.id}>
                     <summary>{item.locator}</summary>
                     <blockquote>{item.text}</blockquote>
-                    <p>{item.source_id} · {item.review_status} · expert validated: no</p>
-                    <code>{item.source_sha256}</code>
+                    {"source_id" in item ? (
+                      <><p>{item.source_id} · {item.bindingness} · {item.review_status} · expert validated: no</p><code>{item.source_sha256}</code></>
+                    ) : (
+                      <><p>Dossier {item.kind} · deterministic extraction</p><code>{item.file_sha256}</code></>
+                    )}
                   </details>
                 ))}
                 {!analysis.evidence.length && <p>FDA forward compatibility is currently unavailable in current operational mode.</p>}
@@ -194,9 +301,16 @@ export function HeadingCasePage() {
 
             {graph && <GraphNeighborhood graph={graph} />}
 
+            <section className="result-section model-run" aria-label="Semantic inspection record">
+              <p className="panel-kicker">Evidence-bounded model record</p>
+              <h2>Semantic inspection: {analysis.model_run.status}</h2>
+              <p>{analysis.model_run.mode} mode · prompt {analysis.model_run.prompt_template_version} · {Math.round(analysis.model_run.latency_ms)} ms</p>
+              {analysis.model_run.validation_error && <p>Validation error: {analysis.model_run.validation_error}</p>}
+            </section>
+
             <section className="result-section" aria-labelledby="trace-title">
               <p className="panel-kicker">Machine-readable trace</p>
-              <h2 id="trace-title">Deterministic steps</h2>
+              <h2 id="trace-title">Chronological analysis trace</h2>
               <ol className="trace-list">
                 {analysis.trace.map((step) => (
                   <li key={step.sequence}><span>{step.sequence}</span><div><strong>{step.component}</strong><p>{step.summary}</p></div></li>

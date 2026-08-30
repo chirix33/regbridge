@@ -11,6 +11,19 @@
           "title": "Basis",
           "type": "string"
         },
+        "category": {
+          "default": "ambiguous_reference",
+          "enum": [
+            "obsolete_heading",
+            "applicant_name_mismatch",
+            "irrelevant_hyperlink",
+            "broken_internal_destination",
+            "benign_historical_reference",
+            "ambiguous_reference"
+          ],
+          "title": "Category",
+          "type": "string"
+        },
         "evidence_ids": {
           "items": {
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",

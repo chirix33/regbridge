@@ -4,20 +4,34 @@ import re
 import shutil
 import stat
 import tempfile
+import unicodedata
 import zipfile
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path, PurePosixPath, PureWindowsPath
+from typing import Literal
 from xml.etree import ElementTree
 
 import yaml
+from pypdf import PdfReader
+from pypdf.errors import PdfReadError
+from pypdf.generic import ArrayObject, Destination, DictionaryObject, IndirectObject
 
 from app.config import REPOSITORY_ROOT
 from app.domain.enums import LifecycleOperation, StandardVersion
-from app.parsers.models import ApplicationInventory, FixtureSummary, ParsedLeaf, ParseWarning
+from app.parsers.models import (
+    ApplicationInventory,
+    FixtureSummary,
+    ParsedHyperlink,
+    ParsedKeyword,
+    ParsedLeaf,
+    ParsedTextSpan,
+    ParseWarning,
+)
 
 _HEADING_TAG = re.compile(r"^m(?P<module>\d+)(?P<parts>(?:-[a-z0-9]+)+)$", re.IGNORECASE)
 _SUPPORTED_LEAF_TYPES = {".pdf": "application/pdf"}
+_KEYWORD_ATTRIBUTES = {"manufacturer", "substance", "product", "dosage-form"}
 
 
 class EctdParseError(ValueError):
@@ -34,6 +48,9 @@ class EctdParserLimits:
     max_member_bytes = 10 * 1024 * 1024
     max_members = 200
     max_compression_ratio = 100
+    max_pdf_pages = 50
+    max_pdf_text_chars = 100_000
+    max_pdf_links = 200
 
 
 def _local_name(name: str) -> str:
@@ -56,6 +73,10 @@ def _heading_from_tag(tag: str) -> str | None:
     rendered = [match.group("module")]
     rendered.extend(token.upper() if token.isalpha() else token for token in tokens)
     return ".".join(rendered)
+
+
+def _normalize_keyword(value: str) -> str:
+    return " ".join(unicodedata.normalize("NFKC", value).split()).casefold()
 
 
 def _package_digest(directory: Path) -> str:
@@ -154,14 +175,130 @@ def _regional_value(root: ElementTree.Element, *names: str) -> str | None:
 def _iter_leaves(
     element: ElementTree.Element,
     heading: str | None = None,
-) -> Iterator[tuple[ElementTree.Element, str]]:
+    keywords: tuple[ParsedKeyword, ...] = (),
+) -> Iterator[tuple[ElementTree.Element, str, tuple[ParsedKeyword, ...]]]:
     current_heading = _heading_from_tag(element.tag) or heading
+    current_keywords = list(keywords)
+    if current_heading:
+        by_name = {keyword.name: keyword for keyword in current_keywords}
+        for raw_name, raw_value in element.attrib.items():
+            name = _local_name(raw_name).casefold()
+            value = str(raw_value)
+            if name in _KEYWORD_ATTRIBUTES and value.strip():
+                by_name[name] = ParsedKeyword(
+                    name=name,
+                    raw_value=value,
+                    normalized_value=_normalize_keyword(value),
+                    source_locator=f"index.xml / {current_heading} / @{name}",
+                )
+        current_keywords = [by_name[name] for name in sorted(by_name)]
     if _local_name(element.tag) == "leaf":
         if not current_heading:
             raise EctdParseError("leaf is not located beneath a recognized CTD heading")
-        yield element, current_heading
+        yield element, current_heading, tuple(current_keywords)
     for child in element:
-        yield from _iter_leaves(child, current_heading)
+        yield from _iter_leaves(child, current_heading, tuple(current_keywords))
+
+
+def _pdf_destination_name(value: object) -> str:
+    if isinstance(value, IndirectObject):
+        value = value.get_object()
+    if isinstance(value, Destination):
+        return str(value.title)
+    if isinstance(value, ArrayObject) and value:
+        return f"page-object-{value[0]}"
+    return str(value)
+
+
+def _extract_pdf_evidence(
+    path: Path,
+    leaf_id: str,
+    verified_link_ids: set[str],
+) -> tuple[
+    tuple[ParsedTextSpan, ...],
+    tuple[ParsedHyperlink, ...],
+    Literal["completed", "failed", "bounded"],
+    str | None,
+]:
+    try:
+        reader = PdfReader(path, strict=True)
+        if reader.is_encrypted:
+            return (), (), "failed", "encrypted PDF text and hyperlinks were not inspected"
+        bounded = len(reader.pages) > EctdParserLimits.max_pdf_pages
+        text_spans: list[ParsedTextSpan] = []
+        hyperlinks: list[ParsedHyperlink] = []
+        character_count = 0
+        for page_index, page in enumerate(reader.pages[: EctdParserLimits.max_pdf_pages], start=1):
+            text = " ".join((page.extract_text() or "").split())
+            if text:
+                remaining = EctdParserLimits.max_pdf_text_chars - character_count
+                if remaining <= 0:
+                    bounded = True
+                    break
+                text = text[:remaining]
+                character_count += len(text)
+                for span_index, offset in enumerate(range(0, len(text), 3500), start=1):
+                    excerpt = text[offset : offset + 3500]
+                    text_spans.append(
+                        ParsedTextSpan(
+                            id=f"{leaf_id}-text-p{page_index}-{span_index}",
+                            page=page_index,
+                            text=excerpt,
+                            locator=f"{path.name} / PDF page {page_index} / text {span_index}",
+                        )
+                    )
+            annotations = page.get("/Annots", [])
+            for annotation in annotations:
+                if len(hyperlinks) >= EctdParserLimits.max_pdf_links:
+                    bounded = True
+                    break
+                obj = annotation.get_object()
+                if obj.get("/Subtype") != "/Link":
+                    continue
+                action = obj.get("/A")
+                destination = obj.get("/Dest")
+                target_type: Literal["uri", "internal", "unsupported"] = "unsupported"
+                target = "unsupported-link-action"
+                target_exists: bool | None = None
+                if isinstance(action, DictionaryObject) and action.get("/S") == "/URI":
+                    target_type = "uri"
+                    target = str(action.get("/URI", "")) or "empty-uri"
+                elif destination is not None or (
+                    isinstance(action, DictionaryObject) and action.get("/S") == "/GoTo"
+                ):
+                    target_type = "internal"
+                    raw_destination = destination if destination is not None else action.get("/D")
+                    target = _pdf_destination_name(raw_destination)
+                    try:
+                        if isinstance(raw_destination, ArrayObject) and raw_destination:
+                            page_reference = raw_destination[0]
+                            target_exists = any(
+                                page.indirect_reference == page_reference for page in reader.pages
+                            )
+                        elif str(raw_destination) in reader.named_destinations:
+                            target_exists = True
+                        else:
+                            reader.get_destination_page_number(raw_destination)
+                            target_exists = True
+                    except Exception:  # pypdf exposes several malformed-destination exceptions
+                        target_exists = False
+                link_id = f"{leaf_id}-link-p{page_index}-{len(hyperlinks) + 1}"
+                hyperlinks.append(
+                    ParsedHyperlink(
+                        id=link_id,
+                        page=page_index,
+                        target_type=target_type,
+                        target=target,
+                        locator=f"{path.name} / PDF page {page_index} / link annotation",
+                        target_exists=target_exists,
+                        author_verified_relevant=link_id in verified_link_ids,
+                    )
+                )
+        status: Literal["completed", "failed", "bounded"] = "bounded" if bounded else "completed"
+        warning = "PDF evidence extraction reached a configured bound" if bounded else None
+        return tuple(text_spans), tuple(hyperlinks), status, warning
+    except (PdfReadError, ValueError, TypeError, KeyError) as error:
+        return (), (), "failed", f"PDF evidence extraction failed: {type(error).__name__}"
 
 
 def _resolve_leaf_file(root: Path, href: str) -> tuple[Path, str]:
@@ -182,7 +319,12 @@ def _resolve_leaf_file(root: Path, href: str) -> tuple[Path, str]:
     return target, content_type
 
 
-def parse_directory(directory: Path, *, fixture_id: str | None = None) -> ApplicationInventory:
+def parse_directory(
+    directory: Path,
+    *,
+    fixture_id: str | None = None,
+    author_verified_relevant_hyperlink_ids: tuple[str, ...] = (),
+) -> ApplicationInventory:
     root = directory.resolve()
     index_path = root / "index.xml"
     regional_path = root / "us-regional.xml"
@@ -193,7 +335,8 @@ def parse_directory(directory: Path, *, fixture_id: str | None = None) -> Applic
     regional_root = _parse_xml(regional_path)
     leaves: list[ParsedLeaf] = []
     warnings: list[ParseWarning] = []
-    for element, heading in _iter_leaves(index_root):
+    verified_link_ids = set(author_verified_relevant_hyperlink_ids)
+    for element, heading, keywords in _iter_leaves(index_root):
         leaf_id = _attribute(element, "ID") or _attribute(element, "id")
         href = _attribute(element, "href")
         operation_raw = (_attribute(element, "operation") or "new").lower()
@@ -213,6 +356,17 @@ def parse_directory(directory: Path, *, fixture_id: str | None = None) -> Applic
             leaf_path.stem,
         )
         checksum = hashlib.sha256(leaf_path.read_bytes()).hexdigest()
+        text_spans, hyperlinks, extraction_status, extraction_warning = _extract_pdf_evidence(
+            leaf_path, leaf_id, verified_link_ids
+        )
+        if extraction_warning:
+            warnings.append(
+                ParseWarning(
+                    code="pdf-evidence-incomplete",
+                    message=extraction_warning,
+                    locator=f"index.xml / {heading} / leaf[{leaf_id}]",
+                )
+            )
         declared_checksum = _attribute(element, "checksum")
         leaves.append(
             ParsedLeaf(
@@ -226,6 +380,12 @@ def parse_directory(directory: Path, *, fixture_id: str | None = None) -> Applic
                 file_sha256=checksum,
                 declared_checksum=declared_checksum,
                 source_locator=f"index.xml / {heading} / leaf[{leaf_id}]",
+                keywords=keywords,
+                text_span_count=len(text_spans),
+                hyperlink_count=len(hyperlinks),
+                extraction_status=extraction_status,
+                text_spans=text_spans,
+                hyperlinks=hyperlinks,
             )
         )
     if not leaves:
@@ -263,7 +423,8 @@ class FixtureCatalog:
         return tuple(FixtureSummary.model_validate(item) for item in payload["fixtures"])
 
     def parse(self, fixture_id: str) -> ApplicationInventory:
-        known = {fixture.id for fixture in self.list()}
+        fixtures = {fixture.id: fixture for fixture in self.list()}
+        known = set(fixtures)
         if fixture_id not in known:
             raise EctdParseError(f"unknown controlled fixture: {fixture_id}")
         fixture_path = (self.root / fixture_id).resolve()
@@ -271,4 +432,10 @@ class FixtureCatalog:
             fixture_path.relative_to(self.root)
         except ValueError as error:
             raise EctdSecurityError("fixture path escapes fixture catalog") from error
-        return parse_directory(fixture_path, fixture_id=fixture_id)
+        return parse_directory(
+            fixture_path,
+            fixture_id=fixture_id,
+            author_verified_relevant_hyperlink_ids=(
+                fixtures[fixture_id].author_verified_relevant_hyperlink_ids
+            ),
+        )

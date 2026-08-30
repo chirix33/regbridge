@@ -3,6 +3,7 @@ import type {
   ApplicationInventory,
   FixtureListResponse,
   GraphNeighborhood,
+  MetadataPlan,
   ScenarioMode,
   ScopeResponse,
   StandardsSnapshotResponse,
@@ -52,6 +53,7 @@ export async function createAnalysis(
   inventoryId: string,
   leafId: string,
   scenarioMode: ScenarioMode,
+  metadataPlan: MetadataPlan | null = null,
 ): Promise<AnalysisResult> {
   const response = await fetch(`${apiOrigin}/api/v1/analyses`, {
     method: "POST",
@@ -69,6 +71,7 @@ export async function createAnalysis(
         reuse_operation: "reference-existing-content",
         standards_snapshot_id: "fda-cder-demo-v1",
         scenario_mode: scenarioMode,
+        metadata_plan: metadataPlan,
       },
     }),
   });

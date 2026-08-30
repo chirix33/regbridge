@@ -1,0 +1,18 @@
+{
+  "fixture_version": "1.0.0",
+  "abstained": false,
+  "abstain_reason": null,
+  "findings": [
+    {
+      "id": "semantic-stale-heading",
+      "basis": "observation",
+      "summary": "The PDF cites removed legacy heading 3.2.S.1.1 as a controlling current reference.",
+      "severity": "high",
+      "evidence_ids": [
+        "leaf-c-stale-heading-text-p1-1"
+      ],
+      "category": "obsolete_heading"
+    }
+  ],
+  "confidence": 0.98
+}
