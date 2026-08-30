@@ -1,0 +1,21 @@
+fixtures:
+  - id: case-a-removed-3211
+    title: Removed heading 3.2.S.1.1
+    description: Synthetic legacy leaf under explicitly mapped removed heading 3.2.S.1.1.
+    expected_class: positive
+  - id: case-a-removed-3212
+    title: Removed heading 3.2.S.1.2
+    description: Synthetic legacy leaf under explicitly mapped removed heading 3.2.S.1.2.
+    expected_class: positive
+  - id: case-a-removed-3213
+    title: Removed heading 3.2.S.1.3
+    description: Synthetic legacy leaf under explicitly mapped removed heading 3.2.S.1.3.
+    expected_class: positive
+  - id: case-a-clean-321
+    title: Available heading 3.2.S.1
+    description: Clean negative beneath the source-verified target heading 3.2.S.1.
+    expected_class: negative
+  - id: case-a-ambiguous-3214
+    title: Unmapped heading 3.2.S.1.4
+    description: Ambiguous example outside the explicit author-adjudicated mapping.
+    expected_class: ambiguous

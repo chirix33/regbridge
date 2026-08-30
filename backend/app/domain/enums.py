@@ -53,9 +53,66 @@ class Bindingness(StrEnum):
 
 class ReviewStatus(StrEnum):
     CANDIDATE = "candidate"
-    REVIEWED = "reviewed"
-    AUTHORITATIVE_FOR_DEMO = "authoritative_for_demo"
+    SOURCE_VERIFIED = "source_verified"
+    AUTHOR_ADJUDICATED_FOR_DEMO = "author_adjudicated_for_demo"
     REJECTED = "rejected"
+
+
+class ReviewDecision(StrEnum):
+    ACCEPTED = "accepted"
+    REJECTED = "rejected"
+
+
+class VerificationBasis(StrEnum):
+    DIRECT_STANDARD_ENCODING = "direct_standard_encoding"
+    MECHANICAL_DERIVATION = "mechanical_derivation"
+    AUTHOR_INTERPRETATION = "author_interpretation"
+    SEMANTIC_INFERENCE = "semantic_inference"
+    SYNTHETIC_ASSUMPTION = "synthetic_assumption"
+
+
+class EnforcementMode(StrEnum):
+    HARD = "hard"
+    ADVISORY = "advisory"
+    SEMANTIC_SIGNAL = "semantic_signal"
+    DISABLED = "disabled"
+
+
+class ScenarioMode(StrEnum):
+    PROSPECTIVE_FORWARD_COMPATIBILITY = "prospective_forward_compatibility"
+    CURRENT_OPERATIONAL = "current_operational"
+
+
+class OperationalStatus(StrEnum):
+    NOT_OPERATIONAL = "not_operational"
+
+
+class LifecycleOperation(StrEnum):
+    NEW = "new"
+    REPLACE = "replace"
+    APPEND = "append"
+    DELETE = "delete"
+
+
+class NodeType(StrEnum):
+    ARTIFACT = "artifact"
+    STANDARD = "standard"
+    STANDARD_VERSION = "standard_version"
+    HEADING = "heading"
+    EVIDENCE = "evidence"
+    RULE = "rule"
+    REPAIR = "repair"
+    DECISION = "decision"
+
+
+class EdgeType(StrEnum):
+    LOCATED_UNDER = "LOCATED_UNDER"
+    AVAILABLE_IN = "AVAILABLE_IN"
+    REMOVED_IN = "REMOVED_IN"
+    MAPS_TO = "MAPS_TO"
+    SUPPORTED_BY = "SUPPORTED_BY"
+    REQUIRES_REPAIR = "REQUIRES_REPAIR"
+    TRIGGERS_DECISION = "TRIGGERS_DECISION"
 
 
 class ExtractionMethod(StrEnum):
@@ -74,4 +131,3 @@ class LlmMode(StrEnum):
     FIXTURE = "fixture"
     LIVE = "live"
     DISABLED = "disabled"
-

@@ -38,4 +38,3 @@ class SemanticRiskOutput(DomainModel):
         if self.abstained and self.findings:
             raise ValueError("abstaining model output cannot include substantive findings")
         return self
-

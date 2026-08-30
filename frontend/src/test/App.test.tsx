@@ -15,6 +15,9 @@ const scopeResponse = {
   standards_snapshot_id: "fda-cder-demo-v1",
   model_mode: "fixture",
   network_required: false,
+  operational_status: "not_operational",
+  approved_research_scenario: "prospective_forward_compatibility",
+  expert_validated: false,
   available_features: ["scope"],
   planned_archetypes: [
     "unavailable-heading",
@@ -38,7 +41,10 @@ const standardsResponse = {
       center: "CDER",
       source_url: "https://www.fda.gov/example",
       sha256: "d".repeat(64),
-      review_status: "reviewed",
+      review_status: "source_verified",
+      verification_basis: "direct_standard_encoding",
+      enforcement_mode: "disabled",
+      expert_validated: false,
       reviewer_note: "Registry inclusion review only.",
     },
   ],
@@ -49,8 +55,8 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe("RegBridge M0 scope", () => {
-  it("shows the disclaimer, scope, offline mode, and reviewed source", async () => {
+describe("RegBridge scope", () => {
+  it("shows the disclaimer, operational status, scope, and source-verified registry", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn((input: RequestInfo | URL) => {
@@ -74,7 +80,9 @@ describe("RegBridge M0 scope", () => {
     );
     expect(screen.getByText("eCTD-3.2.2")).toBeVisible();
     expect(screen.getByText("eCTD-4.0")).toBeVisible();
-    expect(screen.getByText("Reviewed source registry")).toBeVisible();
+    expect(screen.getByText("Source-verified registry")).toBeVisible();
+    expect(screen.getByText(/FDA forward compatibility: not_operational/i)).toBeVisible();
+    expect(screen.getByText(/expert validated: no/i)).toBeVisible();
     expect(screen.getByRole("link", { name: /Open official FDA source/i })).toHaveAttribute(
       "href",
       "https://www.fda.gov/example",

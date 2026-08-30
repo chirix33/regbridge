@@ -7,4 +7,3 @@ from app.standards.registry import (
 )
 
 __all__ = ["SourceDigestMismatchError", "StandardsRegistry", "StandardsRegistryError"]
-

@@ -9,12 +9,17 @@ from app.domain.enums import (
     Bindingness,
     Center,
     Decision,
+    EnforcementMode,
     ExtractionMethod,
+    OperationalStatus,
     ReuseOperation,
+    ReviewDecision,
     ReviewStatus,
+    ScenarioMode,
     Severity,
     StandardVersion,
     TraceStepKind,
+    VerificationBasis,
 )
 
 StableId = Annotated[str, Field(pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]*$")]
@@ -34,6 +39,7 @@ class TargetContext(DomainModel):
     analysis_date: date
     reuse_operation: ReuseOperation
     standards_snapshot_id: StableId
+    scenario_mode: ScenarioMode
 
     @model_validator(mode="after")
     def validate_version_transition(self) -> "TargetContext":
@@ -76,6 +82,10 @@ class RegulatorySource(DomainModel):
     bindingness: Bindingness
     scope: SourceScope
     review_status: ReviewStatus
+    verification_basis: VerificationBasis
+    enforcement_mode: EnforcementMode
+    expert_validated: bool = False
+    review_events: tuple["ReviewEvent", ...] = Field(min_length=1)
     review_locator: str = Field(min_length=1)
     reviewer_note: str = Field(min_length=1)
     notes: str = Field(min_length=1)
@@ -83,7 +93,41 @@ class RegulatorySource(DomainModel):
     @model_validator(mode="after")
     def validate_reviewed_source(self) -> "RegulatorySource":
         if self.review_status == ReviewStatus.CANDIDATE:
-            raise ValueError("standards manifest entries must be reviewed or explicitly rejected")
+            raise ValueError("standards manifest entries must be source-verified or rejected")
+        if self.enforcement_mode != EnforcementMode.DISABLED:
+            raise ValueError("manifest entries do not independently enforce conclusions")
+        if self.expert_validated and not any(
+            event.expert_validated for event in self.review_events
+        ):
+            raise ValueError("expert validation requires a separately recorded external review")
+        if self.review_status == ReviewStatus.SOURCE_VERIFIED and not any(
+            event.decision == ReviewDecision.ACCEPTED for event in self.review_events
+        ):
+            raise ValueError("source-verified entries require an accepted author review event")
+        return self
+
+
+class ReviewEvent(DomainModel):
+    id: StableId
+    reviewer_id: StableId
+    reviewer_role: str = Field(min_length=1)
+    reviewed_at: AwareDatetime
+    object_id: StableId
+    object_version: str = Field(min_length=1)
+    source_snapshot_id: StableId
+    source_sha256: Sha256
+    supporting_source_sha256s: tuple[Sha256, ...] = ()
+    decision: ReviewDecision
+    rationale: str = Field(min_length=1)
+    unresolved_assumptions: tuple[str, ...] = ()
+    independent_second_author_check: bool = False
+    expert_validated: bool = False
+    external_reviewer_qualification: str | None = None
+
+    @model_validator(mode="after")
+    def validate_expert_review(self) -> "ReviewEvent":
+        if self.expert_validated and not self.external_reviewer_qualification:
+            raise ValueError("expert validation requires a recorded external qualification")
         return self
 
 
@@ -111,6 +155,27 @@ class EvidenceSpan(DomainModel):
     source_sha256: Sha256
     extraction_method: ExtractionMethod
     review_status: ReviewStatus
+    verification_basis: VerificationBasis
+    enforcement_mode: EnforcementMode
+    expert_validated: bool = False
+    review_events: tuple[ReviewEvent, ...] = ()
+
+    @model_validator(mode="after")
+    def validate_governance(self) -> "EvidenceSpan":
+        if (
+            self.review_status == ReviewStatus.CANDIDATE
+            and self.enforcement_mode != EnforcementMode.DISABLED
+        ):
+            raise ValueError("candidate evidence cannot participate in enforcement")
+        if self.expert_validated and not any(
+            event.expert_validated for event in self.review_events
+        ):
+            raise ValueError("expert_validated requires qualified external review")
+        if self.review_status == ReviewStatus.SOURCE_VERIFIED and not any(
+            event.decision == ReviewDecision.ACCEPTED for event in self.review_events
+        ):
+            raise ValueError("source-verified evidence requires an accepted review event")
+        return self
 
 
 class SourceArtifact(DomainModel):
@@ -118,6 +183,7 @@ class SourceArtifact(DomainModel):
     title: str = Field(min_length=1)
     source_standard: StandardVersion
     source_leaf_id: StableId
+    source_heading: str = Field(pattern=r"^\d+(?:\.[A-Za-z0-9]+)+$")
     source_locator: str = Field(min_length=1)
     content_type: str = Field(pattern=r"^[a-z0-9][a-z0-9.+-]*/[a-z0-9][a-z0-9.+-]*$")
     file_sha256: Sha256
@@ -151,6 +217,9 @@ class AnalysisResult(DomainModel):
     id: StableId
     source_artifact: SourceArtifact
     target_context: TargetContext
+    operational_status: OperationalStatus
+    scenario_disclosure: str = Field(min_length=1)
+    expert_validated: bool = False
     decision: Decision
     severity: Severity
     triggered_rule_ids: tuple[StableId, ...]
@@ -165,6 +234,8 @@ class AnalysisResult(DomainModel):
 
     @model_validator(mode="after")
     def validate_human_review_contract(self) -> "AnalysisResult":
+        if self.expert_validated:
+            raise ValueError("M1 results are not regulatory-expert validated")
         if self.decision == Decision.HUMAN_REGULATORY_REVIEW and not self.human_approval_required:
             raise ValueError("human review decisions require human approval")
         if self.decision == Decision.HUMAN_REGULATORY_REVIEW and not self.unresolved_uncertainty:

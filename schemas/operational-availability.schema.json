@@ -1,0 +1,123 @@
+{
+  "$defs": {
+    "EnforcementMode": {
+      "enum": [
+        "hard",
+        "advisory",
+        "semantic_signal",
+        "disabled"
+      ],
+      "title": "EnforcementMode",
+      "type": "string"
+    },
+    "OperationalStatus": {
+      "enum": [
+        "not_operational"
+      ],
+      "title": "OperationalStatus",
+      "type": "string"
+    },
+    "ReviewStatus": {
+      "enum": [
+        "candidate",
+        "source_verified",
+        "author_adjudicated_for_demo",
+        "rejected"
+      ],
+      "title": "ReviewStatus",
+      "type": "string"
+    },
+    "VerificationBasis": {
+      "enum": [
+        "direct_standard_encoding",
+        "mechanical_derivation",
+        "author_interpretation",
+        "semantic_inference",
+        "synthetic_assumption"
+      ],
+      "title": "VerificationBasis",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "capability": {
+      "minLength": 1,
+      "title": "Capability",
+      "type": "string"
+    },
+    "enforcement_mode": {
+      "$ref": "#/$defs/EnforcementMode"
+    },
+    "expert_validated": {
+      "default": false,
+      "title": "Expert Validated",
+      "type": "boolean"
+    },
+    "rationale": {
+      "minLength": 1,
+      "title": "Rationale",
+      "type": "string"
+    },
+    "record_version": {
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "title": "Record Version",
+      "type": "string"
+    },
+    "recorded_at": {
+      "format": "date-time",
+      "title": "Recorded At",
+      "type": "string"
+    },
+    "recorded_by": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "title": "Recorded By",
+      "type": "string"
+    },
+    "review_status": {
+      "$ref": "#/$defs/ReviewStatus"
+    },
+    "scope": {
+      "minLength": 1,
+      "title": "Scope",
+      "type": "string"
+    },
+    "source_url": {
+      "format": "uri",
+      "maxLength": 2083,
+      "minLength": 1,
+      "title": "Source Url",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/OperationalStatus"
+    },
+    "unresolved_assumptions": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Unresolved Assumptions",
+      "type": "array"
+    },
+    "verification_basis": {
+      "$ref": "#/$defs/VerificationBasis"
+    }
+  },
+  "required": [
+    "record_version",
+    "status",
+    "capability",
+    "scope",
+    "source_url",
+    "recorded_at",
+    "recorded_by",
+    "review_status",
+    "verification_basis",
+    "enforcement_mode",
+    "rationale",
+    "unresolved_assumptions"
+  ],
+  "title": "OperationalAvailability",
+  "type": "object"
+}

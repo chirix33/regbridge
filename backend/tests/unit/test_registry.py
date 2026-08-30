@@ -4,18 +4,17 @@ import pytest
 import yaml
 from app.config import REPOSITORY_ROOT
 from app.domain.enums import ReviewStatus
+from app.standards.operational import OperationalStatusRegistry
 from app.standards.registry import SourceDigestMismatchError, StandardsRegistry
 
 
-def test_reviewed_manifest_loads_and_verifies_frozen_source() -> None:
+def test_source_verified_manifest_loads_and_verifies_frozen_sources() -> None:
     manifest = StandardsRegistry().load()
 
     assert manifest.snapshot_id == "fda-cder-demo-v1"
-    assert len(manifest.sources) == 1
-    assert manifest.sources[0].review_status == ReviewStatus.REVIEWED
-    assert manifest.sources[0].sha256 == (
-        "dccd247940cdf5bc7cbf6a5e31b8f2547ad7f61650ae1a138113feb315f8002e"
-    )
+    assert len(manifest.sources) == 2
+    assert all(source.review_status == ReviewStatus.SOURCE_VERIFIED for source in manifest.sources)
+    assert all(source.expert_validated is False for source in manifest.sources)
 
 
 def test_registry_rejects_digest_drift(tmp_path: Path) -> None:
@@ -24,11 +23,20 @@ def test_registry_rejects_digest_drift(tmp_path: Path) -> None:
     standards_directory = tmp_path / "standards"
     snapshot_directory = standards_directory / "snapshots"
     snapshot_directory.mkdir(parents=True)
-    snapshot_path = snapshot_directory / "fda-ectd-v4-technical-conformance-guide-v1.5.pdf"
-    snapshot_path.write_bytes(b"not the reviewed source")
+    for source in payload["sources"]:
+        snapshot_path = snapshot_directory / Path(source["local_path"]).name
+        snapshot_path.write_bytes(b"not the reviewed source")
     manifest_path = standards_directory / "manifest.yaml"
     manifest_path.write_text(yaml.safe_dump(payload), encoding="utf-8")
 
     with pytest.raises(SourceDigestMismatchError, match="source digest mismatch"):
         StandardsRegistry(manifest_path).load()
 
+
+def test_operational_status_is_recorded_and_not_expert_validated() -> None:
+    record = OperationalStatusRegistry().load()
+    assert record.status.value == "not_operational"
+    assert record.recorded_by == "author-01"
+    assert record.review_status.value == "author_adjudicated_for_demo"
+    assert record.enforcement_mode.value == "disabled"
+    assert record.expert_validated is False

@@ -1,14 +1,42 @@
 # RegBridge standards source ledger
 
-This ledger describes frozen regulatory materials registered for the research prototype. A
-registered source is not, by itself, an executable conclusion. Each future rule must identify an
-exact evidence span, applicability context, bindingness, and separate review state.
+This ledger records frozen regulatory materials for a controlled **prospective** FDA/CDER
+forward-compatibility research scenario. FDA forward compatibility is currently
+`not_operational`. A registered source does not independently authorize an executable conclusion.
 
-| Source ID | Source | Frozen artifact | Registry review | Executable rules |
-|---|---|---|---|---|
-| `fda-ectd-v4-tcg-v1.5` | FDA, *Electronic Common Technical Document (eCTD) v4.0 Technical Conformance Guide*, v1.5, June 2026 | `snapshots/fda-ectd-v4-technical-conformance-guide-v1.5.pdf`; SHA-256 `dccd247940cdf5bc7cbf6a5e31b8f2547ad7f61650ae1a138113feb315f8002e` | Identity, source, version, CDER/NDA demo scope, local path, and digest checked on 2026-08-29 UTC. | None in M0. Evidence segmentation and rule review begin in M1. |
+| Source ID | Frozen artifact and digest | Author-verified locators | Governance |
+|---|---|---|---|
+| `fda-ectd-v4-ctoc-v2.2` | `snapshots/fda-ectd-v4-ctoc-headings-v2.2.pdf`; `382ec5e00b44d179abe7d3e1d9cebecef939938218c36badbde1689f54bfc3e6` | PDF page 8 / printed page 5: `3.2.S.1` remains. PDF page 39 / printed page 36: `3.2.S.1.1`–`3.2.S.1.3` are removed subheadings. | `source_verified` by `author-01`; `expert_validated: false`. |
+| `fda-ectd-v4-tcg-v1.5` | `snapshots/fda-ectd-v4-technical-conformance-guide-v1.5.pdf`; `dccd247940cdf5bc7cbf6a5e31b8f2547ad7f61650ae1a138113feb315f8002e` | §2.1 / PDF page 13: replacement retains headings/attributes. §1.5.4 / PDF page 11: changed placement requires a new context group and old-context suspension; reuse by document identifier does not require resubmission of the file or document element. | `source_verified` by `author-01`; `expert_validated: false`. |
 
-The guide is jointly issued for CDER and CBER. RegBridge registers only CDER applicability in this
-snapshot, consistent with the declared research boundary. The source is available from the
-[official FDA download](https://www.fda.gov/media/179700/download?attachment=).
+Official FDA downloads:
 
+- [CTOC v2.2](https://www.fda.gov/media/179699/download)
+- [Technical Conformance Guide v1.5](https://www.fda.gov/media/179700/download)
+
+## M1 adjudicated derivation
+
+Rule `FDA-CDER-M1-REMOVED-SUBHEADING-001` uses only this explicit mapping:
+
+```text
+3.2.S.1.1 → 3.2.S.1
+3.2.S.1.2 → 3.2.S.1
+3.2.S.1.3 → 3.2.S.1
+```
+
+The rule is `author_adjudicated_for_demo`, based on `mechanical_derivation`, and `hard` only
+within the controlled prospective FDA/CDER scenario. Its decision is `REUSE_WITH_NEW_CONTEXT`; its
+repair is `CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT`. The existing document is reused
+through its identifier without resubmitting the physical file or document element. No generic
+nearest-parent algorithm is authorized.
+
+This is internal research governance, not FDA approval, professional eCTD validation, or expert
+regulatory ground truth.
+
+## Operational-availability record
+
+`operational-status.yaml` records `not_operational` as an
+`author_adjudicated_for_demo` mode guard at the direction of `author-01`. It is disabled as an
+executable rule, is not source-verified evidence for the heading constraint, and remains
+`expert_validated: false`. The record links the current FDA eCTD status page and carries an explicit
+time-sensitive re-verification assumption.

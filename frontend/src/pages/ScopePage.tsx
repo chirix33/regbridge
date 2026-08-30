@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import {
   ArrowRight,
   Book,
@@ -26,7 +27,7 @@ export function ScopePage() {
     return (
       <main className="state-panel" aria-live="polite">
         <Flask aria-hidden="true" />
-        <p>Loading the reviewed research scope…</p>
+        <p>Loading the source-verified research scope…</p>
       </main>
     );
   }
@@ -43,7 +44,6 @@ export function ScopePage() {
 
   const scopeData = scope.data;
   const snapshot = standards.data;
-  const source = snapshot.sources[0];
 
   return (
     <div className="app-shell">
@@ -83,6 +83,19 @@ export function ScopePage() {
 
         <Disclaimer text={scopeData.disclaimer} />
 
+        <section className="operational-banner" aria-label="FDA operational availability">
+          <WarningTriangle aria-hidden="true" />
+          <div>
+            <strong>FDA forward compatibility: {scopeData.operational_status}</strong>
+            <span>
+              M1 is a clearly labeled prospective research scenario · expert validated: no
+            </span>
+          </div>
+          <Link className="primary-link" to="/case-a">
+            Run M1 heading case <ArrowRight aria-hidden="true" />
+          </Link>
+        </section>
+
         <section className="content-grid" aria-label="M0 capabilities and provenance">
           <article className="panel archetype-panel">
             <div className="panel-heading">
@@ -109,26 +122,30 @@ export function ScopePage() {
             <div className="panel-heading">
               <div>
                 <p className="panel-kicker">Pinned evidence</p>
-                <h2>Reviewed source registry</h2>
+                <h2>Source-verified registry</h2>
               </div>
               <Database aria-hidden="true" />
             </div>
-            {source ? (
-              <div className="source-card">
-                <div className="source-meta">
-                  <span>{source.review_status}</span>
-                  <span>{source.version}</span>
-                </div>
-                <h3>{source.title}</h3>
-                <p>Snapshot <code>{snapshot.snapshot_id}</code></p>
-                <p className="digest">SHA-256 {source.sha256}</p>
-                <a href={source.source_url} target="_blank" rel="noreferrer">
-                  Open official FDA source
-                  <OpenNewWindow aria-hidden="true" width={16} height={16} />
-                </a>
+            {snapshot.sources.length ? (
+              <div className="source-stack">
+                {snapshot.sources.map((source) => (
+                  <div className="source-card" key={source.id}>
+                    <div className="source-meta">
+                      <span>{source.review_status}</span>
+                      <span>{source.version}</span>
+                    </div>
+                    <h3>{source.title}</h3>
+                    <p>Snapshot <code>{snapshot.snapshot_id}</code></p>
+                    <p className="digest">SHA-256 {source.sha256}</p>
+                    <a href={source.source_url} target="_blank" rel="noreferrer">
+                      Open official FDA source
+                      <OpenNewWindow aria-hidden="true" width={16} height={16} />
+                    </a>
+                  </div>
+                ))}
               </div>
             ) : (
-              <p>No reviewed source is registered.</p>
+              <p>No source-verified source is registered.</p>
             )}
           </article>
         </section>
@@ -137,11 +154,11 @@ export function ScopePage() {
           <Book aria-hidden="true" />
           <div>
             <p className="panel-kicker">Current milestone boundary</p>
-            <h2 id="boundary-title">Contracts and provenance are live. Decisions are not.</h2>
+            <h2 id="boundary-title">The first evidence-grounded decision path is live.</h2>
             <p>
-              M0 establishes typed outputs, validated configuration, immutable source metadata,
-              and deterministic model fixtures. No artifact reuse decision is produced until the
-              M1 parser, graph facts, reviewed evidence spans, and constraints are connected.
+              M1 securely parses controlled legacy packages and connects exact heading facts,
+              author-adjudicated constraints, evidence, repair, and a typed graph. It remains a
+              prospective research scenario because FDA forward compatibility is not operational.
             </p>
           </div>
         </section>
@@ -154,4 +171,3 @@ export function ScopePage() {
     </div>
   );
 }
-

@@ -31,4 +31,4 @@ finally {
     Pop-Location
 }
 
-Write-Output "RegBridge setup complete. Run .\scripts\check.ps1 to verify M0."
+Write-Output "RegBridge setup complete. Run .\scripts\check.ps1 to verify M1."

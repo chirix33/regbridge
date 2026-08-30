@@ -8,7 +8,7 @@ def test_default_configuration_is_offline(monkeypatch: pytest.MonkeyPatch) -> No
     for key in ("LLM_MODE", "LLM_BASE_URL", "LLM_API_KEY", "LLM_MODEL"):
         monkeypatch.delenv(key, raising=False)
 
-    settings = Settings()
+    settings = Settings(llm_base_url=None, llm_api_key=None, llm_model=None)
 
     assert settings.llm_mode == LlmMode.FIXTURE
     assert settings.llm_api_key is None
@@ -21,7 +21,12 @@ def test_live_configuration_requires_all_provider_values(
         monkeypatch.delenv(key, raising=False)
 
     with pytest.raises(ValidationError, match="LLM_BASE_URL, LLM_API_KEY, LLM_MODEL"):
-        Settings(llm_mode=LlmMode.LIVE)
+        Settings(
+            llm_mode=LlmMode.LIVE,
+            llm_base_url=None,
+            llm_api_key=None,
+            llm_model=None,
+        )
 
 
 def test_secret_is_not_exposed_by_representation() -> None:

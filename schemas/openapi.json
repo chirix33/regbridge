@@ -1,6 +1,244 @@
 {
   "components": {
     "schemas": {
+      "AnalysisRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "inventory_id": {
+            "title": "Inventory Id",
+            "type": "string"
+          },
+          "leaf_id": {
+            "title": "Leaf Id",
+            "type": "string"
+          },
+          "target_context": {
+            "$ref": "#/components/schemas/TargetContext"
+          }
+        },
+        "required": [
+          "inventory_id",
+          "leaf_id",
+          "target_context"
+        ],
+        "title": "AnalysisRequest",
+        "type": "object"
+      },
+      "AnalysisResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "analysis": {
+            "$ref": "#/components/schemas/AnalysisResult"
+          }
+        },
+        "required": [
+          "analysis"
+        ],
+        "title": "AnalysisResponse",
+        "type": "object"
+      },
+      "AnalysisResult": {
+        "additionalProperties": false,
+        "properties": {
+          "confidence": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence",
+            "type": "number"
+          },
+          "decision": {
+            "$ref": "#/components/schemas/Decision"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceSpan"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "expert_validated": {
+            "default": false,
+            "title": "Expert Validated",
+            "type": "boolean"
+          },
+          "findings": {
+            "items": {
+              "$ref": "#/components/schemas/Finding"
+            },
+            "title": "Findings",
+            "type": "array"
+          },
+          "human_approval_required": {
+            "title": "Human Approval Required",
+            "type": "boolean"
+          },
+          "id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Id",
+            "type": "string"
+          },
+          "operational_status": {
+            "$ref": "#/components/schemas/OperationalStatus"
+          },
+          "rationale": {
+            "minLength": 1,
+            "title": "Rationale",
+            "type": "string"
+          },
+          "repair": {
+            "$ref": "#/components/schemas/RepairAction"
+          },
+          "scenario_disclosure": {
+            "minLength": 1,
+            "title": "Scenario Disclosure",
+            "type": "string"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/Severity"
+          },
+          "source_artifact": {
+            "$ref": "#/components/schemas/SourceArtifact"
+          },
+          "target_context": {
+            "$ref": "#/components/schemas/TargetContext"
+          },
+          "trace": {
+            "items": {
+              "$ref": "#/components/schemas/TraceStep"
+            },
+            "minItems": 1,
+            "title": "Trace",
+            "type": "array"
+          },
+          "triggered_rule_ids": {
+            "items": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+              "type": "string"
+            },
+            "title": "Triggered Rule Ids",
+            "type": "array"
+          },
+          "unresolved_uncertainty": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Unresolved Uncertainty",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "source_artifact",
+          "target_context",
+          "operational_status",
+          "scenario_disclosure",
+          "decision",
+          "severity",
+          "triggered_rule_ids",
+          "findings",
+          "evidence",
+          "rationale",
+          "repair",
+          "confidence",
+          "unresolved_uncertainty",
+          "human_approval_required",
+          "trace"
+        ],
+        "title": "AnalysisResult",
+        "type": "object"
+      },
+      "ApplicationInventory": {
+        "additionalProperties": false,
+        "properties": {
+          "applicant_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applicant Name"
+          },
+          "application_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Application Number"
+          },
+          "fixture_id": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fixture Id"
+          },
+          "has_stf": {
+            "title": "Has Stf",
+            "type": "boolean"
+          },
+          "id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Id",
+            "type": "string"
+          },
+          "leaves": {
+            "items": {
+              "$ref": "#/components/schemas/ParsedLeaf"
+            },
+            "minItems": 1,
+            "title": "Leaves",
+            "type": "array"
+          },
+          "package_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Package Sha256",
+            "type": "string"
+          },
+          "source_standard": {
+            "$ref": "#/components/schemas/StandardVersion"
+          },
+          "submission_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Submission Type"
+          },
+          "warnings": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ParseWarning"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "source_standard",
+          "has_stf",
+          "package_sha256",
+          "leaves"
+        ],
+        "title": "ApplicationInventory",
+        "type": "object"
+      },
       "ApplicationType": {
         "enum": [
           "NDA",
@@ -18,12 +256,441 @@
         "title": "Authority",
         "type": "string"
       },
+      "Bindingness": {
+        "enum": [
+          "requirement",
+          "validation",
+          "recommendation",
+          "informative"
+        ],
+        "title": "Bindingness",
+        "type": "string"
+      },
       "Center": {
         "enum": [
           "CDER"
         ],
         "title": "Center",
         "type": "string"
+      },
+      "Decision": {
+        "enum": [
+          "REUSE_AS_LEGACY_REFERENCE",
+          "REUSE_WITH_NEW_CONTEXT",
+          "REUSE_AFTER_METADATA_REPAIR",
+          "BREAK_LIFECYCLE_AND_RESUBMIT",
+          "DO_NOT_REUSE",
+          "HUMAN_REGULATORY_REVIEW"
+        ],
+        "title": "Decision",
+        "type": "string"
+      },
+      "EdgeType": {
+        "enum": [
+          "LOCATED_UNDER",
+          "AVAILABLE_IN",
+          "REMOVED_IN",
+          "MAPS_TO",
+          "SUPPORTED_BY",
+          "REQUIRES_REPAIR",
+          "TRIGGERS_DECISION"
+        ],
+        "title": "EdgeType",
+        "type": "string"
+      },
+      "EnforcementMode": {
+        "enum": [
+          "hard",
+          "advisory",
+          "semantic_signal",
+          "disabled"
+        ],
+        "title": "EnforcementMode",
+        "type": "string"
+      },
+      "EvidenceSpan": {
+        "additionalProperties": false,
+        "properties": {
+          "applicability": {
+            "$ref": "#/components/schemas/SourceScope"
+          },
+          "bindingness": {
+            "$ref": "#/components/schemas/Bindingness"
+          },
+          "enforcement_mode": {
+            "$ref": "#/components/schemas/EnforcementMode"
+          },
+          "expert_validated": {
+            "default": false,
+            "title": "Expert Validated",
+            "type": "boolean"
+          },
+          "extraction_method": {
+            "$ref": "#/components/schemas/ExtractionMethod"
+          },
+          "id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Id",
+            "type": "string"
+          },
+          "locator": {
+            "minLength": 1,
+            "title": "Locator",
+            "type": "string"
+          },
+          "review_events": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ReviewEvent"
+            },
+            "title": "Review Events",
+            "type": "array"
+          },
+          "review_status": {
+            "$ref": "#/components/schemas/ReviewStatus"
+          },
+          "source_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "source_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Source Sha256",
+            "type": "string"
+          },
+          "text": {
+            "minLength": 1,
+            "title": "Text",
+            "type": "string"
+          },
+          "verification_basis": {
+            "$ref": "#/components/schemas/VerificationBasis"
+          }
+        },
+        "required": [
+          "id",
+          "source_id",
+          "locator",
+          "text",
+          "bindingness",
+          "applicability",
+          "source_sha256",
+          "extraction_method",
+          "review_status",
+          "verification_basis",
+          "enforcement_mode"
+        ],
+        "title": "EvidenceSpan",
+        "type": "object"
+      },
+      "ExtractionMethod": {
+        "enum": [
+          "manual",
+          "deterministic",
+          "model_candidate"
+        ],
+        "title": "ExtractionMethod",
+        "type": "string"
+      },
+      "Finding": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence_ids": {
+            "items": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Id",
+            "type": "string"
+          },
+          "rationale": {
+            "minLength": 1,
+            "title": "Rationale",
+            "type": "string"
+          },
+          "rule_id": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rule Id"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/Severity"
+          },
+          "source": {
+            "$ref": "#/components/schemas/TraceStepKind"
+          }
+        },
+        "required": [
+          "id",
+          "severity",
+          "rationale",
+          "evidence_ids",
+          "source"
+        ],
+        "title": "Finding",
+        "type": "object"
+      },
+      "FixtureListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "fixtures": {
+            "items": {
+              "$ref": "#/components/schemas/FixtureSummary"
+            },
+            "title": "Fixtures",
+            "type": "array"
+          }
+        },
+        "required": [
+          "fixtures"
+        ],
+        "title": "FixtureListResponse",
+        "type": "object"
+      },
+      "FixtureSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "minLength": 1,
+            "title": "Description",
+            "type": "string"
+          },
+          "expected_class": {
+            "pattern": "^(positive|negative|ambiguous)$",
+            "title": "Expected Class",
+            "type": "string"
+          },
+          "id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "description",
+          "expected_class"
+        ],
+        "title": "FixtureSummary",
+        "type": "object"
+      },
+      "GraphEdge": {
+        "additionalProperties": false,
+        "properties": {
+          "enforcement_mode": {
+            "$ref": "#/components/schemas/EnforcementMode",
+            "default": "disabled"
+          },
+          "evidence_ids": {
+            "default": [],
+            "items": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "expert_validated": {
+            "default": false,
+            "title": "Expert Validated",
+            "type": "boolean"
+          },
+          "id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          },
+          "review_status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReviewStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Source",
+            "type": "string"
+          },
+          "target": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Target",
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/EdgeType"
+          },
+          "verification_basis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VerificationBasis"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "source",
+          "target",
+          "type",
+          "label"
+        ],
+        "title": "GraphEdge",
+        "type": "object"
+      },
+      "GraphNeighborhood": {
+        "additionalProperties": false,
+        "properties": {
+          "analysis_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Analysis Id",
+            "type": "string"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/GraphEdge"
+            },
+            "title": "Edges",
+            "type": "array"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/GraphNode"
+            },
+            "minItems": 1,
+            "title": "Nodes",
+            "type": "array"
+          },
+          "text_alternative": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Text Alternative",
+            "type": "array"
+          }
+        },
+        "required": [
+          "analysis_id",
+          "nodes",
+          "edges",
+          "text_alternative"
+        ],
+        "title": "GraphNeighborhood",
+        "type": "object"
+      },
+      "GraphNode": {
+        "additionalProperties": false,
+        "properties": {
+          "expert_validated": {
+            "default": false,
+            "title": "Expert Validated",
+            "type": "boolean"
+          },
+          "id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          },
+          "properties": {
+            "additionalProperties": true,
+            "title": "Properties",
+            "type": "object"
+          },
+          "review_status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReviewStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "type": {
+            "$ref": "#/components/schemas/NodeType"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "label"
+        ],
+        "title": "GraphNode",
+        "type": "object"
+      },
+      "GraphResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "graph": {
+            "$ref": "#/components/schemas/GraphNeighborhood"
+          }
+        },
+        "required": [
+          "graph"
+        ],
+        "title": "GraphResponse",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
       },
       "HealthResponse": {
         "additionalProperties": false,
@@ -60,6 +727,16 @@
         "title": "HealthResponse",
         "type": "object"
       },
+      "LifecycleOperation": {
+        "enum": [
+          "new",
+          "replace",
+          "append",
+          "delete"
+        ],
+        "title": "LifecycleOperation",
+        "type": "string"
+      },
       "LlmMode": {
         "enum": [
           "fixture",
@@ -69,19 +746,308 @@
         "title": "LlmMode",
         "type": "string"
       },
+      "NodeType": {
+        "enum": [
+          "artifact",
+          "standard",
+          "standard_version",
+          "heading",
+          "evidence",
+          "rule",
+          "repair",
+          "decision"
+        ],
+        "title": "NodeType",
+        "type": "string"
+      },
+      "OperationalStatus": {
+        "enum": [
+          "not_operational"
+        ],
+        "title": "OperationalStatus",
+        "type": "string"
+      },
+      "ParseWarning": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Code",
+            "type": "string"
+          },
+          "locator": {
+            "minLength": 1,
+            "title": "Locator",
+            "type": "string"
+          },
+          "message": {
+            "minLength": 1,
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "locator"
+        ],
+        "title": "ParseWarning",
+        "type": "object"
+      },
+      "ParsedLeaf": {
+        "additionalProperties": false,
+        "properties": {
+          "content_type": {
+            "pattern": "^[a-z0-9][a-z0-9.+-]*/[a-z0-9][a-z0-9.+-]*$",
+            "title": "Content Type",
+            "type": "string"
+          },
+          "declared_checksum": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Declared Checksum"
+          },
+          "file_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "File Sha256",
+            "type": "string"
+          },
+          "heading": {
+            "pattern": "^\\d+(?:\\.[A-Za-z0-9]+)+$",
+            "title": "Heading",
+            "type": "string"
+          },
+          "href": {
+            "minLength": 1,
+            "title": "Href",
+            "type": "string"
+          },
+          "id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Id",
+            "type": "string"
+          },
+          "modified_leaf_id": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Modified Leaf Id"
+          },
+          "operation": {
+            "$ref": "#/components/schemas/LifecycleOperation"
+          },
+          "source_locator": {
+            "minLength": 1,
+            "title": "Source Locator",
+            "type": "string"
+          },
+          "title": {
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "heading",
+          "href",
+          "operation",
+          "content_type",
+          "file_sha256",
+          "source_locator"
+        ],
+        "title": "ParsedLeaf",
+        "type": "object"
+      },
+      "RepairAction": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "minLength": 1,
+            "title": "Description",
+            "type": "string"
+          },
+          "evidence_ids": {
+            "default": [],
+            "items": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "type": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "description"
+        ],
+        "title": "RepairAction",
+        "type": "object"
+      },
+      "ReuseOperation": {
+        "enum": [
+          "reference-existing-content",
+          "create-new-target-artifact"
+        ],
+        "title": "ReuseOperation",
+        "type": "string"
+      },
+      "ReviewDecision": {
+        "enum": [
+          "accepted",
+          "rejected"
+        ],
+        "title": "ReviewDecision",
+        "type": "string"
+      },
+      "ReviewEvent": {
+        "additionalProperties": false,
+        "properties": {
+          "decision": {
+            "$ref": "#/components/schemas/ReviewDecision"
+          },
+          "expert_validated": {
+            "default": false,
+            "title": "Expert Validated",
+            "type": "boolean"
+          },
+          "external_reviewer_qualification": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Reviewer Qualification"
+          },
+          "id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Id",
+            "type": "string"
+          },
+          "independent_second_author_check": {
+            "default": false,
+            "title": "Independent Second Author Check",
+            "type": "boolean"
+          },
+          "object_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "object_version": {
+            "minLength": 1,
+            "title": "Object Version",
+            "type": "string"
+          },
+          "rationale": {
+            "minLength": 1,
+            "title": "Rationale",
+            "type": "string"
+          },
+          "reviewed_at": {
+            "format": "date-time",
+            "title": "Reviewed At",
+            "type": "string"
+          },
+          "reviewer_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Reviewer Id",
+            "type": "string"
+          },
+          "reviewer_role": {
+            "minLength": 1,
+            "title": "Reviewer Role",
+            "type": "string"
+          },
+          "source_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Source Sha256",
+            "type": "string"
+          },
+          "source_snapshot_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Source Snapshot Id",
+            "type": "string"
+          },
+          "supporting_source_sha256s": {
+            "default": [],
+            "items": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "title": "Supporting Source Sha256S",
+            "type": "array"
+          },
+          "unresolved_assumptions": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Unresolved Assumptions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "reviewer_id",
+          "reviewer_role",
+          "reviewed_at",
+          "object_id",
+          "object_version",
+          "source_snapshot_id",
+          "source_sha256",
+          "decision",
+          "rationale"
+        ],
+        "title": "ReviewEvent",
+        "type": "object"
+      },
       "ReviewStatus": {
         "enum": [
           "candidate",
-          "reviewed",
-          "authoritative_for_demo",
+          "source_verified",
+          "author_adjudicated_for_demo",
           "rejected"
         ],
         "title": "ReviewStatus",
         "type": "string"
       },
+      "ScenarioMode": {
+        "enum": [
+          "prospective_forward_compatibility",
+          "current_operational"
+        ],
+        "title": "ScenarioMode",
+        "type": "string"
+      },
       "ScopeResponse": {
         "additionalProperties": false,
         "properties": {
+          "approved_research_scenario": {
+            "$ref": "#/components/schemas/ScenarioMode"
+          },
           "authority": {
             "$ref": "#/components/schemas/Authority"
           },
@@ -99,6 +1065,10 @@
             "title": "Disclaimer",
             "type": "string"
           },
+          "expert_validated": {
+            "title": "Expert Validated",
+            "type": "boolean"
+          },
           "limitations": {
             "items": {
               "type": "string"
@@ -112,6 +1082,9 @@
           "network_required": {
             "title": "Network Required",
             "type": "boolean"
+          },
+          "operational_status": {
+            "$ref": "#/components/schemas/OperationalStatus"
           },
           "planned_archetypes": {
             "items": {
@@ -176,12 +1149,142 @@
           "standards_snapshot_id",
           "model_mode",
           "network_required",
+          "operational_status",
+          "approved_research_scenario",
+          "expert_validated",
           "available_features",
           "planned_archetypes",
           "disclaimer",
           "limitations"
         ],
         "title": "ScopeResponse",
+        "type": "object"
+      },
+      "Severity": {
+        "enum": [
+          "informational",
+          "low",
+          "medium",
+          "high",
+          "blocking",
+          "unresolved"
+        ],
+        "title": "Severity",
+        "type": "string"
+      },
+      "SourceArtifact": {
+        "additionalProperties": false,
+        "properties": {
+          "content_type": {
+            "pattern": "^[a-z0-9][a-z0-9.+-]*/[a-z0-9][a-z0-9.+-]*$",
+            "title": "Content Type",
+            "type": "string"
+          },
+          "file_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "File Sha256",
+            "type": "string"
+          },
+          "id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Id",
+            "type": "string"
+          },
+          "source_heading": {
+            "pattern": "^\\d+(?:\\.[A-Za-z0-9]+)+$",
+            "title": "Source Heading",
+            "type": "string"
+          },
+          "source_leaf_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Source Leaf Id",
+            "type": "string"
+          },
+          "source_locator": {
+            "minLength": 1,
+            "title": "Source Locator",
+            "type": "string"
+          },
+          "source_standard": {
+            "$ref": "#/components/schemas/StandardVersion"
+          },
+          "title": {
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "source_standard",
+          "source_leaf_id",
+          "source_heading",
+          "source_locator",
+          "content_type",
+          "file_sha256"
+        ],
+        "title": "SourceArtifact",
+        "type": "object"
+      },
+      "SourceScope": {
+        "additionalProperties": false,
+        "properties": {
+          "application_types": {
+            "items": {
+              "$ref": "#/components/schemas/ApplicationType"
+            },
+            "minItems": 1,
+            "title": "Application Types",
+            "type": "array"
+          },
+          "source_standards": {
+            "items": {
+              "$ref": "#/components/schemas/StandardVersion"
+            },
+            "minItems": 1,
+            "title": "Source Standards",
+            "type": "array"
+          },
+          "target_standards": {
+            "items": {
+              "$ref": "#/components/schemas/StandardVersion"
+            },
+            "minItems": 1,
+            "title": "Target Standards",
+            "type": "array"
+          },
+          "valid_from": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid From"
+          },
+          "valid_to": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid To"
+          }
+        },
+        "required": [
+          "application_types",
+          "source_standards",
+          "target_standards"
+        ],
+        "title": "SourceScope",
         "type": "object"
       },
       "StandardSourceSummary": {
@@ -192,6 +1295,13 @@
           },
           "center": {
             "$ref": "#/components/schemas/Center"
+          },
+          "enforcement_mode": {
+            "$ref": "#/components/schemas/EnforcementMode"
+          },
+          "expert_validated": {
+            "title": "Expert Validated",
+            "type": "boolean"
           },
           "id": {
             "title": "Id",
@@ -219,6 +1329,9 @@
             "title": "Title",
             "type": "string"
           },
+          "verification_basis": {
+            "$ref": "#/components/schemas/VerificationBasis"
+          },
           "version": {
             "title": "Version",
             "type": "string"
@@ -233,6 +1346,9 @@
           "source_url",
           "sha256",
           "review_status",
+          "verification_basis",
+          "enforcement_mode",
+          "expert_validated",
           "reviewer_note"
         ],
         "title": "StandardSourceSummary",
@@ -277,6 +1393,154 @@
         ],
         "title": "StandardsSnapshotResponse",
         "type": "object"
+      },
+      "TargetContext": {
+        "additionalProperties": false,
+        "properties": {
+          "analysis_date": {
+            "format": "date",
+            "title": "Analysis Date",
+            "type": "string"
+          },
+          "application_type": {
+            "$ref": "#/components/schemas/ApplicationType"
+          },
+          "authority": {
+            "$ref": "#/components/schemas/Authority"
+          },
+          "center": {
+            "$ref": "#/components/schemas/Center"
+          },
+          "reuse_operation": {
+            "$ref": "#/components/schemas/ReuseOperation"
+          },
+          "scenario_mode": {
+            "$ref": "#/components/schemas/ScenarioMode"
+          },
+          "source_standard": {
+            "$ref": "#/components/schemas/StandardVersion"
+          },
+          "standards_snapshot_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Standards Snapshot Id",
+            "type": "string"
+          },
+          "target_standard": {
+            "$ref": "#/components/schemas/StandardVersion"
+          }
+        },
+        "required": [
+          "authority",
+          "center",
+          "application_type",
+          "source_standard",
+          "target_standard",
+          "analysis_date",
+          "reuse_operation",
+          "standards_snapshot_id",
+          "scenario_mode"
+        ],
+        "title": "TargetContext",
+        "type": "object"
+      },
+      "TraceStep": {
+        "additionalProperties": false,
+        "properties": {
+          "component": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Component",
+            "type": "string"
+          },
+          "evidence_ids": {
+            "default": [],
+            "items": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/TraceStepKind"
+          },
+          "occurred_at": {
+            "format": "date-time",
+            "title": "Occurred At",
+            "type": "string"
+          },
+          "sequence": {
+            "minimum": 1.0,
+            "title": "Sequence",
+            "type": "integer"
+          },
+          "summary": {
+            "minLength": 1,
+            "title": "Summary",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sequence",
+          "kind",
+          "component",
+          "summary",
+          "occurred_at"
+        ],
+        "title": "TraceStep",
+        "type": "object"
+      },
+      "TraceStepKind": {
+        "enum": [
+          "deterministic",
+          "model_assisted",
+          "synthesis"
+        ],
+        "title": "TraceStepKind",
+        "type": "string"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "VerificationBasis": {
+        "enum": [
+          "direct_standard_encoding",
+          "mechanical_derivation",
+          "author_interpretation",
+          "semantic_inference",
+          "synthetic_assumption"
+        ],
+        "title": "VerificationBasis",
+        "type": "string"
       }
     }
   },
@@ -288,6 +1552,180 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v1/analyses": {
+      "post": {
+        "operationId": "create_analysis_api_v1_analyses_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnalysisRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Analysis",
+        "tags": [
+          "analysis"
+        ]
+      }
+    },
+    "/api/v1/analyses/{analysis_id}": {
+      "get": {
+        "operationId": "get_analysis_api_v1_analyses__analysis_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "analysis_id",
+            "required": true,
+            "schema": {
+              "title": "Analysis Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Analysis",
+        "tags": [
+          "analysis"
+        ]
+      }
+    },
+    "/api/v1/analyses/{analysis_id}/graph": {
+      "get": {
+        "operationId": "get_analysis_graph_api_v1_analyses__analysis_id__graph_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "analysis_id",
+            "required": true,
+            "schema": {
+              "title": "Analysis Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Analysis Graph",
+        "tags": [
+          "analysis"
+        ]
+      }
+    },
+    "/api/v1/applications/parse": {
+      "post": {
+        "operationId": "parse_application_api_v1_applications_parse_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "fixture_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Fixture Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationInventory"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Parse Application",
+        "tags": [
+          "analysis"
+        ]
+      }
+    },
     "/api/v1/config/scope": {
       "get": {
         "operationId": "scope_api_v1_config_scope_get",
@@ -306,6 +1744,27 @@
         "summary": "Scope",
         "tags": [
           "configuration"
+        ]
+      }
+    },
+    "/api/v1/fixtures": {
+      "get": {
+        "operationId": "fixtures_api_v1_fixtures_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FixtureListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Fixtures",
+        "tags": [
+          "analysis"
         ]
       }
     },

@@ -33,6 +33,21 @@
       "title": "LlmMode",
       "type": "string"
     },
+    "OperationalStatus": {
+      "enum": [
+        "not_operational"
+      ],
+      "title": "OperationalStatus",
+      "type": "string"
+    },
+    "ScenarioMode": {
+      "enum": [
+        "prospective_forward_compatibility",
+        "current_operational"
+      ],
+      "title": "ScenarioMode",
+      "type": "string"
+    },
     "StandardVersion": {
       "enum": [
         "eCTD-3.2.2",
@@ -44,6 +59,9 @@
   },
   "additionalProperties": false,
   "properties": {
+    "approved_research_scenario": {
+      "$ref": "#/$defs/ScenarioMode"
+    },
     "authority": {
       "$ref": "#/$defs/Authority"
     },
@@ -61,6 +79,10 @@
       "title": "Disclaimer",
       "type": "string"
     },
+    "expert_validated": {
+      "title": "Expert Validated",
+      "type": "boolean"
+    },
     "limitations": {
       "items": {
         "type": "string"
@@ -74,6 +96,9 @@
     "network_required": {
       "title": "Network Required",
       "type": "boolean"
+    },
+    "operational_status": {
+      "$ref": "#/$defs/OperationalStatus"
     },
     "planned_archetypes": {
       "items": {
@@ -138,6 +163,9 @@
     "standards_snapshot_id",
     "model_mode",
     "network_required",
+    "operational_status",
+    "approved_research_scenario",
+    "expert_validated",
     "available_features",
     "planned_archetypes",
     "disclaimer",

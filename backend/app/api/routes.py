@@ -1,17 +1,32 @@
+from functools import lru_cache
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 
 from app import __version__
+from app.analyzer.service import AnalysisService
 from app.api.contracts import (
+    AnalysisRequest,
+    AnalysisResponse,
+    FixtureListResponse,
+    GraphResponse,
     HealthResponse,
     ScopeResponse,
     StandardSourceSummary,
     StandardsSnapshotResponse,
 )
 from app.config import Settings, get_settings
-from app.domain.enums import ApplicationType, Authority, Center, StandardVersion
+from app.domain.enums import (
+    ApplicationType,
+    Authority,
+    Center,
+    ScenarioMode,
+    StandardVersion,
+)
 from app.domain.models import StandardsManifest
+from app.parsers.ectd322 import EctdParseError, FixtureCatalog, parse_zip
+from app.parsers.models import ApplicationInventory
+from app.standards.operational import OperationalStatusRegistry
 from app.standards.registry import StandardsRegistry
 
 RESEARCH_QUESTION = (
@@ -23,7 +38,8 @@ DISCLAIMER = (
     "RegBridge is an FDA/CDER-scoped research prototype for risk analysis and decision support. "
     "It is not FDA-certified, does not provide regulatory advice, and does not predict or "
     "guarantee filing or application acceptance. Use public, synthetic, or deliberately "
-    "de-identified materials only."
+    "de-identified materials only. The controlled M1 scenario and labels are author-"
+    "adjudicated and have not been validated by a regulatory expert."
 )
 
 router = APIRouter()
@@ -35,6 +51,16 @@ def get_manifest() -> StandardsManifest:
 
 SettingsDependency = Annotated[Settings, Depends(get_settings)]
 ManifestDependency = Annotated[StandardsManifest, Depends(get_manifest)]
+
+_inventories: dict[str, ApplicationInventory] = {}
+
+
+@lru_cache
+def get_analysis_service() -> AnalysisService:
+    return AnalysisService()
+
+
+AnalysisDependency = Annotated[AnalysisService, Depends(get_analysis_service)]
 
 
 @router.get("/health", response_model=HealthResponse, tags=["system"])
@@ -68,7 +94,16 @@ def scope(
         standards_snapshot_id=manifest.snapshot_id,
         model_mode=settings.llm_mode,
         network_required=settings.llm_mode.value == "live",
-        available_features=("scope", "standards-registry", "offline-model-fixtures"),
+        operational_status=OperationalStatusRegistry().load().status,
+        approved_research_scenario=ScenarioMode.PROSPECTIVE_FORWARD_COMPATIBILITY,
+        expert_validated=False,
+        available_features=(
+            "scope",
+            "standards-registry",
+            "secure-ectd-322-parser",
+            "explicit-heading-rule",
+            "graph-neighborhood",
+        ),
         planned_archetypes=(
             "unavailable-heading",
             "legacy-metadata-tension",
@@ -78,7 +113,9 @@ def scope(
         limitations=(
             "FDA/CDER and the reviewed demonstration snapshot only.",
             "No submission-package generation, acceptance prediction, or regulatory advice.",
-            "M0 exposes contracts and provenance; artifact analysis begins in M1.",
+            "FDA forward compatibility is currently not operational.",
+            "M1 is a prospective controlled research scenario, not operational guidance.",
+            "Author-adjudicated labels and rules have not been validated by a regulatory expert.",
         ),
     )
 
@@ -105,8 +142,80 @@ def standards_snapshots(
                 source_url=source.source_url,
                 sha256=source.sha256,
                 review_status=source.review_status,
+                verification_basis=source.verification_basis,
+                enforcement_mode=source.enforcement_mode,
+                expert_validated=source.expert_validated,
                 reviewer_note=source.reviewer_note,
             )
             for source in manifest.sources
         ),
     )
+
+
+@router.get("/api/v1/fixtures", response_model=FixtureListResponse, tags=["analysis"])
+def fixtures() -> FixtureListResponse:
+    return FixtureListResponse(fixtures=FixtureCatalog().list())
+
+
+@router.post(
+    "/api/v1/applications/parse",
+    response_model=ApplicationInventory,
+    tags=["analysis"],
+)
+async def parse_application(
+    request: Request,
+    fixture_id: Annotated[str | None, Query()] = None,
+) -> ApplicationInventory:
+    try:
+        if fixture_id is not None:
+            if await request.body():
+                raise EctdParseError("provide a fixture_id or ZIP upload, not both")
+            inventory = FixtureCatalog().parse(fixture_id)
+        else:
+            if request.headers.get("content-type", "").split(";", 1)[0] not in {
+                "application/zip",
+                "application/x-zip-compressed",
+            }:
+                raise EctdParseError("upload must use a ZIP MIME type")
+            payload = await request.body()
+            if not payload:
+                raise EctdParseError("provide a controlled fixture_id or ZIP upload")
+            inventory = parse_zip(payload)
+    except EctdParseError as error:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(error),
+        ) from error
+    _inventories[inventory.id] = inventory
+    return inventory
+
+
+@router.post("/api/v1/analyses", response_model=AnalysisResponse, tags=["analysis"])
+def create_analysis(
+    request: AnalysisRequest,
+    service: AnalysisDependency,
+) -> AnalysisResponse:
+    inventory = _inventories.get(request.inventory_id)
+    if inventory is None:
+        raise HTTPException(status_code=404, detail="parsed inventory not found")
+    try:
+        result = service.analyze(inventory, request.leaf_id, request.target_context)
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+    return AnalysisResponse(analysis=result)
+
+
+@router.get("/api/v1/analyses/{analysis_id}", response_model=AnalysisResponse, tags=["analysis"])
+def get_analysis(analysis_id: str, service: AnalysisDependency) -> AnalysisResponse:
+    try:
+        return AnalysisResponse(analysis=service.get(analysis_id))
+    except KeyError as error:
+        raise HTTPException(status_code=404, detail=str(error)) from error
+
+
+@router.get("/api/v1/analyses/{analysis_id}/graph", response_model=GraphResponse, tags=["analysis"])
+def get_analysis_graph(analysis_id: str, service: AnalysisDependency) -> GraphResponse:
+    try:
+        return GraphResponse(graph=service.graph(analysis_id))
+    except KeyError as error:
+        raise HTTPException(status_code=404, detail=str(error)) from error

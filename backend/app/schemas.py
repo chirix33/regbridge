@@ -3,15 +3,34 @@ import json
 
 from pydantic import BaseModel
 
-from app.api.contracts import ScopeResponse, StandardsSnapshotResponse
+from app.api.contracts import (
+    AnalysisRequest,
+    AnalysisResponse,
+    FixtureListResponse,
+    GraphResponse,
+    ScopeResponse,
+    StandardsSnapshotResponse,
+)
 from app.config import REPOSITORY_ROOT
 from app.domain.models import AnalysisResult, StandardsManifest, TargetContext
+from app.graph.models import GraphNeighborhood
 from app.llm.models import ModelRequest, SemanticRiskOutput
 from app.main import create_app
+from app.parsers.models import ApplicationInventory
+from app.rules.models import HeadingRule
+from app.standards.operational import OperationalAvailability
 
 SCHEMA_MODELS: dict[str, type[BaseModel]] = {
     "analysis-result.schema.json": AnalysisResult,
+    "analysis-request.schema.json": AnalysisRequest,
+    "analysis-response.schema.json": AnalysisResponse,
+    "application-inventory.schema.json": ApplicationInventory,
+    "fixture-list-response.schema.json": FixtureListResponse,
+    "graph-neighborhood.schema.json": GraphNeighborhood,
+    "graph-response.schema.json": GraphResponse,
+    "heading-rule.schema.json": HeadingRule,
     "model-request.schema.json": ModelRequest,
+    "operational-availability.schema.json": OperationalAvailability,
     "scope-response.schema.json": ScopeResponse,
     "semantic-risk-output.schema.json": SemanticRiskOutput,
     "standards-manifest.schema.json": StandardsManifest,
@@ -26,9 +45,7 @@ def rendered_schemas() -> dict[str, str]:
         filename: json.dumps(model.model_json_schema(), indent=2, sort_keys=True) + "\n"
         for filename, model in SCHEMA_MODELS.items()
     }
-    schemas["openapi.json"] = json.dumps(
-        create_app().openapi(), indent=2, sort_keys=True
-    ) + "\n"
+    schemas["openapi.json"] = json.dumps(create_app().openapi(), indent=2, sort_keys=True) + "\n"
     return schemas
 
 

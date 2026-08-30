@@ -5,9 +5,11 @@ import pytest
 from app.domain.enums import (
     ApplicationType,
     Bindingness,
+    EnforcementMode,
     ExtractionMethod,
     ReviewStatus,
     StandardVersion,
+    VerificationBasis,
 )
 from app.domain.models import EvidenceSpan, SourceScope
 from app.llm.fixture import FixtureModel, FixtureNotFoundError, UnsupportedCitationError
@@ -28,7 +30,9 @@ def evidence_span() -> EvidenceSpan:
         ),
         source_sha256="a" * 64,
         extraction_method=ExtractionMethod.MANUAL,
-        review_status=ReviewStatus.REVIEWED,
+        review_status=ReviewStatus.CANDIDATE,
+        verification_basis=VerificationBasis.SYNTHETIC_ASSUMPTION,
+        enforcement_mode=EnforcementMode.DISABLED,
     )
 
 
@@ -81,4 +85,3 @@ async def test_fixture_model_rejects_unsupported_citation(tmp_path: Path) -> Non
 
     with pytest.raises(UnsupportedCitationError, match="evidence-not-supplied"):
         await FixtureModel(tmp_path).complete(request("unsupported"), SemanticRiskOutput)
-

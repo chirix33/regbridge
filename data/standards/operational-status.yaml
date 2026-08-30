@@ -1,0 +1,17 @@
+record_version: 1.0.0
+status: not_operational
+capability: FDA eCTD v3.2.2-to-v4.0 forward compatibility
+scope: FDA/CDER controlled demonstration
+source_url: https://www.fda.gov/drugs/electronic-regulatory-submission-and-review/electronic-common-technical-document-ectd
+recorded_at: 2026-08-29T02:55:00Z
+recorded_by: author-01
+review_status: author_adjudicated_for_demo
+verification_basis: author_interpretation
+enforcement_mode: disabled
+expert_validated: false
+rationale: >-
+  author-01 directed RegBridge to record current FDA operational availability as
+  not_operational and to bypass the prospective M1 rule in current-operational mode.
+unresolved_assumptions:
+  - This operational status is time-sensitive and must be re-verified before a later release.
+  - The linked current-status page is not an executable-rule evidence span.

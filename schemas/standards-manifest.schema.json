@@ -34,6 +34,16 @@
       "title": "Center",
       "type": "string"
     },
+    "EnforcementMode": {
+      "enum": [
+        "hard",
+        "advisory",
+        "semantic_signal",
+        "disabled"
+      ],
+      "title": "EnforcementMode",
+      "type": "string"
+    },
     "RegulatorySource": {
       "additionalProperties": false,
       "properties": {
@@ -58,6 +68,14 @@
           ],
           "default": null,
           "title": "Effective From"
+        },
+        "enforcement_mode": {
+          "$ref": "#/$defs/EnforcementMode"
+        },
+        "expert_validated": {
+          "default": false,
+          "title": "Expert Validated",
+          "type": "boolean"
         },
         "id": {
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
@@ -102,6 +120,14 @@
           "title": "Retrieved At",
           "type": "string"
         },
+        "review_events": {
+          "items": {
+            "$ref": "#/$defs/ReviewEvent"
+          },
+          "minItems": 1,
+          "title": "Review Events",
+          "type": "array"
+        },
         "review_locator": {
           "minLength": 1,
           "title": "Review Locator",
@@ -135,6 +161,9 @@
           "title": "Title",
           "type": "string"
         },
+        "verification_basis": {
+          "$ref": "#/$defs/VerificationBasis"
+        },
         "version": {
           "minLength": 1,
           "title": "Version",
@@ -156,6 +185,9 @@
         "bindingness",
         "scope",
         "review_status",
+        "verification_basis",
+        "enforcement_mode",
+        "review_events",
         "review_locator",
         "reviewer_note",
         "notes"
@@ -163,11 +195,125 @@
       "title": "RegulatorySource",
       "type": "object"
     },
+    "ReviewDecision": {
+      "enum": [
+        "accepted",
+        "rejected"
+      ],
+      "title": "ReviewDecision",
+      "type": "string"
+    },
+    "ReviewEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "decision": {
+          "$ref": "#/$defs/ReviewDecision"
+        },
+        "expert_validated": {
+          "default": false,
+          "title": "Expert Validated",
+          "type": "boolean"
+        },
+        "external_reviewer_qualification": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "External Reviewer Qualification"
+        },
+        "id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "independent_second_author_check": {
+          "default": false,
+          "title": "Independent Second Author Check",
+          "type": "boolean"
+        },
+        "object_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Object Id",
+          "type": "string"
+        },
+        "object_version": {
+          "minLength": 1,
+          "title": "Object Version",
+          "type": "string"
+        },
+        "rationale": {
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "format": "date-time",
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewer_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Reviewer Id",
+          "type": "string"
+        },
+        "reviewer_role": {
+          "minLength": 1,
+          "title": "Reviewer Role",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "source_snapshot_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Source Snapshot Id",
+          "type": "string"
+        },
+        "supporting_source_sha256s": {
+          "default": [],
+          "items": {
+            "pattern": "^[a-f0-9]{64}$",
+            "type": "string"
+          },
+          "title": "Supporting Source Sha256S",
+          "type": "array"
+        },
+        "unresolved_assumptions": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Unresolved Assumptions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "reviewer_id",
+        "reviewer_role",
+        "reviewed_at",
+        "object_id",
+        "object_version",
+        "source_snapshot_id",
+        "source_sha256",
+        "decision",
+        "rationale"
+      ],
+      "title": "ReviewEvent",
+      "type": "object"
+    },
     "ReviewStatus": {
       "enum": [
         "candidate",
-        "reviewed",
-        "authoritative_for_demo",
+        "source_verified",
+        "author_adjudicated_for_demo",
         "rejected"
       ],
       "title": "ReviewStatus",
@@ -241,6 +387,17 @@
         "eCTD-4.0"
       ],
       "title": "StandardVersion",
+      "type": "string"
+    },
+    "VerificationBasis": {
+      "enum": [
+        "direct_standard_encoding",
+        "mechanical_derivation",
+        "author_interpretation",
+        "semantic_inference",
+        "synthetic_assumption"
+      ],
+      "title": "VerificationBasis",
       "type": "string"
     }
   },

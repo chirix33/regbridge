@@ -1,0 +1,236 @@
+{
+  "$defs": {
+    "EdgeType": {
+      "enum": [
+        "LOCATED_UNDER",
+        "AVAILABLE_IN",
+        "REMOVED_IN",
+        "MAPS_TO",
+        "SUPPORTED_BY",
+        "REQUIRES_REPAIR",
+        "TRIGGERS_DECISION"
+      ],
+      "title": "EdgeType",
+      "type": "string"
+    },
+    "EnforcementMode": {
+      "enum": [
+        "hard",
+        "advisory",
+        "semantic_signal",
+        "disabled"
+      ],
+      "title": "EnforcementMode",
+      "type": "string"
+    },
+    "GraphEdge": {
+      "additionalProperties": false,
+      "properties": {
+        "enforcement_mode": {
+          "$ref": "#/$defs/EnforcementMode",
+          "default": "disabled"
+        },
+        "evidence_ids": {
+          "default": [],
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "expert_validated": {
+          "default": false,
+          "title": "Expert Validated",
+          "type": "boolean"
+        },
+        "id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "review_status": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ReviewStatus"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "source": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Source",
+          "type": "string"
+        },
+        "target": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Target",
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/EdgeType"
+        },
+        "verification_basis": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/VerificationBasis"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "target",
+        "type",
+        "label"
+      ],
+      "title": "GraphEdge",
+      "type": "object"
+    },
+    "GraphNode": {
+      "additionalProperties": false,
+      "properties": {
+        "expert_validated": {
+          "default": false,
+          "title": "Expert Validated",
+          "type": "boolean"
+        },
+        "id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "properties": {
+          "additionalProperties": true,
+          "title": "Properties",
+          "type": "object"
+        },
+        "review_status": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ReviewStatus"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "type": {
+          "$ref": "#/$defs/NodeType"
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Version"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "label"
+      ],
+      "title": "GraphNode",
+      "type": "object"
+    },
+    "NodeType": {
+      "enum": [
+        "artifact",
+        "standard",
+        "standard_version",
+        "heading",
+        "evidence",
+        "rule",
+        "repair",
+        "decision"
+      ],
+      "title": "NodeType",
+      "type": "string"
+    },
+    "ReviewStatus": {
+      "enum": [
+        "candidate",
+        "source_verified",
+        "author_adjudicated_for_demo",
+        "rejected"
+      ],
+      "title": "ReviewStatus",
+      "type": "string"
+    },
+    "VerificationBasis": {
+      "enum": [
+        "direct_standard_encoding",
+        "mechanical_derivation",
+        "author_interpretation",
+        "semantic_inference",
+        "synthetic_assumption"
+      ],
+      "title": "VerificationBasis",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "analysis_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "title": "Analysis Id",
+      "type": "string"
+    },
+    "edges": {
+      "items": {
+        "$ref": "#/$defs/GraphEdge"
+      },
+      "title": "Edges",
+      "type": "array"
+    },
+    "nodes": {
+      "items": {
+        "$ref": "#/$defs/GraphNode"
+      },
+      "minItems": 1,
+      "title": "Nodes",
+      "type": "array"
+    },
+    "text_alternative": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Text Alternative",
+      "type": "array"
+    }
+  },
+  "required": [
+    "analysis_id",
+    "nodes",
+    "edges",
+    "text_alternative"
+  ],
+  "title": "GraphNeighborhood",
+  "type": "object"
+}

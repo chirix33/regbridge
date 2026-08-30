@@ -13,4 +13,3 @@ class StructuredModel(Protocol):
         request: ModelRequest,
         output_type: type[ModelOutput],
     ) -> ModelOutput: ...
-

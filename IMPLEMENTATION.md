@@ -331,8 +331,8 @@ Represent rules as versioned data validated by Pydantic and exported as JSON Sch
 Example shape:
 
 ```yaml
-id: FDA-DEMO-HEADING-001
-title: Target heading unavailable
+id: FDA-CDER-M1-REMOVED-SUBHEADING-001
+title: Removed 3.2.S.1 subheadings require a new target context group
 bindingness: requirement
 applies_when:
   authority: FDA
@@ -340,18 +340,27 @@ applies_when:
   source_standard: eCTD-3.2.2
   target_standard: eCTD-4.0
 predicate:
-  type: target_heading_unavailable
+  type: explicit_heading_mapping
+  mapping:
+    3.2.S.1.1: 3.2.S.1
+    3.2.S.1.2: 3.2.S.1
+    3.2.S.1.3: 3.2.S.1
 severity: blocking
-decision: BREAK_LIFECYCLE_AND_RESUBMIT
-repair: relocate_to_nearest_available_parent
-evidence_ids: [evidence-heading-map-001]
+decision: REUSE_WITH_NEW_CONTEXT
+repair: CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT
+evidence_ids:
+  - ev-ctoc-321-remains
+  - ev-ctoc-3211-3213-removed
+  - ev-tcg-replacement-context-same
+  - ev-tcg-new-context-and-reuse
 review_status: author_adjudicated_for_demo
-verification_basis: direct_standard_encoding
+verification_basis: mechanical_derivation
 expert_validated: false
 enforcement_mode: hard
+scenario_mode: prospective_forward_compatibility
 ```
 
-The example expresses an author-adjudicated research encoding of a directly verifiable structural fact. It must not be described as an expert-certified FDA rule.
+The example expresses an author-adjudicated research encoding for the controlled prospective FDA/CDER demonstration. It must not be described as an expert-certified FDA rule. Do not generalize this into a nearest-available-parent algorithm: only the three explicit source-supported mappings above are authorized. FDA forward compatibility is currently `not_operational`; current-operational mode must report that status and bypass this prospective rule.
 
 ### Rule precedence
 
@@ -438,7 +447,7 @@ Create approximately 30 controlled cases: ten variants per archetype. The exact 
 
 ### Case A — unavailable heading
 
-Variants should change leaf titles, file names, sibling placement, and target mapping while preserving or removing the actual heading conflict. Include a case where the heading remains valid so the analyzer does not over-trigger.
+Variants should change leaf titles, file names, and sibling placement while preserving or removing the actual heading conflict. The controlled prospective mapping is fixed to `3.2.S.1.1`, `3.2.S.1.2`, and `3.2.S.1.3` → `3.2.S.1`; do not create novel target mappings as synthetic variants. Include a case where `3.2.S.1` remains valid so the analyzer does not over-trigger, and an unmapped heading that must abstain rather than infer a parent.
 
 ### Case B — legacy metadata tension
 
@@ -458,12 +467,12 @@ Each benchmark item should contain:
   "archetype": "unavailable-heading",
   "input_fixture": "...",
   "target_context_id": "...",
-  "reference_decision": "BREAK_LIFECYCLE_AND_RESUBMIT",
+  "reference_decision": "REUSE_WITH_NEW_CONTEXT",
   "reference_severity": "blocking",
-  "required_rule_ids": ["FDA-DEMO-HEADING-001"],
-  "acceptable_evidence_ids": ["evidence-heading-map-001"],
-  "required_repair_type": "relocate_to_nearest_available_parent",
-  "human_review_required": false,
+  "required_rule_ids": ["FDA-CDER-M1-REMOVED-SUBHEADING-001"],
+  "acceptable_evidence_ids": ["ev-ctoc-321-remains", "ev-ctoc-3211-3213-removed", "ev-tcg-replacement-context-same", "ev-tcg-new-context-and-reuse"],
+  "required_repair_type": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT",
+  "human_review_required": true,
   "reference_rationale": "...",
   "adjudication": {
     "status": "author_adjudicated_for_demo",
@@ -655,6 +664,8 @@ Deliver:
 Exit criteria: lint/test/build commands work from a clean checkout with no model key.
 
 ### M1 — First vertical slice: heading case (August 31–September 3)
+
+M1 is a clearly labeled prospective forward-compatibility research scenario. The API, UI, paper, and demonstration must keep FDA operational availability visible as `not_operational`. Current-operational mode bypasses the prospective rule and returns an unresolved human-review result.
 
 Deliver:
 

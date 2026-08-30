@@ -1,0 +1,56 @@
+rules_version: 1.0.0
+snapshot_id: fda-cder-demo-v1
+rules:
+  - id: FDA-CDER-M1-REMOVED-SUBHEADING-001
+    version: "1.0.0"
+    title: Removed 3.2.S.1 subheadings require a new target context group
+    description: >-
+      In the controlled prospective FDA/CDER demonstration, a legacy leaf under one of the
+      three explicitly mapped removed headings cannot retain that placement in the target.
+    review_status: author_adjudicated_for_demo
+    verification_basis: mechanical_derivation
+    enforcement_mode: hard
+    expert_validated: false
+    scenario_mode: prospective_forward_compatibility
+    scope:
+      authority: FDA
+      center: CDER
+      application_types: [NDA]
+      source_standard: eCTD-3.2.2
+      target_standard: eCTD-4.0
+    explicit_heading_mapping:
+      3.2.S.1.1: 3.2.S.1
+      3.2.S.1.2: 3.2.S.1
+      3.2.S.1.3: 3.2.S.1
+    verified_available_target_headings: [3.2.S.1]
+    decision: REUSE_WITH_NEW_CONTEXT
+    severity: blocking
+    repair_type: CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT
+    repair_description: >-
+      Create a new 3.2.S.1 context group, suspend the legacy context, and reference the
+      existing document through its unique identifier. Do not resubmit the physical file or
+      document element.
+    evidence_ids:
+      - ev-ctoc-321-remains
+      - ev-ctoc-3211-3213-removed
+      - ev-tcg-replacement-context-same
+      - ev-tcg-new-context-and-reuse
+    review_event:
+      id: adjudication-m1-heading-rule-author-01
+      reviewer_id: author-01
+      reviewer_role: research-author
+      reviewed_at: 2026-08-29T02:55:00Z
+      object_id: FDA-CDER-M1-REMOVED-SUBHEADING-001
+      object_version: "1.0.0"
+      source_snapshot_id: fda-cder-demo-v1
+      source_sha256: 382ec5e00b44d179abe7d3e1d9cebecef939938218c36badbde1689f54bfc3e6
+      supporting_source_sha256s:
+        - 382ec5e00b44d179abe7d3e1d9cebecef939938218c36badbde1689f54bfc3e6
+        - dccd247940cdf5bc7cbf6a5e31b8f2547ad7f61650ae1a138113feb315f8002e
+      decision: accepted
+      rationale: >-
+        author-01 approved the explicit three-heading mapping, decision, repair, mechanical
+        derivation, and hard enforcement for the controlled prospective demonstration only.
+      unresolved_assumptions: []
+      independent_second_author_check: false
+      expert_validated: false

@@ -1,0 +1,122 @@
+{
+  "$defs": {
+    "ApplicationType": {
+      "enum": [
+        "NDA",
+        "ANDA",
+        "IND",
+        "DMF"
+      ],
+      "title": "ApplicationType",
+      "type": "string"
+    },
+    "Authority": {
+      "enum": [
+        "FDA"
+      ],
+      "title": "Authority",
+      "type": "string"
+    },
+    "Center": {
+      "enum": [
+        "CDER"
+      ],
+      "title": "Center",
+      "type": "string"
+    },
+    "ReuseOperation": {
+      "enum": [
+        "reference-existing-content",
+        "create-new-target-artifact"
+      ],
+      "title": "ReuseOperation",
+      "type": "string"
+    },
+    "ScenarioMode": {
+      "enum": [
+        "prospective_forward_compatibility",
+        "current_operational"
+      ],
+      "title": "ScenarioMode",
+      "type": "string"
+    },
+    "StandardVersion": {
+      "enum": [
+        "eCTD-3.2.2",
+        "eCTD-4.0"
+      ],
+      "title": "StandardVersion",
+      "type": "string"
+    },
+    "TargetContext": {
+      "additionalProperties": false,
+      "properties": {
+        "analysis_date": {
+          "format": "date",
+          "title": "Analysis Date",
+          "type": "string"
+        },
+        "application_type": {
+          "$ref": "#/$defs/ApplicationType"
+        },
+        "authority": {
+          "$ref": "#/$defs/Authority"
+        },
+        "center": {
+          "$ref": "#/$defs/Center"
+        },
+        "reuse_operation": {
+          "$ref": "#/$defs/ReuseOperation"
+        },
+        "scenario_mode": {
+          "$ref": "#/$defs/ScenarioMode"
+        },
+        "source_standard": {
+          "$ref": "#/$defs/StandardVersion"
+        },
+        "standards_snapshot_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Standards Snapshot Id",
+          "type": "string"
+        },
+        "target_standard": {
+          "$ref": "#/$defs/StandardVersion"
+        }
+      },
+      "required": [
+        "authority",
+        "center",
+        "application_type",
+        "source_standard",
+        "target_standard",
+        "analysis_date",
+        "reuse_operation",
+        "standards_snapshot_id",
+        "scenario_mode"
+      ],
+      "title": "TargetContext",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "inventory_id": {
+      "title": "Inventory Id",
+      "type": "string"
+    },
+    "leaf_id": {
+      "title": "Leaf Id",
+      "type": "string"
+    },
+    "target_context": {
+      "$ref": "#/$defs/TargetContext"
+    }
+  },
+  "required": [
+    "inventory_id",
+    "leaf_id",
+    "target_context"
+  ],
+  "title": "AnalysisRequest",
+  "type": "object"
+}

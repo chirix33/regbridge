@@ -14,11 +14,21 @@
       "title": "Center",
       "type": "string"
     },
+    "EnforcementMode": {
+      "enum": [
+        "hard",
+        "advisory",
+        "semantic_signal",
+        "disabled"
+      ],
+      "title": "EnforcementMode",
+      "type": "string"
+    },
     "ReviewStatus": {
       "enum": [
         "candidate",
-        "reviewed",
-        "authoritative_for_demo",
+        "source_verified",
+        "author_adjudicated_for_demo",
         "rejected"
       ],
       "title": "ReviewStatus",
@@ -32,6 +42,13 @@
         },
         "center": {
           "$ref": "#/$defs/Center"
+        },
+        "enforcement_mode": {
+          "$ref": "#/$defs/EnforcementMode"
+        },
+        "expert_validated": {
+          "title": "Expert Validated",
+          "type": "boolean"
         },
         "id": {
           "title": "Id",
@@ -59,6 +76,9 @@
           "title": "Title",
           "type": "string"
         },
+        "verification_basis": {
+          "$ref": "#/$defs/VerificationBasis"
+        },
         "version": {
           "title": "Version",
           "type": "string"
@@ -73,10 +93,24 @@
         "source_url",
         "sha256",
         "review_status",
+        "verification_basis",
+        "enforcement_mode",
+        "expert_validated",
         "reviewer_note"
       ],
       "title": "StandardSourceSummary",
       "type": "object"
+    },
+    "VerificationBasis": {
+      "enum": [
+        "direct_standard_encoding",
+        "mechanical_derivation",
+        "author_interpretation",
+        "semantic_inference",
+        "synthetic_assumption"
+      ],
+      "title": "VerificationBasis",
+      "type": "string"
     }
   },
   "additionalProperties": false,

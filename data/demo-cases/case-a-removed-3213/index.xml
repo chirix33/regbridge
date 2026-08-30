@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ectd:ectd xmlns:ectd="urn:ich:ectd:v3.2.2" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <m3-2-s-1-3>
+    <leaf ID="leaf-3213" operation="new" xlink:href="documents/manufacturer.pdf">
+      <title>Manufacturer information</title>
+    </leaf>
+  </m3-2-s-1-3>
+</ectd:ectd>

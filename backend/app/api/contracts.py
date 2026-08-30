@@ -6,10 +6,17 @@ from app.domain.enums import (
     ApplicationType,
     Authority,
     Center,
+    EnforcementMode,
     LlmMode,
+    OperationalStatus,
     ReviewStatus,
+    ScenarioMode,
     StandardVersion,
+    VerificationBasis,
 )
+from app.domain.models import AnalysisResult, TargetContext
+from app.graph.models import GraphNeighborhood
+from app.parsers.models import FixtureSummary
 
 
 class ApiModel(BaseModel):
@@ -36,6 +43,9 @@ class ScopeResponse(ApiModel):
     standards_snapshot_id: str
     model_mode: LlmMode
     network_required: bool
+    operational_status: OperationalStatus
+    approved_research_scenario: ScenarioMode
+    expert_validated: bool
     available_features: tuple[str, ...]
     planned_archetypes: tuple[str, ...]
     disclaimer: str
@@ -51,6 +61,9 @@ class StandardSourceSummary(ApiModel):
     source_url: HttpUrl
     sha256: str
     review_status: ReviewStatus
+    verification_basis: VerificationBasis
+    enforcement_mode: EnforcementMode
+    expert_validated: bool
     reviewer_note: str
 
 
@@ -60,3 +73,20 @@ class StandardsSnapshotResponse(ApiModel):
     description: str
     sources: tuple[StandardSourceSummary, ...]
 
+
+class FixtureListResponse(ApiModel):
+    fixtures: tuple[FixtureSummary, ...]
+
+
+class AnalysisRequest(ApiModel):
+    inventory_id: str
+    leaf_id: str
+    target_context: TargetContext
+
+
+class AnalysisResponse(ApiModel):
+    analysis: AnalysisResult
+
+
+class GraphResponse(ApiModel):
+    graph: GraphNeighborhood

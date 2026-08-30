@@ -46,6 +46,16 @@
       "title": "Decision",
       "type": "string"
     },
+    "EnforcementMode": {
+      "enum": [
+        "hard",
+        "advisory",
+        "semantic_signal",
+        "disabled"
+      ],
+      "title": "EnforcementMode",
+      "type": "string"
+    },
     "EvidenceSpan": {
       "additionalProperties": false,
       "properties": {
@@ -54,6 +64,14 @@
         },
         "bindingness": {
           "$ref": "#/$defs/Bindingness"
+        },
+        "enforcement_mode": {
+          "$ref": "#/$defs/EnforcementMode"
+        },
+        "expert_validated": {
+          "default": false,
+          "title": "Expert Validated",
+          "type": "boolean"
         },
         "extraction_method": {
           "$ref": "#/$defs/ExtractionMethod"
@@ -67,6 +85,14 @@
           "minLength": 1,
           "title": "Locator",
           "type": "string"
+        },
+        "review_events": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ReviewEvent"
+          },
+          "title": "Review Events",
+          "type": "array"
         },
         "review_status": {
           "$ref": "#/$defs/ReviewStatus"
@@ -85,6 +111,9 @@
           "minLength": 1,
           "title": "Text",
           "type": "string"
+        },
+        "verification_basis": {
+          "$ref": "#/$defs/VerificationBasis"
         }
       },
       "required": [
@@ -96,7 +125,9 @@
         "applicability",
         "source_sha256",
         "extraction_method",
-        "review_status"
+        "review_status",
+        "verification_basis",
+        "enforcement_mode"
       ],
       "title": "EvidenceSpan",
       "type": "object"
@@ -162,6 +193,13 @@
       "title": "Finding",
       "type": "object"
     },
+    "OperationalStatus": {
+      "enum": [
+        "not_operational"
+      ],
+      "title": "OperationalStatus",
+      "type": "string"
+    },
     "RepairAction": {
       "additionalProperties": false,
       "properties": {
@@ -200,14 +238,136 @@
       "title": "ReuseOperation",
       "type": "string"
     },
+    "ReviewDecision": {
+      "enum": [
+        "accepted",
+        "rejected"
+      ],
+      "title": "ReviewDecision",
+      "type": "string"
+    },
+    "ReviewEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "decision": {
+          "$ref": "#/$defs/ReviewDecision"
+        },
+        "expert_validated": {
+          "default": false,
+          "title": "Expert Validated",
+          "type": "boolean"
+        },
+        "external_reviewer_qualification": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "External Reviewer Qualification"
+        },
+        "id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "independent_second_author_check": {
+          "default": false,
+          "title": "Independent Second Author Check",
+          "type": "boolean"
+        },
+        "object_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Object Id",
+          "type": "string"
+        },
+        "object_version": {
+          "minLength": 1,
+          "title": "Object Version",
+          "type": "string"
+        },
+        "rationale": {
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "format": "date-time",
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewer_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Reviewer Id",
+          "type": "string"
+        },
+        "reviewer_role": {
+          "minLength": 1,
+          "title": "Reviewer Role",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "source_snapshot_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Source Snapshot Id",
+          "type": "string"
+        },
+        "supporting_source_sha256s": {
+          "default": [],
+          "items": {
+            "pattern": "^[a-f0-9]{64}$",
+            "type": "string"
+          },
+          "title": "Supporting Source Sha256S",
+          "type": "array"
+        },
+        "unresolved_assumptions": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Unresolved Assumptions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "reviewer_id",
+        "reviewer_role",
+        "reviewed_at",
+        "object_id",
+        "object_version",
+        "source_snapshot_id",
+        "source_sha256",
+        "decision",
+        "rationale"
+      ],
+      "title": "ReviewEvent",
+      "type": "object"
+    },
     "ReviewStatus": {
       "enum": [
         "candidate",
-        "reviewed",
-        "authoritative_for_demo",
+        "source_verified",
+        "author_adjudicated_for_demo",
         "rejected"
       ],
       "title": "ReviewStatus",
+      "type": "string"
+    },
+    "ScenarioMode": {
+      "enum": [
+        "prospective_forward_compatibility",
+        "current_operational"
+      ],
+      "title": "ScenarioMode",
       "type": "string"
     },
     "Severity": {
@@ -240,6 +400,11 @@
           "title": "Id",
           "type": "string"
         },
+        "source_heading": {
+          "pattern": "^\\d+(?:\\.[A-Za-z0-9]+)+$",
+          "title": "Source Heading",
+          "type": "string"
+        },
         "source_leaf_id": {
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
           "title": "Source Leaf Id",
@@ -264,6 +429,7 @@
         "title",
         "source_standard",
         "source_leaf_id",
+        "source_heading",
         "source_locator",
         "content_type",
         "file_sha256"
@@ -361,6 +527,9 @@
         "reuse_operation": {
           "$ref": "#/$defs/ReuseOperation"
         },
+        "scenario_mode": {
+          "$ref": "#/$defs/ScenarioMode"
+        },
         "source_standard": {
           "$ref": "#/$defs/StandardVersion"
         },
@@ -381,7 +550,8 @@
         "target_standard",
         "analysis_date",
         "reuse_operation",
-        "standards_snapshot_id"
+        "standards_snapshot_id",
+        "scenario_mode"
       ],
       "title": "TargetContext",
       "type": "object"
@@ -440,6 +610,17 @@
       ],
       "title": "TraceStepKind",
       "type": "string"
+    },
+    "VerificationBasis": {
+      "enum": [
+        "direct_standard_encoding",
+        "mechanical_derivation",
+        "author_interpretation",
+        "semantic_inference",
+        "synthetic_assumption"
+      ],
+      "title": "VerificationBasis",
+      "type": "string"
     }
   },
   "additionalProperties": false,
@@ -460,6 +641,11 @@
       "title": "Evidence",
       "type": "array"
     },
+    "expert_validated": {
+      "default": false,
+      "title": "Expert Validated",
+      "type": "boolean"
+    },
     "findings": {
       "items": {
         "$ref": "#/$defs/Finding"
@@ -476,6 +662,9 @@
       "title": "Id",
       "type": "string"
     },
+    "operational_status": {
+      "$ref": "#/$defs/OperationalStatus"
+    },
     "rationale": {
       "minLength": 1,
       "title": "Rationale",
@@ -483,6 +672,11 @@
     },
     "repair": {
       "$ref": "#/$defs/RepairAction"
+    },
+    "scenario_disclosure": {
+      "minLength": 1,
+      "title": "Scenario Disclosure",
+      "type": "string"
     },
     "severity": {
       "$ref": "#/$defs/Severity"
@@ -521,6 +715,8 @@
     "id",
     "source_artifact",
     "target_context",
+    "operational_status",
+    "scenario_disclosure",
     "decision",
     "severity",
     "triggered_rule_ids",
