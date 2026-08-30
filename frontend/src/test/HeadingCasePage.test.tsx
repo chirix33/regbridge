@@ -91,6 +91,48 @@ const result = {
   },
 };
 
+const currentOperationalResult = {
+  analysis: {
+    id: "analysis-current-operational",
+    source_artifact: {
+      id: "artifact-leaf-3211",
+      title: "Substance name and structure",
+      source_leaf_id: "leaf-3211",
+      source_heading: "3.2.S.1.1",
+      source_locator: "index.xml / 3.2.S.1.1 / leaf[leaf-3211]",
+      file_sha256: "b".repeat(64),
+    },
+    target_context: { scenario_mode: "current_operational" },
+    operational_status: "not_operational",
+    scenario_disclosure: "Prospective research scenario.",
+    expert_validated: false,
+    decision: "HUMAN_REGULATORY_REVIEW",
+    severity: "unresolved",
+    triggered_rule_ids: [],
+    evidence: [],
+    rationale:
+      "FDA forward compatibility is not operational in the selected current-operational mode, so the prospective M1 mapping rule was not executed.",
+    repair: {
+      type: "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+      description:
+        "Do not apply the prospective rule to an operational submission; retain human regulatory review until FDA makes the capability operational.",
+      evidence_ids: [],
+    },
+    confidence: 0,
+    unresolved_uncertainty: ["Operational forward-compatibility processing is unavailable."],
+    human_approval_required: true,
+    trace: [
+      {
+        sequence: 1,
+        kind: "deterministic",
+        component: "operational-mode-guard",
+        summary: "Bypassed prospective rules because operational status is not_operational.",
+        evidence_ids: [],
+      },
+    ],
+  },
+};
+
 const graph = {
   graph: {
     analysis_id: "analysis-1",
@@ -112,8 +154,10 @@ afterEach(() => {
 });
 
 describe("M1 heading case", () => {
-  it("shows parsed placement, decision, repair, evidence, graph, and operational disclosure", async () => {
+  it("shows parsed placement, decision, repair, evidence, operational disclosure, and focus target", async () => {
     window.history.pushState({}, "", "/case-a");
+    const scrollIntoView = vi.fn();
+    window.HTMLElement.prototype.scrollIntoView = scrollIntoView;
     vi.stubGlobal(
       "fetch",
       vi.fn((input: RequestInfo | URL) => {
@@ -130,6 +174,10 @@ describe("M1 heading case", () => {
     );
 
     render(<App />);
+    expect(await screen.findByText("Controlled test case")).toBeVisible();
+    expect(
+      screen.getByText("Run a controlled heading-placement scenario and inspect the evidence-backed decision trace."),
+    ).toBeVisible();
     fireEvent.click(await screen.findByRole("button", { name: /Parse and analyze/i }));
 
     expect(await screen.findByText("REUSE WITH NEW CONTEXT")).toBeVisible();
@@ -139,5 +187,45 @@ describe("M1 heading case", () => {
     expect(screen.getByText("Why this conclusion is connected")).toBeVisible();
     expect(screen.getAllByText("not_operational").length).toBeGreaterThan(0);
     expect(screen.getAllByText("no").length).toBeGreaterThan(0);
+    const decision = screen.getByText("REUSE WITH NEW CONTEXT");
+    const results = decision.closest(".analysis-results");
+    expect(results).not.toBeNull();
+    expect(results).toHaveFocus();
+    expect(scrollIntoView).toHaveBeenCalledTimes(1);
+  });
+
+  it("reports current operational unavailability without prospective evidence", async () => {
+    window.history.pushState({}, "", "/case-a");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+        const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+        if (url.endsWith("/api/v1/fixtures")) {
+          return Promise.resolve(new Response(JSON.stringify(fixtures), { status: 200 }));
+        }
+        if (url.includes("applications/parse")) {
+          return Promise.resolve(new Response(JSON.stringify(inventory), { status: 200 }));
+        }
+        if (url.includes("/graph")) {
+          return Promise.resolve(new Response(JSON.stringify(graph), { status: 200 }));
+        }
+        const body = typeof init?.body === "string" ? JSON.parse(init.body) as { target_context?: { scenario_mode?: string } } : {};
+        const payload =
+          body.target_context?.scenario_mode === "current_operational"
+            ? currentOperationalResult
+            : result;
+        return Promise.resolve(new Response(JSON.stringify(payload), { status: 200 }));
+      }),
+    );
+
+    render(<App />);
+    fireEvent.click((await screen.findAllByLabelText("Current operational"))[0]!);
+    fireEvent.click((await screen.findAllByRole("button", { name: /Parse and analyze/i }))[0]!);
+
+    expect(await screen.findByText("HUMAN REGULATORY REVIEW")).toBeVisible();
+    expect(
+      screen.getByText("FDA forward compatibility is currently unavailable in current operational mode."),
+    ).toBeVisible();
+    expect(screen.getByText(/prospective M1 mapping rule was not executed/i)).toBeVisible();
   });
 });

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -24,6 +24,9 @@ const disclosure =
   "Prospective FDA/CDER forward-compatibility research scenario. FDA forward compatibility " +
   "is not operational, and this author-adjudicated demonstration is not regulatory-expert validated.";
 
+const subtitle =
+  "Run a controlled heading-placement scenario and inspect the evidence-backed decision trace.";
+
 export function HeadingCasePage() {
   const [fixtures, setFixtures] = useState<FixtureSummary[]>([]);
   const [fixtureId, setFixtureId] = useState("case-a-removed-3211");
@@ -33,10 +36,19 @@ export function HeadingCasePage() {
   const [graph, setGraph] = useState<GraphData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const resultsRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     void getFixtures().then((response) => setFixtures(response.fixtures)).catch((reason: Error) => setError(reason.message));
   }, []);
+
+  useEffect(() => {
+    if (!analysis || !resultsRef.current) {
+      return;
+    }
+    resultsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    resultsRef.current.focus({ preventScroll: true });
+  }, [analysis]);
 
   async function runAnalysis() {
     setBusy(true);
@@ -77,7 +89,7 @@ export function HeadingCasePage() {
           <Link className="back-link" to="/"><ArrowLeft aria-hidden="true" /> Research scope</Link>
           <div className="eyebrow"><Flask aria-hidden="true" /> M1 · unavailable target heading</div>
           <h1>Inspect the placement. Follow the evidence. Preserve the document.</h1>
-          <p>{disclosure}</p>
+          <p>{subtitle}</p>
         </section>
         <Disclaimer text={disclosure} />
 
@@ -87,7 +99,7 @@ export function HeadingCasePage() {
             <h2 id="case-controls-title">Choose a structural variant</h2>
           </div>
           <label>
-            Fixture
+            Controlled test case
             <select value={fixtureId} onChange={(event) => setFixtureId(event.target.value)}>
               {fixtures.map((fixture) => (
                 <option value={fixture.id} key={fixture.id}>{fixture.title}</option>
@@ -133,7 +145,7 @@ export function HeadingCasePage() {
         )}
 
         {analysis && (
-          <div className="analysis-results" aria-live="polite">
+          <div className="analysis-results" aria-live="polite" ref={resultsRef} tabIndex={-1}>
             <section className={`decision-card severity-${analysis.severity}`}>
               <div>
                 <p className="panel-kicker">Decision · {analysis.severity}</p>
@@ -169,7 +181,7 @@ export function HeadingCasePage() {
                     <code>{item.source_sha256}</code>
                   </details>
                 ))}
-                {!analysis.evidence.length && <p>No prospective evidence was executed in current-operational mode.</p>}
+                {!analysis.evidence.length && <p>FDA forward compatibility is currently unavailable in current operational mode.</p>}
               </div>
             </section>
 
