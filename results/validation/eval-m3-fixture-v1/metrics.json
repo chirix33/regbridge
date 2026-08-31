@@ -3,6 +3,7 @@
     {
       "abstention_accuracy": 1.0,
       "accuracy": 1.0,
+      "action_required_family_count": 3,
       "balanced_accuracy": 1.0,
       "calibration_not_applicable_reason": "Deterministic contract fixtures and rule outputs do not provide empirically calibrated probabilities.",
       "calibration_status": "not_applicable",
@@ -20,6 +21,7 @@
       "cost_usd": null,
       "evidence_citation_accuracy": 0.6666666666666666,
       "failures": 0,
+      "families_with_unsafe_misses": 0,
       "family_sensitivity": [
         {
           "eligible_cases": 2,
@@ -62,6 +64,7 @@
       },
       "inference_claims": "exploratory-only-no-independence-or-significance-claims",
       "input_tokens": 9619,
+      "interval_interpretation": "scorer validation only; no statistical interpretation",
       "latency_ms_total": 0.0,
       "macro_f1": 1.0,
       "output_tokens": 849,
@@ -92,6 +95,7 @@
         "HUMAN_REGULATORY_REVIEW"
       ],
       "requests": 12,
+      "result_status": "fixture validation only",
       "retrieval": null,
       "review_bypass_rate": {
         "denominator": 4,
@@ -113,6 +117,7 @@
     {
       "abstention_accuracy": 1.0,
       "accuracy": 1.0,
+      "action_required_family_count": 12,
       "balanced_accuracy": 1.0,
       "calibration_not_applicable_reason": "Deterministic contract fixtures and rule outputs do not provide empirically calibrated probabilities.",
       "calibration_status": "not_applicable",
@@ -130,6 +135,7 @@
       "cost_usd": null,
       "evidence_citation_accuracy": 0.7333333333333333,
       "failures": 0,
+      "families_with_unsafe_misses": 0,
       "family_sensitivity": [
         {
           "eligible_cases": 1,
@@ -222,6 +228,7 @@
       },
       "inference_claims": "exploratory-only-no-independence-or-significance-claims",
       "input_tokens": 23962,
+      "interval_interpretation": "scorer validation only; no statistical interpretation",
       "latency_ms_total": 0.0,
       "macro_f1": 1.0,
       "output_tokens": 2216,
@@ -252,6 +259,7 @@
         "HUMAN_REGULATORY_REVIEW"
       ],
       "requests": 30,
+      "result_status": "fixture validation only",
       "retrieval": null,
       "review_bypass_rate": {
         "denominator": 14,
@@ -273,6 +281,7 @@
     {
       "abstention_accuracy": 0.9166666666666666,
       "accuracy": 0.9166666666666666,
+      "action_required_family_count": 3,
       "balanced_accuracy": 0.9166666666666666,
       "calibration_not_applicable_reason": "Deterministic contract fixtures and rule outputs do not provide empirically calibrated probabilities.",
       "calibration_status": "not_applicable",
@@ -290,6 +299,7 @@
       "cost_usd": null,
       "evidence_citation_accuracy": 0.6666666666666666,
       "failures": 0,
+      "families_with_unsafe_misses": 0,
       "family_sensitivity": [
         {
           "eligible_cases": 2,
@@ -332,6 +342,7 @@
       },
       "inference_claims": "exploratory-only-no-independence-or-significance-claims",
       "input_tokens": 6766,
+      "interval_interpretation": "scorer validation only; no statistical interpretation",
       "latency_ms_total": 0.0,
       "macro_f1": 0.9153439153439153,
       "output_tokens": 848,
@@ -362,11 +373,13 @@
         "HUMAN_REGULATORY_REVIEW"
       ],
       "requests": 12,
+      "result_status": "fixture validation only",
       "retrieval": {
         "evaluated_cases": 7,
         "mrr": 1.0,
         "precision_at_3": 0.47619047619047616,
-        "recall_at_3": 0.7023809523809524
+        "recall_at_3": 0.7023809523809524,
+        "result_status": "genuine deterministic retrieval measurement"
       },
       "review_bypass_rate": {
         "denominator": 4,
@@ -388,6 +401,7 @@
     {
       "abstention_accuracy": 0.9,
       "accuracy": 0.9,
+      "action_required_family_count": 12,
       "balanced_accuracy": 0.8571428571428571,
       "calibration_not_applicable_reason": "Deterministic contract fixtures and rule outputs do not provide empirically calibrated probabilities.",
       "calibration_status": "not_applicable",
@@ -405,6 +419,7 @@
       "cost_usd": null,
       "evidence_citation_accuracy": 0.7333333333333333,
       "failures": 0,
+      "families_with_unsafe_misses": 0,
       "family_sensitivity": [
         {
           "eligible_cases": 1,
@@ -497,6 +512,7 @@
       },
       "inference_claims": "exploratory-only-no-independence-or-significance-claims",
       "input_tokens": 16897,
+      "interval_interpretation": "scorer validation only; no statistical interpretation",
       "latency_ms_total": 0.0,
       "macro_f1": 0.8768328445747801,
       "output_tokens": 2145,
@@ -527,11 +543,13 @@
         "HUMAN_REGULATORY_REVIEW"
       ],
       "requests": 30,
+      "result_status": "fixture validation only",
       "retrieval": {
         "evaluated_cases": 16,
         "mrr": 0.90625,
         "precision_at_3": 0.5,
-        "recall_at_3": 0.625
+        "recall_at_3": 0.625,
+        "result_status": "genuine deterministic retrieval measurement"
       },
       "review_bypass_rate": {
         "denominator": 14,
@@ -553,6 +571,7 @@
     {
       "abstention_accuracy": 0.8333333333333334,
       "accuracy": 0.8333333333333334,
+      "action_required_family_count": 3,
       "balanced_accuracy": 0.8333333333333334,
       "calibration_not_applicable_reason": "Deterministic contract fixtures and rule outputs do not provide empirically calibrated probabilities.",
       "calibration_status": "not_applicable",
@@ -570,6 +589,7 @@
       "cost_usd": null,
       "evidence_citation_accuracy": 0.8333333333333334,
       "failures": 0,
+      "families_with_unsafe_misses": 1,
       "family_sensitivity": [
         {
           "eligible_cases": 2,
@@ -612,6 +632,7 @@
       },
       "inference_claims": "exploratory-only-no-independence-or-significance-claims",
       "input_tokens": 0,
+      "interval_interpretation": "exploratory only; no independence or significance claim",
       "latency_ms_total": 0.0,
       "macro_f1": 0.8222222222222223,
       "output_tokens": 0,
@@ -642,6 +663,7 @@
         "HUMAN_REGULATORY_REVIEW"
       ],
       "requests": 0,
+      "result_status": "genuine deterministic experimental output",
       "retrieval": null,
       "review_bypass_rate": {
         "denominator": 4,
@@ -663,6 +685,7 @@
     {
       "abstention_accuracy": 0.8333333333333334,
       "accuracy": 0.8333333333333334,
+      "action_required_family_count": 12,
       "balanced_accuracy": 0.8809523809523809,
       "calibration_not_applicable_reason": "Deterministic contract fixtures and rule outputs do not provide empirically calibrated probabilities.",
       "calibration_status": "not_applicable",
@@ -680,6 +703,7 @@
       "cost_usd": null,
       "evidence_citation_accuracy": 0.8666666666666667,
       "failures": 0,
+      "families_with_unsafe_misses": 3,
       "family_sensitivity": [
         {
           "eligible_cases": 1,
@@ -772,6 +796,7 @@
       },
       "inference_claims": "exploratory-only-no-independence-or-significance-claims",
       "input_tokens": 0,
+      "interval_interpretation": "exploratory only; no independence or significance claim",
       "latency_ms_total": 0.0,
       "macro_f1": 0.8550724637681159,
       "output_tokens": 0,
@@ -802,6 +827,7 @@
         "HUMAN_REGULATORY_REVIEW"
       ],
       "requests": 0,
+      "result_status": "genuine deterministic experimental output",
       "retrieval": null,
       "review_bypass_rate": {
         "denominator": 14,
@@ -823,6 +849,7 @@
     {
       "abstention_accuracy": 1.0,
       "accuracy": 1.0,
+      "action_required_family_count": 3,
       "balanced_accuracy": 1.0,
       "calibration_not_applicable_reason": "Deterministic contract fixtures and rule outputs do not provide empirically calibrated probabilities.",
       "calibration_status": "not_applicable",
@@ -840,6 +867,7 @@
       "cost_usd": null,
       "evidence_citation_accuracy": 0.8333333333333334,
       "failures": 0,
+      "families_with_unsafe_misses": 0,
       "family_sensitivity": [
         {
           "eligible_cases": 2,
@@ -882,6 +910,7 @@
       },
       "inference_claims": "exploratory-only-no-independence-or-significance-claims",
       "input_tokens": 0,
+      "interval_interpretation": "scorer validation only; no statistical interpretation",
       "latency_ms_total": 0.0,
       "macro_f1": 1.0,
       "output_tokens": 0,
@@ -912,6 +941,7 @@
         "HUMAN_REGULATORY_REVIEW"
       ],
       "requests": 11,
+      "result_status": "fixture validation only",
       "retrieval": null,
       "review_bypass_rate": {
         "denominator": 4,
@@ -933,6 +963,7 @@
     {
       "abstention_accuracy": 1.0,
       "accuracy": 1.0,
+      "action_required_family_count": 12,
       "balanced_accuracy": 1.0,
       "calibration_not_applicable_reason": "Deterministic contract fixtures and rule outputs do not provide empirically calibrated probabilities.",
       "calibration_status": "not_applicable",
@@ -950,6 +981,7 @@
       "cost_usd": null,
       "evidence_citation_accuracy": 0.8666666666666667,
       "failures": 0,
+      "families_with_unsafe_misses": 0,
       "family_sensitivity": [
         {
           "eligible_cases": 1,
@@ -1042,6 +1074,7 @@
       },
       "inference_claims": "exploratory-only-no-independence-or-significance-claims",
       "input_tokens": 0,
+      "interval_interpretation": "scorer validation only; no statistical interpretation",
       "latency_ms_total": 0.0,
       "macro_f1": 1.0,
       "output_tokens": 0,
@@ -1072,6 +1105,7 @@
         "HUMAN_REGULATORY_REVIEW"
       ],
       "requests": 27,
+      "result_status": "fixture validation only",
       "retrieval": null,
       "review_bypass_rate": {
         "denominator": 14,

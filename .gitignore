@@ -24,6 +24,10 @@ paper/tables/*
 !paper/tables/.gitkeep
 !paper/tables/validation/
 !paper/tables/validation/**
+!paper/tables/deterministic/
+!paper/tables/deterministic/**
+!paper/tables/retrieval/
+!paper/tables/retrieval/**
 
 .DS_Store
 Thumbs.db

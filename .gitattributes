@@ -2,3 +2,5 @@
 data/** -text
 results/validation/** -text
 paper/tables/validation/** -text
+paper/tables/deterministic/** -text
+paper/tables/retrieval/** -text

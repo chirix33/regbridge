@@ -1,4 +1,6 @@
+import csv
 import hashlib
+import io
 import json
 from pathlib import Path
 
@@ -37,6 +39,8 @@ def test_deterministic_evaluation_reproduces_prediction_and_metric_content() -> 
     assert b2.unsafe_false_negative_rate.numerator == 2
     assert b2.unsafe_false_negative_rate.denominator == 8
     assert b2.review_bypass_rate.numerator == 2
+    assert b2.families_with_unsafe_misses == 1
+    assert b2.action_required_family_count == 3
     assert b2.inference_claims == "exploratory-only-no-independence-or-significance-claims"
     for report in first.metrics:
         if report.scope == "held-out-test":
@@ -85,3 +89,51 @@ def test_manifest_and_exports_are_physically_separated() -> None:
     assert hashlib.sha256(metrics.read_bytes()).hexdigest() == (
         run.artifacts.metrics_content_sha256
     )
+
+
+def test_presentation_separates_fixtures_deterministic_and_retrieval_results() -> None:
+    run = run_evaluation(CONFIGURATION_ID)
+    assert run.artifacts is not None
+    root = Path(__file__).resolve().parents[3]
+    summary = (root / run.artifacts.summary_markdown).read_text(encoding="utf-8")
+    assert "| System | Result status |" in summary
+    assert "B2 unsafe misses occurred in 1 of the 3 held-out families" in summary
+    assert "no statistical interpretation" in summary
+    assert "Measured B1 BM25 retrieval" in summary
+    headline = tuple(item for item in run.metrics if item.scope == "held-out-test")
+    rows = list(csv.DictReader(io.StringIO(runner._metrics_csv(headline))))
+    for row, report in zip(rows, headline, strict=True):
+        if report.system == "B2":
+            assert row["result_status"] == "genuine deterministic experimental output"
+            assert row["unsafe_fn_wilson_low"]
+        else:
+            assert row["result_status"] == "fixture validation only"
+            assert row["unsafe_fn_wilson_low"] == row["unsafe_fn_wilson_high"] == ""
+            assert report.unsafe_false_negative_rate.wilson_95_high is not None
+            assert report.interval_interpretation == (
+                "scorer validation only; no statistical interpretation"
+            )
+            score_row = next(line for line in summary.splitlines() if line.startswith(
+                f"| {report.system} | fixture validation only | 0.000 ("
+            ))
+            assert "not interpreted" in score_row
+
+    b2_path = root / run.artifacts.paper_deterministic_table_csv
+    b2_rows = list(csv.DictReader(io.StringIO(b2_path.read_text(encoding="utf-8"))))
+    assert "/deterministic/" in b2_path.as_posix()
+    assert [row["system"] for row in b2_rows] == ["B2"]
+    assert b2_rows[0]["families_with_unsafe_misses"] == "1"
+    assert b2_rows[0]["action_required_family_count"] == "3"
+
+    retrieval_path = root / run.artifacts.paper_retrieval_table_csv
+    retrieval_rows = list(csv.DictReader(io.StringIO(retrieval_path.read_text(encoding="utf-8"))))
+    assert "/retrieval/" in retrieval_path.as_posix()
+    assert len(retrieval_rows) == 1
+    measured = next(item.retrieval for item in headline if item.system == "B1")
+    assert measured is not None
+    assert retrieval_rows[0]["result_status"] == "genuine deterministic retrieval measurement"
+    assert int(retrieval_rows[0]["evaluated_cases"]) == measured.evaluated_cases
+    for key in ("recall_at_3", "precision_at_3", "mrr"):
+        assert float(retrieval_rows[0][key]) == getattr(measured, key)
+    assert "accuracy" not in retrieval_rows[0]
+    assert "macro_f1" not in retrieval_rows[0]

@@ -234,6 +234,14 @@ def score_system(
     family_tuples = {family: (counts[0], counts[1]) for family, counts in family_counts.items()}
     report = MetricsReport(
         system=system,
+        result_status=(
+            "genuine deterministic experimental output"
+            if system == "B2" else "fixture validation only"
+        ),
+        interval_interpretation=(
+            "exploratory only; no independence or significance claim"
+            if system == "B2" else "scorer validation only; no statistical interpretation"
+        ),
         scope=scope,  # type: ignore[arg-type]
         represented_classes=REPRESENTED_CLASSES,
         unsafe_false_negative_rate=_rate(unsafe_numerator, unsafe_denominator),
@@ -261,6 +269,8 @@ def score_system(
             "calibrated probabilities."
         ),
         family_sensitivity=family_sensitivity,
+        action_required_family_count=sum(item.eligible_cases > 0 for item in family_sensitivity),
+        families_with_unsafe_misses=sum(item.unsafe_misses > 0 for item in family_sensitivity),
         cluster_bootstrap_unsafe_fnr_95=_cluster_bootstrap(family_tuples, seed=seed),
         inference_claims="exploratory-only-no-independence-or-significance-claims",
     )

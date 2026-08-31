@@ -179,6 +179,9 @@ class RateMetric(DomainModel):
 
 
 class RetrievalMetrics(DomainModel):
+    result_status: Literal["genuine deterministic retrieval measurement"] = (
+        "genuine deterministic retrieval measurement"
+    )
     evaluated_cases: int
     recall_at_3: float | None
     precision_at_3: float | None
@@ -193,6 +196,13 @@ class FamilySensitivity(DomainModel):
 
 class MetricsReport(DomainModel):
     system: SystemName
+    result_status: Literal[
+        "fixture validation only", "genuine deterministic experimental output"
+    ]
+    interval_interpretation: Literal[
+        "scorer validation only; no statistical interpretation",
+        "exploratory only; no independence or significance claim",
+    ]
     scope: Literal["held-out-test", "all-cases-secondary"]
     represented_classes: tuple[Decision, ...]
     unsafe_false_negative_rate: RateMetric
@@ -217,6 +227,8 @@ class MetricsReport(DomainModel):
     calibration_status: Literal["not_applicable"]
     calibration_not_applicable_reason: str
     family_sensitivity: tuple[FamilySensitivity, ...]
+    action_required_family_count: int
+    families_with_unsafe_misses: int
     cluster_bootstrap_unsafe_fnr_95: tuple[float, float] | None
     inference_claims: Literal["exploratory-only-no-independence-or-significance-claims"]
 
@@ -246,6 +258,8 @@ class EvaluationArtifacts(DomainModel):
     metrics_csv: str
     summary_markdown: str
     paper_table_csv: str
+    paper_deterministic_table_csv: str
+    paper_retrieval_table_csv: str
     prediction_content_sha256: Sha256
     metrics_content_sha256: Sha256
 

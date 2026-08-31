@@ -138,6 +138,14 @@
           "title": "Metrics Json",
           "type": "string"
         },
+        "paper_deterministic_table_csv": {
+          "title": "Paper Deterministic Table Csv",
+          "type": "string"
+        },
+        "paper_retrieval_table_csv": {
+          "title": "Paper Retrieval Table Csv",
+          "type": "string"
+        },
         "paper_table_csv": {
           "title": "Paper Table Csv",
           "type": "string"
@@ -178,6 +186,8 @@
         "metrics_csv",
         "summary_markdown",
         "paper_table_csv",
+        "paper_deterministic_table_csv",
+        "paper_retrieval_table_csv",
         "prediction_content_sha256",
         "metrics_content_sha256"
       ],
@@ -219,6 +229,10 @@
         "accuracy": {
           "title": "Accuracy",
           "type": "number"
+        },
+        "action_required_family_count": {
+          "title": "Action Required Family Count",
+          "type": "integer"
         },
         "balanced_accuracy": {
           "title": "Balanced Accuracy",
@@ -276,6 +290,10 @@
           "title": "Failures",
           "type": "integer"
         },
+        "families_with_unsafe_misses": {
+          "title": "Families With Unsafe Misses",
+          "type": "integer"
+        },
         "family_sensitivity": {
           "items": {
             "$ref": "#/$defs/FamilySensitivity"
@@ -305,6 +323,14 @@
         "input_tokens": {
           "title": "Input Tokens",
           "type": "integer"
+        },
+        "interval_interpretation": {
+          "enum": [
+            "scorer validation only; no statistical interpretation",
+            "exploratory only; no independence or significance claim"
+          ],
+          "title": "Interval Interpretation",
+          "type": "string"
         },
         "latency_ms_total": {
           "title": "Latency Ms Total",
@@ -339,6 +365,14 @@
         "requests": {
           "title": "Requests",
           "type": "integer"
+        },
+        "result_status": {
+          "enum": [
+            "fixture validation only",
+            "genuine deterministic experimental output"
+          ],
+          "title": "Result Status",
+          "type": "string"
         },
         "retrieval": {
           "anyOf": [
@@ -377,6 +411,8 @@
       },
       "required": [
         "system",
+        "result_status",
+        "interval_interpretation",
         "scope",
         "represented_classes",
         "unsafe_false_negative_rate",
@@ -401,6 +437,8 @@
         "calibration_status",
         "calibration_not_applicable_reason",
         "family_sensitivity",
+        "action_required_family_count",
+        "families_with_unsafe_misses",
         "cluster_bootstrap_unsafe_fnr_95",
         "inference_claims"
       ],
@@ -501,6 +539,12 @@
             }
           ],
           "title": "Recall At 3"
+        },
+        "result_status": {
+          "const": "genuine deterministic retrieval measurement",
+          "default": "genuine deterministic retrieval measurement",
+          "title": "Result Status",
+          "type": "string"
         }
       },
       "required": [

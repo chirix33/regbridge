@@ -551,6 +551,23 @@ Every evaluation run writes a manifest containing:
 
 Generate Markdown/CSV/JSON tables under `results/` and paper-ready tables under `paper/tables/`. Claims in the paper must be traceable to a run manifest.
 
+### 14.4 M3 presentation safeguards
+
+- Every decision-results table includes `Result status`: B0/B1/RegBridge are
+  `fixture validation only`; B2 is `genuine deterministic experimental output`.
+- Canned end-to-end scores validate the harness and contracts only. Neither the perfect
+  B0/RegBridge scores nor B1's end-to-end accuracy belongs in the paper's empirical results
+  table. Keep the all-system tables in `validation/`; export B2 alone in `deterministic/`.
+- B1's actual BM25 recall@3, precision@3, and MRR are measured retrieval results, independent
+  of the canned decision response. Export them separately in `retrieval/`, with the evaluated
+  case count and without end-to-end decision scores.
+- Retain Wilson and bootstrap calculations in raw scorer outputs for regression testing.
+  For canned outputs mark their interval use `scorer validation only; no statistical
+  interpretation`, and omit their interval values from presentation tables. No independence
+  or significance claims follow from the controlled family design.
+- Report B2's unsafe-miss family count over the held-out families with action-required cases,
+  separately from the total six held-out families; derive both counts from scored family data.
+
 ## 15. API specification
 
 Use a versioned prefix such as `/api/v1`. Minimum endpoints:
