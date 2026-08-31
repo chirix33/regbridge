@@ -1,0 +1,528 @@
+version: 1.0.0
+snapshot_id: fda-cder-demo-v1
+status: awaiting-author-approval
+author_approval_required: true
+author_approval_recorded: false
+expert_validated: false
+controls:
+  case_serialization: identical-for-b0-b1
+  evidence_ordering: evidence-id-ascending
+  input_character_limit: 16000
+  over_limit_behavior: fail-validation
+  b2_semantic_capability: omitted
+  b2_test_policy: rule-behavior-not-case-id-mapping
+  held_out_family_description: six non-overlapping held-out fixture families
+target_contexts:
+  prospective-reference: &prospective
+    authority: FDA
+    center: CDER
+    application_type: NDA
+    source_standard: eCTD-3.2.2
+    target_standard: eCTD-4.0
+    analysis_date: 2026-08-29
+    reuse_operation: reference-existing-content
+    standards_snapshot_id: fda-cder-demo-v1
+    scenario_mode: prospective_forward_compatibility
+    metadata_plan: null
+  current-operational:
+    <<: *prospective
+    scenario_mode: current_operational
+  normalize-unnecessary-reference:
+    <<: *prospective
+    metadata_plan: {intent: normalize-metadata, manufacturer_partitioning: unnecessary, replacement_manufacturer_value: null}
+  preserve-reference:
+    <<: *prospective
+    metadata_plan: {intent: preserve-existing-lifecycle, manufacturer_partitioning: unknown, replacement_manufacturer_value: null}
+  unspecified-reference:
+    <<: *prospective
+    metadata_plan: {intent: unspecified, manufacturer_partitioning: unknown, replacement_manufacturer_value: null}
+  normalize-required-explicit:
+    <<: *prospective
+    metadata_plan: {intent: normalize-metadata, manufacturer_partitioning: required, replacement_manufacturer_value: Northstar River Site}
+  normalize-unknown:
+    <<: *prospective
+    metadata_plan: {intent: normalize-metadata, manufacturer_partitioning: unknown, replacement_manufacturer_value: null}
+  create-new-target:
+    <<: *prospective
+    reuse_operation: create-new-target-artifact
+
+cases:
+  - case_id: A001
+    archetype: unavailable-heading
+    fixture_id: case-a-removed-3211
+    selected_leaf_id: leaf-3211
+    target_context_id: prospective-reference
+    fixture_family: a-removed-3211-lifecycle
+    split: train
+    mutation: {type: canonical, exact: new leaf beneath 3.2.S.1.1}
+    reference_decision: REUSE_WITH_NEW_CONTEXT
+    reference_severity: blocking
+    action: CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT
+    action_mode: required_condition
+    required_rule_ids: [FDA-CDER-M1-REMOVED-SUBHEADING-001]
+    acceptable_evidence_ids: [ev-ctoc-321-remains, ev-ctoc-3211-3213-removed, ev-tcg-replacement-context-same, ev-tcg-new-context-and-reuse]
+    human_review_required: true
+    rationale: Exact source-supported mapping moves 3.2.S.1.1 to 3.2.S.1 in the prospective scenario.
+  - case_id: A002
+    archetype: unavailable-heading
+    fixture_id: case-a-removed-3212
+    selected_leaf_id: leaf-3212
+    target_context_id: prospective-reference
+    fixture_family: a-removed-3212-lifecycle
+    split: test
+    mutation: {type: canonical, exact: new leaf beneath 3.2.S.1.2}
+    reference_decision: REUSE_WITH_NEW_CONTEXT
+    reference_severity: blocking
+    action: CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT
+    action_mode: required_condition
+    required_rule_ids: [FDA-CDER-M1-REMOVED-SUBHEADING-001]
+    acceptable_evidence_ids: [ev-ctoc-321-remains, ev-ctoc-3211-3213-removed, ev-tcg-replacement-context-same, ev-tcg-new-context-and-reuse]
+    human_review_required: true
+    rationale: Exact source-supported mapping moves 3.2.S.1.2 to 3.2.S.1 in the prospective scenario.
+  - case_id: A003
+    archetype: unavailable-heading
+    fixture_id: case-a-removed-3213
+    selected_leaf_id: leaf-3213
+    target_context_id: prospective-reference
+    fixture_family: a-removed-3213
+    split: development
+    mutation: {type: canonical, exact: new leaf beneath 3.2.S.1.3}
+    reference_decision: REUSE_WITH_NEW_CONTEXT
+    reference_severity: blocking
+    action: CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT
+    action_mode: required_condition
+    required_rule_ids: [FDA-CDER-M1-REMOVED-SUBHEADING-001]
+    acceptable_evidence_ids: [ev-ctoc-321-remains, ev-ctoc-3211-3213-removed, ev-tcg-replacement-context-same, ev-tcg-new-context-and-reuse]
+    human_review_required: true
+    rationale: Exact source-supported mapping moves 3.2.S.1.3 to 3.2.S.1 in the prospective scenario.
+  - case_id: A004
+    archetype: unavailable-heading
+    fixture_id: case-a-004-replacement-3211
+    source_fixture_id: case-a-removed-3211
+    selected_leaf_id: leaf-a004-selected
+    target_context_id: prospective-reference
+    fixture_family: a-removed-3211-lifecycle
+    split: train
+    mutation: {type: lifecycle, exact: selected replace leaf modifies existing predecessor beneath 3.2.S.1.1}
+    reference_decision: REUSE_WITH_NEW_CONTEXT
+    reference_severity: blocking
+    action: CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT
+    action_mode: required_condition
+    required_rule_ids: [FDA-CDER-M1-REMOVED-SUBHEADING-001]
+    acceptable_evidence_ids: [ev-ctoc-321-remains, ev-ctoc-3211-3213-removed, ev-tcg-replacement-context-same, ev-tcg-new-context-and-reuse]
+    human_review_required: true
+    rationale: Replacement lifecycle does not alter the exact removed-heading mapping.
+  - case_id: A005
+    archetype: unavailable-heading
+    fixture_id: case-a-005-append-3212
+    source_fixture_id: case-a-removed-3212
+    selected_leaf_id: leaf-a005-selected
+    target_context_id: prospective-reference
+    fixture_family: a-removed-3212-lifecycle
+    split: test
+    mutation: {type: lifecycle, exact: selected append leaf modifies existing predecessor leaf-a005-predecessor beneath 3.2.S.1.2}
+    reference_decision: REUSE_WITH_NEW_CONTEXT
+    reference_severity: blocking
+    action: CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT
+    action_mode: required_condition
+    required_rule_ids: [FDA-CDER-M1-REMOVED-SUBHEADING-001]
+    acceptable_evidence_ids: [ev-ctoc-321-remains, ev-ctoc-3211-3213-removed, ev-tcg-replacement-context-same, ev-tcg-new-context-and-reuse]
+    human_review_required: true
+    rationale: The exact analyzed operation is append with an existing predecessor; the removed-heading mapping still controls.
+  - case_id: A006
+    archetype: unavailable-heading
+    fixture_id: case-a-clean-321
+    selected_leaf_id: leaf-321
+    target_context_id: prospective-reference
+    fixture_family: a-valid-321-lifecycle
+    split: test
+    mutation: {type: clean-negative, exact: new leaf beneath available 3.2.S.1}
+    reference_decision: REUSE_AS_LEGACY_REFERENCE
+    reference_severity: informational
+    action: NO_MATERIAL_REPAIR
+    action_mode: no_action
+    required_rule_ids: []
+    acceptable_evidence_ids: [ev-ctoc-321-remains]
+    human_review_required: false
+    rationale: The selected leaf already uses the verified available heading and has no other detected risk.
+  - case_id: A007
+    archetype: unavailable-heading
+    fixture_id: case-a-007-valid-replacement-321
+    source_fixture_id: case-a-clean-321
+    selected_leaf_id: leaf-a007-selected
+    target_context_id: prospective-reference
+    fixture_family: a-valid-321-lifecycle
+    split: test
+    mutation: {type: lifecycle, exact: selected replace leaf modifies existing predecessor beneath available 3.2.S.1}
+    reference_decision: REUSE_AS_LEGACY_REFERENCE
+    reference_severity: informational
+    action: NO_MATERIAL_REPAIR
+    action_mode: no_action
+    required_rule_ids: []
+    acceptable_evidence_ids: [ev-ctoc-321-remains]
+    human_review_required: false
+    rationale: Replacement remains beneath verified available heading 3.2.S.1 with a complete predecessor relationship.
+  - case_id: A008
+    archetype: unavailable-heading
+    fixture_id: case-a-ambiguous-3214
+    selected_leaf_id: leaf-3214
+    target_context_id: prospective-reference
+    fixture_family: a-unmapped-heading
+    split: train
+    mutation: {type: unmapped-heading, exact: new leaf beneath unsupported 3.2.S.1.4}
+    reference_decision: HUMAN_REGULATORY_REVIEW
+    reference_severity: unresolved
+    action: AUTHOR_REVIEW_HEADING_MAPPING
+    action_mode: suggested_check
+    required_rule_ids: []
+    acceptable_evidence_ids: [ev-ctoc-321-remains, ev-ctoc-3211-3213-removed]
+    human_review_required: true
+    rationale: No generic nearest-parent inference is allowed for 3.2.S.1.4.
+  - case_id: A009
+    archetype: unavailable-heading
+    fixture_id: case-a-009-unmapped-3215
+    source_fixture_id: case-a-ambiguous-3214
+    selected_leaf_id: leaf-a009-selected
+    target_context_id: prospective-reference
+    fixture_family: a-unmapped-heading
+    split: train
+    mutation: {type: unmapped-heading, exact: new leaf beneath distinct unsupported 3.2.S.1.5}
+    reference_decision: HUMAN_REGULATORY_REVIEW
+    reference_severity: unresolved
+    action: AUTHOR_REVIEW_HEADING_MAPPING
+    action_mode: suggested_check
+    required_rule_ids: []
+    acceptable_evidence_ids: [ev-ctoc-321-remains, ev-ctoc-3211-3213-removed]
+    human_review_required: true
+    rationale: No source-supported mapping is encoded for 3.2.S.1.5.
+  - case_id: A010
+    archetype: unavailable-heading
+    fixture_id: case-a-removed-3211
+    selected_leaf_id: leaf-3211
+    target_context_id: current-operational
+    fixture_family: a-operational-guard
+    split: development
+    mutation: {type: scenario-mode, exact: current operational mode}
+    reference_decision: HUMAN_REGULATORY_REVIEW
+    reference_severity: unresolved
+    action: WAIT_FOR_OPERATIONAL_AVAILABILITY
+    action_mode: required_condition
+    required_rule_ids: []
+    acceptable_evidence_ids: []
+    human_review_required: true
+    rationale: FDA forward compatibility remains not operational and prospective rules must not execute.
+
+  - &b_normalize
+    case_id: B001
+    archetype: legacy-metadata-tension
+    fixture_id: case-b-normalize-all
+    selected_leaf_id: leaf-b-normalize-all
+    target_context_id: normalize-unnecessary-reference
+    fixture_family: b-manufacturer-all-normalization
+    split: test
+    mutation: {type: metadata-intent, exact: normalize manufacturer all with unnecessary partitioning}
+    reference_decision: REUSE_WITH_NEW_CONTEXT
+    reference_severity: blocking
+    action: CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD
+    action_mode: required_condition
+    required_rule_ids: [FDA-CDER-M2-DISCOURAGED-MANUFACTURER-ALL-001, FDA-CDER-M2-NORMALIZE-MANUFACTURER-003]
+    acceptable_evidence_ids: [ev-m4-manufacturer-general-values, ev-tcg-replacement-context-same, ev-tcg-new-context-and-reuse]
+    human_review_required: true
+    rationale: Explicit normalization changes the keyword context while reusing the unchanged document identifier.
+  - case_id: B002
+    archetype: legacy-metadata-tension
+    fixture_id: case-b-preserve-all
+    selected_leaf_id: leaf-b-preserve-all
+    target_context_id: preserve-reference
+    fixture_family: b-manufacturer-all-preservation
+    split: train
+    mutation: {type: metadata-intent, exact: preserve exact manufacturer all lifecycle}
+    reference_decision: REUSE_AS_LEGACY_REFERENCE
+    reference_severity: medium
+    action: PRESERVE_EXACT_CONTEXT_GROUP_KEYWORDS
+    action_mode: required_condition
+    required_rule_ids: [FDA-CDER-M2-DISCOURAGED-MANUFACTURER-ALL-001, FDA-CDER-M2-PRESERVE-EXISTING-CONTEXT-002]
+    acceptable_evidence_ids: [ev-m4-manufacturer-general-values, ev-tcg-replacement-context-same, ev-tcg-hyperlinks-relevant-to-context]
+    human_review_required: false
+    rationale: Explicit preservation with exact keywords and no hyperlinks passes the controlled technical gate; the manufacturer advisory remains visible.
+  - case_id: B003
+    archetype: legacy-metadata-tension
+    fixture_id: case-b-unspecified-all
+    selected_leaf_id: leaf-b-unspecified-all
+    target_context_id: unspecified-reference
+    fixture_family: b-manufacturer-all-preservation
+    split: train
+    mutation: {type: metadata-intent, exact: manufacturer all with unspecified migration intent}
+    reference_decision: HUMAN_REGULATORY_REVIEW
+    reference_severity: unresolved
+    action: DECLARE_METADATA_MIGRATION_INTENT
+    action_mode: required_condition
+    required_rule_ids: [FDA-CDER-M2-DISCOURAGED-MANUFACTURER-ALL-001]
+    acceptable_evidence_ids: [ev-m4-manufacturer-general-values]
+    human_review_required: true
+    rationale: The analyzer cannot choose preservation or normalization without explicit intent.
+  - <<: *b_normalize
+    case_id: B004
+    target_context_id: normalize-required-explicit
+    mutation: {type: metadata-intent, exact: normalize manufacturer all with required partitioning and explicit Northstar River Site value}
+    rationale: Explicit normalization and a stable replacement manufacturer value require a new context group.
+  - case_id: B005
+    archetype: legacy-metadata-tension
+    fixture_id: case-b-normalize-all
+    selected_leaf_id: leaf-b-normalize-all
+    target_context_id: normalize-unknown
+    fixture_family: b-manufacturer-all-normalization
+    split: test
+    mutation: {type: metadata-intent, exact: normalize manufacturer all with partitioning need unknown}
+    reference_decision: HUMAN_REGULATORY_REVIEW
+    reference_severity: unresolved
+    action: DECLARE_MANUFACTURER_PARTITIONING
+    action_mode: required_condition
+    required_rule_ids: [FDA-CDER-M2-DISCOURAGED-MANUFACTURER-ALL-001]
+    acceptable_evidence_ids: [ev-m4-manufacturer-general-values]
+    human_review_required: true
+    rationale: Partitioning must be declared before deterministic normalization eligibility can be established.
+  - case_id: B006
+    archetype: legacy-metadata-tension
+    fixture_id: case-b-clean-specific
+    selected_leaf_id: leaf-b-clean-specific
+    target_context_id: prospective-reference
+    fixture_family: b-specific-manufacturer-scope
+    split: development
+    mutation: {type: clean-negative, exact: stable site-distinguishing manufacturer value}
+    reference_decision: REUSE_AS_LEGACY_REFERENCE
+    reference_severity: informational
+    action: NO_MATERIAL_REPAIR
+    action_mode: no_action
+    required_rule_ids: []
+    acceptable_evidence_ids: [leaf-b-clean-specific-metadata-manufacturer]
+    human_review_required: false
+    rationale: A stable specific manufacturer value does not trigger the scoped manufacturer-all rule.
+  - case_id: B007
+    archetype: legacy-metadata-tension
+    fixture_id: case-b-clean-specific
+    selected_leaf_id: leaf-b-clean-specific
+    target_context_id: create-new-target
+    fixture_family: b-specific-manufacturer-scope
+    split: development
+    mutation: {type: reuse-operation, exact: create new target artifact outside identifier-reuse rule scope}
+    reference_decision: HUMAN_REGULATORY_REVIEW
+    reference_severity: unresolved
+    action: SELECT_SUPPORTED_REUSE_OPERATION
+    action_mode: required_condition
+    required_rule_ids: []
+    acceptable_evidence_ids: [leaf-b-clean-specific-metadata-manufacturer]
+    human_review_required: true
+    rationale: New-artifact creation is outside the approved identifier-reuse rules.
+  - case_id: B008
+    archetype: legacy-metadata-tension
+    fixture_id: case-b-out-of-scope-product-all
+    selected_leaf_id: leaf-b-product-all
+    target_context_id: prospective-reference
+    fixture_family: b-product-keyword-scope
+    split: train
+    mutation: {type: keyword-scope, exact: product equals all while manufacturer is absent}
+    reference_decision: REUSE_AS_LEGACY_REFERENCE
+    reference_severity: informational
+    action: NO_MATERIAL_REPAIR
+    action_mode: no_action
+    required_rule_ids: []
+    acceptable_evidence_ids: [leaf-b-product-all-metadata-product]
+    human_review_required: false
+    rationale: The rule is scoped to manufacturer and must not fire for product.
+  - case_id: B009
+    archetype: legacy-metadata-tension
+    fixture_id: case-b-unspecified-all
+    selected_leaf_id: leaf-b-unspecified-all
+    target_context_id: preserve-reference
+    fixture_family: b-manufacturer-all-preservation
+    split: train
+    mutation: {type: normalization, exact: raw manufacturer whitespace and case normalize exactly to all under explicit preservation}
+    reference_decision: REUSE_AS_LEGACY_REFERENCE
+    reference_severity: medium
+    action: PRESERVE_EXACT_CONTEXT_GROUP_KEYWORDS
+    action_mode: required_condition
+    required_rule_ids: [FDA-CDER-M2-DISCOURAGED-MANUFACTURER-ALL-001, FDA-CDER-M2-PRESERVE-EXISTING-CONTEXT-002]
+    acceptable_evidence_ids: [ev-m4-manufacturer-general-values, ev-tcg-replacement-context-same, ev-tcg-hyperlinks-relevant-to-context]
+    human_review_required: false
+    rationale: Exact preservation intent satisfies the controlled gate after deterministic keyword normalization; the advisory remains visible.
+  - case_id: B010
+    archetype: legacy-metadata-tension
+    fixture_id: case-b-normalize-all
+    selected_leaf_id: leaf-b-normalize-all
+    target_context_id: current-operational
+    fixture_family: b-manufacturer-all-normalization
+    split: test
+    mutation: {type: scenario-mode, exact: current operational mode}
+    reference_decision: HUMAN_REGULATORY_REVIEW
+    reference_severity: unresolved
+    action: WAIT_FOR_OPERATIONAL_AVAILABILITY
+    action_mode: required_condition
+    required_rule_ids: []
+    acceptable_evidence_ids: []
+    human_review_required: true
+    rationale: FDA forward compatibility remains not operational and prospective rules must not execute.
+
+  - case_id: C001
+    archetype: stale-content-or-hyperlink
+    fixture_id: case-c-stale-heading
+    selected_leaf_id: leaf-c-stale-heading
+    target_context_id: prospective-reference
+    fixture_family: c-heading-context-contrast
+    split: train
+    mutation: {type: semantic-text, exact: removed heading presented as current controlling reference}
+    reference_decision: HUMAN_REGULATORY_REVIEW
+    reference_severity: unresolved
+    action: HUMAN_VERIFY_STALE_CONTENT
+    action_mode: suggested_check
+    required_rule_ids: []
+    acceptable_evidence_ids: [leaf-c-stale-heading-text-p1-1]
+    human_review_required: true
+    rationale: Supported stale wording is a semantic signal and requires human review.
+  - case_id: C002
+    archetype: stale-content-or-hyperlink
+    fixture_id: case-c-stale-applicant
+    selected_leaf_id: leaf-c-stale-applicant
+    target_context_id: prospective-reference
+    fixture_family: c-applicant-mismatch
+    split: test
+    mutation: {type: semantic-text, exact: former applicant presented as current}
+    reference_decision: HUMAN_REGULATORY_REVIEW
+    reference_severity: unresolved
+    action: HUMAN_VERIFY_STALE_CONTENT
+    action_mode: suggested_check
+    required_rule_ids: []
+    acceptable_evidence_ids: [leaf-c-stale-applicant-text-p1-1]
+    human_review_required: true
+    rationale: The applicant statement conflicts with regional metadata and requires human review.
+  - case_id: C003
+    archetype: stale-content-or-hyperlink
+    fixture_id: case-c-irrelevant-link
+    selected_leaf_id: leaf-c-irrelevant-link
+    target_context_id: prospective-reference
+    fixture_family: c-external-link-operational
+    split: development
+    mutation: {type: hyperlink, exact: external hyperlink relevance not author verified}
+    reference_decision: HUMAN_REGULATORY_REVIEW
+    reference_severity: unresolved
+    action: VERIFY_HYPERLINK_RELEVANCE
+    action_mode: suggested_check
+    required_rule_ids: [FDA-CDER-M2-HYPERLINK-RELEVANCE-004]
+    acceptable_evidence_ids: [ev-tcg-hyperlinks-relevant-to-context, leaf-c-irrelevant-link-link-p1-1]
+    human_review_required: true
+    rationale: A model-only no-problem result cannot establish hyperlink relevance.
+  - case_id: C004
+    archetype: stale-content-or-hyperlink
+    fixture_id: case-c-clean
+    selected_leaf_id: leaf-c-clean
+    target_context_id: prospective-reference
+    fixture_family: c-clean-current
+    split: test
+    mutation: {type: clean-negative, exact: current wording and no hyperlinks}
+    reference_decision: REUSE_AS_LEGACY_REFERENCE
+    reference_severity: informational
+    action: NO_MATERIAL_REPAIR
+    action_mode: no_action
+    required_rule_ids: []
+    acceptable_evidence_ids: [leaf-c-clean-text-p1-1]
+    human_review_required: false
+    rationale: Completed inspection found current wording and no hyperlink eligibility issue.
+  - case_id: C005
+    archetype: stale-content-or-hyperlink
+    fixture_id: case-c-relevant-link
+    selected_leaf_id: leaf-c-relevant-link
+    target_context_id: prospective-reference
+    fixture_family: c-relevant-internal-link
+    split: test
+    mutation: {type: hyperlink, exact: internal hyperlink target exists and relevance is author verified for fixture}
+    reference_decision: REUSE_AS_LEGACY_REFERENCE
+    reference_severity: informational
+    action: NO_MATERIAL_REPAIR
+    action_mode: no_action
+    required_rule_ids: []
+    acceptable_evidence_ids: [leaf-c-relevant-link-link-p1-1]
+    human_review_required: false
+    rationale: The internal link exists and its relevance is author verified for this controlled fixture.
+  - case_id: C006
+    archetype: stale-content-or-hyperlink
+    fixture_id: case-c-ambiguous
+    selected_leaf_id: leaf-c-ambiguous
+    target_context_id: prospective-reference
+    fixture_family: c-ambiguous-wording
+    split: train
+    mutation: {type: semantic-text, exact: ambiguous historical wording}
+    reference_decision: HUMAN_REGULATORY_REVIEW
+    reference_severity: unresolved
+    action: HUMAN_VERIFY_STALE_CONTENT
+    action_mode: suggested_check
+    required_rule_ids: []
+    acceptable_evidence_ids: [leaf-c-ambiguous-text-p1-1]
+    human_review_required: true
+    rationale: Ambiguity is not converted into a permissive recommendation.
+  - case_id: C007
+    archetype: stale-content-or-hyperlink
+    fixture_id: case-c-007-stale-heading-3212
+    source_fixture_id: case-c-stale-heading
+    selected_leaf_id: leaf-c007-selected
+    target_context_id: prospective-reference
+    fixture_family: c-heading-context-contrast
+    split: train
+    mutation: {type: semantic-text, exact: alternate wording presents 3.2.S.1.2 as current controlling location}
+    reference_decision: HUMAN_REGULATORY_REVIEW
+    reference_severity: unresolved
+    action: HUMAN_VERIFY_STALE_CONTENT
+    action_mode: suggested_check
+    required_rule_ids: []
+    acceptable_evidence_ids: [leaf-c007-selected-text-p1-1]
+    human_review_required: true
+    rationale: Alternate stale heading wording remains a semantic signal requiring human review.
+  - case_id: C008
+    archetype: stale-content-or-hyperlink
+    fixture_id: case-c-008-stale-responsible-applicant
+    source_fixture_id: case-c-stale-applicant
+    selected_leaf_id: leaf-c008-selected
+    target_context_id: prospective-reference
+    fixture_family: c-applicant-mismatch
+    split: test
+    mutation: {type: semantic-text, exact: current responsible-applicant statement conflicts with regional Northstar Therapeutics metadata}
+    reference_decision: HUMAN_REGULATORY_REVIEW
+    reference_severity: unresolved
+    action: HUMAN_VERIFY_STALE_CONTENT
+    action_mode: suggested_check
+    required_rule_ids: []
+    acceptable_evidence_ids: [leaf-c008-selected-text-p1-1]
+    human_review_required: true
+    rationale: The responsible-applicant statement conflicts with regional metadata and requires human review.
+  - case_id: C009
+    archetype: stale-content-or-hyperlink
+    fixture_id: case-c-009-benign-heading-history
+    source_fixture_id: case-c-clean
+    selected_leaf_id: leaf-c009-selected
+    target_context_id: prospective-reference
+    fixture_family: c-heading-context-contrast
+    split: train
+    mutation: {type: semantic-text, exact: old heading explicitly historical and explicitly not current guidance}
+    reference_decision: REUSE_AS_LEGACY_REFERENCE
+    reference_severity: informational
+    action: NO_MATERIAL_REPAIR
+    action_mode: no_action
+    required_rule_ids: []
+    acceptable_evidence_ids: [leaf-c009-selected-text-p1-1]
+    human_review_required: false
+    rationale: The old heading is explicitly historical and not presented as current guidance.
+  - case_id: C010
+    archetype: stale-content-or-hyperlink
+    fixture_id: case-c-irrelevant-link
+    selected_leaf_id: leaf-c-irrelevant-link
+    target_context_id: current-operational
+    fixture_family: c-external-link-operational
+    split: development
+    mutation: {type: scenario-mode, exact: current operational mode}
+    reference_decision: HUMAN_REGULATORY_REVIEW
+    reference_severity: unresolved
+    action: WAIT_FOR_OPERATIONAL_AVAILABILITY
+    action_mode: required_condition
+    required_rule_ids: []
+    acceptable_evidence_ids: []
+    human_review_required: true
+    rationale: FDA forward compatibility remains not operational and prospective analysis must not execute.

@@ -1,0 +1,329 @@
+{
+  "$defs": {
+    "Decision": {
+      "enum": [
+        "REUSE_AS_LEGACY_REFERENCE",
+        "REUSE_WITH_NEW_CONTEXT",
+        "REUSE_AFTER_METADATA_REPAIR",
+        "BREAK_LIFECYCLE_AND_RESUBMIT",
+        "DO_NOT_REUSE",
+        "HUMAN_REGULATORY_REVIEW"
+      ],
+      "title": "Decision",
+      "type": "string"
+    },
+    "RetrievalHit": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "rank": {
+          "minimum": 1,
+          "title": "Rank",
+          "type": "integer"
+        },
+        "score": {
+          "title": "Score",
+          "type": "number"
+        }
+      },
+      "required": [
+        "evidence_id",
+        "score",
+        "rank"
+      ],
+      "title": "RetrievalHit",
+      "type": "object"
+    },
+    "RetrievalTrace": {
+      "additionalProperties": false,
+      "properties": {
+        "b": {
+          "default": 0.75,
+          "title": "B",
+          "type": "number"
+        },
+        "case_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "configuration_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Configuration Sha256",
+          "type": "string"
+        },
+        "corpus_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Corpus Sha256",
+          "type": "string"
+        },
+        "hits": {
+          "items": {
+            "$ref": "#/$defs/RetrievalHit"
+          },
+          "maxItems": 3,
+          "minItems": 3,
+          "title": "Hits",
+          "type": "array"
+        },
+        "idf_formula": {
+          "const": "log(1+(N-df+0.5)/(df+0.5))",
+          "title": "Idf Formula",
+          "type": "string"
+        },
+        "k1": {
+          "default": 1.5,
+          "title": "K1",
+          "type": "number"
+        },
+        "query": {
+          "title": "Query",
+          "type": "string"
+        },
+        "query_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Query Sha256",
+          "type": "string"
+        },
+        "system": {
+          "const": "B1",
+          "default": "B1",
+          "title": "System",
+          "type": "string"
+        },
+        "top_k": {
+          "const": 3,
+          "default": 3,
+          "title": "Top K",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "case_id",
+        "query",
+        "query_sha256",
+        "corpus_sha256",
+        "configuration_sha256",
+        "idf_formula",
+        "hits"
+      ],
+      "title": "RetrievalTrace",
+      "type": "object"
+    },
+    "Severity": {
+      "enum": [
+        "informational",
+        "low",
+        "medium",
+        "high",
+        "blocking",
+        "unresolved"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "SystemPrediction": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Action",
+          "type": "string"
+        },
+        "case_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "cost_usd": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cost Usd"
+        },
+        "decision": {
+          "$ref": "#/$defs/Decision"
+        },
+        "empirical_model_observation": {
+          "const": false,
+          "default": false,
+          "title": "Empirical Model Observation",
+          "type": "boolean"
+        },
+        "evidence_ids": {
+          "default": [],
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "failure": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Failure"
+        },
+        "human_review_required": {
+          "title": "Human Review Required",
+          "type": "boolean"
+        },
+        "input_tokens": {
+          "minimum": 0,
+          "title": "Input Tokens",
+          "type": "integer"
+        },
+        "latency_ms": {
+          "minimum": 0,
+          "title": "Latency Ms",
+          "type": "number"
+        },
+        "output_tokens": {
+          "minimum": 0,
+          "title": "Output Tokens",
+          "type": "integer"
+        },
+        "prediction_source": {
+          "enum": [
+            "contract_fixture",
+            "genuine_rule_only",
+            "hybrid_contract_fixture"
+          ],
+          "title": "Prediction Source",
+          "type": "string"
+        },
+        "rationale": {
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "requests": {
+          "minimum": 0,
+          "title": "Requests",
+          "type": "integer"
+        },
+        "rule_ids": {
+          "default": [],
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "type": "string"
+          },
+          "title": "Rule Ids",
+          "type": "array"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        },
+        "system": {
+          "enum": [
+            "B0",
+            "B1",
+            "B2",
+            "RegBridge"
+          ],
+          "title": "System",
+          "type": "string"
+        },
+        "unconditional_reuse": {
+          "title": "Unconditional Reuse",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "system",
+        "case_id",
+        "decision",
+        "severity",
+        "action",
+        "human_review_required",
+        "unconditional_reuse",
+        "rationale",
+        "prediction_source",
+        "latency_ms",
+        "requests",
+        "input_tokens",
+        "output_tokens"
+      ],
+      "title": "SystemPrediction",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "current_fda_operational_availability": {
+      "const": "not_operational",
+      "title": "Current Fda Operational Availability",
+      "type": "string"
+    },
+    "eligible_for_performance_claims": {
+      "const": false,
+      "title": "Eligible For Performance Claims",
+      "type": "boolean"
+    },
+    "empirical_model_run": {
+      "const": false,
+      "title": "Empirical Model Run",
+      "type": "boolean"
+    },
+    "prediction": {
+      "$ref": "#/$defs/SystemPrediction"
+    },
+    "retrieval": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RetrievalTrace"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "run_type": {
+      "const": "deterministic_fixture_validation",
+      "title": "Run Type",
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_type",
+    "empirical_model_run",
+    "eligible_for_performance_claims",
+    "current_fda_operational_availability",
+    "prediction"
+  ],
+  "title": "BaselineRunResponse",
+  "type": "object"
+}

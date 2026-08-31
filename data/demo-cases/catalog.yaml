@@ -24,6 +24,26 @@ fixtures:
     description: Ambiguous example outside the explicit author-adjudicated mapping.
     expected_class: ambiguous
     archetype: unavailable-heading
+  - id: case-a-004-replacement-3211
+    title: Replacement lifecycle under removed heading 3.2.S.1.1
+    description: Selected replacement leaf explicitly identifies its existing predecessor.
+    expected_class: positive
+    archetype: unavailable-heading
+  - id: case-a-005-append-3212
+    title: Append lifecycle under removed heading 3.2.S.1.2
+    description: Selected append leaf explicitly identifies its existing predecessor; this exact operation is decision-relevant.
+    expected_class: positive
+    archetype: unavailable-heading
+  - id: case-a-007-valid-replacement-321
+    title: Replacement lifecycle under available heading 3.2.S.1
+    description: Clean replacement variation beneath the source-verified target heading.
+    expected_class: negative
+    archetype: unavailable-heading
+  - id: case-a-009-unmapped-3215
+    title: Distinct unmapped heading 3.2.S.1.5
+    description: Unsupported heading outside the explicit source-supported mapping requires abstention.
+    expected_class: ambiguous
+    archetype: unavailable-heading
   - id: case-b-normalize-all
     title: Normalize discouraged manufacturer metadata
     description: Canonical Case B with explicit normalization intent and unnecessary partitioning.
@@ -86,3 +106,18 @@ fixtures:
     expected_class: negative
     archetype: stale-content-or-hyperlink
     author_verified_relevant_hyperlink_ids: [leaf-c-relevant-link-link-p1-1]
+  - id: case-c-007-stale-heading-3212
+    title: Alternate stale current-heading claim
+    description: Distinct wording incorrectly presents 3.2.S.1.2 as current placement guidance.
+    expected_class: positive
+    archetype: stale-content-or-hyperlink
+  - id: case-c-008-stale-responsible-applicant
+    title: Stale responsible-applicant claim
+    description: Document wording conflicts with the current applicant in regional metadata.
+    expected_class: positive
+    archetype: stale-content-or-hyperlink
+  - id: case-c-009-benign-heading-history
+    title: Explicit benign heading history
+    description: Historical heading reference explicitly says it is not current placement guidance.
+    expected_class: negative
+    archetype: stale-content-or-hyperlink

@@ -273,6 +273,78 @@
         "title": "Authority",
         "type": "string"
       },
+      "BaselineRunRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "case_id": {
+            "title": "Case Id",
+            "type": "string"
+          },
+          "system": {
+            "enum": [
+              "B0",
+              "B1",
+              "B2",
+              "RegBridge"
+            ],
+            "title": "System",
+            "type": "string"
+          }
+        },
+        "required": [
+          "system",
+          "case_id"
+        ],
+        "title": "BaselineRunRequest",
+        "type": "object"
+      },
+      "BaselineRunResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "current_fda_operational_availability": {
+            "const": "not_operational",
+            "title": "Current Fda Operational Availability",
+            "type": "string"
+          },
+          "eligible_for_performance_claims": {
+            "const": false,
+            "title": "Eligible For Performance Claims",
+            "type": "boolean"
+          },
+          "empirical_model_run": {
+            "const": false,
+            "title": "Empirical Model Run",
+            "type": "boolean"
+          },
+          "prediction": {
+            "$ref": "#/components/schemas/SystemPrediction"
+          },
+          "retrieval": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RetrievalTrace"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "run_type": {
+            "const": "deterministic_fixture_validation",
+            "title": "Run Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_type",
+          "empirical_model_run",
+          "eligible_for_performance_claims",
+          "current_fda_operational_availability",
+          "prediction"
+        ],
+        "title": "BaselineRunResponse",
+        "type": "object"
+      },
       "Bindingness": {
         "enum": [
           "requirement",
@@ -283,12 +355,118 @@
         "title": "Bindingness",
         "type": "string"
       },
+      "CaseEvaluation": {
+        "additionalProperties": false,
+        "properties": {
+          "case_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Case Id",
+            "type": "string"
+          },
+          "conservative_false_positive": {
+            "title": "Conservative False Positive",
+            "type": "boolean"
+          },
+          "correct": {
+            "title": "Correct",
+            "type": "boolean"
+          },
+          "fixture_family": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Fixture Family",
+            "type": "string"
+          },
+          "prediction_action": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Prediction Action",
+            "type": "string"
+          },
+          "prediction_decision": {
+            "$ref": "#/components/schemas/Decision"
+          },
+          "reference_action": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Reference Action",
+            "type": "string"
+          },
+          "reference_decision": {
+            "$ref": "#/components/schemas/Decision"
+          },
+          "review_bypass": {
+            "title": "Review Bypass",
+            "type": "boolean"
+          },
+          "split": {
+            "title": "Split",
+            "type": "string"
+          },
+          "system": {
+            "enum": [
+              "B0",
+              "B1",
+              "B2",
+              "RegBridge"
+            ],
+            "title": "System",
+            "type": "string"
+          },
+          "unsafe_false_negative": {
+            "title": "Unsafe False Negative",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "case_id",
+          "fixture_family",
+          "split",
+          "system",
+          "reference_decision",
+          "prediction_decision",
+          "reference_action",
+          "prediction_action",
+          "unsafe_false_negative",
+          "review_bypass",
+          "conservative_false_positive",
+          "correct"
+        ],
+        "title": "CaseEvaluation",
+        "type": "object"
+      },
       "Center": {
         "enum": [
           "CDER"
         ],
         "title": "Center",
         "type": "string"
+      },
+      "ClassMetrics": {
+        "additionalProperties": false,
+        "properties": {
+          "f1": {
+            "title": "F1",
+            "type": "number"
+          },
+          "precision": {
+            "title": "Precision",
+            "type": "number"
+          },
+          "recall": {
+            "title": "Recall",
+            "type": "number"
+          },
+          "support": {
+            "title": "Support",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "precision",
+          "recall",
+          "f1",
+          "support"
+        ],
+        "title": "ClassMetrics",
+        "type": "object"
       },
       "Decision": {
         "enum": [
@@ -377,6 +555,222 @@
         "title": "EnforcementMode",
         "type": "string"
       },
+      "EvaluationArtifacts": {
+        "additionalProperties": false,
+        "properties": {
+          "manifest_json": {
+            "title": "Manifest Json",
+            "type": "string"
+          },
+          "metrics_content_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Metrics Content Sha256",
+            "type": "string"
+          },
+          "metrics_csv": {
+            "title": "Metrics Csv",
+            "type": "string"
+          },
+          "metrics_json": {
+            "title": "Metrics Json",
+            "type": "string"
+          },
+          "paper_table_csv": {
+            "title": "Paper Table Csv",
+            "type": "string"
+          },
+          "per_case_csv": {
+            "title": "Per Case Csv",
+            "type": "string"
+          },
+          "prediction_content_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Prediction Content Sha256",
+            "type": "string"
+          },
+          "predictions_jsonl": {
+            "title": "Predictions Jsonl",
+            "type": "string"
+          },
+          "retrieval_jsonl": {
+            "title": "Retrieval Jsonl",
+            "type": "string"
+          },
+          "run_directory": {
+            "title": "Run Directory",
+            "type": "string"
+          },
+          "summary_markdown": {
+            "title": "Summary Markdown",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_directory",
+          "manifest_json",
+          "predictions_jsonl",
+          "retrieval_jsonl",
+          "per_case_csv",
+          "metrics_json",
+          "metrics_csv",
+          "summary_markdown",
+          "paper_table_csv",
+          "prediction_content_sha256",
+          "metrics_content_sha256"
+        ],
+        "title": "EvaluationArtifacts",
+        "type": "object"
+      },
+      "EvaluationCreateRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "configuration_id": {
+            "const": "m3-fixture-all-systems-v1",
+            "title": "Configuration Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "configuration_id"
+        ],
+        "title": "EvaluationCreateRequest",
+        "type": "object"
+      },
+      "EvaluationResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "evaluation": {
+            "$ref": "#/components/schemas/EvaluationRun"
+          }
+        },
+        "required": [
+          "evaluation"
+        ],
+        "title": "EvaluationResponse",
+        "type": "object"
+      },
+      "EvaluationRun": {
+        "additionalProperties": false,
+        "properties": {
+          "artifacts": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EvaluationArtifacts"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cases": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/CaseEvaluation"
+            },
+            "title": "Cases",
+            "type": "array"
+          },
+          "configuration_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Configuration Id",
+            "type": "string"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "current_fda_operational_availability": {
+            "const": "not_operational",
+            "title": "Current Fda Operational Availability",
+            "type": "string"
+          },
+          "eligible_for_performance_claims": {
+            "const": false,
+            "title": "Eligible For Performance Claims",
+            "type": "boolean"
+          },
+          "empirical_model_run": {
+            "const": false,
+            "title": "Empirical Model Run",
+            "type": "boolean"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Id",
+            "type": "string"
+          },
+          "metrics": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/MetricsReport"
+            },
+            "title": "Metrics",
+            "type": "array"
+          },
+          "run_type": {
+            "const": "deterministic_fixture_validation",
+            "title": "Run Type",
+            "type": "string"
+          },
+          "seed": {
+            "title": "Seed",
+            "type": "integer"
+          },
+          "state": {
+            "enum": [
+              "queued",
+              "running",
+              "completed",
+              "failed"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "systems": {
+            "items": {
+              "enum": [
+                "B0",
+                "B1",
+                "B2",
+                "RegBridge"
+              ],
+              "type": "string"
+            },
+            "title": "Systems",
+            "type": "array"
+          },
+          "updated_at": {
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "configuration_id",
+          "state",
+          "run_type",
+          "empirical_model_run",
+          "eligible_for_performance_claims",
+          "current_fda_operational_availability",
+          "systems",
+          "seed",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "EvaluationRun",
+        "type": "object"
+      },
       "EvidenceSpan": {
         "additionalProperties": false,
         "properties": {
@@ -461,6 +855,31 @@
         ],
         "title": "ExtractionMethod",
         "type": "string"
+      },
+      "FamilySensitivity": {
+        "additionalProperties": false,
+        "properties": {
+          "eligible_cases": {
+            "title": "Eligible Cases",
+            "type": "integer"
+          },
+          "fixture_family": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Fixture Family",
+            "type": "string"
+          },
+          "unsafe_misses": {
+            "title": "Unsafe Misses",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "fixture_family",
+          "unsafe_misses",
+          "eligible_cases"
+        ],
+        "title": "FamilySensitivity",
+        "type": "object"
       },
       "Finding": {
         "additionalProperties": false,
@@ -920,6 +1339,204 @@
         "title": "MetadataPlan",
         "type": "object"
       },
+      "MetricsReport": {
+        "additionalProperties": false,
+        "properties": {
+          "abstention_accuracy": {
+            "title": "Abstention Accuracy",
+            "type": "number"
+          },
+          "accuracy": {
+            "title": "Accuracy",
+            "type": "number"
+          },
+          "balanced_accuracy": {
+            "title": "Balanced Accuracy",
+            "type": "number"
+          },
+          "calibration_not_applicable_reason": {
+            "title": "Calibration Not Applicable Reason",
+            "type": "string"
+          },
+          "calibration_status": {
+            "const": "not_applicable",
+            "title": "Calibration Status",
+            "type": "string"
+          },
+          "cluster_bootstrap_unsafe_fnr_95": {
+            "anyOf": [
+              {
+                "maxItems": 2,
+                "minItems": 2,
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cluster Bootstrap Unsafe Fnr 95"
+          },
+          "conservative_false_positive_rate": {
+            "$ref": "#/components/schemas/RateMetric"
+          },
+          "cost_usd": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cost Usd"
+          },
+          "evidence_citation_accuracy": {
+            "title": "Evidence Citation Accuracy",
+            "type": "number"
+          },
+          "failures": {
+            "title": "Failures",
+            "type": "integer"
+          },
+          "family_sensitivity": {
+            "items": {
+              "$ref": "#/components/schemas/FamilySensitivity"
+            },
+            "title": "Family Sensitivity",
+            "type": "array"
+          },
+          "heading_mapping_accuracy": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heading Mapping Accuracy"
+          },
+          "high_blocking_unsafe_false_negative_rate": {
+            "$ref": "#/components/schemas/RateMetric"
+          },
+          "inference_claims": {
+            "const": "exploratory-only-no-independence-or-significance-claims",
+            "title": "Inference Claims",
+            "type": "string"
+          },
+          "input_tokens": {
+            "title": "Input Tokens",
+            "type": "integer"
+          },
+          "latency_ms_total": {
+            "title": "Latency Ms Total",
+            "type": "number"
+          },
+          "macro_f1": {
+            "title": "Macro F1",
+            "type": "number"
+          },
+          "output_tokens": {
+            "title": "Output Tokens",
+            "type": "integer"
+          },
+          "per_class": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ClassMetrics"
+            },
+            "title": "Per Class",
+            "type": "object"
+          },
+          "repair_action_accuracy": {
+            "title": "Repair Action Accuracy",
+            "type": "number"
+          },
+          "represented_classes": {
+            "items": {
+              "$ref": "#/components/schemas/Decision"
+            },
+            "title": "Represented Classes",
+            "type": "array"
+          },
+          "requests": {
+            "title": "Requests",
+            "type": "integer"
+          },
+          "retrieval": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RetrievalMetrics"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "review_bypass_rate": {
+            "$ref": "#/components/schemas/RateMetric"
+          },
+          "scope": {
+            "enum": [
+              "held-out-test",
+              "all-cases-secondary"
+            ],
+            "title": "Scope",
+            "type": "string"
+          },
+          "system": {
+            "enum": [
+              "B0",
+              "B1",
+              "B2",
+              "RegBridge"
+            ],
+            "title": "System",
+            "type": "string"
+          },
+          "unsafe_false_negative_rate": {
+            "$ref": "#/components/schemas/RateMetric"
+          }
+        },
+        "required": [
+          "system",
+          "scope",
+          "represented_classes",
+          "unsafe_false_negative_rate",
+          "high_blocking_unsafe_false_negative_rate",
+          "review_bypass_rate",
+          "conservative_false_positive_rate",
+          "per_class",
+          "macro_f1",
+          "accuracy",
+          "balanced_accuracy",
+          "heading_mapping_accuracy",
+          "evidence_citation_accuracy",
+          "repair_action_accuracy",
+          "abstention_accuracy",
+          "retrieval",
+          "latency_ms_total",
+          "failures",
+          "requests",
+          "input_tokens",
+          "output_tokens",
+          "cost_usd",
+          "calibration_status",
+          "calibration_not_applicable_reason",
+          "family_sensitivity",
+          "cluster_bootstrap_unsafe_fnr_95",
+          "inference_claims"
+        ],
+        "title": "MetricsReport",
+        "type": "object"
+      },
       "ModelRunRecord": {
         "additionalProperties": false,
         "properties": {
@@ -1205,6 +1822,61 @@
         "title": "ParsedLeaf",
         "type": "object"
       },
+      "RateMetric": {
+        "additionalProperties": false,
+        "properties": {
+          "denominator": {
+            "title": "Denominator",
+            "type": "integer"
+          },
+          "numerator": {
+            "title": "Numerator",
+            "type": "integer"
+          },
+          "rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rate"
+          },
+          "wilson_95_high": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wilson 95 High"
+          },
+          "wilson_95_low": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wilson 95 Low"
+          }
+        },
+        "required": [
+          "numerator",
+          "denominator",
+          "rate",
+          "wilson_95_low",
+          "wilson_95_high"
+        ],
+        "title": "RateMetric",
+        "type": "object"
+      },
       "RepairAction": {
         "additionalProperties": false,
         "properties": {
@@ -1233,6 +1905,158 @@
           "description"
         ],
         "title": "RepairAction",
+        "type": "object"
+      },
+      "RetrievalHit": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Evidence Id",
+            "type": "string"
+          },
+          "rank": {
+            "minimum": 1.0,
+            "title": "Rank",
+            "type": "integer"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          }
+        },
+        "required": [
+          "evidence_id",
+          "score",
+          "rank"
+        ],
+        "title": "RetrievalHit",
+        "type": "object"
+      },
+      "RetrievalMetrics": {
+        "additionalProperties": false,
+        "properties": {
+          "evaluated_cases": {
+            "title": "Evaluated Cases",
+            "type": "integer"
+          },
+          "mrr": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mrr"
+          },
+          "precision_at_3": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Precision At 3"
+          },
+          "recall_at_3": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recall At 3"
+          }
+        },
+        "required": [
+          "evaluated_cases",
+          "recall_at_3",
+          "precision_at_3",
+          "mrr"
+        ],
+        "title": "RetrievalMetrics",
+        "type": "object"
+      },
+      "RetrievalTrace": {
+        "additionalProperties": false,
+        "properties": {
+          "b": {
+            "default": 0.75,
+            "title": "B",
+            "type": "number"
+          },
+          "case_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Case Id",
+            "type": "string"
+          },
+          "configuration_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Configuration Sha256",
+            "type": "string"
+          },
+          "corpus_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Corpus Sha256",
+            "type": "string"
+          },
+          "hits": {
+            "items": {
+              "$ref": "#/components/schemas/RetrievalHit"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Hits",
+            "type": "array"
+          },
+          "idf_formula": {
+            "const": "log(1+(N-df+0.5)/(df+0.5))",
+            "title": "Idf Formula",
+            "type": "string"
+          },
+          "k1": {
+            "default": 1.5,
+            "title": "K1",
+            "type": "number"
+          },
+          "query": {
+            "title": "Query",
+            "type": "string"
+          },
+          "query_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Query Sha256",
+            "type": "string"
+          },
+          "system": {
+            "const": "B1",
+            "default": "B1",
+            "title": "System",
+            "type": "string"
+          },
+          "top_k": {
+            "const": 3,
+            "default": 3,
+            "title": "Top K",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "case_id",
+          "query",
+          "query_sha256",
+          "corpus_sha256",
+          "configuration_sha256",
+          "idf_formula",
+          "hits"
+        ],
+        "title": "RetrievalTrace",
         "type": "object"
       },
       "ReuseOperation": {
@@ -1726,6 +2550,156 @@
         "title": "StandardsSnapshotResponse",
         "type": "object"
       },
+      "SystemPrediction": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Action",
+            "type": "string"
+          },
+          "case_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Case Id",
+            "type": "string"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "cost_usd": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cost Usd"
+          },
+          "decision": {
+            "$ref": "#/components/schemas/Decision"
+          },
+          "empirical_model_observation": {
+            "const": false,
+            "default": false,
+            "title": "Empirical Model Observation",
+            "type": "boolean"
+          },
+          "evidence_ids": {
+            "default": [],
+            "items": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "failure": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure"
+          },
+          "human_review_required": {
+            "title": "Human Review Required",
+            "type": "boolean"
+          },
+          "input_tokens": {
+            "minimum": 0.0,
+            "title": "Input Tokens",
+            "type": "integer"
+          },
+          "latency_ms": {
+            "minimum": 0.0,
+            "title": "Latency Ms",
+            "type": "number"
+          },
+          "output_tokens": {
+            "minimum": 0.0,
+            "title": "Output Tokens",
+            "type": "integer"
+          },
+          "prediction_source": {
+            "enum": [
+              "contract_fixture",
+              "genuine_rule_only",
+              "hybrid_contract_fixture"
+            ],
+            "title": "Prediction Source",
+            "type": "string"
+          },
+          "rationale": {
+            "minLength": 1,
+            "title": "Rationale",
+            "type": "string"
+          },
+          "requests": {
+            "minimum": 0.0,
+            "title": "Requests",
+            "type": "integer"
+          },
+          "rule_ids": {
+            "default": [],
+            "items": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+              "type": "string"
+            },
+            "title": "Rule Ids",
+            "type": "array"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/Severity"
+          },
+          "system": {
+            "enum": [
+              "B0",
+              "B1",
+              "B2",
+              "RegBridge"
+            ],
+            "title": "System",
+            "type": "string"
+          },
+          "unconditional_reuse": {
+            "title": "Unconditional Reuse",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "system",
+          "case_id",
+          "decision",
+          "severity",
+          "action",
+          "human_review_required",
+          "unconditional_reuse",
+          "rationale",
+          "prediction_source",
+          "latency_ms",
+          "requests",
+          "input_tokens",
+          "output_tokens"
+        ],
+        "title": "SystemPrediction",
+        "type": "object"
+      },
       "TargetContext": {
         "additionalProperties": false,
         "properties": {
@@ -2068,6 +3042,47 @@
         ]
       }
     },
+    "/api/v1/baselines/run": {
+      "post": {
+        "operationId": "run_baseline_api_v1_baselines_run_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BaselineRunRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaselineRunResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Run Baseline",
+        "tags": [
+          "evaluation"
+        ]
+      }
+    },
     "/api/v1/config/scope": {
       "get": {
         "operationId": "scope_api_v1_config_scope_get",
@@ -2086,6 +3101,89 @@
         "summary": "Scope",
         "tags": [
           "configuration"
+        ]
+      }
+    },
+    "/api/v1/evaluations": {
+      "post": {
+        "operationId": "create_evaluation_api_v1_evaluations_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvaluationCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvaluationResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Evaluation",
+        "tags": [
+          "evaluation"
+        ]
+      }
+    },
+    "/api/v1/evaluations/{evaluation_id}": {
+      "get": {
+        "operationId": "get_evaluation_api_v1_evaluations__evaluation_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "evaluation_id",
+            "required": true,
+            "schema": {
+              "title": "Evaluation Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvaluationResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Evaluation",
+        "tags": [
+          "evaluation"
         ]
       }
     },

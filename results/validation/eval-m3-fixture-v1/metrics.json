@@ -1,0 +1,1094 @@
+{
+  "reports": [
+    {
+      "abstention_accuracy": 1.0,
+      "accuracy": 1.0,
+      "balanced_accuracy": 1.0,
+      "calibration_not_applicable_reason": "Deterministic contract fixtures and rule outputs do not provide empirically calibrated probabilities.",
+      "calibration_status": "not_applicable",
+      "cluster_bootstrap_unsafe_fnr_95": [
+        0.0,
+        0.0
+      ],
+      "conservative_false_positive_rate": {
+        "denominator": 4,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.4898908364545973,
+        "wilson_95_low": 0.0
+      },
+      "cost_usd": null,
+      "evidence_citation_accuracy": 0.6666666666666666,
+      "failures": 0,
+      "family_sensitivity": [
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-removed-3212-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "a-valid-321-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 4,
+          "fixture_family": "b-manufacturer-all-normalization",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-applicant-mismatch",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-clean-current",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-relevant-internal-link",
+          "unsafe_misses": 0
+        }
+      ],
+      "heading_mapping_accuracy": 1.0,
+      "high_blocking_unsafe_false_negative_rate": {
+        "denominator": 4,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.4898908364545973,
+        "wilson_95_low": 0.0
+      },
+      "inference_claims": "exploratory-only-no-independence-or-significance-claims",
+      "input_tokens": 9619,
+      "latency_ms_total": 0.0,
+      "macro_f1": 1.0,
+      "output_tokens": 849,
+      "per_class": {
+        "HUMAN_REGULATORY_REVIEW": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 4
+        },
+        "REUSE_AS_LEGACY_REFERENCE": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 4
+        },
+        "REUSE_WITH_NEW_CONTEXT": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 4
+        }
+      },
+      "repair_action_accuracy": 1.0,
+      "represented_classes": [
+        "REUSE_WITH_NEW_CONTEXT",
+        "REUSE_AS_LEGACY_REFERENCE",
+        "HUMAN_REGULATORY_REVIEW"
+      ],
+      "requests": 12,
+      "retrieval": null,
+      "review_bypass_rate": {
+        "denominator": 4,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.4898908364545973,
+        "wilson_95_low": 0.0
+      },
+      "scope": "held-out-test",
+      "system": "B0",
+      "unsafe_false_negative_rate": {
+        "denominator": 8,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.32440756488388023,
+        "wilson_95_low": 0.0
+      }
+    },
+    {
+      "abstention_accuracy": 1.0,
+      "accuracy": 1.0,
+      "balanced_accuracy": 1.0,
+      "calibration_not_applicable_reason": "Deterministic contract fixtures and rule outputs do not provide empirically calibrated probabilities.",
+      "calibration_status": "not_applicable",
+      "cluster_bootstrap_unsafe_fnr_95": [
+        0.0,
+        0.0
+      ],
+      "conservative_false_positive_rate": {
+        "denominator": 7,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.35433043506668743,
+        "wilson_95_low": 5.551115123125783e-17
+      },
+      "cost_usd": null,
+      "evidence_citation_accuracy": 0.7333333333333333,
+      "failures": 0,
+      "family_sensitivity": [
+        {
+          "eligible_cases": 1,
+          "fixture_family": "a-operational-guard",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-removed-3211-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-removed-3212-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 1,
+          "fixture_family": "a-removed-3213",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-unmapped-heading",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "a-valid-321-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 4,
+          "fixture_family": "b-manufacturer-all-normalization",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 3,
+          "fixture_family": "b-manufacturer-all-preservation",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "b-product-keyword-scope",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 1,
+          "fixture_family": "b-specific-manufacturer-scope",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 1,
+          "fixture_family": "c-ambiguous-wording",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-applicant-mismatch",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-clean-current",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-external-link-operational",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-heading-context-contrast",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-relevant-internal-link",
+          "unsafe_misses": 0
+        }
+      ],
+      "heading_mapping_accuracy": 1.0,
+      "high_blocking_unsafe_false_negative_rate": {
+        "denominator": 7,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.35433043506668743,
+        "wilson_95_low": 5.551115123125783e-17
+      },
+      "inference_claims": "exploratory-only-no-independence-or-significance-claims",
+      "input_tokens": 23962,
+      "latency_ms_total": 0.0,
+      "macro_f1": 1.0,
+      "output_tokens": 2216,
+      "per_class": {
+        "HUMAN_REGULATORY_REVIEW": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 14
+        },
+        "REUSE_AS_LEGACY_REFERENCE": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 9
+        },
+        "REUSE_WITH_NEW_CONTEXT": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 7
+        }
+      },
+      "repair_action_accuracy": 1.0,
+      "represented_classes": [
+        "REUSE_WITH_NEW_CONTEXT",
+        "REUSE_AS_LEGACY_REFERENCE",
+        "HUMAN_REGULATORY_REVIEW"
+      ],
+      "requests": 30,
+      "retrieval": null,
+      "review_bypass_rate": {
+        "denominator": 14,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.2153108027376358,
+        "wilson_95_low": 1.3877787807814457e-17
+      },
+      "scope": "all-cases-secondary",
+      "system": "B0",
+      "unsafe_false_negative_rate": {
+        "denominator": 23,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.14311661845042686,
+        "wilson_95_low": 0.0
+      }
+    },
+    {
+      "abstention_accuracy": 0.9166666666666666,
+      "accuracy": 0.9166666666666666,
+      "balanced_accuracy": 0.9166666666666666,
+      "calibration_not_applicable_reason": "Deterministic contract fixtures and rule outputs do not provide empirically calibrated probabilities.",
+      "calibration_status": "not_applicable",
+      "cluster_bootstrap_unsafe_fnr_95": [
+        0.0,
+        0.0
+      ],
+      "conservative_false_positive_rate": {
+        "denominator": 4,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.4898908364545973,
+        "wilson_95_low": 0.0
+      },
+      "cost_usd": null,
+      "evidence_citation_accuracy": 0.6666666666666666,
+      "failures": 0,
+      "family_sensitivity": [
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-removed-3212-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "a-valid-321-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 4,
+          "fixture_family": "b-manufacturer-all-normalization",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-applicant-mismatch",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-clean-current",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-relevant-internal-link",
+          "unsafe_misses": 0
+        }
+      ],
+      "heading_mapping_accuracy": 0.75,
+      "high_blocking_unsafe_false_negative_rate": {
+        "denominator": 4,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.4898908364545973,
+        "wilson_95_low": 0.0
+      },
+      "inference_claims": "exploratory-only-no-independence-or-significance-claims",
+      "input_tokens": 6766,
+      "latency_ms_total": 0.0,
+      "macro_f1": 0.9153439153439153,
+      "output_tokens": 848,
+      "per_class": {
+        "HUMAN_REGULATORY_REVIEW": {
+          "f1": 0.888888888888889,
+          "precision": 0.8,
+          "recall": 1.0,
+          "support": 4
+        },
+        "REUSE_AS_LEGACY_REFERENCE": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 4
+        },
+        "REUSE_WITH_NEW_CONTEXT": {
+          "f1": 0.8571428571428571,
+          "precision": 1.0,
+          "recall": 0.75,
+          "support": 4
+        }
+      },
+      "repair_action_accuracy": 0.9166666666666666,
+      "represented_classes": [
+        "REUSE_WITH_NEW_CONTEXT",
+        "REUSE_AS_LEGACY_REFERENCE",
+        "HUMAN_REGULATORY_REVIEW"
+      ],
+      "requests": 12,
+      "retrieval": {
+        "evaluated_cases": 7,
+        "mrr": 1.0,
+        "precision_at_3": 0.47619047619047616,
+        "recall_at_3": 0.7023809523809524
+      },
+      "review_bypass_rate": {
+        "denominator": 4,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.4898908364545973,
+        "wilson_95_low": 0.0
+      },
+      "scope": "held-out-test",
+      "system": "B1",
+      "unsafe_false_negative_rate": {
+        "denominator": 8,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.32440756488388023,
+        "wilson_95_low": 0.0
+      }
+    },
+    {
+      "abstention_accuracy": 0.9,
+      "accuracy": 0.9,
+      "balanced_accuracy": 0.8571428571428571,
+      "calibration_not_applicable_reason": "Deterministic contract fixtures and rule outputs do not provide empirically calibrated probabilities.",
+      "calibration_status": "not_applicable",
+      "cluster_bootstrap_unsafe_fnr_95": [
+        0.0,
+        0.0
+      ],
+      "conservative_false_positive_rate": {
+        "denominator": 7,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.35433043506668743,
+        "wilson_95_low": 5.551115123125783e-17
+      },
+      "cost_usd": null,
+      "evidence_citation_accuracy": 0.7333333333333333,
+      "failures": 0,
+      "family_sensitivity": [
+        {
+          "eligible_cases": 1,
+          "fixture_family": "a-operational-guard",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-removed-3211-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-removed-3212-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 1,
+          "fixture_family": "a-removed-3213",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-unmapped-heading",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "a-valid-321-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 4,
+          "fixture_family": "b-manufacturer-all-normalization",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 3,
+          "fixture_family": "b-manufacturer-all-preservation",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "b-product-keyword-scope",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 1,
+          "fixture_family": "b-specific-manufacturer-scope",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 1,
+          "fixture_family": "c-ambiguous-wording",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-applicant-mismatch",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-clean-current",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-external-link-operational",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-heading-context-contrast",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-relevant-internal-link",
+          "unsafe_misses": 0
+        }
+      ],
+      "heading_mapping_accuracy": 0.7,
+      "high_blocking_unsafe_false_negative_rate": {
+        "denominator": 7,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.35433043506668743,
+        "wilson_95_low": 5.551115123125783e-17
+      },
+      "inference_claims": "exploratory-only-no-independence-or-significance-claims",
+      "input_tokens": 16897,
+      "latency_ms_total": 0.0,
+      "macro_f1": 0.8768328445747801,
+      "output_tokens": 2145,
+      "per_class": {
+        "HUMAN_REGULATORY_REVIEW": {
+          "f1": 0.9032258064516129,
+          "precision": 0.8235294117647058,
+          "recall": 1.0,
+          "support": 14
+        },
+        "REUSE_AS_LEGACY_REFERENCE": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 9
+        },
+        "REUSE_WITH_NEW_CONTEXT": {
+          "f1": 0.7272727272727273,
+          "precision": 1.0,
+          "recall": 0.5714285714285714,
+          "support": 7
+        }
+      },
+      "repair_action_accuracy": 0.9,
+      "represented_classes": [
+        "REUSE_WITH_NEW_CONTEXT",
+        "REUSE_AS_LEGACY_REFERENCE",
+        "HUMAN_REGULATORY_REVIEW"
+      ],
+      "requests": 30,
+      "retrieval": {
+        "evaluated_cases": 16,
+        "mrr": 0.90625,
+        "precision_at_3": 0.5,
+        "recall_at_3": 0.625
+      },
+      "review_bypass_rate": {
+        "denominator": 14,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.2153108027376358,
+        "wilson_95_low": 1.3877787807814457e-17
+      },
+      "scope": "all-cases-secondary",
+      "system": "B1",
+      "unsafe_false_negative_rate": {
+        "denominator": 23,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.14311661845042686,
+        "wilson_95_low": 0.0
+      }
+    },
+    {
+      "abstention_accuracy": 0.8333333333333334,
+      "accuracy": 0.8333333333333334,
+      "balanced_accuracy": 0.8333333333333334,
+      "calibration_not_applicable_reason": "Deterministic contract fixtures and rule outputs do not provide empirically calibrated probabilities.",
+      "calibration_status": "not_applicable",
+      "cluster_bootstrap_unsafe_fnr_95": [
+        0.0,
+        1.0
+      ],
+      "conservative_false_positive_rate": {
+        "denominator": 4,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.4898908364545973,
+        "wilson_95_low": 0.0
+      },
+      "cost_usd": null,
+      "evidence_citation_accuracy": 0.8333333333333334,
+      "failures": 0,
+      "family_sensitivity": [
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-removed-3212-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "a-valid-321-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 4,
+          "fixture_family": "b-manufacturer-all-normalization",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-applicant-mismatch",
+          "unsafe_misses": 2
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-clean-current",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-relevant-internal-link",
+          "unsafe_misses": 0
+        }
+      ],
+      "heading_mapping_accuracy": 1.0,
+      "high_blocking_unsafe_false_negative_rate": {
+        "denominator": 4,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.4898908364545973,
+        "wilson_95_low": 0.0
+      },
+      "inference_claims": "exploratory-only-no-independence-or-significance-claims",
+      "input_tokens": 0,
+      "latency_ms_total": 0.0,
+      "macro_f1": 0.8222222222222223,
+      "output_tokens": 0,
+      "per_class": {
+        "HUMAN_REGULATORY_REVIEW": {
+          "f1": 0.6666666666666666,
+          "precision": 1.0,
+          "recall": 0.5,
+          "support": 4
+        },
+        "REUSE_AS_LEGACY_REFERENCE": {
+          "f1": 0.8,
+          "precision": 0.6666666666666666,
+          "recall": 1.0,
+          "support": 4
+        },
+        "REUSE_WITH_NEW_CONTEXT": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 4
+        }
+      },
+      "repair_action_accuracy": 0.8333333333333334,
+      "represented_classes": [
+        "REUSE_WITH_NEW_CONTEXT",
+        "REUSE_AS_LEGACY_REFERENCE",
+        "HUMAN_REGULATORY_REVIEW"
+      ],
+      "requests": 0,
+      "retrieval": null,
+      "review_bypass_rate": {
+        "denominator": 4,
+        "numerator": 2,
+        "rate": 0.5,
+        "wilson_95_high": 0.8499610108478506,
+        "wilson_95_low": 0.15003898915214947
+      },
+      "scope": "held-out-test",
+      "system": "B2",
+      "unsafe_false_negative_rate": {
+        "denominator": 8,
+        "numerator": 2,
+        "rate": 0.25,
+        "wilson_95_high": 0.5907245696898311,
+        "wilson_95_low": 0.071479212752109
+      }
+    },
+    {
+      "abstention_accuracy": 0.8333333333333334,
+      "accuracy": 0.8333333333333334,
+      "balanced_accuracy": 0.8809523809523809,
+      "calibration_not_applicable_reason": "Deterministic contract fixtures and rule outputs do not provide empirically calibrated probabilities.",
+      "calibration_status": "not_applicable",
+      "cluster_bootstrap_unsafe_fnr_95": [
+        0.0,
+        0.5
+      ],
+      "conservative_false_positive_rate": {
+        "denominator": 7,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.35433043506668743,
+        "wilson_95_low": 5.551115123125783e-17
+      },
+      "cost_usd": null,
+      "evidence_citation_accuracy": 0.8666666666666667,
+      "failures": 0,
+      "family_sensitivity": [
+        {
+          "eligible_cases": 1,
+          "fixture_family": "a-operational-guard",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-removed-3211-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-removed-3212-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 1,
+          "fixture_family": "a-removed-3213",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-unmapped-heading",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "a-valid-321-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 4,
+          "fixture_family": "b-manufacturer-all-normalization",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 3,
+          "fixture_family": "b-manufacturer-all-preservation",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "b-product-keyword-scope",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 1,
+          "fixture_family": "b-specific-manufacturer-scope",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 1,
+          "fixture_family": "c-ambiguous-wording",
+          "unsafe_misses": 1
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-applicant-mismatch",
+          "unsafe_misses": 2
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-clean-current",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-external-link-operational",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-heading-context-contrast",
+          "unsafe_misses": 2
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-relevant-internal-link",
+          "unsafe_misses": 0
+        }
+      ],
+      "heading_mapping_accuracy": 1.0,
+      "high_blocking_unsafe_false_negative_rate": {
+        "denominator": 7,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.35433043506668743,
+        "wilson_95_low": 5.551115123125783e-17
+      },
+      "inference_claims": "exploratory-only-no-independence-or-significance-claims",
+      "input_tokens": 0,
+      "latency_ms_total": 0.0,
+      "macro_f1": 0.8550724637681159,
+      "output_tokens": 0,
+      "per_class": {
+        "HUMAN_REGULATORY_REVIEW": {
+          "f1": 0.782608695652174,
+          "precision": 1.0,
+          "recall": 0.6428571428571429,
+          "support": 14
+        },
+        "REUSE_AS_LEGACY_REFERENCE": {
+          "f1": 0.782608695652174,
+          "precision": 0.6428571428571429,
+          "recall": 1.0,
+          "support": 9
+        },
+        "REUSE_WITH_NEW_CONTEXT": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 7
+        }
+      },
+      "repair_action_accuracy": 0.8333333333333334,
+      "represented_classes": [
+        "REUSE_WITH_NEW_CONTEXT",
+        "REUSE_AS_LEGACY_REFERENCE",
+        "HUMAN_REGULATORY_REVIEW"
+      ],
+      "requests": 0,
+      "retrieval": null,
+      "review_bypass_rate": {
+        "denominator": 14,
+        "numerator": 5,
+        "rate": 0.35714285714285715,
+        "wilson_95_high": 0.612355768960926,
+        "wilson_95_low": 0.1634473175355414
+      },
+      "scope": "all-cases-secondary",
+      "system": "B2",
+      "unsafe_false_negative_rate": {
+        "denominator": 23,
+        "numerator": 5,
+        "rate": 0.21739130434782608,
+        "wilson_95_high": 0.4190348301626401,
+        "wilson_95_low": 0.09663978026586204
+      }
+    },
+    {
+      "abstention_accuracy": 1.0,
+      "accuracy": 1.0,
+      "balanced_accuracy": 1.0,
+      "calibration_not_applicable_reason": "Deterministic contract fixtures and rule outputs do not provide empirically calibrated probabilities.",
+      "calibration_status": "not_applicable",
+      "cluster_bootstrap_unsafe_fnr_95": [
+        0.0,
+        0.0
+      ],
+      "conservative_false_positive_rate": {
+        "denominator": 4,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.4898908364545973,
+        "wilson_95_low": 0.0
+      },
+      "cost_usd": null,
+      "evidence_citation_accuracy": 0.8333333333333334,
+      "failures": 0,
+      "family_sensitivity": [
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-removed-3212-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "a-valid-321-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 4,
+          "fixture_family": "b-manufacturer-all-normalization",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-applicant-mismatch",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-clean-current",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-relevant-internal-link",
+          "unsafe_misses": 0
+        }
+      ],
+      "heading_mapping_accuracy": 1.0,
+      "high_blocking_unsafe_false_negative_rate": {
+        "denominator": 4,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.4898908364545973,
+        "wilson_95_low": 0.0
+      },
+      "inference_claims": "exploratory-only-no-independence-or-significance-claims",
+      "input_tokens": 0,
+      "latency_ms_total": 0.0,
+      "macro_f1": 1.0,
+      "output_tokens": 0,
+      "per_class": {
+        "HUMAN_REGULATORY_REVIEW": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 4
+        },
+        "REUSE_AS_LEGACY_REFERENCE": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 4
+        },
+        "REUSE_WITH_NEW_CONTEXT": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 4
+        }
+      },
+      "repair_action_accuracy": 1.0,
+      "represented_classes": [
+        "REUSE_WITH_NEW_CONTEXT",
+        "REUSE_AS_LEGACY_REFERENCE",
+        "HUMAN_REGULATORY_REVIEW"
+      ],
+      "requests": 11,
+      "retrieval": null,
+      "review_bypass_rate": {
+        "denominator": 4,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.4898908364545973,
+        "wilson_95_low": 0.0
+      },
+      "scope": "held-out-test",
+      "system": "RegBridge",
+      "unsafe_false_negative_rate": {
+        "denominator": 8,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.32440756488388023,
+        "wilson_95_low": 0.0
+      }
+    },
+    {
+      "abstention_accuracy": 1.0,
+      "accuracy": 1.0,
+      "balanced_accuracy": 1.0,
+      "calibration_not_applicable_reason": "Deterministic contract fixtures and rule outputs do not provide empirically calibrated probabilities.",
+      "calibration_status": "not_applicable",
+      "cluster_bootstrap_unsafe_fnr_95": [
+        0.0,
+        0.0
+      ],
+      "conservative_false_positive_rate": {
+        "denominator": 7,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.35433043506668743,
+        "wilson_95_low": 5.551115123125783e-17
+      },
+      "cost_usd": null,
+      "evidence_citation_accuracy": 0.8666666666666667,
+      "failures": 0,
+      "family_sensitivity": [
+        {
+          "eligible_cases": 1,
+          "fixture_family": "a-operational-guard",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-removed-3211-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-removed-3212-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 1,
+          "fixture_family": "a-removed-3213",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-unmapped-heading",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "a-valid-321-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 4,
+          "fixture_family": "b-manufacturer-all-normalization",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 3,
+          "fixture_family": "b-manufacturer-all-preservation",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "b-product-keyword-scope",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 1,
+          "fixture_family": "b-specific-manufacturer-scope",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 1,
+          "fixture_family": "c-ambiguous-wording",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-applicant-mismatch",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-clean-current",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-external-link-operational",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-heading-context-contrast",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-relevant-internal-link",
+          "unsafe_misses": 0
+        }
+      ],
+      "heading_mapping_accuracy": 1.0,
+      "high_blocking_unsafe_false_negative_rate": {
+        "denominator": 7,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.35433043506668743,
+        "wilson_95_low": 5.551115123125783e-17
+      },
+      "inference_claims": "exploratory-only-no-independence-or-significance-claims",
+      "input_tokens": 0,
+      "latency_ms_total": 0.0,
+      "macro_f1": 1.0,
+      "output_tokens": 0,
+      "per_class": {
+        "HUMAN_REGULATORY_REVIEW": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 14
+        },
+        "REUSE_AS_LEGACY_REFERENCE": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 9
+        },
+        "REUSE_WITH_NEW_CONTEXT": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 7
+        }
+      },
+      "repair_action_accuracy": 1.0,
+      "represented_classes": [
+        "REUSE_WITH_NEW_CONTEXT",
+        "REUSE_AS_LEGACY_REFERENCE",
+        "HUMAN_REGULATORY_REVIEW"
+      ],
+      "requests": 27,
+      "retrieval": null,
+      "review_bypass_rate": {
+        "denominator": 14,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.2153108027376358,
+        "wilson_95_low": 1.3877787807814457e-17
+      },
+      "scope": "all-cases-secondary",
+      "system": "RegBridge",
+      "unsafe_false_negative_rate": {
+        "denominator": 23,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95_high": 0.14311661845042686,
+        "wilson_95_low": 0.0
+      }
+    }
+  ]
+}

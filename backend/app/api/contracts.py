@@ -15,6 +15,12 @@ from app.domain.enums import (
     VerificationBasis,
 )
 from app.domain.models import AnalysisResult, TargetContext
+from app.evaluation.models import (
+    EvaluationRun,
+    RetrievalTrace,
+    SystemName,
+    SystemPrediction,
+)
 from app.graph.models import GraphNeighborhood
 from app.parsers.models import FixtureSummary
 
@@ -90,3 +96,25 @@ class AnalysisResponse(ApiModel):
 
 class GraphResponse(ApiModel):
     graph: GraphNeighborhood
+
+
+class BaselineRunRequest(ApiModel):
+    system: SystemName
+    case_id: str
+
+
+class BaselineRunResponse(ApiModel):
+    run_type: Literal["deterministic_fixture_validation"]
+    empirical_model_run: Literal[False]
+    eligible_for_performance_claims: Literal[False]
+    current_fda_operational_availability: Literal["not_operational"]
+    prediction: SystemPrediction
+    retrieval: RetrievalTrace | None = None
+
+
+class EvaluationCreateRequest(ApiModel):
+    configuration_id: Literal["m3-fixture-all-systems-v1"]
+
+
+class EvaluationResponse(ApiModel):
+    evaluation: EvaluationRun

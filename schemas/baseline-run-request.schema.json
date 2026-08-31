@@ -1,0 +1,25 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "case_id": {
+      "title": "Case Id",
+      "type": "string"
+    },
+    "system": {
+      "enum": [
+        "B0",
+        "B1",
+        "B2",
+        "RegBridge"
+      ],
+      "title": "System",
+      "type": "string"
+    }
+  },
+  "required": [
+    "system",
+    "case_id"
+  ],
+  "title": "BaselineRunRequest",
+  "type": "object"
+}

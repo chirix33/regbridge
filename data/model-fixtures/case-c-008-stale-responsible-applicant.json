@@ -1,0 +1,16 @@
+{
+  "findings": [
+    {
+      "id": "semantic-c008-stale-applicant",
+      "basis": "observation",
+      "category": "applicant_name_mismatch",
+      "severity": "high",
+      "summary": "The responsible-applicant statement conflicts with current regional metadata.",
+      "evidence_ids": ["leaf-c008-selected-text-p1-1"]
+    }
+  ],
+  "abstained": false,
+  "abstain_reason": null,
+  "fixture_version": "1.0.0",
+  "confidence": 0.98
+}

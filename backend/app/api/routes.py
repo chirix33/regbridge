@@ -1,13 +1,17 @@
 from functools import lru_cache
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request, status
 
 from app import __version__
 from app.analyzer.service import AnalysisService
 from app.api.contracts import (
     AnalysisRequest,
     AnalysisResponse,
+    BaselineRunRequest,
+    BaselineRunResponse,
+    EvaluationCreateRequest,
+    EvaluationResponse,
     FixtureListResponse,
     GraphResponse,
     HealthResponse,
@@ -15,6 +19,7 @@ from app.api.contracts import (
     StandardSourceSummary,
     StandardsSnapshotResponse,
 )
+from app.baselines.runner import BaselineRunner
 from app.config import Settings, get_settings
 from app.domain.enums import (
     ApplicationType,
@@ -24,6 +29,8 @@ from app.domain.enums import (
     StandardVersion,
 )
 from app.domain.models import StandardsManifest
+from app.evaluation.benchmark import load_frozen_benchmark
+from app.evaluation.jobs import EvaluationBusyError, EvaluationManager
 from app.parsers.ectd322 import EctdParseError, FixtureCatalog, parse_zip
 from app.parsers.models import ApplicationInventory
 from app.standards.operational import OperationalStatusRegistry
@@ -53,6 +60,7 @@ SettingsDependency = Annotated[Settings, Depends(get_settings)]
 ManifestDependency = Annotated[StandardsManifest, Depends(get_manifest)]
 
 _inventories: dict[str, ApplicationInventory] = {}
+_evaluation_manager = EvaluationManager()
 
 
 @lru_cache
@@ -108,6 +116,9 @@ def scope(
             "fixture-semantic-inspection",
             "openai-compatible-semantic-adapter",
             "shared-decision-synthesis",
+            "frozen-benchmark",
+            "baseline-runner",
+            "deterministic-evaluation",
         ),
         planned_archetypes=(
             "unavailable-heading",
@@ -222,5 +233,59 @@ def get_analysis(analysis_id: str, service: AnalysisDependency) -> AnalysisRespo
 def get_analysis_graph(analysis_id: str, service: AnalysisDependency) -> GraphResponse:
     try:
         return GraphResponse(graph=service.graph(analysis_id))
+    except KeyError as error:
+        raise HTTPException(status_code=404, detail=str(error)) from error
+
+
+@router.post(
+    "/api/v1/baselines/run",
+    response_model=BaselineRunResponse,
+    tags=["evaluation"],
+)
+def run_baseline(request: BaselineRunRequest) -> BaselineRunResponse:
+    benchmark = load_frozen_benchmark()
+    try:
+        case = next(item for item in benchmark.cases if item.case_id == request.case_id)
+    except StopIteration as error:
+        raise HTTPException(status_code=404, detail="frozen benchmark case not found") from error
+    runner = BaselineRunner()
+    prediction, retrieval = runner.run(request.system, runner.case_input(case))
+    return BaselineRunResponse(
+        run_type="deterministic_fixture_validation",
+        empirical_model_run=False,
+        eligible_for_performance_claims=False,
+        current_fda_operational_availability="not_operational",
+        prediction=prediction,
+        retrieval=retrieval,
+    )
+
+
+@router.post(
+    "/api/v1/evaluations",
+    response_model=EvaluationResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+    tags=["evaluation"],
+)
+def create_evaluation(
+    request: EvaluationCreateRequest, background_tasks: BackgroundTasks
+) -> EvaluationResponse:
+    try:
+        run = _evaluation_manager.create(request.configuration_id)
+    except EvaluationBusyError as error:
+        raise HTTPException(status_code=409, detail=str(error)) from error
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+    background_tasks.add_task(_evaluation_manager.execute, run.id)
+    return EvaluationResponse(evaluation=run)
+
+
+@router.get(
+    "/api/v1/evaluations/{evaluation_id}",
+    response_model=EvaluationResponse,
+    tags=["evaluation"],
+)
+def get_evaluation(evaluation_id: str) -> EvaluationResponse:
+    try:
+        return EvaluationResponse(evaluation=_evaluation_manager.get(evaluation_id))
     except KeyError as error:
         raise HTTPException(status_code=404, detail=str(error)) from error

@@ -38,7 +38,7 @@ def evidence_span() -> EvidenceSpan:
 
 def request(fixture_id: str) -> ModelRequest:
     return ModelRequest(
-        fixture_id=fixture_id,
+        fixture_lookup_key=fixture_id,
         task="Classify semantic risk using only supplied evidence.",
         context={"artifact_id": "artifact-001"},
         evidence=(evidence_span(),),

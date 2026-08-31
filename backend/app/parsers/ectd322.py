@@ -206,7 +206,10 @@ def _pdf_destination_name(value: object) -> str:
     if isinstance(value, Destination):
         return str(value.title)
     if isinstance(value, ArrayObject) and value:
-        return f"page-object-{value[0]}"
+        page_reference = list.__getitem__(value, 0)
+        if isinstance(page_reference, IndirectObject):
+            return f"page-ref-{page_reference.idnum}-{page_reference.generation}"
+        return f"page-object-{type(page_reference).__name__}"
     return str(value)
 
 
@@ -271,7 +274,7 @@ def _extract_pdf_evidence(
                     target = _pdf_destination_name(raw_destination)
                     try:
                         if isinstance(raw_destination, ArrayObject) and raw_destination:
-                            page_reference = raw_destination[0]
+                            page_reference = list.__getitem__(raw_destination, 0)
                             target_exists = any(
                                 page.indirect_reference == page_reference for page in reader.pages
                             )

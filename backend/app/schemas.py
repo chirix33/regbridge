@@ -6,6 +6,10 @@ from pydantic import BaseModel
 from app.api.contracts import (
     AnalysisRequest,
     AnalysisResponse,
+    BaselineRunRequest,
+    BaselineRunResponse,
+    EvaluationCreateRequest,
+    EvaluationResponse,
     FixtureListResponse,
     GraphResponse,
     ScopeResponse,
@@ -14,6 +18,15 @@ from app.api.contracts import (
 from app.config import REPOSITORY_ROOT
 from app.domain.models import AnalysisResult, StandardsManifest, TargetContext
 from app.evaluation.drafts import BenchmarkDraftSet
+from app.evaluation.models import (
+    BenchmarkCase,
+    CaseInput,
+    EvaluationRun,
+    FrozenBenchmark,
+    MetricsReport,
+    RetrievalTrace,
+    SystemPrediction,
+)
 from app.graph.models import GraphNeighborhood
 from app.llm.models import ModelRequest, SemanticRiskOutput
 from app.main import create_app
@@ -26,6 +39,14 @@ SCHEMA_MODELS: dict[str, type[BaseModel]] = {
     "benchmark-draft-set.schema.json": BenchmarkDraftSet,
     "analysis-request.schema.json": AnalysisRequest,
     "analysis-response.schema.json": AnalysisResponse,
+    "baseline-run-request.schema.json": BaselineRunRequest,
+    "baseline-run-response.schema.json": BaselineRunResponse,
+    "benchmark-case.schema.json": BenchmarkCase,
+    "case-input.schema.json": CaseInput,
+    "evaluation-create-request.schema.json": EvaluationCreateRequest,
+    "evaluation-response.schema.json": EvaluationResponse,
+    "evaluation-run.schema.json": EvaluationRun,
+    "frozen-benchmark.schema.json": FrozenBenchmark,
     "application-inventory.schema.json": ApplicationInventory,
     "fixture-list-response.schema.json": FixtureListResponse,
     "graph-neighborhood.schema.json": GraphNeighborhood,
@@ -33,12 +54,15 @@ SCHEMA_MODELS: dict[str, type[BaseModel]] = {
     "heading-rule.schema.json": HeadingRule,
     "model-request.schema.json": ModelRequest,
     "metadata-rule.schema.json": MetadataRule,
+    "metrics-report.schema.json": MetricsReport,
     "operational-availability.schema.json": OperationalAvailability,
     "scope-response.schema.json": ScopeResponse,
+    "retrieval-trace.schema.json": RetrievalTrace,
     "semantic-risk-output.schema.json": SemanticRiskOutput,
     "standards-manifest.schema.json": StandardsManifest,
     "standards-snapshot-response.schema.json": StandardsSnapshotResponse,
     "target-context.schema.json": TargetContext,
+    "system-prediction.schema.json": SystemPrediction,
 }
 SCHEMA_DIRECTORY = REPOSITORY_ROOT / "schemas"
 

@@ -1,4 +1,4 @@
-.PHONY: setup lint typecheck test build check dev schemas
+.PHONY: setup lint typecheck test build check dev schemas evaluate
 
 PYTHON ?= python3
 VENV_PYTHON := .venv/bin/python
@@ -34,3 +34,6 @@ schemas:
 
 dev:
 	@echo "Use ./scripts/dev.ps1 on Windows or run the backend and frontend commands from README.md."
+
+evaluate:
+	$(VENV_PYTHON) scripts/evaluate.py

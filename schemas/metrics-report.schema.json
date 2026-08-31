@@ -1,0 +1,371 @@
+{
+  "$defs": {
+    "ClassMetrics": {
+      "additionalProperties": false,
+      "properties": {
+        "f1": {
+          "title": "F1",
+          "type": "number"
+        },
+        "precision": {
+          "title": "Precision",
+          "type": "number"
+        },
+        "recall": {
+          "title": "Recall",
+          "type": "number"
+        },
+        "support": {
+          "title": "Support",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "precision",
+        "recall",
+        "f1",
+        "support"
+      ],
+      "title": "ClassMetrics",
+      "type": "object"
+    },
+    "Decision": {
+      "enum": [
+        "REUSE_AS_LEGACY_REFERENCE",
+        "REUSE_WITH_NEW_CONTEXT",
+        "REUSE_AFTER_METADATA_REPAIR",
+        "BREAK_LIFECYCLE_AND_RESUBMIT",
+        "DO_NOT_REUSE",
+        "HUMAN_REGULATORY_REVIEW"
+      ],
+      "title": "Decision",
+      "type": "string"
+    },
+    "FamilySensitivity": {
+      "additionalProperties": false,
+      "properties": {
+        "eligible_cases": {
+          "title": "Eligible Cases",
+          "type": "integer"
+        },
+        "fixture_family": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Fixture Family",
+          "type": "string"
+        },
+        "unsafe_misses": {
+          "title": "Unsafe Misses",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "fixture_family",
+        "unsafe_misses",
+        "eligible_cases"
+      ],
+      "title": "FamilySensitivity",
+      "type": "object"
+    },
+    "RateMetric": {
+      "additionalProperties": false,
+      "properties": {
+        "denominator": {
+          "title": "Denominator",
+          "type": "integer"
+        },
+        "numerator": {
+          "title": "Numerator",
+          "type": "integer"
+        },
+        "rate": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Rate"
+        },
+        "wilson_95_high": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Wilson 95 High"
+        },
+        "wilson_95_low": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Wilson 95 Low"
+        }
+      },
+      "required": [
+        "numerator",
+        "denominator",
+        "rate",
+        "wilson_95_low",
+        "wilson_95_high"
+      ],
+      "title": "RateMetric",
+      "type": "object"
+    },
+    "RetrievalMetrics": {
+      "additionalProperties": false,
+      "properties": {
+        "evaluated_cases": {
+          "title": "Evaluated Cases",
+          "type": "integer"
+        },
+        "mrr": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mrr"
+        },
+        "precision_at_3": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Precision At 3"
+        },
+        "recall_at_3": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Recall At 3"
+        }
+      },
+      "required": [
+        "evaluated_cases",
+        "recall_at_3",
+        "precision_at_3",
+        "mrr"
+      ],
+      "title": "RetrievalMetrics",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "abstention_accuracy": {
+      "title": "Abstention Accuracy",
+      "type": "number"
+    },
+    "accuracy": {
+      "title": "Accuracy",
+      "type": "number"
+    },
+    "balanced_accuracy": {
+      "title": "Balanced Accuracy",
+      "type": "number"
+    },
+    "calibration_not_applicable_reason": {
+      "title": "Calibration Not Applicable Reason",
+      "type": "string"
+    },
+    "calibration_status": {
+      "const": "not_applicable",
+      "title": "Calibration Status",
+      "type": "string"
+    },
+    "cluster_bootstrap_unsafe_fnr_95": {
+      "anyOf": [
+        {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Cluster Bootstrap Unsafe Fnr 95"
+    },
+    "conservative_false_positive_rate": {
+      "$ref": "#/$defs/RateMetric"
+    },
+    "cost_usd": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Cost Usd"
+    },
+    "evidence_citation_accuracy": {
+      "title": "Evidence Citation Accuracy",
+      "type": "number"
+    },
+    "failures": {
+      "title": "Failures",
+      "type": "integer"
+    },
+    "family_sensitivity": {
+      "items": {
+        "$ref": "#/$defs/FamilySensitivity"
+      },
+      "title": "Family Sensitivity",
+      "type": "array"
+    },
+    "heading_mapping_accuracy": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Heading Mapping Accuracy"
+    },
+    "high_blocking_unsafe_false_negative_rate": {
+      "$ref": "#/$defs/RateMetric"
+    },
+    "inference_claims": {
+      "const": "exploratory-only-no-independence-or-significance-claims",
+      "title": "Inference Claims",
+      "type": "string"
+    },
+    "input_tokens": {
+      "title": "Input Tokens",
+      "type": "integer"
+    },
+    "latency_ms_total": {
+      "title": "Latency Ms Total",
+      "type": "number"
+    },
+    "macro_f1": {
+      "title": "Macro F1",
+      "type": "number"
+    },
+    "output_tokens": {
+      "title": "Output Tokens",
+      "type": "integer"
+    },
+    "per_class": {
+      "additionalProperties": {
+        "$ref": "#/$defs/ClassMetrics"
+      },
+      "title": "Per Class",
+      "type": "object"
+    },
+    "repair_action_accuracy": {
+      "title": "Repair Action Accuracy",
+      "type": "number"
+    },
+    "represented_classes": {
+      "items": {
+        "$ref": "#/$defs/Decision"
+      },
+      "title": "Represented Classes",
+      "type": "array"
+    },
+    "requests": {
+      "title": "Requests",
+      "type": "integer"
+    },
+    "retrieval": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RetrievalMetrics"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "review_bypass_rate": {
+      "$ref": "#/$defs/RateMetric"
+    },
+    "scope": {
+      "enum": [
+        "held-out-test",
+        "all-cases-secondary"
+      ],
+      "title": "Scope",
+      "type": "string"
+    },
+    "system": {
+      "enum": [
+        "B0",
+        "B1",
+        "B2",
+        "RegBridge"
+      ],
+      "title": "System",
+      "type": "string"
+    },
+    "unsafe_false_negative_rate": {
+      "$ref": "#/$defs/RateMetric"
+    }
+  },
+  "required": [
+    "system",
+    "scope",
+    "represented_classes",
+    "unsafe_false_negative_rate",
+    "high_blocking_unsafe_false_negative_rate",
+    "review_bypass_rate",
+    "conservative_false_positive_rate",
+    "per_class",
+    "macro_f1",
+    "accuracy",
+    "balanced_accuracy",
+    "heading_mapping_accuracy",
+    "evidence_citation_accuracy",
+    "repair_action_accuracy",
+    "abstention_accuracy",
+    "retrieval",
+    "latency_ms_total",
+    "failures",
+    "requests",
+    "input_tokens",
+    "output_tokens",
+    "cost_usd",
+    "calibration_status",
+    "calibration_not_applicable_reason",
+    "family_sensitivity",
+    "cluster_bootstrap_unsafe_fnr_95",
+    "inference_claims"
+  ],
+  "title": "MetricsReport",
+  "type": "object"
+}

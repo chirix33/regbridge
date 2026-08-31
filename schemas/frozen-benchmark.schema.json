@@ -1,0 +1,564 @@
+{
+  "$defs": {
+    "ApplicationType": {
+      "enum": [
+        "NDA",
+        "ANDA",
+        "IND",
+        "DMF"
+      ],
+      "title": "ApplicationType",
+      "type": "string"
+    },
+    "Authority": {
+      "enum": [
+        "FDA"
+      ],
+      "title": "Authority",
+      "type": "string"
+    },
+    "BenchmarkCase": {
+      "additionalProperties": false,
+      "properties": {
+        "archetype": {
+          "title": "Archetype",
+          "type": "string"
+        },
+        "case_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "decision_fingerprint_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Decision Fingerprint Sha256",
+          "type": "string"
+        },
+        "decision_predicate_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Decision Predicate Sha256",
+          "type": "string"
+        },
+        "decision_relevant_predicates": {
+          "additionalProperties": true,
+          "title": "Decision Relevant Predicates",
+          "type": "object"
+        },
+        "expert_validated": {
+          "const": false,
+          "default": false,
+          "title": "Expert Validated",
+          "type": "boolean"
+        },
+        "fixture_family": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Fixture Family",
+          "type": "string"
+        },
+        "fixture_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Fixture Id",
+          "type": "string"
+        },
+        "mutation": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Mutation",
+          "type": "object"
+        },
+        "package_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Package Sha256",
+          "type": "string"
+        },
+        "reference": {
+          "$ref": "#/$defs/ReferenceLabel"
+        },
+        "review_event": {
+          "$ref": "#/$defs/ReviewEvent"
+        },
+        "review_status": {
+          "const": "author_adjudicated_for_demo",
+          "title": "Review Status",
+          "type": "string"
+        },
+        "selected_file_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Selected File Sha256",
+          "type": "string"
+        },
+        "selected_leaf_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Selected Leaf Id",
+          "type": "string"
+        },
+        "source_fixture_id": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Source Fixture Id"
+        },
+        "split": {
+          "enum": [
+            "train",
+            "development",
+            "test"
+          ],
+          "title": "Split",
+          "type": "string"
+        },
+        "target_context": {
+          "$ref": "#/$defs/TargetContext"
+        },
+        "target_context_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Target Context Id",
+          "type": "string"
+        },
+        "target_context_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Target Context Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "archetype",
+        "fixture_id",
+        "source_fixture_id",
+        "selected_leaf_id",
+        "target_context_id",
+        "target_context",
+        "fixture_family",
+        "split",
+        "mutation",
+        "package_sha256",
+        "selected_file_sha256",
+        "target_context_sha256",
+        "decision_fingerprint_sha256",
+        "decision_predicate_sha256",
+        "decision_relevant_predicates",
+        "reference",
+        "review_status",
+        "review_event"
+      ],
+      "title": "BenchmarkCase",
+      "type": "object"
+    },
+    "Center": {
+      "enum": [
+        "CDER"
+      ],
+      "title": "Center",
+      "type": "string"
+    },
+    "Decision": {
+      "enum": [
+        "REUSE_AS_LEGACY_REFERENCE",
+        "REUSE_WITH_NEW_CONTEXT",
+        "REUSE_AFTER_METADATA_REPAIR",
+        "BREAK_LIFECYCLE_AND_RESUBMIT",
+        "DO_NOT_REUSE",
+        "HUMAN_REGULATORY_REVIEW"
+      ],
+      "title": "Decision",
+      "type": "string"
+    },
+    "ManufacturerPartitioning": {
+      "enum": [
+        "unnecessary",
+        "required",
+        "unknown"
+      ],
+      "title": "ManufacturerPartitioning",
+      "type": "string"
+    },
+    "MetadataMigrationIntent": {
+      "enum": [
+        "preserve-existing-lifecycle",
+        "normalize-metadata",
+        "unspecified"
+      ],
+      "title": "MetadataMigrationIntent",
+      "type": "string"
+    },
+    "MetadataPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "intent": {
+          "$ref": "#/$defs/MetadataMigrationIntent"
+        },
+        "manufacturer_partitioning": {
+          "$ref": "#/$defs/ManufacturerPartitioning",
+          "default": "unknown"
+        },
+        "replacement_manufacturer_value": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Replacement Manufacturer Value"
+        }
+      },
+      "required": [
+        "intent"
+      ],
+      "title": "MetadataPlan",
+      "type": "object"
+    },
+    "ReferenceLabel": {
+      "additionalProperties": false,
+      "properties": {
+        "acceptable_evidence_ids": {
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "type": "string"
+          },
+          "title": "Acceptable Evidence Ids",
+          "type": "array"
+        },
+        "action": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Action",
+          "type": "string"
+        },
+        "action_mode": {
+          "enum": [
+            "required_condition",
+            "suggested_check",
+            "no_action"
+          ],
+          "title": "Action Mode",
+          "type": "string"
+        },
+        "decision": {
+          "$ref": "#/$defs/Decision"
+        },
+        "human_review_required": {
+          "title": "Human Review Required",
+          "type": "boolean"
+        },
+        "rationale": {
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "required_rule_ids": {
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "type": "string"
+          },
+          "title": "Required Rule Ids",
+          "type": "array"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        }
+      },
+      "required": [
+        "decision",
+        "severity",
+        "action",
+        "action_mode",
+        "required_rule_ids",
+        "acceptable_evidence_ids",
+        "human_review_required",
+        "rationale"
+      ],
+      "title": "ReferenceLabel",
+      "type": "object"
+    },
+    "ReuseOperation": {
+      "enum": [
+        "reference-existing-content",
+        "create-new-target-artifact"
+      ],
+      "title": "ReuseOperation",
+      "type": "string"
+    },
+    "ReviewDecision": {
+      "enum": [
+        "accepted",
+        "rejected"
+      ],
+      "title": "ReviewDecision",
+      "type": "string"
+    },
+    "ReviewEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "decision": {
+          "$ref": "#/$defs/ReviewDecision"
+        },
+        "expert_validated": {
+          "default": false,
+          "title": "Expert Validated",
+          "type": "boolean"
+        },
+        "external_reviewer_qualification": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "External Reviewer Qualification"
+        },
+        "id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "independent_second_author_check": {
+          "default": false,
+          "title": "Independent Second Author Check",
+          "type": "boolean"
+        },
+        "object_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Object Id",
+          "type": "string"
+        },
+        "object_version": {
+          "minLength": 1,
+          "title": "Object Version",
+          "type": "string"
+        },
+        "rationale": {
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "format": "date-time",
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewer_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Reviewer Id",
+          "type": "string"
+        },
+        "reviewer_role": {
+          "minLength": 1,
+          "title": "Reviewer Role",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "source_snapshot_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Source Snapshot Id",
+          "type": "string"
+        },
+        "supporting_source_sha256s": {
+          "default": [],
+          "items": {
+            "pattern": "^[a-f0-9]{64}$",
+            "type": "string"
+          },
+          "title": "Supporting Source Sha256S",
+          "type": "array"
+        },
+        "unresolved_assumptions": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Unresolved Assumptions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "reviewer_id",
+        "reviewer_role",
+        "reviewed_at",
+        "object_id",
+        "object_version",
+        "source_snapshot_id",
+        "source_sha256",
+        "decision",
+        "rationale"
+      ],
+      "title": "ReviewEvent",
+      "type": "object"
+    },
+    "ScenarioMode": {
+      "enum": [
+        "prospective_forward_compatibility",
+        "current_operational"
+      ],
+      "title": "ScenarioMode",
+      "type": "string"
+    },
+    "Severity": {
+      "enum": [
+        "informational",
+        "low",
+        "medium",
+        "high",
+        "blocking",
+        "unresolved"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "StandardVersion": {
+      "enum": [
+        "eCTD-3.2.2",
+        "eCTD-4.0"
+      ],
+      "title": "StandardVersion",
+      "type": "string"
+    },
+    "TargetContext": {
+      "additionalProperties": false,
+      "properties": {
+        "analysis_date": {
+          "format": "date",
+          "title": "Analysis Date",
+          "type": "string"
+        },
+        "application_type": {
+          "$ref": "#/$defs/ApplicationType"
+        },
+        "authority": {
+          "$ref": "#/$defs/Authority"
+        },
+        "center": {
+          "$ref": "#/$defs/Center"
+        },
+        "metadata_plan": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MetadataPlan"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "reuse_operation": {
+          "$ref": "#/$defs/ReuseOperation"
+        },
+        "scenario_mode": {
+          "$ref": "#/$defs/ScenarioMode"
+        },
+        "source_standard": {
+          "$ref": "#/$defs/StandardVersion"
+        },
+        "standards_snapshot_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Standards Snapshot Id",
+          "type": "string"
+        },
+        "target_standard": {
+          "$ref": "#/$defs/StandardVersion"
+        }
+      },
+      "required": [
+        "authority",
+        "center",
+        "application_type",
+        "source_standard",
+        "target_standard",
+        "analysis_date",
+        "reuse_operation",
+        "standards_snapshot_id",
+        "scenario_mode"
+      ],
+      "title": "TargetContext",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "benchmark_version": {
+      "title": "Benchmark Version",
+      "type": "string"
+    },
+    "cases": {
+      "items": {
+        "$ref": "#/$defs/BenchmarkCase"
+      },
+      "maxItems": 30,
+      "minItems": 30,
+      "title": "Cases",
+      "type": "array"
+    },
+    "expert_validated": {
+      "const": false,
+      "title": "Expert Validated",
+      "type": "boolean"
+    },
+    "frozen_at": {
+      "title": "Frozen At",
+      "type": "string"
+    },
+    "frozen_by": {
+      "const": "author-01",
+      "title": "Frozen By",
+      "type": "string"
+    },
+    "operational_availability": {
+      "const": "not_operational",
+      "title": "Operational Availability",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "snapshot_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "title": "Snapshot Id",
+      "type": "string"
+    },
+    "source_ledger_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Source Ledger Sha256",
+      "type": "string"
+    },
+    "status": {
+      "const": "frozen",
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "benchmark_version",
+    "snapshot_id",
+    "status",
+    "frozen_at",
+    "source_ledger_sha256",
+    "frozen_by",
+    "expert_validated",
+    "operational_availability",
+    "cases"
+  ],
+  "title": "FrozenBenchmark",
+  "type": "object"
+}

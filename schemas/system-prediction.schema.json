@@ -1,0 +1,179 @@
+{
+  "$defs": {
+    "Decision": {
+      "enum": [
+        "REUSE_AS_LEGACY_REFERENCE",
+        "REUSE_WITH_NEW_CONTEXT",
+        "REUSE_AFTER_METADATA_REPAIR",
+        "BREAK_LIFECYCLE_AND_RESUBMIT",
+        "DO_NOT_REUSE",
+        "HUMAN_REGULATORY_REVIEW"
+      ],
+      "title": "Decision",
+      "type": "string"
+    },
+    "Severity": {
+      "enum": [
+        "informational",
+        "low",
+        "medium",
+        "high",
+        "blocking",
+        "unresolved"
+      ],
+      "title": "Severity",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "action": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "title": "Action",
+      "type": "string"
+    },
+    "case_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "title": "Case Id",
+      "type": "string"
+    },
+    "confidence": {
+      "anyOf": [
+        {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Confidence"
+    },
+    "cost_usd": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cost Usd"
+    },
+    "decision": {
+      "$ref": "#/$defs/Decision"
+    },
+    "empirical_model_observation": {
+      "const": false,
+      "default": false,
+      "title": "Empirical Model Observation",
+      "type": "boolean"
+    },
+    "evidence_ids": {
+      "default": [],
+      "items": {
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+        "type": "string"
+      },
+      "title": "Evidence Ids",
+      "type": "array"
+    },
+    "failure": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Failure"
+    },
+    "human_review_required": {
+      "title": "Human Review Required",
+      "type": "boolean"
+    },
+    "input_tokens": {
+      "minimum": 0,
+      "title": "Input Tokens",
+      "type": "integer"
+    },
+    "latency_ms": {
+      "minimum": 0,
+      "title": "Latency Ms",
+      "type": "number"
+    },
+    "output_tokens": {
+      "minimum": 0,
+      "title": "Output Tokens",
+      "type": "integer"
+    },
+    "prediction_source": {
+      "enum": [
+        "contract_fixture",
+        "genuine_rule_only",
+        "hybrid_contract_fixture"
+      ],
+      "title": "Prediction Source",
+      "type": "string"
+    },
+    "rationale": {
+      "minLength": 1,
+      "title": "Rationale",
+      "type": "string"
+    },
+    "requests": {
+      "minimum": 0,
+      "title": "Requests",
+      "type": "integer"
+    },
+    "rule_ids": {
+      "default": [],
+      "items": {
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+        "type": "string"
+      },
+      "title": "Rule Ids",
+      "type": "array"
+    },
+    "severity": {
+      "$ref": "#/$defs/Severity"
+    },
+    "system": {
+      "enum": [
+        "B0",
+        "B1",
+        "B2",
+        "RegBridge"
+      ],
+      "title": "System",
+      "type": "string"
+    },
+    "unconditional_reuse": {
+      "title": "Unconditional Reuse",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "system",
+    "case_id",
+    "decision",
+    "severity",
+    "action",
+    "human_review_required",
+    "unconditional_reuse",
+    "rationale",
+    "prediction_source",
+    "latency_ms",
+    "requests",
+    "input_tokens",
+    "output_tokens"
+  ],
+  "title": "SystemPrediction",
+  "type": "object"
+}

@@ -16,10 +16,14 @@ frontend/.vite/
 
 results/*
 !results/.gitkeep
+!results/validation/
+!results/validation/**
 paper/figures/*
 !paper/figures/.gitkeep
 paper/tables/*
 !paper/tables/.gitkeep
+!paper/tables/validation/
+!paper/tables/validation/**
 
 .DS_Store
 Thumbs.db

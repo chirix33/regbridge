@@ -14,7 +14,7 @@ from app.domain.models import (
 
 
 class ModelRequest(DomainModel):
-    fixture_id: StableId
+    fixture_lookup_key: StableId = Field(exclude=True, repr=False)
     task: str = Field(min_length=1)
     context: dict[str, JsonValue]
     evidence: tuple[EvidenceSpan | DossierEvidence, ...]

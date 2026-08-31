@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ectd:ectd xmlns:ectd="urn:ich:ectd:v3.2.2" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <m3-2-s-1-2>
+    <leaf ID="leaf-a005-predecessor" operation="new" xlink:href="documents/leaf-a005-predecessor.pdf">
+      <title>Original properties description</title>
+    </leaf>
+    <leaf ID="leaf-a005-selected" operation="append" modified-file="leaf-a005-predecessor" xlink:href="documents/leaf-a005-selected.pdf">
+      <title>Appended properties description</title>
+    </leaf>
+  </m3-2-s-1-2>
+</ectd:ectd>

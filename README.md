@@ -8,9 +8,9 @@ It is not FDA-certified, is not a substitute for regulatory review, and does not
 guarantee filing or application acceptance. Use only public, synthetic, or deliberately
 de-identified materials. Do not upload confidential sponsor submissions.
 
-## Current delivery state: M2
+## Current delivery state: M3
 
-M2 completes one shared end-to-end analyzer path for all three archetypes:
+M3 preserves the shared analyzer path and adds a frozen, auditable evaluation capability:
 
 - FastAPI health, FDA/CDER scope, and frozen-snapshot endpoints;
 - React/TypeScript/Tailwind scope UI with a visible research disclaimer;
@@ -30,16 +30,23 @@ M2 completes one shared end-to-end analyzer path for all three archetypes:
 - bounded PDF text and hyperlink extraction with author-verified fixture-link governance;
 - strict offline fixtures, a disabled-model abstention, and an opt-in OpenAI-compatible structured
   adapter with redacted run metadata;
-- deterministic decision precedence, SQLite result/graph trace persistence, and exactly 30
-  unfrozen benchmark drafts (ten per archetype);
+- deterministic decision precedence and SQLite result/graph trace persistence;
+- an atomically frozen 30-case benchmark with author-adjudicated labels, immutable input hashes,
+  12 held-out cases, and six non-overlapping held-out fixture families;
+- B0 long-context contract fixtures, dependency-free BM25 B1, genuine rule-only B2, and the full
+  RegBridge path through one label-isolated runner;
+- unsafe false-negative, review-bypass, per-class, retrieval, Wilson-interval, and exploratory
+  family-clustered metrics;
+- deterministic manifests, raw outputs, CSV/JSON/Markdown exports, evaluation APIs, and one-
+  command evaluation;
 - an interactive shared UI for parsed inventory, findings, evidence, model record, repair,
   uncertainty, graph, and chronological trace.
 
 M1/M2 are a **prospective forward-compatibility research scenario**. FDA forward compatibility is
 currently **`not_operational`**, which is visible in the API and UI. Current-operational mode does
-not execute prospective rules or semantic inspection. The executable M1/M2 rules and canonical
-Case B label are author-adjudicated by `author-01`; the other benchmark drafts remain candidates
-until M3. `expert_validated` remains `false`.
+not execute prospective rules or semantic inspection. The executable rules and frozen benchmark
+labels are author-adjudicated by `author-01` for the controlled demonstration only.
+`expert_validated` remains `false`.
 
 ## Prerequisites
 
@@ -76,7 +83,18 @@ make check
 lint, type checking, component tests, and a production build. No default check uses the network or
 requires a model key.
 
-## Run the M2 application
+Run the deterministic M3 evaluation on Windows:
+
+```powershell
+.\scripts\evaluate.ps1
+```
+
+On macOS/Linux, use `make evaluate`. Validation-only artifacts are written beneath
+`results/validation/` and `paper/tables/validation/`. B0, B1, and RegBridge outputs are synthetic
+contract fixtures—not empirical model observations. Only B2 is a genuine rule-only result. No
+model-comparison or RegBridge-superiority claim is permitted without a declared live-model run.
+
+## Run the M3 application
 
 On Windows, one command starts the local API and UI:
 
@@ -100,6 +118,9 @@ Useful endpoints:
 - supported scope and disclaimer: <http://127.0.0.1:8000/api/v1/config/scope>
 - frozen source snapshot: <http://127.0.0.1:8000/api/v1/standards/snapshots>
 - controlled fixture catalog: <http://127.0.0.1:8000/api/v1/fixtures>
+- baseline runner: `POST http://127.0.0.1:8000/api/v1/baselines/run`
+- deterministic evaluation: `POST http://127.0.0.1:8000/api/v1/evaluations`
+- evaluation status: `GET http://127.0.0.1:8000/api/v1/evaluations/eval-m3-fixture-v1`
 - unavailable-heading case: <http://127.0.0.1:5173/case-a>
 - metadata/lifecycle case: <http://127.0.0.1:5173/case-b>
 - semantic PDF/hyperlink case: <http://127.0.0.1:5173/case-c>
@@ -113,6 +134,8 @@ The server binds only to `127.0.0.1`. Authentication and public deployment are o
 - `backend/app/graph/` and `backend/app/rules/` — typed graph and adjudicated constraints
 - `backend/app/standards/` — frozen registry, evidence loader, and digest validation
 - `backend/app/llm/` — structured model protocol and deterministic fixture implementation
+- `backend/app/baselines/` and `backend/app/evaluation/` — comparison systems, benchmark,
+  scoring, manifests, and exports
 - `frontend/src/` — accessible scope-first demonstration shell
 - `data/standards/` — source-verified registry, source ledger, and immutable source snapshots
 - `data/model-fixtures/` — versioned offline structured outputs

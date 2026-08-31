@@ -1,0 +1,16 @@
+{
+  "findings": [
+    {
+      "id": "semantic-c007-stale-heading",
+      "basis": "observation",
+      "category": "obsolete_heading",
+      "severity": "high",
+      "summary": "The document presents removed heading 3.2.S.1.2 as current placement guidance.",
+      "evidence_ids": ["leaf-c007-selected-text-p1-1"]
+    }
+  ],
+  "abstained": false,
+  "abstain_reason": null,
+  "fixture_version": "1.0.0",
+  "confidence": 0.98
+}

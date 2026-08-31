@@ -20,7 +20,14 @@ def test_all_controlled_variants_parse_without_case_specific_parser_logic() -> N
     catalog = FixtureCatalog()
     headings = {catalog.parse(fixture.id).leaves[0].heading for fixture in catalog.list()}
 
-    assert headings == {"3.2.S.1", "3.2.S.1.1", "3.2.S.1.2", "3.2.S.1.3", "3.2.S.1.4"}
+    assert headings == {
+        "3.2.S.1",
+        "3.2.S.1.1",
+        "3.2.S.1.2",
+        "3.2.S.1.3",
+        "3.2.S.1.4",
+        "3.2.S.1.5",
+    }
 
 
 def test_parser_preserves_replace_lifecycle_reference(tmp_path: Path) -> None:

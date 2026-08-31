@@ -515,9 +515,14 @@ For model-based systems, hold model, decoding parameters, schema, and maximum re
 
 ### 14.1 Primary metrics
 
-- **Unsafe false-negative rate:** fraction of author-adjudicated reference high-risk/blocking cases predicted as safe reuse. This is the primary safety metric within the controlled benchmark; it is not an estimate of real FDA acceptance risk.
+- **Unsafe false-negative rate:** fraction of references requiring any action, context change,
+  repair, non-reuse, or review that receive unconditional `REUSE_AS_LEGACY_REFERENCE`.
+  Report numerator, denominator, rate, and a 95% Wilson interval. Report the high/blocking-
+  severity restriction separately as sensitivity analysis, not as the primary denominator.
+  This is a controlled benchmark metric, not an estimate of real FDA acceptance risk.
 - **High-risk recall:** recall for cases requiring lifecycle break, non-reuse, or human review due to material uncertainty.
-- **Macro-F1:** balanced performance across the six decision labels.
+- **Macro-F1:** equal weighting over the three represented M3 reference classes only:
+  `REUSE_WITH_NEW_CONTEXT`, `REUSE_AS_LEGACY_REFERENCE`, and `HUMAN_REGULATORY_REVIEW`.
 
 ### 14.2 Supporting metrics
 
@@ -700,6 +705,42 @@ Deliver:
 - deterministic offline evaluation plus one optional declared live-model run.
 
 Exit criteria: one command produces comparable per-case and aggregate results for all four systems.
+
+#### Frozen M3 realization
+
+- The benchmark contains exactly 30 author-adjudicated controlled prospective cases: 12 train,
+  six development, and 12 held-out test cases. The held-out set is balanced 4/4/4 across
+  `REUSE_WITH_NEW_CONTEXT`, `REUSE_AS_LEGACY_REFERENCE`, and
+  `HUMAN_REGULATORY_REVIEW`, using six non-overlapping held-out fixture families. No independence
+  or significance claim is made.
+- Promotion requires a generated and validated pre-freeze ledger followed by explicit
+  `author-01` approval. The ledger command cannot create adjudication events or freeze the
+  benchmark. Atomic promotion verifies the approved ledger digest and records
+  `expert_validated: false` for every case.
+- A005 analyzes one exact selected leaf: `operation="append"`, with
+  `modified-file="leaf-a005-predecessor"`; that predecessor exists with `operation="new"`. These
+  predicates participate in the decision fingerprint.
+- B0 and B1 use identical label-free case serialization, fixed evidence-ID ordering, one direct-
+  decision schema, temperature zero, a 16,000-character input limit, and an 800-token output
+  limit. Inputs above the limit fail validation; evidence is never silently truncated.
+- B1 uses only the six source-verified evidence spans, BM25 `top_k=3`, `k1=1.5`, `b=0.75`, IDF
+  `log(1+(N-df+0.5)/(df+0.5))`, NFKC/casefold tokenization that preserves dotted CTD identifiers,
+  and evidence-ID tie breaking.
+- B2 omits semantic capability without converting omission into abstention. Its tests exercise
+  the capability boundary and deterministic guards, never case-ID-specific output mappings.
+- Deterministic runs are labeled `deterministic_fixture_validation`,
+  `empirical_model_run: false`, and `eligible_for_performance_claims: false`. B0, B1, and
+  RegBridge fixture outputs are contract fixtures. Only genuine B2 rule-only output is an
+  experimental result; a later declared live-model run is required for model-comparison or
+  RegBridge-superiority claims.
+- Headline metrics use only the 12 held-out cases. All-30 metrics are secondary diagnostics.
+  Family-clustered bootstrap intervals sample all six held-out families, including families
+  with zero action-required cases; zero-denominator replicates are omitted. Family counts
+  remain visible even when their unsafe-FNR denominator is zero. Intervals are exploratory.
+  Source-tree digests exclude caches, build outputs, runtime databases, local secrets, and
+  generated evaluation artifacts; byte-pinned inputs are protected from Git newline conversion.
+  FDA operational availability remains
+  `not_operational` in every API, manifest, paper table, and demonstration artifact.
 
 ### M4 — Demonstration polish (September 11–14)
 

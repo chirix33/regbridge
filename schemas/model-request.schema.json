@@ -395,9 +395,9 @@
       "title": "Evidence",
       "type": "array"
     },
-    "fixture_id": {
+    "fixture_lookup_key": {
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
-      "title": "Fixture Id",
+      "title": "Fixture Lookup Key",
       "type": "string"
     },
     "prompt_template_version": {
@@ -412,7 +412,7 @@
     }
   },
   "required": [
-    "fixture_id",
+    "fixture_lookup_key",
     "task",
     "context",
     "evidence",

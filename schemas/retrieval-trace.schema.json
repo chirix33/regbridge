@@ -1,0 +1,104 @@
+{
+  "$defs": {
+    "RetrievalHit": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "rank": {
+          "minimum": 1,
+          "title": "Rank",
+          "type": "integer"
+        },
+        "score": {
+          "title": "Score",
+          "type": "number"
+        }
+      },
+      "required": [
+        "evidence_id",
+        "score",
+        "rank"
+      ],
+      "title": "RetrievalHit",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "b": {
+      "default": 0.75,
+      "title": "B",
+      "type": "number"
+    },
+    "case_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "title": "Case Id",
+      "type": "string"
+    },
+    "configuration_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Configuration Sha256",
+      "type": "string"
+    },
+    "corpus_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Corpus Sha256",
+      "type": "string"
+    },
+    "hits": {
+      "items": {
+        "$ref": "#/$defs/RetrievalHit"
+      },
+      "maxItems": 3,
+      "minItems": 3,
+      "title": "Hits",
+      "type": "array"
+    },
+    "idf_formula": {
+      "const": "log(1+(N-df+0.5)/(df+0.5))",
+      "title": "Idf Formula",
+      "type": "string"
+    },
+    "k1": {
+      "default": 1.5,
+      "title": "K1",
+      "type": "number"
+    },
+    "query": {
+      "title": "Query",
+      "type": "string"
+    },
+    "query_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Query Sha256",
+      "type": "string"
+    },
+    "system": {
+      "const": "B1",
+      "default": "B1",
+      "title": "System",
+      "type": "string"
+    },
+    "top_k": {
+      "const": 3,
+      "default": 3,
+      "title": "Top K",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "case_id",
+    "query",
+    "query_sha256",
+    "corpus_sha256",
+    "configuration_sha256",
+    "idf_formula",
+    "hits"
+  ],
+  "title": "RetrievalTrace",
+  "type": "object"
+}

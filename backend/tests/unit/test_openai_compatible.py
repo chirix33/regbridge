@@ -8,7 +8,7 @@ from app.llm.openai_compatible import OpenAICompatibleModel, OpenAICompatibleMod
 
 def request() -> ModelRequest:
     return ModelRequest(
-        fixture_id="live-test",
+        fixture_lookup_key="live-test",
         task="Inspect only supplied evidence.",
         context={"target": "eCTD-4.0"},
         evidence=(),
@@ -50,6 +50,9 @@ async def test_openai_compatible_adapter_uses_deterministic_structured_request()
     assert completion.run.output_tokens == 8
     assert observed["temperature"] == 0
     assert observed["response_format"]["type"] == "json_schema"  # type: ignore[index]
+    user_payload = json.loads(observed["messages"][1]["content"])  # type: ignore[index]
+    assert "fixture_lookup_key" not in user_payload
+    assert "live-test" not in json.dumps(user_payload)
 
 
 @pytest.mark.asyncio

@@ -1,0 +1,4 @@
+# Preserve byte-pinned evidence, fixture packages, approved ledgers, and frozen digests.
+data/** -text
+results/validation/** -text
+paper/tables/validation/** -text

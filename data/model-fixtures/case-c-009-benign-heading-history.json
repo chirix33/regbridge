@@ -1,0 +1,16 @@
+{
+  "findings": [
+    {
+      "id": "semantic-c009-benign-history",
+      "basis": "observation",
+      "category": "benign_historical_reference",
+      "severity": "low",
+      "summary": "The old heading is explicitly historical and is not presented as current guidance.",
+      "evidence_ids": ["leaf-c009-selected-text-p1-1"]
+    }
+  ],
+  "abstained": false,
+  "abstain_reason": null,
+  "fixture_version": "1.0.0",
+  "confidence": 0.97
+}

@@ -31,9 +31,11 @@ class FixtureModel:
         request: ModelRequest,
         output_type: type[ModelOutput],
     ) -> ModelCompletion[ModelOutput]:
-        fixture_path = self._fixture_directory / f"{request.fixture_id}.json"
+        fixture_path = self._fixture_directory / f"{request.fixture_lookup_key}.json"
         if not fixture_path.is_file():
-            raise FixtureNotFoundError(f"offline model fixture not found: {request.fixture_id}")
+            raise FixtureNotFoundError(
+                f"offline model fixture not found: {request.fixture_lookup_key}"
+            )
 
         with fixture_path.open(encoding="utf-8") as fixture_file:
             payload = json.load(fixture_file)
@@ -58,7 +60,7 @@ class FixtureModel:
                 mode="fixture",
                 status="abstained" if getattr(result, "abstained", False) else "completed",
                 prompt_template_version=request.prompt_template_version,
-                model_name=f"fixture:{request.fixture_id}",
+                model_name=f"fixture:{request.fixture_lookup_key}",
                 request_digest=digest,
                 latency_ms=0,
             ),

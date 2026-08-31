@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ectd:ectd xmlns:ectd="urn:ich:ectd:v3.2.2" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <m3-2-s-1>
+    <leaf ID="leaf-a007-predecessor" operation="new" xlink:href="documents/leaf-a007-predecessor.pdf">
+      <title>Original general information</title>
+    </leaf>
+    <leaf ID="leaf-a007-selected" operation="replace" modified-file="leaf-a007-predecessor" xlink:href="documents/leaf-a007-selected.pdf">
+      <title>Replacement general information</title>
+    </leaf>
+  </m3-2-s-1>
+</ectd:ectd>

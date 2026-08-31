@@ -1,0 +1,281 @@
+{
+  "$defs": {
+    "ApplicationType": {
+      "enum": [
+        "NDA",
+        "ANDA",
+        "IND",
+        "DMF"
+      ],
+      "title": "ApplicationType",
+      "type": "string"
+    },
+    "Authority": {
+      "enum": [
+        "FDA"
+      ],
+      "title": "Authority",
+      "type": "string"
+    },
+    "Center": {
+      "enum": [
+        "CDER"
+      ],
+      "title": "Center",
+      "type": "string"
+    },
+    "DossierEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "extraction_method": {
+          "$ref": "#/$defs/ExtractionMethod",
+          "default": "deterministic"
+        },
+        "file_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "File Sha256",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "pattern": "^(text|hyperlink|metadata)$",
+          "title": "Kind",
+          "type": "string"
+        },
+        "locator": {
+          "minLength": 1,
+          "title": "Locator",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "artifact_id",
+        "kind",
+        "locator",
+        "text",
+        "file_sha256"
+      ],
+      "title": "DossierEvidence",
+      "type": "object"
+    },
+    "ExtractionMethod": {
+      "enum": [
+        "manual",
+        "deterministic",
+        "model_candidate"
+      ],
+      "title": "ExtractionMethod",
+      "type": "string"
+    },
+    "ManufacturerPartitioning": {
+      "enum": [
+        "unnecessary",
+        "required",
+        "unknown"
+      ],
+      "title": "ManufacturerPartitioning",
+      "type": "string"
+    },
+    "MetadataMigrationIntent": {
+      "enum": [
+        "preserve-existing-lifecycle",
+        "normalize-metadata",
+        "unspecified"
+      ],
+      "title": "MetadataMigrationIntent",
+      "type": "string"
+    },
+    "MetadataPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "intent": {
+          "$ref": "#/$defs/MetadataMigrationIntent"
+        },
+        "manufacturer_partitioning": {
+          "$ref": "#/$defs/ManufacturerPartitioning",
+          "default": "unknown"
+        },
+        "replacement_manufacturer_value": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Replacement Manufacturer Value"
+        }
+      },
+      "required": [
+        "intent"
+      ],
+      "title": "MetadataPlan",
+      "type": "object"
+    },
+    "ReuseOperation": {
+      "enum": [
+        "reference-existing-content",
+        "create-new-target-artifact"
+      ],
+      "title": "ReuseOperation",
+      "type": "string"
+    },
+    "ScenarioMode": {
+      "enum": [
+        "prospective_forward_compatibility",
+        "current_operational"
+      ],
+      "title": "ScenarioMode",
+      "type": "string"
+    },
+    "StandardVersion": {
+      "enum": [
+        "eCTD-3.2.2",
+        "eCTD-4.0"
+      ],
+      "title": "StandardVersion",
+      "type": "string"
+    },
+    "TargetContext": {
+      "additionalProperties": false,
+      "properties": {
+        "analysis_date": {
+          "format": "date",
+          "title": "Analysis Date",
+          "type": "string"
+        },
+        "application_type": {
+          "$ref": "#/$defs/ApplicationType"
+        },
+        "authority": {
+          "$ref": "#/$defs/Authority"
+        },
+        "center": {
+          "$ref": "#/$defs/Center"
+        },
+        "metadata_plan": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MetadataPlan"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "reuse_operation": {
+          "$ref": "#/$defs/ReuseOperation"
+        },
+        "scenario_mode": {
+          "$ref": "#/$defs/ScenarioMode"
+        },
+        "source_standard": {
+          "$ref": "#/$defs/StandardVersion"
+        },
+        "standards_snapshot_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Standards Snapshot Id",
+          "type": "string"
+        },
+        "target_standard": {
+          "$ref": "#/$defs/StandardVersion"
+        }
+      },
+      "required": [
+        "authority",
+        "center",
+        "application_type",
+        "source_standard",
+        "target_standard",
+        "analysis_date",
+        "reuse_operation",
+        "standards_snapshot_id",
+        "scenario_mode"
+      ],
+      "title": "TargetContext",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Inference input. Reference labels and adjudication rationales are intentionally absent.",
+  "properties": {
+    "case_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "title": "Case Id",
+      "type": "string"
+    },
+    "dossier_evidence": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/DossierEvidence"
+      },
+      "title": "Dossier Evidence",
+      "type": "array"
+    },
+    "fixture_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "title": "Fixture Id",
+      "type": "string"
+    },
+    "material": {
+      "additionalProperties": true,
+      "title": "Material",
+      "type": "object"
+    },
+    "package_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Package Sha256",
+      "type": "string"
+    },
+    "selected_file_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Selected File Sha256",
+      "type": "string"
+    },
+    "selected_leaf_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "title": "Selected Leaf Id",
+      "type": "string"
+    },
+    "target_context": {
+      "$ref": "#/$defs/TargetContext"
+    },
+    "target_context_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "title": "Target Context Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "case_id",
+    "fixture_id",
+    "selected_leaf_id",
+    "target_context_id",
+    "target_context",
+    "package_sha256",
+    "selected_file_sha256",
+    "material"
+  ],
+  "title": "CaseInput",
+  "type": "object"
+}

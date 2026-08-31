@@ -156,6 +156,12 @@ class AnalysisService:
                 "No generic nearest-parent inference is permitted; no source-supported mapping "
                 f"is encoded for {leaf.heading}."
             )
+
+        if target.reuse_operation == ReuseOperation.CREATE_NEW_TARGET_ARTIFACT:
+            unresolved_reason = (
+                "The approved identifier-reuse rules do not cover creation of a new target "
+                "artifact."
+            )
             regulatory_ids.update(("ev-ctoc-321-remains", "ev-ctoc-3211-3213-removed"))
             findings.append(
                 Finding(
@@ -189,11 +195,6 @@ class AnalysisService:
             plan = target.metadata_plan
             if plan is None or plan.intent == MetadataMigrationIntent.UNSPECIFIED:
                 unresolved_reason = "Metadata migration intent is not declared."
-            elif target.reuse_operation == ReuseOperation.CREATE_NEW_TARGET_ARTIFACT:
-                unresolved_reason = (
-                    "The approved M2 lifecycle rules cover reuse by identifier, not automatic "
-                    "creation of a new target artifact."
-                )
             elif plan.intent == MetadataMigrationIntent.PRESERVE_EXISTING_LIFECYCLE:
                 preserve = self.metadata_by_predicate["preserve-existing-lifecycle"]
                 self._append_rule_finding(
@@ -326,6 +327,30 @@ class AnalysisService:
                     ),
                     evidence_ids=("ev-tcg-hyperlinks-relevant-to-context",),
                 )
+            elif target.reuse_operation == ReuseOperation.CREATE_NEW_TARGET_ARTIFACT:
+                repair = RepairAction(
+                    type="SELECT_SUPPORTED_REUSE_OPERATION",
+                    description=(
+                        "Select identifier-based reuse for this controlled rule or obtain human "
+                        "review for new-artifact creation outside the approved rule scope."
+                    ),
+                )
+            elif (
+                manufacturer_all
+                and target.metadata_plan is not None
+                and target.metadata_plan.intent == MetadataMigrationIntent.NORMALIZE_METADATA
+                and target.metadata_plan.manufacturer_partitioning
+                == ManufacturerPartitioning.UNKNOWN
+            ):
+                repair = RepairAction(
+                    type="DECLARE_MANUFACTURER_PARTITIONING",
+                    description=(
+                        "Declare whether manufacturer partitioning is required and, when "
+                        "required, provide a stable distinguishing manufacturer value."
+                    ),
+                    evidence_ids=("ev-m4-manufacturer-general-values",),
+                )
+                regulatory_ids.add("ev-m4-manufacturer-general-values")
             elif manufacturer_all and (
                 target.metadata_plan is None
                 or target.metadata_plan.intent == MetadataMigrationIntent.UNSPECIFIED
@@ -520,7 +545,7 @@ class AnalysisService:
     ) -> tuple[SemanticRiskOutput, ModelRunRecord]:
         fixture_id = inventory.fixture_id or "uncontrolled-upload"
         request = ModelRequest(
-            fixture_id=fixture_id,
+            fixture_lookup_key=fixture_id,
             task=(
                 "Identify supported stale headings, applicant names, or hyperlink relevance risks. "
                 "Classify benign historical references separately and abstain when evidence "
