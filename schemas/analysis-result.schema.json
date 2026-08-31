@@ -421,7 +421,19 @@
           "type": "array"
         },
         "type": {
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "enum": [
+            "AUTHOR_REVIEW_HEADING_MAPPING",
+            "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT",
+            "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD",
+            "DECLARE_MANUFACTURER_PARTITIONING",
+            "DECLARE_METADATA_MIGRATION_INTENT",
+            "HUMAN_VERIFY_STALE_CONTENT",
+            "NO_MATERIAL_REPAIR",
+            "PRESERVE_EXACT_CONTEXT_GROUP_KEYWORDS",
+            "SELECT_SUPPORTED_REUSE_OPERATION",
+            "VERIFY_HYPERLINK_RELEVANCE",
+            "WAIT_FOR_OPERATIONAL_AVAILABILITY"
+          ],
           "title": "Type",
           "type": "string"
         }

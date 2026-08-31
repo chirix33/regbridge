@@ -9,6 +9,7 @@ from typing import Any, TypeVar
 from app.analyzer.prompts import SEMANTIC_INSPECTION_TASK
 from app.baselines.prompts import DIRECT_DECISION_TASK
 from app.config import REPOSITORY_ROOT
+from app.domain.vocabulary import output_vocabulary
 from app.evaluation.models import DirectDecisionOutput
 from app.llm.models import SemanticRiskOutput
 from app.llm.responses import SYSTEM_INSTRUCTIONS, TEMPERATURE_HANDLING, _strict_json_schema
@@ -48,11 +49,30 @@ def configuration_material(*, max_output_tokens: int = 25_000) -> dict[str, Any]
         "semantic_prompt_source": source("backend/app/analyzer/prompts.py"),
         "output_validators": source("backend/app/evaluation/models.py"),
         "semantic_validators": source("backend/app/llm/models.py"),
+        "request_aliasing": source("backend/app/llm/serialization.py"),
+        "shared_output_vocabulary": output_vocabulary(),
+        "action_vocabulary_source": source("backend/app/domain/vocabulary.py"),
+        "scorer": source("backend/app/evaluation/metrics.py"),
+        "decision_scoring_policy": "option-a-exact-match-three-represented-reference-classes",
         "tokenizer": "tiktoken==0.12.0:o200k_base",
         "input_counting_policy": (
             "Unicode characters: instructions + serialized input + JSON schema"
         ),
     }
+
+
+def require_development_approval() -> None:
+    """Approval is an external author event; neither exporter nor runner can create it."""
+    path = REPOSITORY_ROOT / "data/evaluation/phase1-v2-approval.json"
+    if not path.is_file():
+        raise ValueError("Phase 1 rerun blocked: action vocabulary awaits author-01 approval")
+    approval = json.loads(path.read_text(encoding="utf-8"))
+    if (
+        approval.get("author_id") != "author-01"
+        or approval.get("configuration_sha256") != content_digest(configuration_material())
+        or approval.get("action_vocabulary_sha256") != content_digest(output_vocabulary())
+    ):
+        raise ValueError("Phase 1 rerun blocked: author approval or configuration digest mismatch")
 
 
 def template_digests(material: dict[str, Any]) -> dict[str, str]:

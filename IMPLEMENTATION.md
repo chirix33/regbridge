@@ -531,6 +531,51 @@ For model-based systems, hold model, decoding parameters, schema, and maximum re
 
 ### 14.2 Supporting metrics
 
+#### Declared development contract v2 (approval required before inference)
+
+All four final output schemas permit the same six decisions in `AGENTS.md` §5. B0/B1 direct
+outputs and RegBridge/B2 final repairs use one case-independent action enum derived from the
+existing analyzer and rule repair semantics. RegBridge's semantic request receives the same
+full vocabulary, but retains its evidence-inspection role; the model does not execute repairs
+or select the final hybrid decision. The current rule set structurally emits only three of
+the six permitted decisions. Disclose this architectural restriction in manifests, rather
+than restricting any model's output options to the benchmark distribution.
+
+The proposed 11-action vocabulary is in `docs/evaluation/M3-CONTRACT-V2-REVIEW.md`.
+The Phase 1 runner fails before data/model access until explicit author-01 approval identifies
+the vocabulary and current configuration digests. No approval event is created automatically.
+
+Option (a) scoring is exact match against the reference. A prediction outside the three
+represented reference classes is an error and reduces recall for its true reference class;
+it contributes to no represented class's precision denominator. Macro-F1 remains the mean
+of the three represented-class F1 scores. This benchmark does not evaluate the complete
+six-label taxonomy. Invalid model output is excluded from decision denominators, separately
+reported, and never converted to any decision class.
+
+For every scored system/split, report outside-class count/rate and a breakdown by each
+predicted outside class (including zero counts). Rates use all valid predictions in the
+scope. Also report accuracy after excluding outside-class predictions as **sensitivity only**,
+with included/excluded counts and null accuracy if none remain. It is never an alternative
+headline result. Primary tables always retain outside-class predictions as errors.
+
+Review-bypass and unsafe-FNR have equal prominence in decision-summary tables. When no
+`REUSE_AS_LEGACY_REFERENCE` prediction occurred, explicitly state that zero unsafe-FNR does
+not establish safety. Withhold RegBridge decision metrics until all 18 development outcomes
+complete; an incomplete run cannot support cross-system comparison. Preserve raw partial
+outputs for audit. Do not propose a Phase 2 output cap from partial development observations.
+
+Contract acceptance is based on defect cessation, not accuracy or F1 movement. The before/
+after audit distinguishes schema/serialization checks, rescoring unchanged historical outputs,
+and fresh inference (unavailable until rerun approval). Do not present replayed outputs or
+network-free probes as new empirical observations. Original failed outputs remain unchanged.
+
+Live requests use request-local evidence/identifier aliases, including UUIDs and embedded
+case-derived locator text. Map citations back only after checking that they were supplied.
+The semantic wire severity enum is limited to informational/low/medium/high, with the
+existing runtime validator retained. Source artifacts, labels, and regulatory rules are
+not changed by these contract corrections. Both schemas, the action/decision vocabulary,
+serializers, and scoring policy are included in the new configuration digest.
+
 - decision accuracy;
 - heading mapping accuracy;
 - evidence citation precision/recall and citation validity;

@@ -39,7 +39,14 @@
           "type": "string"
         },
         "severity": {
-          "$ref": "#/$defs/Severity"
+          "enum": [
+            "informational",
+            "low",
+            "medium",
+            "high"
+          ],
+          "title": "Severity",
+          "type": "string"
         },
         "summary": {
           "minLength": 1,
@@ -56,18 +63,6 @@
       ],
       "title": "SemanticFinding",
       "type": "object"
-    },
-    "Severity": {
-      "enum": [
-        "informational",
-        "low",
-        "medium",
-        "high",
-        "blocking",
-        "unresolved"
-      ],
-      "title": "Severity",
-      "type": "string"
     }
   },
   "additionalProperties": false,

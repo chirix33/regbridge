@@ -185,6 +185,7 @@ async def test_usage_cap_and_cost_include_failed_attempts() -> None:
 async def test_phase_stops_after_new_failure_without_advancing_cases(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    monkeypatch.setattr(live, "require_development_approval", lambda: None)
     requests: list[bytes] = []
 
     def handler(request: httpx.Request) -> httpx.Response:

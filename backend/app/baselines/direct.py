@@ -1,11 +1,13 @@
 import json
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, cast
 
 from app.baselines.prompts import DIRECT_DECISION_TASK
 from app.domain.enums import Decision, Severity
 from app.domain.models import EvidenceSpan
+from app.domain.vocabulary import ActionCode, output_vocabulary
 from app.evaluation.models import CaseInput, DirectDecisionOutput
+from app.llm.serialization import RequestAliases
 
 DIRECT_INPUT_CHARACTER_LIMIT = 16_000
 DIRECT_OUTPUT_TOKEN_LIMIT = 800
@@ -21,6 +23,13 @@ class PreparedCase:
 
 
 def prepare_case(case_input: CaseInput) -> PreparedCase:
+    request_aliases = RequestAliases(forbidden=(
+        case_input.case_id, case_input.fixture_id, case_input.selected_leaf_id,
+        case_input.target_context_id, *(
+            value for item in case_input.dossier_evidence
+            for value in (item.id, item.artifact_id, item.locator)
+        ),
+    ))
     selected = dict(case_input.material["selected_leaf"])
     aliases: dict[str, str] = {}
     sanitized_text: list[dict[str, Any]] = []
@@ -29,7 +38,7 @@ def prepare_case(case_input: CaseInput) -> PreparedCase:
     for index, evidence in enumerate(case_input.dossier_evidence, start=1):
         alias = f"case-evidence-{index:03d}"
         aliases[alias] = evidence.id
-        record = {"evidence_id": alias, "text": evidence.text}
+        record = {"evidence_id": alias, "text": request_aliases.text(evidence.text)}
         if evidence.kind == "text":
             sanitized_text.append(record)
         elif evidence.kind == "hyperlink":
@@ -52,6 +61,7 @@ def prepare_case(case_input: CaseInput) -> PreparedCase:
         "target_context": case_input.target_context.model_dump(mode="json"),
         "operational_availability": case_input.material["operational_availability"],
     }
+    material = request_aliases.clean(material)
     serialized = json.dumps(material, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     forbidden = (
         case_input.case_id,
@@ -81,7 +91,8 @@ def serialize_direct_request(prepared: PreparedCase, evidence: tuple[EvidenceSpa
             }
             for item in ordered
         ],
-        "output_schema": "DirectDecisionOutput-v1",
+        "output_schema": "DirectDecisionOutput-v2",
+        "output_vocabulary": output_vocabulary(),
     }
     serialized = json.dumps(packet, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     if len(serialized) > DIRECT_INPUT_CHARACTER_LIMIT:
@@ -127,7 +138,7 @@ def contract_fixture_decision(
         return DirectDecisionOutput(
             decision=decision,
             severity=severity,
-            action=action,
+            action=cast(ActionCode, action),
             human_review_required=human,
             rationale=rationale,
             evidence_ids=cited,

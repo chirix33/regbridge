@@ -21,6 +21,7 @@ from app.evaluation.drafts import BenchmarkDraftSet
 from app.evaluation.models import (
     BenchmarkCase,
     CaseInput,
+    DirectDecisionOutput,
     EvaluationRun,
     FrozenBenchmark,
     MetricsReport,
@@ -63,6 +64,7 @@ SCHEMA_MODELS: dict[str, type[BaseModel]] = {
     "standards-snapshot-response.schema.json": StandardsSnapshotResponse,
     "target-context.schema.json": TargetContext,
     "system-prediction.schema.json": SystemPrediction,
+    "direct-decision-output.schema.json": DirectDecisionOutput,
 }
 SCHEMA_DIRECTORY = REPOSITORY_ROOT / "schemas"
 

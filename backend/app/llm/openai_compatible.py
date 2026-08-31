@@ -1,5 +1,4 @@
 import hashlib
-import json
 import time
 from typing import TypeVar
 
@@ -8,6 +7,7 @@ from pydantic import BaseModel, ValidationError
 
 from app.domain.models import ModelRunRecord
 from app.llm.models import ModelCompletion, ModelRequest
+from app.llm.serialization import serialize_semantic_request
 
 ModelOutput = TypeVar("ModelOutput", bound=BaseModel)
 
@@ -37,10 +37,8 @@ class OpenAICompatibleModel:
     async def complete(
         self, request: ModelRequest, output_type: type[ModelOutput]
     ) -> ModelCompletion[ModelOutput]:
-        request_json = request.model_dump(mode="json")
-        digest = hashlib.sha256(
-            json.dumps(request_json, sort_keys=True, separators=(",", ":")).encode()
-        ).hexdigest()
+        packet = serialize_semantic_request(request)
+        digest = hashlib.sha256(packet.serialized.encode()).hexdigest()
         payload = {
             "model": self.model,
             "temperature": 0,
@@ -52,7 +50,7 @@ class OpenAICompatibleModel:
                         "every finding. Abstain rather than invent evidence or regulatory rules."
                     ),
                 },
-                {"role": "user", "content": json.dumps(request_json, sort_keys=True)},
+                {"role": "user", "content": packet.serialized},
             ],
             "response_format": {
                 "type": "json_schema",
@@ -90,6 +88,12 @@ class OpenAICompatibleModel:
             if not isinstance(content, str):
                 raise TypeError("message content is not a JSON string")
             result = output_type.model_validate_json(content)
+            translated = result.model_dump()
+            for finding in translated.get("findings", ()):
+                finding["evidence_ids"] = tuple(
+                    packet.alias_to_evidence_id[item] for item in finding["evidence_ids"]
+                )
+            result = output_type.model_validate(translated)
         except (
             httpx.HTTPStatusError,
             KeyError,

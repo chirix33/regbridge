@@ -11,6 +11,7 @@ from app.domain.models import (
     StableId,
     TargetContext,
 )
+from app.domain.vocabulary import ActionCode
 
 SystemName = Literal["B0", "B1", "B2", "RegBridge"]
 RunState = Literal["queued", "running", "completed", "failed"]
@@ -108,7 +109,7 @@ class FrozenBenchmark(DomainModel):
 class DirectDecisionOutput(DomainModel):
     decision: Decision
     severity: Severity
-    action: StableId
+    action: ActionCode
     human_review_required: bool
     rationale: str = Field(min_length=1)
     evidence_ids: tuple[StableId, ...] = ()
@@ -146,7 +147,7 @@ class SystemPrediction(DomainModel):
     case_id: StableId
     decision: Decision
     severity: Severity
-    action: StableId
+    action: ActionCode
     human_review_required: bool
     unconditional_reuse: bool
     rationale: str = Field(min_length=1)
@@ -200,6 +201,20 @@ class FamilySensitivity(DomainModel):
     eligible_cases: int
 
 
+class VocabularyDiagnostic(DomainModel):
+    valid_prediction_count: int
+    outside_represented_count: int
+    outside_represented_rate: float | None
+    outside_counts_by_decision: dict[str, int]
+    outside_rates_by_decision: dict[str, float | None]
+    sensitivity_label: Literal["sensitivity only; not an alternative headline result"]
+    sensitivity_included_count: int
+    sensitivity_excluded_count: int
+    accuracy_excluding_outside_predictions: float | None
+    legacy_reference_prediction_count: int
+    safety_caveat: str | None
+
+
 class MetricsReport(DomainModel):
     system: SystemName
     result_status: Literal[
@@ -226,6 +241,7 @@ class MetricsReport(DomainModel):
     per_class: dict[str, ClassMetrics]
     macro_f1: float
     accuracy: float
+    vocabulary_diagnostic: VocabularyDiagnostic
     balanced_accuracy: float
     heading_mapping_accuracy: float | None
     evidence_citation_accuracy: float

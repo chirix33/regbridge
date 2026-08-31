@@ -10,6 +10,7 @@ from pydantic import BaseModel, ValidationError
 
 from app.domain.models import ModelRunRecord
 from app.llm.models import ModelCompletion, ModelRequest
+from app.llm.serialization import UUID_PATTERN, serialize_semantic_request
 
 ModelOutput = TypeVar("ModelOutput", bound=BaseModel)
 SYSTEM_INSTRUCTIONS = (
@@ -111,14 +112,13 @@ class ResponsesStructuredModel:
     async def complete(
         self, request: ModelRequest, output_type: type[ModelOutput]
     ) -> ModelCompletion[ModelOutput]:
-        request_json = request.model_dump(mode="json")
-        request_content = json.dumps(request_json, sort_keys=True, separators=(",", ":"))
+        packet = serialize_semantic_request(request)
         completion = await self.complete_text(
-            input_text=request_content,
+            input_text=packet.serialized,
             output_type=output_type,
             prompt_template_version=request.prompt_template_version,
         )
-        supplied_ids = {item.id for item in request.evidence}
+        supplied_ids = set(packet.alias_to_evidence_id)
         cited_ids = {
             evidence_id for finding in getattr(completion.output, "findings", ())
             for evidence_id in finding.evidence_ids
@@ -129,7 +129,12 @@ class ResponsesStructuredModel:
                 for item in self.last_attempts
             )
             raise LiveModelInvalidOutput("unsupported_citation")
-        return completion
+        translated = completion.output.model_dump()
+        for finding in translated.get("findings", ()):
+            finding["evidence_ids"] = tuple(
+                packet.alias_to_evidence_id[item] for item in finding["evidence_ids"]
+            )
+        return ModelCompletion(output=output_type.model_validate(translated), run=completion.run)
 
     async def complete_text(
         self,
@@ -200,6 +205,9 @@ class ResponsesStructuredModel:
                 raise LiveModelInvalidOutput("final JSON text exceeded 800 tokens")
             failure_class = "schema_validation"
             output = output_type.model_validate_json(text)
+            failure_class = "unsupported_identifier"
+            if UUID_PATTERN.search(text):
+                raise LiveModelInvalidOutput("model output contains an unsupported UUID")
             attempt = _attempt_from_body(
                 attempt_index=1,
                 request_digest=digest,

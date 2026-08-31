@@ -25,7 +25,7 @@ class SemanticFinding(DomainModel):
     id: StableId
     basis: Literal["observation", "inference"]
     summary: str = Field(min_length=1)
-    severity: Severity
+    severity: Literal[Severity.INFORMATIONAL, Severity.LOW, Severity.MEDIUM, Severity.HIGH]
     evidence_ids: tuple[StableId, ...] = Field(min_length=1)
     category: Literal[
         "obsolete_heading",

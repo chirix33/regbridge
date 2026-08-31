@@ -30,6 +30,7 @@ from app.domain.enums import Decision, LlmMode
 from app.evaluation.live_configuration import (
     configuration_material,
     content_digest,
+    require_development_approval,
     template_digests,
 )
 from app.evaluation.metrics import score_system
@@ -60,7 +61,7 @@ from app.parsers.ectd322 import parse_directory
 from app.standards.evidence import EvidenceRegistry
 
 LIVE_SYSTEMS: tuple[SystemName, ...] = ("B0", "B1", "RegBridge")
-LIVE_CONFIGURATION_ID = "m3-live-phase1-gpt-5.5-train-dev-v1"
+LIVE_CONFIGURATION_ID = "m3-live-phase1-gpt-5.5-contract-v2"
 LIVE_RUN_TYPE = "live_model_run"
 LIVE_REASONING_EFFORT = "medium"
 LIVE_PILOT_OUTPUT_CEILING = 25_000
@@ -715,8 +716,19 @@ def _manifest(
         "frozen_configuration_digest": None,
         "phase2_controls": "prepared-but-not-active; explicit author-01 approval required",
         "schema_differences": {
-            "B0_B1": "DirectDecisionOutput-v1",
-            "RegBridge": "SemanticRiskOutput-v1 before deterministic synthesis",
+            "B0_B1": "DirectDecisionOutput-v2; shared action and six-decision vocabularies",
+            "RegBridge": "SemanticRiskOutput-v2 before deterministic synthesis",
+        },
+        "architecture_disclosure": {
+            "permitted_decisions": configuration["shared_output_vocabulary"]["decisions"],
+            "shared_action_vocabulary": configuration["shared_output_vocabulary"]["actions"],
+            "regbridge_rule_set_structurally_emits": [
+                "REUSE_WITH_NEW_CONTEXT", "REUSE_AS_LEGACY_REFERENCE", "HUMAN_REGULATORY_REVIEW",
+            ],
+            "regbridge_schema_still_permits_all_six_decisions": True,
+            "benchmark_taxonomy": (
+                "three represented reference classes, not complete six-label evaluation"
+            ),
         },
         "usage_summary": _usage_summary(outcomes),
         "phase2_cap_proposal": _phase2_cap(outcomes),
@@ -753,6 +765,7 @@ def _manifest(
 
 
 async def run_phase1_live() -> Path:
+    require_development_approval()
     if not PHASE1_BUNDLE.is_file():
         raise LivePhase1Error("Isolated bundle missing; live runner cannot load combined benchmark")
     bundle = load_phase1_bundle()
@@ -843,6 +856,9 @@ def _write_artifacts(
         completed_case_ids = {
             outcome.case_id for outcome in outcomes if outcome.system == system
         }
+        if system == "RegBridge" and len(completed_case_ids) != len(bundle.cases):
+            # Preserve raw outcomes and usage, but do not publish partial RegBridge metrics.
+            continue
         system_cases = tuple(case for case in bundle.cases if case.case_id in completed_case_ids)
         system_predictions = tuple(pred for pred in valid_predictions if pred.system == system)
         system_traces = tuple(trace for trace in retrievals if trace and system == "B1")
@@ -883,6 +899,14 @@ def _write_artifacts(
     )
     if stopped_reason:
         manifest["stopped_reason"] = stopped_reason
+    manifest["regbridge_metrics_status"] = (
+        "complete" if sum(item.system == "RegBridge" for item in outcomes) == len(bundle.cases)
+        else "withheld_until_all_18_outcomes_complete"
+    )
+    manifest["cross_system_comparison_status"] = (
+        "complete_development_only" if len(outcomes) == len(bundle.cases) * len(LIVE_SYSTEMS)
+        else "prohibited_incomplete_system_coverage"
+    )
     if running:
         manifest["state"] = "running"
     if running or stopped_reason:
@@ -934,8 +958,8 @@ def _summary_markdown(
         f"Completed {len(outcomes)}/54 system-case outcomes from train/development only. "
         f"Stop reason: `{manifest.get('stopped_reason', 'none')}`.\n",
         "| System | Scope | Result status | Valid n | Accuracy | Macro-F1 | "
-        "Unsafe misses / eligible |",
-        "|---|---|---|---:|---:|---:|---:|",
+        "Unsafe misses / eligible | Review bypass / HUMAN |",
+        "|---|---|---|---:|---:|---:|---:|---:|",
     ]
     for report in reports:
         unsafe = report.unsafe_false_negative_rate
@@ -943,8 +967,28 @@ def _summary_markdown(
             f"| {report.system} | {report.scope} | live development only | "
             f"{sum(item.support for item in report.per_class.values())} | "
             f"{report.accuracy:.3f} | {report.macro_f1:.3f} | "
-            f"{unsafe.numerator}/{unsafe.denominator} |"
+            f"{unsafe.numerator}/{unsafe.denominator} | "
+            f"{report.review_bypass_rate.numerator}/{report.review_bypass_rate.denominator} |"
         )
+    rows.extend([
+        "\nRegBridge decision metrics are withheld until all 18 outcomes complete. "
+        "Incomplete runs cannot support cross-system comparison.",
+        "\n| System | Scope | Outside represented classes / valid | "
+        "Counts and rates by predicted class | "
+        "Sensitivity-only accuracy excluding outside predictions |",
+        "|---|---|---:|---|---:|",
+    ])
+    for report in reports:
+        diagnostic = report.vocabulary_diagnostic
+        rows.append(
+            f"| {report.system} | {report.scope} | {diagnostic.outside_represented_count}/"
+            f"{diagnostic.valid_prediction_count} ({diagnostic.outside_represented_rate:.3f}) | "
+            f"counts={json.dumps(diagnostic.outside_counts_by_decision, sort_keys=True)}; "
+            f"rates={json.dumps(diagnostic.outside_rates_by_decision, sort_keys=True)} | "
+            f"{diagnostic.accuracy_excluding_outside_predictions} |"
+        )
+        if diagnostic.safety_caveat:
+            rows.append(f"\n{report.system} ({report.scope}): {diagnostic.safety_caveat}\n")
     if not reports:
         rows.append("\nDecision metrics: not applicable; no valid observations.\n")
     rows.extend([

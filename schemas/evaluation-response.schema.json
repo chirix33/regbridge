@@ -535,6 +535,9 @@
         },
         "unsafe_false_negative_rate": {
           "$ref": "#/$defs/RateMetric"
+        },
+        "vocabulary_diagnostic": {
+          "$ref": "#/$defs/VocabularyDiagnostic"
         }
       },
       "required": [
@@ -550,6 +553,7 @@
         "per_class",
         "macro_f1",
         "accuracy",
+        "vocabulary_diagnostic",
         "balanced_accuracy",
         "heading_mapping_accuracy",
         "evidence_citation_accuracy",
@@ -682,6 +686,105 @@
         "mrr"
       ],
       "title": "RetrievalMetrics",
+      "type": "object"
+    },
+    "VocabularyDiagnostic": {
+      "additionalProperties": false,
+      "properties": {
+        "accuracy_excluding_outside_predictions": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Accuracy Excluding Outside Predictions"
+        },
+        "legacy_reference_prediction_count": {
+          "title": "Legacy Reference Prediction Count",
+          "type": "integer"
+        },
+        "outside_counts_by_decision": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Outside Counts By Decision",
+          "type": "object"
+        },
+        "outside_rates_by_decision": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "title": "Outside Rates By Decision",
+          "type": "object"
+        },
+        "outside_represented_count": {
+          "title": "Outside Represented Count",
+          "type": "integer"
+        },
+        "outside_represented_rate": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Outside Represented Rate"
+        },
+        "safety_caveat": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Safety Caveat"
+        },
+        "sensitivity_excluded_count": {
+          "title": "Sensitivity Excluded Count",
+          "type": "integer"
+        },
+        "sensitivity_included_count": {
+          "title": "Sensitivity Included Count",
+          "type": "integer"
+        },
+        "sensitivity_label": {
+          "const": "sensitivity only; not an alternative headline result",
+          "title": "Sensitivity Label",
+          "type": "string"
+        },
+        "valid_prediction_count": {
+          "title": "Valid Prediction Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "valid_prediction_count",
+        "outside_represented_count",
+        "outside_represented_rate",
+        "outside_counts_by_decision",
+        "outside_rates_by_decision",
+        "sensitivity_label",
+        "sensitivity_included_count",
+        "sensitivity_excluded_count",
+        "accuracy_excluding_outside_predictions",
+        "legacy_reference_prediction_count",
+        "safety_caveat"
+      ],
+      "title": "VocabularyDiagnostic",
       "type": "object"
     }
   },

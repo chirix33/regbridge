@@ -16,6 +16,7 @@ from app.baselines.direct import (
 from app.baselines.retrieval import BM25_CONFIGURATION
 from app.baselines.runner import BaselineRunner
 from app.config import REPOSITORY_ROOT
+from app.domain.vocabulary import output_vocabulary
 from app.evaluation.benchmark import FROZEN_BENCHMARK, load_frozen_benchmark
 from app.evaluation.metrics import score_system
 from app.evaluation.models import (
@@ -182,6 +183,15 @@ def _metrics_csv(reports: tuple[MetricsReport, ...]) -> str:
         "unsafe_fn_wilson_high",
         "high_blocking_unsafe_fn_rate",
         "review_bypass_rate",
+        "review_bypass_numerator",
+        "review_bypass_denominator",
+        "outside_represented_count",
+        "outside_represented_rate",
+        "outside_counts_by_decision",
+        "outside_rates_by_decision",
+        "sensitivity_only_accuracy_excluding_outside",
+        "sensitivity_only_included_count",
+        "safety_caveat",
         "conservative_false_positive_rate",
         "macro_f1",
         "accuracy",
@@ -225,6 +235,23 @@ def _metrics_csv(reports: tuple[MetricsReport, ...]) -> str:
                     report.high_blocking_unsafe_false_negative_rate.rate
                 ),
                 "review_bypass_rate": report.review_bypass_rate.rate,
+                "review_bypass_numerator": report.review_bypass_rate.numerator,
+                "review_bypass_denominator": report.review_bypass_rate.denominator,
+                "outside_represented_count": report.vocabulary_diagnostic.outside_represented_count,
+                "outside_represented_rate": report.vocabulary_diagnostic.outside_represented_rate,
+                "outside_counts_by_decision": json.dumps(
+                    report.vocabulary_diagnostic.outside_counts_by_decision, sort_keys=True
+                ),
+                "outside_rates_by_decision": json.dumps(
+                    report.vocabulary_diagnostic.outside_rates_by_decision, sort_keys=True
+                ),
+                "sensitivity_only_accuracy_excluding_outside": (
+                    report.vocabulary_diagnostic.accuracy_excluding_outside_predictions
+                ),
+                "sensitivity_only_included_count": (
+                    report.vocabulary_diagnostic.sensitivity_included_count
+                ),
+                "safety_caveat": report.vocabulary_diagnostic.safety_caveat,
                 "conservative_false_positive_rate": (report.conservative_false_positive_rate.rate),
                 "macro_f1": report.macro_f1,
                 "accuracy": report.accuracy,
@@ -355,8 +382,8 @@ def _summary(reports: tuple[MetricsReport, ...]) -> str:
             "",
             "## Secondary diagnostic: all 30 cases",
             "",
-            "| System | Result status | Unsafe FNR | Macro-F1 | Accuracy |",
-            "|---|---|---:|---:|---:|",
+            "| System | Result status | Unsafe FNR | Review bypass | Macro-F1 | Accuracy |",
+            "|---|---|---:|---:|---:|---:|",
         )
     )
     for report in reports:
@@ -365,8 +392,26 @@ def _summary(reports: tuple[MetricsReport, ...]) -> str:
         lines.append(
             f"| {report.system} | {report.result_status} | "
             f"{report.unsafe_false_negative_rate.rate:.3f} | "
+            f"{report.review_bypass_rate.rate} | "
             f"{report.macro_f1:.3f} | {report.accuracy:.3f} |"
         )
+    lines.extend((
+        "", "## Vocabulary disclosure (sensitivity only; never an alternative headline)", "",
+        "| System | Scope | Outside / valid | Counts by predicted class | "
+        "Rates by predicted class | Sensitivity-only accuracy excluding outside |",
+        "|---|---|---|---|---|---|",
+    ))
+    for report in reports:
+        diagnostic = report.vocabulary_diagnostic
+        lines.append(
+            f"| {report.system} | {report.scope} | {diagnostic.outside_represented_count}/"
+            f"{diagnostic.valid_prediction_count} ({diagnostic.outside_represented_rate}) | "
+            f"{json.dumps(diagnostic.outside_counts_by_decision, sort_keys=True)} | "
+            f"{json.dumps(diagnostic.outside_rates_by_decision, sort_keys=True)} | "
+            f"{diagnostic.accuracy_excluding_outside_predictions} |"
+        )
+        if diagnostic.safety_caveat:
+            lines.append(f"\n{report.system} ({report.scope}): {diagnostic.safety_caveat}\n")
     lines.append("")
     return "\n".join(lines)
 
@@ -423,6 +468,14 @@ def _manifest(
         "empirical_model_run": False,
         "eligible_for_performance_claims": False,
         "genuine_experimental_systems": ["B2"],
+        "shared_output_vocabulary": output_vocabulary(),
+        "architecture_disclosure": {
+            "regbridge_rule_set_structurally_emits": [
+                "REUSE_WITH_NEW_CONTEXT", "REUSE_AS_LEGACY_REFERENCE", "HUMAN_REGULATORY_REVIEW",
+            ],
+            "permitted_schema_decisions": "all six; no benchmark-distribution restriction",
+            "benchmark_taxonomy": "three represented reference classes",
+        },
         "synthetic_contract_fixture_systems": ["B0", "B1", "RegBridge"],
         "result_status_by_system": {
             system: (

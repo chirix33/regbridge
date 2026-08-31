@@ -23,6 +23,7 @@ from app.domain.enums import (
     TraceStepKind,
     VerificationBasis,
 )
+from app.domain.vocabulary import ActionCode
 
 StableId = Annotated[str, Field(pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]*$")]
 Sha256 = Annotated[str, Field(pattern=r"^[a-f0-9]{64}$")]
@@ -227,7 +228,7 @@ class SourceArtifact(DomainModel):
 
 
 class RepairAction(DomainModel):
-    type: StableId
+    type: ActionCode
     description: str = Field(min_length=1)
     evidence_ids: tuple[StableId, ...] = ()
 

@@ -12,6 +12,7 @@ from app.evaluation.models import (
     RetrievalMetrics,
     RetrievalTrace,
     SystemPrediction,
+    VocabularyDiagnostic,
 )
 
 REPRESENTED_CLASSES = (
@@ -87,6 +88,12 @@ def score_system(
     seed: int,
     regulatory_evidence_ids: frozenset[str],
 ) -> tuple[MetricsReport, tuple[CaseEvaluation, ...]]:
+    """Exact-match option (a); three-class benchmark, six permitted output decisions.
+
+    Outside-class predictions are errors and false negatives for their true reference class.
+    They enter no represented class's precision denominator. Macro-F1 is over the three
+    fixed represented classes. Excluding outside predictions is sensitivity-only.
+    """
     if not cases:
         raise ValueError("cannot score an empty benchmark scope")
     by_case = {item.case_id: item for item in predictions}
@@ -95,6 +102,8 @@ def score_system(
     system = predictions[0].system
     if any(item.system != system for item in predictions):
         raise ValueError("a metrics report may contain only one system")
+    if any(case.reference.decision not in REPRESENTED_CLASSES for case in cases):
+        raise ValueError("this benchmark scorer instantiates only three reference classes")
 
     unsafe_numerator = unsafe_denominator = 0
     high_numerator = high_denominator = 0
@@ -232,6 +241,15 @@ def score_system(
         for family, counts in sorted(family_counts.items())
     )
     family_tuples = {family: (counts[0], counts[1]) for family, counts in family_counts.items()}
+    outside_counts = {
+        label.value: sum(item.decision == label for item in predictions)
+        for label in Decision if label not in REPRESENTED_CLASSES
+    }
+    outside = sum(outside_counts.values())
+    included = len(predictions) - outside
+    legacy_count = sum(
+        item.decision == Decision.REUSE_AS_LEGACY_REFERENCE for item in predictions
+    )
     report = MetricsReport(
         system=system,
         result_status=(
@@ -251,6 +269,27 @@ def score_system(
         per_class=per_class,
         macro_f1=sum(f1_values) / len(f1_values),
         accuracy=sum(item.correct for item in evaluations) / len(evaluations),
+        vocabulary_diagnostic=VocabularyDiagnostic(
+            valid_prediction_count=len(predictions),
+            outside_represented_count=outside,
+            outside_represented_rate=outside / len(predictions),
+            outside_counts_by_decision=outside_counts,
+            outside_rates_by_decision={
+                key: value / len(predictions) for key, value in outside_counts.items()
+            },
+            sensitivity_label="sensitivity only; not an alternative headline result",
+            sensitivity_included_count=included,
+            sensitivity_excluded_count=outside,
+            accuracy_excluding_outside_predictions=(
+                sum(item.correct for item in evaluations) / included if included else None
+            ),
+            legacy_reference_prediction_count=legacy_count,
+            safety_caveat=(
+                "Zero unsafe-FNR does not establish safety: no REUSE_AS_LEGACY_REFERENCE "
+                "prediction occurred. Review-bypass must be considered alongside unsafe-FNR."
+                if legacy_count == 0 else None
+            ),
+        ),
         balanced_accuracy=sum(recalls) / len(recalls),
         heading_mapping_accuracy=heading_correct / heading_total if heading_total else None,
         evidence_citation_accuracy=evidence_correct / len(cases),

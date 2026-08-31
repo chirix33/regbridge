@@ -28,6 +28,7 @@ from app.domain.models import (
     TargetContext,
     TraceStep,
 )
+from app.domain.vocabulary import ActionCode
 from app.graph.builder import build_neighborhood
 from app.graph.models import GraphNeighborhood
 from app.llm import DisabledModel, FixtureModel, OpenAICompatibleModel
@@ -149,7 +150,7 @@ class AnalysisService:
             deterministic_decision = heading_rule.decision
             deterministic_severity = heading_rule.severity
             deterministic_repair = RepairAction(
-                type=heading_rule.repair_type,
+                type=cast(ActionCode, heading_rule.repair_type),
                 description=heading_rule.repair_description,
                 evidence_ids=heading_rule.evidence_ids,
             )
@@ -614,7 +615,7 @@ class AnalysisService:
     @staticmethod
     def _rule_repair(rule: MetadataRule) -> RepairAction:
         return RepairAction(
-            type=cast(str, rule.repair_type),
+            type=cast(ActionCode, rule.repair_type),
             description=cast(str, rule.repair_description),
             evidence_ids=rule.evidence_ids,
         )
