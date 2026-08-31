@@ -411,11 +411,16 @@ Tests and the default demo must use `fixture`. The live path must be opt-in and 
 - Supply only evidence spans and structured context relevant to the task.
 - Give each span a stable identifier.
 - Require citation of one or more supplied evidence identifiers for every substantive finding.
-- Use temperature zero or the nearest supported deterministic setting for evaluation.
+- Fixture evaluations retain their frozen decoding configuration. For the declared `gpt-5.5`
+  Responses live evaluation, omit temperature as explicitly approved by author-01; record
+  `temperature_handling: unsupported_by_endpoint_parameter`, with no effective-zero claim.
 - Reject unknown labels, uncited claims, malformed JSON, and citations to absent evidence.
 - Record prompt-template version, model configuration, token usage, latency, and validation errors.
 - Do not log API keys or entire uploaded documents.
-- Retry transport failures only; do not repeatedly prompt until a desired classification appears.
+- The declared live evaluation permits an initial attempt plus two retries for transport,
+  refusal, schema, citation, incomplete-response, or answer-length failures, without changing
+  prompts/settings. Exhaustion is `invalid_output`, never a decision or abstention. Stop Phase 1
+  on a new failure class after finishing only that case's permitted retry sequence.
 
 The semantic-risk output should distinguish direct observation from inference and include `abstain_reason`.
 
@@ -550,6 +555,34 @@ Every evaluation run writes a manifest containing:
 - per-case outputs, validation errors, timings, and aggregate metrics.
 
 Generate Markdown/CSV/JSON tables under `results/` and paper-ready tables under `paper/tables/`. Claims in the paper must be traceable to a run manifest.
+
+Fixture-mode output determinism and its reproduction checks remain unchanged. Live-mode runs
+claim **configuration and artifact reproducibility only**, not output reproducibility. Three
+separate Phase 2 repetitions characterize run-to-run variation; no voting, pooled predictions,
+or cached-response substitution is permitted.
+
+The declared Phase 1 runs only the isolated 12-train/6-development bundle. Its manifests and
+metrics are `live_model_run`, `empirical_model_run: true`, and
+`eligible_for_performance_claims: false`. They cannot support headline performance claims.
+Keep artifacts in `results/live/` and `paper/tables/live/`, separate from fixture validation.
+
+Two author-approved pre-live deviations from the M3 frozen fixture configuration apply equally
+to B0, B1, and RegBridge's semantic component: (1) `max_output_tokens: 25000` for Phase 1
+measurement, retaining the separately tokenized 800-token final structured-answer bound;
+(2) omission of temperature with `temperature_handling: unsupported_by_endpoint_parameter`.
+The second deviation is grounded in run `m3-live-phase1-20260831T172522Z`: HTTP 400,
+`invalid_request_error`, `error_param: temperature`. Do not represent this as temperature zero
+being requested or taking effect in subsequent runs. Prompt wording is unchanged.
+
+Both actual API output schemas, both validation schemas, both prompt templates, the wrapper
+instructions, serializers, reasoning effort, total output cap, final-answer bound, input limit,
+temperature handling, and retry policy participate in `configuration_sha256`.
+`prompt_template_digests` includes `direct_schema` and `semantic_schema`. Author approval must
+identify the prompts, derived cap, temperature handling, and complete configuration before
+Phase 2. The frozen configuration and prompt digests are recomputed before held-out loading,
+every repetition, and every dispatch; any mismatch aborts before the operation. Phase 2 remains
+inactive until explicit author-01 approval. FDA availability remains `not_operational` and
+`expert_validated: false` throughout.
 
 ### 14.4 M3 presentation safeguards
 

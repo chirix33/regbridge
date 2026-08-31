@@ -169,13 +169,22 @@ def write_phase1_bundle(path: Path = PHASE1_BUNDLE) -> Phase1Bundle:
 
 
 def load_phase1_bundle(path: Path = PHASE1_BUNDLE) -> Phase1Bundle:
-    bundle = Phase1Bundle.model_validate_json(path.read_text(encoding="utf-8"))
     digest_path = path.with_suffix(".sha256")
-    expected_digest = (
-        digest_path.read_text(encoding="utf-8").strip() if digest_path.is_file() else None
-    )
-    if expected_digest is not None and _file_digest(path) != expected_digest:
+    if not digest_path.is_file():
+        raise ValueError("Phase 1 bundle digest is required")
+    expected_digest = digest_path.read_text(encoding="utf-8").strip()
+    if _file_digest(path) != expected_digest:
         raise ValueError("Phase 1 bundle digest does not match")
+    bundle = Phase1Bundle.model_validate_json(path.read_text(encoding="utf-8"))
+    for case, case_input in zip(bundle.cases, bundle.case_inputs, strict=True):
+        if (
+            _digest_bytes(case_input.model_dump_json().encode("utf-8"))
+            != bundle.selected_input_hashes.get(case.case_id)
+            or case.fixture_id != case_input.fixture_id
+            or case.selected_leaf_id != case_input.selected_leaf_id
+            or case.target_context != case_input.target_context
+        ):
+            raise ValueError("Phase 1 selected input provenance mismatch")
     return bundle
 
 

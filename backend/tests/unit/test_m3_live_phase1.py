@@ -12,14 +12,14 @@ from app.evaluation.live_phase1 import (
     _score_valid,
     _token_counter,
 )
-from app.evaluation.phase1_bundle import build_phase1_bundle
+from app.evaluation.phase1_bundle import load_phase1_bundle
 from app.llm.models import ModelRequest, SemanticRiskOutput
 from app.llm.responses import ResponsesStructuredModel, _strict_json_schema
 from app.standards.evidence import EvidenceRegistry
 
 
 def test_phase1_export_contains_only_train_development_inputs() -> None:
-    bundle = build_phase1_bundle()
+    bundle = load_phase1_bundle()
     assert len(bundle.cases) == 18
     assert len(bundle.case_inputs) == 18
     assert sum(case.split == "train" for case in bundle.cases) == 12
@@ -31,7 +31,7 @@ def test_phase1_export_contains_only_train_development_inputs() -> None:
 
 
 def test_phase1_case_input_serialization_excludes_reference_labels() -> None:
-    bundle = build_phase1_bundle()
+    bundle = load_phase1_bundle()
     serialized = json.dumps(
         [case_input.model_dump(mode="json") for case_input in bundle.case_inputs],
         sort_keys=True,
@@ -48,7 +48,7 @@ async def test_responses_adapter_records_reasoning_temperature_and_final_tokens(
     def handler(request: httpx.Request) -> httpx.Response:
         payload = json.loads(request.content)
         assert payload["reasoning"]["effort"] == "medium"
-        assert payload["temperature"] == 0
+        assert "temperature" not in payload
         assert payload["max_output_tokens"] == LIVE_PILOT_OUTPUT_CEILING
         response_text = json.dumps(
             {
@@ -65,7 +65,6 @@ async def test_responses_adapter_records_reasoning_temperature_and_final_tokens(
                 "id": "resp_test",
                 "status": "completed",
                 "model": "gpt-5.5-2026-04-23",
-                "temperature": 0,
                 "output_text": response_text,
                 "usage": {
                     "input_tokens": 100,
@@ -94,7 +93,9 @@ async def test_responses_adapter_records_reasoning_temperature_and_final_tokens(
     completion = await model.complete(request, SemanticRiskOutput)
     assert completion.output.confidence == 1
     attempt = model.last_attempts[0]
-    assert attempt.temperature_verification == "reported_match"
+    assert attempt.temperature_handling == "unsupported_by_endpoint_parameter"
+    assert "temperature_requested" not in attempt.to_json()
+    assert "temperature" not in attempt.to_json()
     assert attempt.reasoning_tokens == 120
     assert attempt.cached_input_tokens == 25
     assert attempt.total_output_tokens == 140
@@ -107,7 +108,6 @@ async def test_responses_adapter_rejects_final_answer_token_overrun() -> None:
             200,
             json={
                 "status": "completed",
-                "temperature": 0,
                 "output_text": json.dumps(
                     {
                         "fixture_version": "1.0.0",
@@ -142,7 +142,7 @@ async def test_responses_adapter_rejects_final_answer_token_overrun() -> None:
 
 
 def test_score_valid_excludes_invalid_outputs_from_decision_metrics() -> None:
-    bundle = build_phase1_bundle()
+    bundle = load_phase1_bundle()
     report, cases = _score_valid(
         cases=bundle.cases[:1],
         predictions=(),
@@ -200,7 +200,7 @@ def test_model_facing_input_limit_is_enforced_before_dispatch() -> None:
         evidence=(),
         prompt_template_version="1.0.0",
     )
-    with pytest.raises(Exception, match="exceeded"):
+    with pytest.raises(Exception, match="input_character_limit"):
         import asyncio
 
         asyncio.run(model.complete(request, SemanticRiskOutput))

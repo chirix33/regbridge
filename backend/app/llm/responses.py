@@ -2,7 +2,7 @@ import hashlib
 import json
 import time
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any, TypeVar
 
 import httpx
@@ -22,6 +22,9 @@ class LiveModelInvalidOutput(RuntimeError):
     """A redacted live-model failure that must not be mapped into a decision class."""
 
 
+TEMPERATURE_HANDLING = "unsupported_by_endpoint_parameter"
+
+
 @dataclass(frozen=True)
 class ResponsesAttempt:
     attempt_index: int
@@ -34,9 +37,7 @@ class ResponsesAttempt:
     error_param: str | None
     model_requested: str
     model_reported: str | None
-    temperature_requested: float
-    temperature_reported: float | None
-    temperature_verification: str
+    temperature_handling: str
     reasoning_effort: str
     max_output_tokens: int
     input_tokens: int | None
@@ -49,6 +50,7 @@ class ResponsesAttempt:
     latency_ms: float
     ceiling_hit: bool
     response_id: str | None
+    final_json_text: str | None = None
 
     def to_json(self) -> dict[str, Any]:
         return {
@@ -62,9 +64,7 @@ class ResponsesAttempt:
             "error_param": self.error_param,
             "model_requested": self.model_requested,
             "model_reported": self.model_reported,
-            "temperature_requested": self.temperature_requested,
-            "temperature_reported": self.temperature_reported,
-            "temperature_verification": self.temperature_verification,
+            "temperature_handling": self.temperature_handling,
             "reasoning_effort": self.reasoning_effort,
             "max_output_tokens": self.max_output_tokens,
             "input_tokens": self.input_tokens,
@@ -77,6 +77,7 @@ class ResponsesAttempt:
             "latency_ms": self.latency_ms,
             "ceiling_hit": self.ceiling_hit,
             "response_id": self.response_id,
+            "final_json_text": self.final_json_text,
         }
 
 
@@ -90,7 +91,6 @@ class ResponsesStructuredModel:
         timeout_seconds: float,
         reasoning_effort: str = "medium",
         max_output_tokens: int = 25_000,
-        temperature: float = 0,
         count_final_tokens: Callable[[str], int],
         final_answer_token_limit: int = 800,
         input_character_limit: int = 16_000,
@@ -102,7 +102,6 @@ class ResponsesStructuredModel:
         self.timeout_seconds = timeout_seconds
         self.reasoning_effort = reasoning_effort
         self.max_output_tokens = max_output_tokens
-        self.temperature = temperature
         self.count_final_tokens = count_final_tokens
         self.final_answer_token_limit = final_answer_token_limit
         self.input_character_limit = input_character_limit
@@ -114,11 +113,23 @@ class ResponsesStructuredModel:
     ) -> ModelCompletion[ModelOutput]:
         request_json = request.model_dump(mode="json")
         request_content = json.dumps(request_json, sort_keys=True, separators=(",", ":"))
-        return await self.complete_text(
+        completion = await self.complete_text(
             input_text=request_content,
             output_type=output_type,
             prompt_template_version=request.prompt_template_version,
         )
+        supplied_ids = {item.id for item in request.evidence}
+        cited_ids = {
+            evidence_id for finding in getattr(completion.output, "findings", ())
+            for evidence_id in finding.evidence_ids
+        }
+        if cited_ids - supplied_ids:
+            self.last_attempts = tuple(
+                replace(item, status="failed", cause="unsupported_citation")
+                for item in self.last_attempts
+            )
+            raise LiveModelInvalidOutput("unsupported_citation")
+        return completion
 
     async def complete_text(
         self,
@@ -133,15 +144,10 @@ class ResponsesStructuredModel:
         model_facing_characters = len(
             SYSTEM_INSTRUCTIONS + input_text + json.dumps(schema, sort_keys=True)
         )
-        if model_facing_characters > self.input_character_limit:
-            raise LiveModelInvalidOutput(
-                "model-facing input exceeded the 16000-character Phase 1 limit"
-            )
         payload = {
             "model": self.model,
             "instructions": SYSTEM_INSTRUCTIONS,
             "input": input_text,
-            "temperature": self.temperature,
             "reasoning": {"effort": self.reasoning_effort},
             "max_output_tokens": self.max_output_tokens,
             "text": {
@@ -155,7 +161,13 @@ class ResponsesStructuredModel:
         }
         started = time.perf_counter()
         response: httpx.Response | None = None
+        final_tokens: int | None = None
+        text: str | None = None
+        failure_class = "api_failure"
         try:
+            if model_facing_characters > self.input_character_limit:
+                failure_class = "input_character_limit"
+                raise LiveModelInvalidOutput("model-facing input character limit exceeded")
             async with httpx.AsyncClient(
                 timeout=self.timeout_seconds, transport=self.transport
             ) as client:
@@ -165,26 +177,41 @@ class ResponsesStructuredModel:
                     json=payload,
                 )
             response.raise_for_status()
+            failure_class = "invalid_response_envelope"
             body = response.json()
+            body["_http_status"] = response.status_code
+            failure_class = "refusal"
+            if any(
+                content.get("type") == "refusal"
+                for item in body.get("output", []) if isinstance(item, dict)
+                for content in item.get("content", []) if isinstance(content, dict)
+            ):
+                raise LiveModelInvalidOutput("provider refusal")
+            failure_class = "incomplete_response"
+            if body.get("status") != "completed":
+                raise LiveModelInvalidOutput("response did not complete")
+            failure_class = "missing_final_json"
             text = _response_text(body)
             if not text:
                 raise LiveModelInvalidOutput("response contained no final JSON text")
             final_tokens = self.count_final_tokens(text)
+            failure_class = "final_answer_token_limit"
             if final_tokens > self.final_answer_token_limit:
                 raise LiveModelInvalidOutput("final JSON text exceeded 800 tokens")
+            failure_class = "schema_validation"
             output = output_type.model_validate_json(text)
             attempt = _attempt_from_body(
                 attempt_index=1,
                 request_digest=digest,
                 body=body,
                 model_requested=self.model,
-                temperature_requested=self.temperature,
                 reasoning_effort=self.reasoning_effort,
                 max_output_tokens=self.max_output_tokens,
                 final_answer_tokens=final_tokens,
                 latency_ms=(time.perf_counter() - started) * 1000,
                 status="completed",
                 cause=None,
+                final_json_text=text,
             )
             self.last_attempts = (attempt,)
             return ModelCompletion(
@@ -217,16 +244,16 @@ class ResponsesStructuredModel:
                 request_digest=digest,
                 body=body,
                 model_requested=self.model,
-                temperature_requested=self.temperature,
                 reasoning_effort=self.reasoning_effort,
                 max_output_tokens=self.max_output_tokens,
-                final_answer_tokens=None,
+                final_answer_tokens=final_tokens,
                 latency_ms=(time.perf_counter() - started) * 1000,
                 status="failed",
-                cause=type(error).__name__,
+                cause=failure_class,
+                final_json_text=text,
             )
             self.last_attempts = (attempt,)
-            message = f"live response invalid: {type(error).__name__}"
+            message = f"live response invalid: {failure_class}"
             raise LiveModelInvalidOutput(message) from error
 
 
@@ -282,25 +309,19 @@ def _usage_value(body: dict[str, Any], *path: str) -> int | None:
     return value if isinstance(value, int) else None
 
 
-def _temperature_status(reported: float | None, requested: float) -> str:
-    if reported is None:
-        return "unverifiable"
-    return "reported_match" if reported == requested else "reported_mismatch"
-
-
 def _attempt_from_body(
     *,
     attempt_index: int,
     request_digest: str,
     body: dict[str, Any],
     model_requested: str,
-    temperature_requested: float,
     reasoning_effort: str,
     max_output_tokens: int,
     final_answer_tokens: int | None,
     latency_ms: float,
     status: str,
     cause: str | None,
+    final_json_text: str | None = None,
 ) -> ResponsesAttempt:
     raw_usage = body.get("usage")
     usage: dict[str, Any] = raw_usage if isinstance(raw_usage, dict) else {}
@@ -314,9 +335,6 @@ def _attempt_from_body(
     incomplete = raw_incomplete if isinstance(raw_incomplete, dict) else {}
     finish_reason = incomplete.get("reason") if isinstance(incomplete.get("reason"), str) else None
     response_status = body.get("status") if isinstance(body.get("status"), str) else None
-    reported_temperature = body.get("temperature")
-    if not isinstance(reported_temperature, int | float):
-        reported_temperature = None
     output_tokens = _usage_value(body, "usage", "output_tokens")
     raw_error = body.get("error")
     error: dict[str, Any] = raw_error if isinstance(raw_error, dict) else {}
@@ -331,9 +349,7 @@ def _attempt_from_body(
         error_param=error.get("param") if isinstance(error.get("param"), str) else None,
         model_requested=model_requested,
         model_reported=body.get("model") if isinstance(body.get("model"), str) else None,
-        temperature_requested=temperature_requested,
-        temperature_reported=reported_temperature,
-        temperature_verification=_temperature_status(reported_temperature, temperature_requested),
+        temperature_handling=TEMPERATURE_HANDLING,
         reasoning_effort=reasoning_effort,
         max_output_tokens=max_output_tokens,
         input_tokens=_usage_value(body, "usage", "input_tokens"),
@@ -350,4 +366,5 @@ def _attempt_from_body(
         latency_ms=latency_ms,
         ceiling_hit=response_status == "incomplete" and finish_reason == "max_output_tokens",
         response_id=body.get("id") if isinstance(body.get("id"), str) else None,
+        final_json_text=final_json_text,
     )

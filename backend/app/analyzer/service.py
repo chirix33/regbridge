@@ -33,6 +33,7 @@ from app.graph.models import GraphNeighborhood
 from app.llm import DisabledModel, FixtureModel, OpenAICompatibleModel
 from app.llm.models import ModelRequest, SemanticRiskOutput
 from app.llm.protocol import StructuredModel
+from app.llm.responses import LiveModelInvalidOutput
 from app.parsers.models import ApplicationInventory, ParsedLeaf
 from app.rules.engine import applicable_heading_rule
 from app.rules.models import MetadataRule
@@ -562,6 +563,9 @@ class AnalysisService:
         try:
             completion = await self.model.complete(request, SemanticRiskOutput)
             return completion.output, completion.run
+        except LiveModelInvalidOutput:
+            # Declared live evaluation retries and records invalid_output outside synthesis.
+            raise
         except Exception as error:
             digest = hashlib.sha256(request.model_dump_json().encode()).hexdigest()
             return (

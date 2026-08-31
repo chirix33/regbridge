@@ -50,6 +50,15 @@ labels are author-adjudicated by `author-01` for the controlled demonstration on
 
 ## Prerequisites
 
+Declared M3 live development evaluation: ` .\scripts\evaluate-live-phase1.ps1` (or
+`make evaluate-live-phase1`) uses only the isolated train/development bundle and explicitly
+configured `gpt-5.5` credentials. Temperature is omitted with
+`temperature_handling: unsupported_by_endpoint_parameter`. Live runs reproduce configuration
+and artifacts, **not model outputs**; fixture-mode determinism is unchanged. Phase 1 outputs
+are development diagnostics with `eligible_for_performance_claims: false`. Phase 2 remains
+gated on explicit author-01 approval, with three separate repetitions to characterize variation.
+See [the reproducibility record](IMPLEMENTATION.md#143-reproducibility-record).
+
 - Python 3.12 or 3.13
 - Node.js 22 or later and npm 11 or later
 - PowerShell 7 on Windows, or GNU Make on macOS/Linux

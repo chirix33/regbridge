@@ -9,7 +9,7 @@ import os
 import statistics
 import tempfile
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal, cast
@@ -20,7 +20,6 @@ from app.analyzer.service import AnalysisService
 from app.baselines.direct import (
     DIRECT_INPUT_CHARACTER_LIMIT,
     DIRECT_OUTPUT_TOKEN_LIMIT,
-    DIRECT_TEMPERATURE,
     prepare_case,
     serialize_direct_request,
 )
@@ -28,6 +27,11 @@ from app.baselines.prompts import DIRECT_DECISION_PROMPT_VERSION
 from app.baselines.retrieval import BM25Retriever
 from app.config import REPOSITORY_ROOT, Settings
 from app.domain.enums import Decision, LlmMode
+from app.evaluation.live_configuration import (
+    configuration_material,
+    content_digest,
+    template_digests,
+)
 from app.evaluation.metrics import score_system
 from app.evaluation.models import (
     BenchmarkCase,
@@ -46,7 +50,12 @@ from app.evaluation.phase1_bundle import (
     phase1_bundle_sha256,
     write_phase1_bundle,
 )
-from app.llm.responses import LiveModelInvalidOutput, ResponsesAttempt, ResponsesStructuredModel
+from app.llm.responses import (
+    TEMPERATURE_HANDLING,
+    LiveModelInvalidOutput,
+    ResponsesAttempt,
+    ResponsesStructuredModel,
+)
 from app.parsers.ectd322 import parse_directory
 from app.standards.evidence import EvidenceRegistry
 
@@ -159,7 +168,6 @@ def _model(settings: Settings, count_tokens: Any) -> ResponsesStructuredModel:
         timeout_seconds=settings.llm_timeout_seconds,
         reasoning_effort=LIVE_REASONING_EFFORT,
         max_output_tokens=LIVE_PILOT_OUTPUT_CEILING,
-        temperature=DIRECT_TEMPERATURE,
         count_final_tokens=lambda text: len(count_tokens(text)),
         final_answer_token_limit=LIVE_FINAL_SCHEMA_TOKEN_LIMIT,
         input_character_limit=LIVE_INPUT_CHARACTER_LIMIT,
@@ -188,13 +196,25 @@ async def _run_direct(
     serialized = serialize_direct_request(prepared, selected)
     if len(serialized) > LIVE_INPUT_CHARACTER_LIMIT:
         raise LivePhase1Error("Phase 1 direct request exceeded the input character limit")
-    attempts, output, failure = await _retry_live_call(
-        model=model,
-        call=lambda: model.complete_text(
+    async def direct_call() -> Any:
+        _guard_case(case, location=f"{system} model dispatch")
+        completion = await model.complete_text(
             input_text=serialized,
             output_type=DirectDecisionOutput,
             prompt_template_version=DIRECT_DECISION_PROMPT_VERSION,
-        ),
+        )
+        allowed = {item.id for item in selected} | set(prepared.alias_to_evidence_id)
+        if set(completion.output.evidence_ids) - allowed:
+            model.last_attempts = tuple(
+                replace(item, status="failed", cause="unsupported_citation")
+                for item in model.last_attempts
+            )
+            raise LiveModelInvalidOutput("unsupported_citation")
+        return completion
+
+    attempts, output, failure = await _retry_live_call(
+        model=model,
+        call=direct_call,
         first_authorized_request=first_authorized_request,
     )
     deviations = _deviations(attempts)
@@ -223,7 +243,9 @@ async def _run_direct(
             and not output.human_review_required
         ),
         rationale=output.rationale,
-        evidence_ids=output.evidence_ids,
+        evidence_ids=tuple(
+            prepared.alias_to_evidence_id.get(item, item) for item in output.evidence_ids
+        ),
         rule_ids=(),
         confidence=output.confidence,
         prediction_source="live_direct_model",
@@ -336,43 +358,36 @@ async def _retry_live_call(
     attempts: list[ResponsesAttempt] = []
     failure: str | None = None
     for retry_index in range(LIVE_RETRY_LIMIT + 1):
+        model.last_attempts = ()
         try:
             completion = await call()
             attempts.extend(
                 attempt.__class__(**{**attempt.to_json(), "attempt_index": len(attempts) + 1})
-                for attempt in model.last_attempts
+                for attempt in cast(tuple[ResponsesAttempt, ...], model.last_attempts)
             )
-            _record_temperature_preflight(attempts[-1], enabled=first_authorized_request)
             if any(attempt.ceiling_hit for attempt in attempts):
                 failure = "pilot output ceiling was hit"
             return tuple(attempts), getattr(completion, "output", completion), failure
         except (LiveModelInvalidOutput, ValueError) as error:
             attempts.extend(
                 attempt.__class__(**{**attempt.to_json(), "attempt_index": len(attempts) + 1})
-                for attempt in model.last_attempts
+                for attempt in cast(tuple[ResponsesAttempt, ...], model.last_attempts)
             )
-            failure = type(error).__name__
-            if attempts:
-                _record_temperature_preflight(attempts[-1], enabled=first_authorized_request)
+            failure = attempts[-1].cause if attempts else type(error).__name__
             if retry_index >= LIVE_RETRY_LIMIT:
                 return tuple(attempts), None, failure
     return tuple(attempts), None, failure
 
 
-def _record_temperature_preflight(attempt: ResponsesAttempt, *, enabled: bool) -> None:
-    if not enabled:
-        return
-
-
 def _deviations(attempts: tuple[ResponsesAttempt, ...]) -> tuple[dict[str, Any], ...]:
     deviations: list[dict[str, Any]] = []
-    for attempt in attempts:
+    for index, attempt in enumerate(attempts):
         if attempt.attempt_index > 1:
             deviations.append(
                 {
                     "type": "retry",
                     "attempt_index": attempt.attempt_index,
-                    "cause": attempt.cause,
+                    "cause": attempts[index - 1].cause,
                 }
             )
         if attempt.ceiling_hit:
@@ -383,23 +398,20 @@ def _deviations(attempts: tuple[ResponsesAttempt, ...]) -> tuple[dict[str, Any],
                     "cause": attempt.finish_reason,
                 }
             )
-        if attempt.temperature_verification != "reported_match":
-            deviations.append(
-                {
-                    "type": "temperature_not_confirmed",
-                    "attempt_index": attempt.attempt_index,
-                    "status": attempt.temperature_verification,
-                }
-            )
     return tuple(deviations)
 
 
 def _cost(attempts: tuple[ResponsesAttempt, ...]) -> float | None:
+    if not attempts:
+        return 0.0  # A deterministic branch incurred no provider request.
     total = 0.0
     observed = False
     for attempt in attempts:
-        if attempt.input_tokens is None and attempt.total_output_tokens is None:
-            continue
+        if (
+            attempt.input_tokens is None or attempt.total_output_tokens is None
+            or attempt.cached_input_tokens is None
+        ):
+            return None
         observed = True
         cached = attempt.cached_input_tokens or 0
         input_tokens = max((attempt.input_tokens or 0) - cached, 0)
@@ -418,6 +430,9 @@ def _score_valid(
     scope: str,
     seed: int,
 ) -> tuple[MetricsReport | None, tuple[CaseEvaluation, ...]]:
+    _guard_phase1_cases(cases, location="scoring")
+    if {item.case_id for item in predictions} - {case.case_id for case in cases}:
+        raise LivePhase1Error("Scoring rejected a prediction outside the Phase 1 allowlist")
     if not predictions:
         return None, ()
     valid_case_ids = {prediction.case_id for prediction in predictions}
@@ -431,7 +446,10 @@ def _score_valid(
         seed=seed,
         regulatory_evidence_ids=regulatory_ids,
     )
-    return report.model_copy(update={"result_status": "live model output"}), evaluations
+    return report.model_copy(update={
+        "result_status": "live model output",
+        "interval_interpretation": "exploratory only; no independence or significance claim",
+    }), evaluations
 
 
 def _percentile(values: list[int], percentile: float) -> float | None:
@@ -447,7 +465,8 @@ def _usage_summary(outcomes: tuple[LiveOutcome, ...]) -> dict[str, Any]:
     for outcome in outcomes:
         by_system[outcome.system].extend(outcome.attempts)
     summary: dict[str, Any] = {}
-    for system, attempts in sorted(by_system.items()):
+    for system in LIVE_SYSTEMS:
+        attempts = by_system[system]
         reasoning = [
             attempt.reasoning_tokens for attempt in attempts if attempt.reasoning_tokens is not None
         ]
@@ -462,7 +481,10 @@ def _usage_summary(outcomes: tuple[LiveOutcome, ...]) -> dict[str, Any]:
             "total_output_tokens": [attempt.total_output_tokens for attempt in attempts],
             "finish_reasons": [attempt.finish_reason for attempt in attempts],
             "latency_ms_total": sum(attempt.latency_ms for attempt in attempts),
-            "cached_input_tokens": sum(attempt.cached_input_tokens or 0 for attempt in attempts),
+            "cached_input_tokens": (
+                sum(cast(int, attempt.cached_input_tokens) for attempt in attempts)
+                if all(attempt.cached_input_tokens is not None for attempt in attempts) else None
+            ),
             "cost_usd": _cost(tuple(attempts)),
         }
     return summary
@@ -475,6 +497,8 @@ def _phase2_cap(outcomes: tuple[LiveOutcome, ...]) -> dict[str, Any]:
     observed = [attempt for attempt in attempts if attempt.reasoning_tokens is not None]
     if not observed:
         return {"status": "withheld", "reason": "reasoning token usage was not reported"}
+    if len(observed) != len(attempts):
+        return {"status": "withheld", "reason": "generation usage is missing for some attempts"}
     maximum = max(cast(int, attempt.reasoning_tokens) for attempt in observed)
     contributing = next(attempt for attempt in observed if attempt.reasoning_tokens == maximum)
     raw_cap = 2 * maximum + LIVE_FINAL_SCHEMA_TOKEN_LIMIT
@@ -524,21 +548,33 @@ def _metrics_json(
         invalid = [outcome for outcome in scheduled if outcome.outcome == "invalid_output"]
         invalid_counts[system] = {
             "invalid_outputs": len(invalid),
-            "scheduled_cases": len(scheduled),
-            "rate": len(invalid) / len(scheduled) if scheduled else None,
+            "scheduled_cases": len(cases),
+            "completed_cases": len(scheduled),
+            "valid_cases": len(scheduled) - len(invalid),
+            "not_run_cases": len(cases) - len(scheduled),
+            "rate": len(invalid) / len(cases) if cases else None,
+            "completed_case_failure_rate": len(invalid) / len(scheduled) if scheduled else None,
         }
     return (
         json.dumps(
             {
                 "run_type": LIVE_RUN_TYPE,
                 "empirical_model_run": True,
-                "eligible_for_performance_claims": True,
+                "eligible_for_performance_claims": False,
                 "current_fda_operational_availability": "not_operational",
                 "expert_validated": False,
                 "scope": "phase1-development-train-dev-only",
                 "scheduled_cases": len(cases) * len(LIVE_SYSTEMS),
                 "invalid_output_counts": invalid_counts,
                 "reports": [report.model_dump(mode="json") for report in reports],
+                "valid_denominators": {
+                    system: {
+                        split: sum(
+                            outcome.system == system and outcome.outcome == "valid_prediction"
+                            and outcome.split == split for outcome in outcomes
+                        ) for split in PHASE1_ALLOWED_SPLITS
+                    } for system in LIVE_SYSTEMS
+                },
             },
             indent=2,
             sort_keys=True,
@@ -592,12 +628,8 @@ def _manifest(
     predictions_digest: str,
     metrics_digest: str,
 ) -> dict[str, Any]:
-    prompt_material = {
-        "direct_prompt": _file_digest(REPOSITORY_ROOT / "backend/app/baselines/prompts.py"),
-        "semantic_prompt": _file_digest(REPOSITORY_ROOT / "backend/app/analyzer/prompts.py"),
-        "direct_serializer": _file_digest(REPOSITORY_ROOT / "backend/app/baselines/direct.py"),
-        "semantic_schema": _file_digest(REPOSITORY_ROOT / "backend/app/llm/models.py"),
-    }
+    configuration = configuration_material(max_output_tokens=LIVE_PILOT_OUTPUT_CEILING)
+    prompt_material = template_digests(configuration)
     return {
         "manifest_version": "1.0.0",
         "run_id": run_id,
@@ -605,7 +637,8 @@ def _manifest(
         "created_at": datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
         "run_type": LIVE_RUN_TYPE,
         "empirical_model_run": True,
-        "eligible_for_performance_claims": True,
+        "eligible_for_performance_claims": False,
+        "reproducibility": "configuration and artifacts only; live outputs are not deterministic",
         "phase": "phase1-development-train-dev-only",
         "state": "awaiting_author_01_approval",
         "systems": LIVE_SYSTEMS,
@@ -614,18 +647,51 @@ def _manifest(
         "model_configuration": {
             "model": "gpt-5.5",
             "reasoning_effort": LIVE_REASONING_EFFORT,
-            "temperature_requested": DIRECT_TEMPERATURE,
+            "temperature_handling": TEMPERATURE_HANDLING,
             "input_character_limit": LIVE_INPUT_CHARACTER_LIMIT,
             "input_counting_policy": (
                 "model-facing system instructions, serialized case/evidence payload, and "
-                "structured-output schema name are counted before dispatch"
+                "complete structured-output JSON schema are counted before dispatch"
             ),
             "final_structured_answer_token_limit": LIVE_FINAL_SCHEMA_TOKEN_LIMIT,
             "pilot_output_ceiling": LIVE_PILOT_OUTPUT_CEILING,
+            "max_output_tokens": LIVE_PILOT_OUTPUT_CEILING,
             "pilot_output_ceiling_status": "phase1_pilot_instrument_not_phase2_cap",
-            "pre_live_deviation": "max_output_tokens raised from 800 to 25000 for reasoning",
             "retry_policy": "initial_attempt_plus_two_retries_unchanged_prompt_and_settings",
             "tokenizer": tokenizer_name,
+        },
+        "deviation_log": [
+            {
+                "sequence": 1,
+                "type": "pre_live_configuration_deviation",
+                "parameter": "max_output_tokens",
+                "previous": 800,
+                "approved": 25000,
+                "reason": (
+                    "author-approved pilot ceiling includes reasoning; final JSON bound stays 800"
+                ),
+            },
+            {
+                "sequence": 2,
+                "type": "pre_live_configuration_deviation",
+                "parameter": "temperature",
+                "temperature_handling": TEMPERATURE_HANDLING,
+                "approved": "omit parameter for B0, B1, and RegBridge semantic component",
+                "author_id": "author-01",
+                "observed_api_evidence": {
+                    "run_id": "m3-live-phase1-20260831T172522Z",
+                    "http_status": 400,
+                    "error_type": "invalid_request_error",
+                    "error_param": "temperature",
+                },
+            },
+        ],
+        "configuration_material": configuration,
+        "pricing": {
+            "currency": "USD", "per_million_tokens": PRICING_PER_MILLION,
+            "source": "https://developers.openai.com/api/docs/models/gpt-5.5",
+            "retrieved_at": "2026-08-31", "basis": "published standard text-token rates",
+            "unknown_usage_policy": "unknown, never zero",
         },
         "bundle": {
             "schema_version": bundle.schema_version,
@@ -675,17 +741,7 @@ def _manifest(
         "digests": {
             "predictions_sha256": predictions_digest,
             "metrics_sha256": metrics_digest,
-            "configuration_sha256": _digest_bytes(
-                _canonical(
-                    {
-                        "model": "gpt-5.5",
-                        "reasoning_effort": LIVE_REASONING_EFFORT,
-                        "temperature": DIRECT_TEMPERATURE,
-                        "pilot_output_ceiling": LIVE_PILOT_OUTPUT_CEILING,
-                        "prompt_material": prompt_material,
-                    }
-                ).encode("utf-8")
-            ),
+            "configuration_sha256": content_digest(configuration),
         },
         "reports": [report.model_dump(mode="json") for report in reports],
         "openai_docs_sources": [
@@ -698,7 +754,7 @@ def _manifest(
 
 async def run_phase1_live() -> Path:
     if not PHASE1_BUNDLE.is_file():
-        write_phase1_bundle()
+        raise LivePhase1Error("Isolated bundle missing; live runner cannot load combined benchmark")
     bundle = load_phase1_bundle()
     _guard_phase1_cases(bundle.cases, location="bundle load")
     settings = _settings()
@@ -710,6 +766,7 @@ async def run_phase1_live() -> Path:
     ordered_cases = tuple(case_by_id[case_input.case_id] for case_input in bundle.case_inputs)
 
     outcomes: list[LiveOutcome] = []
+    run_id = f"m3-live-phase1-{datetime.now(UTC).strftime('%Y%m%dT%H%M%S%fZ')}"
     first_request = True
     for system in LIVE_SYSTEMS:
         for case in ordered_cases:
@@ -732,17 +789,6 @@ async def run_phase1_live() -> Path:
                     first_authorized_request=first_request,
                 )
             outcomes.append(outcome)
-            if (
-                first_request
-                and outcome.attempts
-                and outcome.attempts[-1].temperature_verification != "reported_match"
-            ):
-                return _write_artifacts(
-                    bundle=bundle,
-                    tokenizer_name=tokenizer_name,
-                    outcomes=tuple(outcomes),
-                    stopped_reason="temperature_compatibility_unconfirmed",
-                )
             first_request = False
             if any(attempt.ceiling_hit for attempt in outcome.attempts):
                 return _write_artifacts(
@@ -750,13 +796,26 @@ async def run_phase1_live() -> Path:
                     tokenizer_name=tokenizer_name,
                     outcomes=tuple(outcomes),
                     stopped_reason="pilot_output_ceiling_hit",
+                    run_id=run_id,
                 )
+            if any(attempt.status == "failed" for attempt in outcome.attempts):
+                return _write_artifacts(
+                    bundle=bundle, tokenizer_name=tokenizer_name, outcomes=tuple(outcomes),
+                    stopped_reason="new_failure_class_requires_author_review",
+                    run_id=run_id,
+                )
+            _write_artifacts(
+                bundle=bundle, tokenizer_name=tokenizer_name, outcomes=tuple(outcomes),
+                stopped_reason=None, run_id=run_id, running=True,
+            )
+            print(f"Phase 1: {len(outcomes)}/54 outcomes recorded ({system}).", flush=True)
     _guard_phase1_cases(bundle.cases, location="scoring")
     return _write_artifacts(
         bundle=bundle,
         tokenizer_name=tokenizer_name,
         outcomes=tuple(outcomes),
         stopped_reason=None,
+        run_id=run_id,
     )
 
 
@@ -766,8 +825,10 @@ def _write_artifacts(
     tokenizer_name: str,
     outcomes: tuple[LiveOutcome, ...],
     stopped_reason: str | None,
+    run_id: str | None = None,
+    running: bool = False,
 ) -> Path:
-    run_id = f"m3-live-phase1-{datetime.now(UTC).strftime('%Y%m%dT%H%M%SZ')}"
+    run_id = run_id or f"m3-live-phase1-{datetime.now(UTC).strftime('%Y%m%dT%H%M%S%fZ')}"
     result_dir = LIVE_RESULTS_ROOT / run_id
     paper_dir = LIVE_PAPER_ROOT / run_id
     valid_predictions = tuple(
@@ -822,11 +883,21 @@ def _write_artifacts(
     )
     if stopped_reason:
         manifest["stopped_reason"] = stopped_reason
+    if running:
+        manifest["state"] = "running"
+    if running or stopped_reason:
+        manifest["phase2_cap_proposal"] = {
+            "status": "withheld", "reason": "Phase 1 incomplete; no cap proposed from partial data",
+        }
     manifest_json = json.dumps(manifest, indent=2, sort_keys=True) + "\n"
     _atomic_write(result_dir / "manifest.json", manifest_json)
     _atomic_write(result_dir / "predictions.jsonl", predictions_jsonl)
     _atomic_write(result_dir / "metrics.json", metrics_json)
     _atomic_write(result_dir / "per-case.csv", _per_case_csv(outcomes))
+    _atomic_write(
+        result_dir / "retrieval.jsonl",
+        "".join(trace.model_dump_json() + "\n" for trace in retrievals),
+    )
     _atomic_write(
         result_dir / "attempts.jsonl",
         "".join(
@@ -845,7 +916,59 @@ def _write_artifacts(
     )
     _atomic_write(paper_dir / "m3-live-phase1-development-metrics.json", metrics_json)
     _atomic_write(paper_dir / "m3-live-phase1-development-per-case.csv", _per_case_csv(outcomes))
+    summary = _summary_markdown(manifest, tuple(reports), outcomes)
+    _atomic_write(result_dir / "summary.md", summary)
+    _atomic_write(paper_dir / "m3-live-phase1-development-summary.md", summary)
     return result_dir
+
+
+def _summary_markdown(
+    manifest: dict[str, Any], reports: tuple[MetricsReport, ...], outcomes: tuple[LiveOutcome, ...],
+) -> str:
+    rows = [
+        "# Phase 1 live development diagnostics\n",
+        f"Run: `{manifest['run_id']}`. State: `{manifest['state']}`.\n",
+        "FDA availability: `not_operational`; `expert_validated: false`. "
+        "Empirical model observations, **ineligible for performance claims**. "
+        "Configuration/artifact reproducibility only; no output-determinism claim.\n",
+        f"Completed {len(outcomes)}/54 system-case outcomes from train/development only. "
+        f"Stop reason: `{manifest.get('stopped_reason', 'none')}`.\n",
+        "| System | Scope | Result status | Valid n | Accuracy | Macro-F1 | "
+        "Unsafe misses / eligible |",
+        "|---|---|---|---:|---:|---:|---:|",
+    ]
+    for report in reports:
+        unsafe = report.unsafe_false_negative_rate
+        rows.append(
+            f"| {report.system} | {report.scope} | live development only | "
+            f"{sum(item.support for item in report.per_class.values())} | "
+            f"{report.accuracy:.3f} | {report.macro_f1:.3f} | "
+            f"{unsafe.numerator}/{unsafe.denominator} |"
+        )
+    if not reports:
+        rows.append("\nDecision metrics: not applicable; no valid observations.\n")
+    rows.extend([
+        "\n| System | Attempts | Reasoning min / median / p95 / max | Ceiling hits | Cost USD |",
+        "|---|---:|---|---:|---:|",
+    ])
+    for system, usage in manifest["usage_summary"].items():
+        tokens = " / ".join(
+            str(usage[f"reasoning_tokens_{stat}"]) for stat in ("min", "median", "p95", "max")
+        )
+        rows.append(
+            f"| {system} | {usage['attempts']} | {tokens} | "
+            f"{usage['ceiling_hit_count']} | {usage['cost_usd']} |"
+        )
+    rows.extend([
+        "\nMissing usage is unknown, never zero. Invalid outcomes are excluded from decision "
+        "metrics and remain visible in per-case.csv and metrics.json. Not-run cases are separate.",
+        "\nTemperature handling: `unsupported_by_endpoint_parameter`; parameter omitted for all "
+        "three systems. Both pre-live deviations and observed API evidence are in manifest.json.",
+        "\nPhase 2 cap proposal: " + json.dumps(manifest["phase2_cap_proposal"], sort_keys=True),
+        "\nNo prompt changes or Phase 2 execution are authorized by these results. "
+        "Explicit author-01 approval is required before the held-out phase.",
+    ])
+    return "\n".join(rows) + "\n"
 
 
 def main() -> None:
