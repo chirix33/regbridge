@@ -43,8 +43,8 @@ ACTION_DEFINITIONS: dict[str, str] = {
     "PRESERVE_EXACT_CONTEXT_GROUP_KEYWORDS":
         "Retain the existing context-group keyword codes and values unchanged.",
     "SELECT_SUPPORTED_REUSE_OPERATION":
-        "Select and record an identifier-based content-reuse operation or obtain human "
-        "review of new-artifact creation.",
+        "Record either a supported identifier-based content-reuse operation or a "
+        "human-reviewed operation outside the supported operation vocabulary.",
     "VERIFY_HYPERLINK_RELEVANCE":
         "Have a human check hyperlink targets and relevance to the target context "
         "and document any corrections needed.",

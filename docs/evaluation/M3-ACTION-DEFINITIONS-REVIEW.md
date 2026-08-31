@@ -1,6 +1,8 @@
 # Shared action definitions — author review checkpoint
 
-The eleven codes are approved. These effect-only definitions are **proposed, not yet approved**.
+The eleven codes and all eleven definitions were approved by `author-01` on
+2026-08-31 at 22:52:53Z. This approval authorizes one fresh Phase 1 train/development run;
+it does not authorize held-out access or a prompt freeze.
 No new live evaluation or prompt freeze is authorized by this document. Code order is
 alphabetical, not a frequency or priority ordering. Definitions contain no case mappings,
 reference-label hints, predicates, or decision associations.
@@ -15,7 +17,7 @@ reference-label hints, predicates, or decision associations.
 | `HUMAN_VERIFY_STALE_CONTENT` | Have a human review cited content and references against the target context and document any corrections needed. |
 | `NO_MATERIAL_REPAIR` | Retain the document and its context without material changes. |
 | `PRESERVE_EXACT_CONTEXT_GROUP_KEYWORDS` | Retain the existing context-group keyword codes and values unchanged. |
-| `SELECT_SUPPORTED_REUSE_OPERATION` | Select and record an identifier-based content-reuse operation or obtain human review of new-artifact creation. |
+| `SELECT_SUPPORTED_REUSE_OPERATION` | Record either a supported identifier-based content-reuse operation or a human-reviewed operation outside the supported operation vocabulary. |
 | `VERIFY_HYPERLINK_RELEVANCE` | Have a human check hyperlink targets and relevance to the target context and document any corrections needed. |
 | `WAIT_FOR_OPERATIONAL_AVAILABILITY` | Defer operational submission activity pending availability of the submission pathway. |
 
@@ -46,8 +48,8 @@ is complete until all 18 outcomes for each of B0, B1, and RegBridge are recorded
 
 ## Mandatory stop
 
-Approval must identify these definitions before a new run. No approval event is generated
-automatically. After approval, recompute configuration digests and execute one fresh complete
+The author approval record identifies these definitions and the recomputed digests. Execute
+one fresh complete
 Phase 1 (subject to the existing failure-stop policy), without reusing any prior responses.
 Report defect counts, before/after metrics as diagnostics rather than acceptance criteria,
 outside-class diagnostics, review-bypass alongside unsafe-FNR, and per-system reasoning

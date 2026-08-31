@@ -541,9 +541,10 @@ or select the final hybrid decision. The current rule set structurally emits onl
 the six permitted decisions. Disclose this architectural restriction in manifests, rather
 than restricting any model's output options to the benchmark distribution.
 
-The 11 action codes are approved; the effect-only definitions proposed in
-`docs/evaluation/M3-ACTION-DEFINITIONS-REVIEW.md` require separate author-01 approval before
-any new run. Supply the identical alphabetically ordered code/definition packet to B0, B1,
+The 11 action codes and all 11 effect-only definitions are approved by author-01 for the
+declared fresh Phase 1 development run. The approved packet and configuration digests are
+recorded in `data/evaluation/phase1-v2-approval.json`; this is not held-out authorization or
+a prompt freeze. Supply the identical alphabetically ordered code/definition packet to B0, B1,
 RegBridge's semantic request, and B2's scoring contract. Definitions describe effects, never
 trigger conditions or decision associations. Keep the two context-creation codes distinct:
 content-placement change versus context-group metadata change, both with identifier reuse.

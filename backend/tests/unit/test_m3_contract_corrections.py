@@ -11,6 +11,7 @@ from app.config import REPOSITORY_ROOT
 from app.domain.enums import Decision, Severity
 from app.domain.models import AnalysisResult, DossierEvidence, RepairAction
 from app.domain.vocabulary import ACTION_CODES, output_vocabulary
+from app.evaluation import live_configuration as live_config
 from app.evaluation import live_phase1 as live
 from app.evaluation.live_configuration import require_development_approval
 from app.evaluation.metrics import REPRESENTED_CLASSES, score_system
@@ -181,11 +182,14 @@ def test_option_a_outside_class_scoring_is_identical_for_all_systems(system: Sys
 
 
 @pytest.mark.asyncio
-async def test_no_rerun_before_action_vocabulary_approval(monkeypatch: pytest.MonkeyPatch) -> None:
+async def test_no_rerun_before_action_vocabulary_approval(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
     def forbidden() -> Any:
         pytest.fail("Must reject before bundle or model access")
 
     monkeypatch.setattr(live, "load_phase1_bundle", forbidden)
+    monkeypatch.setattr(live_config, "REPOSITORY_ROOT", tmp_path)
     with pytest.raises(ValueError, match="vocabulary awaits author-01"):
         require_development_approval()
     with pytest.raises(ValueError, match="vocabulary awaits author-01"):
