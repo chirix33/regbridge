@@ -1,4 +1,4 @@
-# Fully pinned Python 3.12 development/runtime environment through M2.
+# Fully pinned Python 3.12 development/runtime environment through M3 live Phase 1.
 # Regenerate deliberately after dependency review; do not use this file for live model secrets.
 annotated-types==0.8.0
 anyio==4.14.2
@@ -28,13 +28,17 @@ pytest==8.4.1
 pytest-asyncio==1.1.0
 python-dotenv==1.2.3
 PyYAML==6.0.2
+regex==2026.8.31
 reportlab==4.4.9
+requests==2.34.2
 ruff==0.12.7
 setuptools==80.9.0
 starlette==0.47.3
+tiktoken==0.12.0
 types-PyYAML==6.0.12.20260815
 typing-inspection==0.4.4
 typing_extensions==4.16.0
+urllib3==2.7.0
 uvicorn==0.35.0
 watchfiles==1.2.0
 websockets==17.1

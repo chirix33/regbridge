@@ -1,0 +1,3460 @@
+{
+  "allowed_splits": [
+    "train",
+    "development"
+  ],
+  "benchmark_sha256": "9b1e94fd0709cbbe8573e6882687b931d88c1da775932f0cbaf9dd55eca6fc75",
+  "case_inputs": [
+    {
+      "case_id": "A001",
+      "dossier_evidence": [],
+      "fixture_id": "case-a-removed-3211",
+      "material": {
+        "applicant_name": "Synthetic Research Sponsor",
+        "application_number": "999001",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "selected_leaf": {
+          "extraction_status": "failed",
+          "heading": "3.2.S.1.1",
+          "href": "documents/substance-name.pdf",
+          "hyperlinks": [],
+          "keywords": [],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [],
+          "title": "Substance name and structure"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "package_sha256": "f036e8032b2c866d12dfdd6e093325e01391f8bc07b106a093177962bf4f6d6c",
+      "selected_file_sha256": "eb2a8680ce19e8c0c0b4662c8d1697fd7a42bcbd66733f594337dd78caeb9cb0",
+      "selected_leaf_id": "leaf-3211",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "prospective-reference"
+    },
+    {
+      "case_id": "A003",
+      "dossier_evidence": [],
+      "fixture_id": "case-a-removed-3213",
+      "material": {
+        "applicant_name": "Synthetic Research Sponsor",
+        "application_number": "999003",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "selected_leaf": {
+          "extraction_status": "failed",
+          "heading": "3.2.S.1.3",
+          "href": "documents/manufacturer.pdf",
+          "hyperlinks": [],
+          "keywords": [],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [],
+          "title": "Manufacturer information"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "package_sha256": "aab0171abe2721e8692d2a8a40ba7298c0ca482eda5a51688386c35eb93d9a69",
+      "selected_file_sha256": "f1bdb07786a40b77c0c7fccbfb3bd8d56839115b1064eae9f8e12ba84860b6eb",
+      "selected_leaf_id": "leaf-3213",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "prospective-reference"
+    },
+    {
+      "case_id": "A004",
+      "dossier_evidence": [
+        {
+          "artifact_id": "artifact-leaf-a004-selected",
+          "extraction_method": "deterministic",
+          "file_sha256": "10d234f050bf0d336c630e66a3c73c7023eef0af00973d3912e58cab5dffca85",
+          "id": "leaf-a004-selected-text-p1-1",
+          "kind": "text",
+          "locator": "leaf-a004-selected.pdf / PDF page 1 / text 1",
+          "text": "Replacement substance name description Replacement synthetic content remains located under legacy heading 3.2.S.1.1."
+        }
+      ],
+      "fixture_id": "case-a-004-replacement-3211",
+      "material": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "930004",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "predecessor_file_sha256": "7e973216b1f0822cde1d95c4070ffd00f8a163065d165be8273478b845e72d1d",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1.1",
+          "href": "documents/leaf-a004-selected.pdf",
+          "hyperlinks": [],
+          "keywords": [],
+          "modified_leaf_id": "leaf-a004-predecessor",
+          "operation": "replace",
+          "predecessor_exists": true,
+          "predecessor_heading": "3.2.S.1.1",
+          "predecessor_operation": "new",
+          "text_spans": [
+            {
+              "locator": "leaf-a004-selected.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Replacement substance name description Replacement synthetic content remains located under legacy heading 3.2.S.1.1."
+            }
+          ],
+          "title": "Replacement substance name description"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "package_sha256": "44cbba823d6eb99edec11d950680104e3d38f9c8e0481907b4b5d361e2e942cb",
+      "selected_file_sha256": "10d234f050bf0d336c630e66a3c73c7023eef0af00973d3912e58cab5dffca85",
+      "selected_leaf_id": "leaf-a004-selected",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "prospective-reference"
+    },
+    {
+      "case_id": "A008",
+      "dossier_evidence": [],
+      "fixture_id": "case-a-ambiguous-3214",
+      "material": {
+        "applicant_name": "Synthetic Research Sponsor",
+        "application_number": "999005",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "selected_leaf": {
+          "extraction_status": "failed",
+          "heading": "3.2.S.1.4",
+          "href": "documents/unmapped-content.pdf",
+          "hyperlinks": [],
+          "keywords": [],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [],
+          "title": "Unmapped controlled example"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "package_sha256": "5ed4dd8546e4c1352602bcda02088af25d463edb1b807590f05fa36e29d3d628",
+      "selected_file_sha256": "e0f69577bc6594657975e9ad86541cf0382af2d2b8d0cf9c562581e26e966e47",
+      "selected_leaf_id": "leaf-3214",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "prospective-reference"
+    },
+    {
+      "case_id": "A009",
+      "dossier_evidence": [
+        {
+          "artifact_id": "artifact-leaf-a009-selected",
+          "extraction_method": "deterministic",
+          "file_sha256": "65b64878168d9c0e098fc21161e58ce0ce553c27e0d34553760f0e468d699712",
+          "id": "leaf-a009-selected-text-p1-1",
+          "kind": "text",
+          "locator": "leaf-a009-selected.pdf / PDF page 1 / text 1",
+          "text": "Unsupported synthetic subheading Synthetic content is located under unverified heading 3.2.S.1.5."
+        }
+      ],
+      "fixture_id": "case-a-009-unmapped-3215",
+      "material": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "930009",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1.5",
+          "href": "documents/leaf-a009-selected.pdf",
+          "hyperlinks": [],
+          "keywords": [],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "leaf-a009-selected.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Unsupported synthetic subheading Synthetic content is located under unverified heading 3.2.S.1.5."
+            }
+          ],
+          "title": "Unsupported synthetic subheading"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "package_sha256": "27496e73670ede6362876816f3f24b232720f69ad49281ae6b017057a013e9f5",
+      "selected_file_sha256": "65b64878168d9c0e098fc21161e58ce0ce553c27e0d34553760f0e468d699712",
+      "selected_leaf_id": "leaf-a009-selected",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "prospective-reference"
+    },
+    {
+      "case_id": "A010",
+      "dossier_evidence": [],
+      "fixture_id": "case-a-removed-3211",
+      "material": {
+        "applicant_name": "Synthetic Research Sponsor",
+        "application_number": "999001",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "selected_leaf": {
+          "extraction_status": "failed",
+          "heading": "3.2.S.1.1",
+          "href": "documents/substance-name.pdf",
+          "hyperlinks": [],
+          "keywords": [],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [],
+          "title": "Substance name and structure"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "current_operational",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "package_sha256": "f036e8032b2c866d12dfdd6e093325e01391f8bc07b106a093177962bf4f6d6c",
+      "selected_file_sha256": "eb2a8680ce19e8c0c0b4662c8d1697fd7a42bcbd66733f594337dd78caeb9cb0",
+      "selected_leaf_id": "leaf-3211",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "current_operational",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "current-operational"
+    },
+    {
+      "case_id": "B002",
+      "dossier_evidence": [
+        {
+          "artifact_id": "artifact-leaf-b-preserve-all",
+          "extraction_method": "deterministic",
+          "file_sha256": "9c2c001a9f096651c1483ea3febfb033274f8450826eba4ac9787691c2834a69",
+          "id": "leaf-b-preserve-all-metadata-manufacturer",
+          "kind": "metadata",
+          "locator": "index.xml / 3.2.S.1 / @manufacturer",
+          "text": "manufacturer=all"
+        },
+        {
+          "artifact_id": "artifact-leaf-b-preserve-all",
+          "extraction_method": "deterministic",
+          "file_sha256": "9c2c001a9f096651c1483ea3febfb033274f8450826eba4ac9787691c2834a69",
+          "id": "leaf-b-preserve-all-text-p1-1",
+          "kind": "text",
+          "locator": "case-b-preserve-all.pdf / PDF page 1 / text 1",
+          "text": "Manufacturer overview - preserve lifecycle Current manufacturer overview for Northstar Therapeutics. No embedded hyperlinks."
+        }
+      ],
+      "fixture_id": "case-b-preserve-all",
+      "material": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "123456",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1",
+          "href": "documents/case-b-preserve-all.pdf",
+          "hyperlinks": [],
+          "keywords": [
+            {
+              "name": "manufacturer",
+              "normalized_value": "all",
+              "raw_value": "all"
+            }
+          ],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "case-b-preserve-all.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Manufacturer overview - preserve lifecycle Current manufacturer overview for Northstar Therapeutics. No embedded hyperlinks."
+            }
+          ],
+          "title": "Manufacturer overview - preserve lifecycle"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": {
+            "intent": "preserve-existing-lifecycle",
+            "manufacturer_partitioning": "unknown",
+            "replacement_manufacturer_value": null
+          },
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "package_sha256": "6333ec84167f1a970b8a72de2fd333cfecfbb5bc89730ad05fb2bfb921bb5a56",
+      "selected_file_sha256": "9c2c001a9f096651c1483ea3febfb033274f8450826eba4ac9787691c2834a69",
+      "selected_leaf_id": "leaf-b-preserve-all",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": {
+          "intent": "preserve-existing-lifecycle",
+          "manufacturer_partitioning": "unknown",
+          "replacement_manufacturer_value": null
+        },
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "preserve-reference"
+    },
+    {
+      "case_id": "B003",
+      "dossier_evidence": [
+        {
+          "artifact_id": "artifact-leaf-b-unspecified-all",
+          "extraction_method": "deterministic",
+          "file_sha256": "f0e729c7a870a79e48f948b86ba9f3bf61539b39eb0a5c390873717766f8763e",
+          "id": "leaf-b-unspecified-all-metadata-manufacturer",
+          "kind": "metadata",
+          "locator": "index.xml / 3.2.S.1 / @manufacturer",
+          "text": "manufacturer= ALL "
+        },
+        {
+          "artifact_id": "artifact-leaf-b-unspecified-all",
+          "extraction_method": "deterministic",
+          "file_sha256": "f0e729c7a870a79e48f948b86ba9f3bf61539b39eb0a5c390873717766f8763e",
+          "id": "leaf-b-unspecified-all-text-p1-1",
+          "kind": "text",
+          "locator": "case-b-unspecified-all.pdf / PDF page 1 / text 1",
+          "text": "Manufacturer overview - intent unspecified Current manufacturer overview for Northstar Therapeutics. No embedded hyperlinks."
+        }
+      ],
+      "fixture_id": "case-b-unspecified-all",
+      "material": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "123456",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1",
+          "href": "documents/case-b-unspecified-all.pdf",
+          "hyperlinks": [],
+          "keywords": [
+            {
+              "name": "manufacturer",
+              "normalized_value": "all",
+              "raw_value": " ALL "
+            }
+          ],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "case-b-unspecified-all.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Manufacturer overview - intent unspecified Current manufacturer overview for Northstar Therapeutics. No embedded hyperlinks."
+            }
+          ],
+          "title": "Manufacturer overview - intent unspecified"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": {
+            "intent": "unspecified",
+            "manufacturer_partitioning": "unknown",
+            "replacement_manufacturer_value": null
+          },
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "package_sha256": "d14b067af92fca852572b1bc08e9dcea539a9134bb6bbeab9a48a2abe889eec3",
+      "selected_file_sha256": "f0e729c7a870a79e48f948b86ba9f3bf61539b39eb0a5c390873717766f8763e",
+      "selected_leaf_id": "leaf-b-unspecified-all",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": {
+          "intent": "unspecified",
+          "manufacturer_partitioning": "unknown",
+          "replacement_manufacturer_value": null
+        },
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "unspecified-reference"
+    },
+    {
+      "case_id": "B006",
+      "dossier_evidence": [
+        {
+          "artifact_id": "artifact-leaf-b-clean-specific",
+          "extraction_method": "deterministic",
+          "file_sha256": "6368392b240f4300e9e6e5913cbe2764ecde4a36f0047959ed35ce9db22f8ebd",
+          "id": "leaf-b-clean-specific-metadata-manufacturer",
+          "kind": "metadata",
+          "locator": "index.xml / 3.2.S.1 / @manufacturer",
+          "text": "manufacturer=Northstar River Site"
+        },
+        {
+          "artifact_id": "artifact-leaf-b-clean-specific",
+          "extraction_method": "deterministic",
+          "file_sha256": "6368392b240f4300e9e6e5913cbe2764ecde4a36f0047959ed35ce9db22f8ebd",
+          "id": "leaf-b-clean-specific-text-p1-1",
+          "kind": "text",
+          "locator": "case-b-clean-specific.pdf / PDF page 1 / text 1",
+          "text": "Manufacturer overview - stable value Manufacturing information for Northstar River Site. No embedded hyperlinks."
+        }
+      ],
+      "fixture_id": "case-b-clean-specific",
+      "material": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "123456",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1",
+          "href": "documents/case-b-clean-specific.pdf",
+          "hyperlinks": [],
+          "keywords": [
+            {
+              "name": "manufacturer",
+              "normalized_value": "northstar river site",
+              "raw_value": "Northstar River Site"
+            }
+          ],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "case-b-clean-specific.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Manufacturer overview - stable value Manufacturing information for Northstar River Site. No embedded hyperlinks."
+            }
+          ],
+          "title": "Manufacturer overview - stable value"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "package_sha256": "959230ee8991b1825fca61b81f3f4a1d2b3e63cf515ef8be4078c3958ea7d09d",
+      "selected_file_sha256": "6368392b240f4300e9e6e5913cbe2764ecde4a36f0047959ed35ce9db22f8ebd",
+      "selected_leaf_id": "leaf-b-clean-specific",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "prospective-reference"
+    },
+    {
+      "case_id": "B007",
+      "dossier_evidence": [
+        {
+          "artifact_id": "artifact-leaf-b-clean-specific",
+          "extraction_method": "deterministic",
+          "file_sha256": "6368392b240f4300e9e6e5913cbe2764ecde4a36f0047959ed35ce9db22f8ebd",
+          "id": "leaf-b-clean-specific-metadata-manufacturer",
+          "kind": "metadata",
+          "locator": "index.xml / 3.2.S.1 / @manufacturer",
+          "text": "manufacturer=Northstar River Site"
+        },
+        {
+          "artifact_id": "artifact-leaf-b-clean-specific",
+          "extraction_method": "deterministic",
+          "file_sha256": "6368392b240f4300e9e6e5913cbe2764ecde4a36f0047959ed35ce9db22f8ebd",
+          "id": "leaf-b-clean-specific-text-p1-1",
+          "kind": "text",
+          "locator": "case-b-clean-specific.pdf / PDF page 1 / text 1",
+          "text": "Manufacturer overview - stable value Manufacturing information for Northstar River Site. No embedded hyperlinks."
+        }
+      ],
+      "fixture_id": "case-b-clean-specific",
+      "material": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "123456",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1",
+          "href": "documents/case-b-clean-specific.pdf",
+          "hyperlinks": [],
+          "keywords": [
+            {
+              "name": "manufacturer",
+              "normalized_value": "northstar river site",
+              "raw_value": "Northstar River Site"
+            }
+          ],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "case-b-clean-specific.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Manufacturer overview - stable value Manufacturing information for Northstar River Site. No embedded hyperlinks."
+            }
+          ],
+          "title": "Manufacturer overview - stable value"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "create-new-target-artifact",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "package_sha256": "959230ee8991b1825fca61b81f3f4a1d2b3e63cf515ef8be4078c3958ea7d09d",
+      "selected_file_sha256": "6368392b240f4300e9e6e5913cbe2764ecde4a36f0047959ed35ce9db22f8ebd",
+      "selected_leaf_id": "leaf-b-clean-specific",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "create-new-target-artifact",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "create-new-target"
+    },
+    {
+      "case_id": "B008",
+      "dossier_evidence": [
+        {
+          "artifact_id": "artifact-leaf-b-product-all",
+          "extraction_method": "deterministic",
+          "file_sha256": "4ba2bca5f46c922093196e740ca24fde7441edc6a934ef85316163a9575e16b0",
+          "id": "leaf-b-product-all-metadata-product",
+          "kind": "metadata",
+          "locator": "index.xml / 3.2.S.1 / @product",
+          "text": "product=all"
+        },
+        {
+          "artifact_id": "artifact-leaf-b-product-all",
+          "extraction_method": "deterministic",
+          "file_sha256": "4ba2bca5f46c922093196e740ca24fde7441edc6a934ef85316163a9575e16b0",
+          "id": "leaf-b-product-all-text-p1-1",
+          "kind": "text",
+          "locator": "case-b-out-of-scope-product-all.pdf / PDF page 1 / text 1",
+          "text": "Product keyword control Product overview using an out-of-scope keyword for this rule."
+        }
+      ],
+      "fixture_id": "case-b-out-of-scope-product-all",
+      "material": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "123456",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1",
+          "href": "documents/case-b-out-of-scope-product-all.pdf",
+          "hyperlinks": [],
+          "keywords": [
+            {
+              "name": "product",
+              "normalized_value": "all",
+              "raw_value": "all"
+            }
+          ],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "case-b-out-of-scope-product-all.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Product keyword control Product overview using an out-of-scope keyword for this rule."
+            }
+          ],
+          "title": "Product keyword control"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "package_sha256": "9994ea55fb8631549af92a6937a1c094e803e2fd67ebf33d9dcac6af4bb4180c",
+      "selected_file_sha256": "4ba2bca5f46c922093196e740ca24fde7441edc6a934ef85316163a9575e16b0",
+      "selected_leaf_id": "leaf-b-product-all",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "prospective-reference"
+    },
+    {
+      "case_id": "B009",
+      "dossier_evidence": [
+        {
+          "artifact_id": "artifact-leaf-b-unspecified-all",
+          "extraction_method": "deterministic",
+          "file_sha256": "f0e729c7a870a79e48f948b86ba9f3bf61539b39eb0a5c390873717766f8763e",
+          "id": "leaf-b-unspecified-all-metadata-manufacturer",
+          "kind": "metadata",
+          "locator": "index.xml / 3.2.S.1 / @manufacturer",
+          "text": "manufacturer= ALL "
+        },
+        {
+          "artifact_id": "artifact-leaf-b-unspecified-all",
+          "extraction_method": "deterministic",
+          "file_sha256": "f0e729c7a870a79e48f948b86ba9f3bf61539b39eb0a5c390873717766f8763e",
+          "id": "leaf-b-unspecified-all-text-p1-1",
+          "kind": "text",
+          "locator": "case-b-unspecified-all.pdf / PDF page 1 / text 1",
+          "text": "Manufacturer overview - intent unspecified Current manufacturer overview for Northstar Therapeutics. No embedded hyperlinks."
+        }
+      ],
+      "fixture_id": "case-b-unspecified-all",
+      "material": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "123456",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1",
+          "href": "documents/case-b-unspecified-all.pdf",
+          "hyperlinks": [],
+          "keywords": [
+            {
+              "name": "manufacturer",
+              "normalized_value": "all",
+              "raw_value": " ALL "
+            }
+          ],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "case-b-unspecified-all.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Manufacturer overview - intent unspecified Current manufacturer overview for Northstar Therapeutics. No embedded hyperlinks."
+            }
+          ],
+          "title": "Manufacturer overview - intent unspecified"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": {
+            "intent": "preserve-existing-lifecycle",
+            "manufacturer_partitioning": "unknown",
+            "replacement_manufacturer_value": null
+          },
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "package_sha256": "d14b067af92fca852572b1bc08e9dcea539a9134bb6bbeab9a48a2abe889eec3",
+      "selected_file_sha256": "f0e729c7a870a79e48f948b86ba9f3bf61539b39eb0a5c390873717766f8763e",
+      "selected_leaf_id": "leaf-b-unspecified-all",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": {
+          "intent": "preserve-existing-lifecycle",
+          "manufacturer_partitioning": "unknown",
+          "replacement_manufacturer_value": null
+        },
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "preserve-reference"
+    },
+    {
+      "case_id": "C001",
+      "dossier_evidence": [
+        {
+          "artifact_id": "artifact-leaf-c-stale-heading",
+          "extraction_method": "deterministic",
+          "file_sha256": "552535d156d9b20a4d421226cb035812ff00689bbe0b177bca926e518e928adc",
+          "id": "leaf-c-stale-heading-text-p1-1",
+          "kind": "text",
+          "locator": "case-c-stale-heading.pdf / PDF page 1 / text 1",
+          "text": "Stale internal heading See legacy section 3.2.S.1.1 Name and Nomenclature for the controlling description."
+        }
+      ],
+      "fixture_id": "case-c-stale-heading",
+      "material": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "123456",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1",
+          "href": "documents/case-c-stale-heading.pdf",
+          "hyperlinks": [],
+          "keywords": [],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "case-c-stale-heading.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Stale internal heading See legacy section 3.2.S.1.1 Name and Nomenclature for the controlling description."
+            }
+          ],
+          "title": "Stale internal heading"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "package_sha256": "0ccd3d76b8049c10629aac3441b9bc9ae5a167a0badb93a73b5ce889f359c3fe",
+      "selected_file_sha256": "552535d156d9b20a4d421226cb035812ff00689bbe0b177bca926e518e928adc",
+      "selected_leaf_id": "leaf-c-stale-heading",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "prospective-reference"
+    },
+    {
+      "case_id": "C003",
+      "dossier_evidence": [
+        {
+          "artifact_id": "artifact-leaf-c-irrelevant-link",
+          "extraction_method": "deterministic",
+          "file_sha256": "760e43120b0f81ed84cfd26c859b7a7219eb6e1f56209d0bbf481f2c8e5838a2",
+          "id": "leaf-c-irrelevant-link-text-p1-1",
+          "kind": "text",
+          "locator": "case-c-irrelevant-link.pdf / PDF page 1 / text 1",
+          "text": "Legacy external hyperlink The legacy applicant portal is linked below for the former dossier context. Open legacy applicant portal"
+        },
+        {
+          "artifact_id": "artifact-leaf-c-irrelevant-link",
+          "extraction_method": "deterministic",
+          "file_sha256": "760e43120b0f81ed84cfd26c859b7a7219eb6e1f56209d0bbf481f2c8e5838a2",
+          "id": "leaf-c-irrelevant-link-link-p1-1",
+          "kind": "hyperlink",
+          "locator": "case-c-irrelevant-link.pdf / PDF page 1 / link annotation",
+          "text": "uri target=https://legacy.example.invalid/old-applicant/3.2.S.1.1; target_exists=None; fixture_relevance=unverified"
+        }
+      ],
+      "fixture_id": "case-c-irrelevant-link",
+      "material": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "123456",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1",
+          "href": "documents/case-c-irrelevant-link.pdf",
+          "hyperlinks": [
+            {
+              "author_verified_relevant": false,
+              "page": 1,
+              "target": "https://legacy.example.invalid/old-applicant/3.2.S.1.1",
+              "target_exists": null,
+              "target_type": "uri"
+            }
+          ],
+          "keywords": [],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "case-c-irrelevant-link.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Legacy external hyperlink The legacy applicant portal is linked below for the former dossier context. Open legacy applicant portal"
+            }
+          ],
+          "title": "Legacy external hyperlink"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "package_sha256": "0ccee6f32b08602334d8e32da841bd8e84e9b91847b58685b72a532ad8c82e54",
+      "selected_file_sha256": "760e43120b0f81ed84cfd26c859b7a7219eb6e1f56209d0bbf481f2c8e5838a2",
+      "selected_leaf_id": "leaf-c-irrelevant-link",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "prospective-reference"
+    },
+    {
+      "case_id": "C006",
+      "dossier_evidence": [
+        {
+          "artifact_id": "artifact-leaf-c-ambiguous",
+          "extraction_method": "deterministic",
+          "file_sha256": "a91ac26db788e852fe3cd14ffcad22b17d93cbb3e64d8d530049594a8d2dd248",
+          "id": "leaf-c-ambiguous-text-p1-1",
+          "kind": "text",
+          "locator": "case-c-ambiguous.pdf / PDF page 1 / text 1",
+          "text": "Ambiguous historical wording Prior placement may have differed; confirm whether the referenced description remains current."
+        }
+      ],
+      "fixture_id": "case-c-ambiguous",
+      "material": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "123456",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1",
+          "href": "documents/case-c-ambiguous.pdf",
+          "hyperlinks": [],
+          "keywords": [],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "case-c-ambiguous.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Ambiguous historical wording Prior placement may have differed; confirm whether the referenced description remains current."
+            }
+          ],
+          "title": "Ambiguous historical wording"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "package_sha256": "326d9db55783318d49fad40058ab74952b0f4335365209cdce7cdaed8aea2fc6",
+      "selected_file_sha256": "a91ac26db788e852fe3cd14ffcad22b17d93cbb3e64d8d530049594a8d2dd248",
+      "selected_leaf_id": "leaf-c-ambiguous",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "prospective-reference"
+    },
+    {
+      "case_id": "C007",
+      "dossier_evidence": [
+        {
+          "artifact_id": "artifact-leaf-c007-selected",
+          "extraction_method": "deterministic",
+          "file_sha256": "ac004b92432129cccccac44365d9d53251761804af561873adcc5ca310b77c58",
+          "id": "leaf-c007-selected-text-p1-1",
+          "kind": "text",
+          "locator": "leaf-c007-selected.pdf / PDF page 1 / text 1",
+          "text": "Stale properties heading instruction Use section 3.2.S.1.2 Properties as the current controlling location for this material."
+        }
+      ],
+      "fixture_id": "case-c-007-stale-heading-3212",
+      "material": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "940007",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1",
+          "href": "documents/leaf-c007-selected.pdf",
+          "hyperlinks": [],
+          "keywords": [],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "leaf-c007-selected.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Stale properties heading instruction Use section 3.2.S.1.2 Properties as the current controlling location for this material."
+            }
+          ],
+          "title": "Stale properties heading instruction"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "package_sha256": "046df99f548897218a4eeac1495e96f5b01d8f62864398c0e9a2432a1fb56926",
+      "selected_file_sha256": "ac004b92432129cccccac44365d9d53251761804af561873adcc5ca310b77c58",
+      "selected_leaf_id": "leaf-c007-selected",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "prospective-reference"
+    },
+    {
+      "case_id": "C009",
+      "dossier_evidence": [
+        {
+          "artifact_id": "artifact-leaf-c009-selected",
+          "extraction_method": "deterministic",
+          "file_sha256": "79de7097254cc5ce63a7f55265761d1627d41aff9628871c537cd13eaa2cb0cb",
+          "id": "leaf-c009-selected-text-p1-1",
+          "kind": "text",
+          "locator": "leaf-c009-selected.pdf / PDF page 1 / text 1",
+          "text": "Historical heading note In a 2022 dossier this material appeared under 3.2.S.1.1. That statement is historical only and is not current placement guidance."
+        }
+      ],
+      "fixture_id": "case-c-009-benign-heading-history",
+      "material": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "940009",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1",
+          "href": "documents/leaf-c009-selected.pdf",
+          "hyperlinks": [],
+          "keywords": [],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "leaf-c009-selected.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Historical heading note In a 2022 dossier this material appeared under 3.2.S.1.1. That statement is historical only and is not current placement guidance."
+            }
+          ],
+          "title": "Historical heading note"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "package_sha256": "05e1b7b5021f1cf5b785a7dfa991b706960cc2ef34f8d8a13368243caa021153",
+      "selected_file_sha256": "79de7097254cc5ce63a7f55265761d1627d41aff9628871c537cd13eaa2cb0cb",
+      "selected_leaf_id": "leaf-c009-selected",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "prospective-reference"
+    },
+    {
+      "case_id": "C010",
+      "dossier_evidence": [
+        {
+          "artifact_id": "artifact-leaf-c-irrelevant-link",
+          "extraction_method": "deterministic",
+          "file_sha256": "760e43120b0f81ed84cfd26c859b7a7219eb6e1f56209d0bbf481f2c8e5838a2",
+          "id": "leaf-c-irrelevant-link-text-p1-1",
+          "kind": "text",
+          "locator": "case-c-irrelevant-link.pdf / PDF page 1 / text 1",
+          "text": "Legacy external hyperlink The legacy applicant portal is linked below for the former dossier context. Open legacy applicant portal"
+        },
+        {
+          "artifact_id": "artifact-leaf-c-irrelevant-link",
+          "extraction_method": "deterministic",
+          "file_sha256": "760e43120b0f81ed84cfd26c859b7a7219eb6e1f56209d0bbf481f2c8e5838a2",
+          "id": "leaf-c-irrelevant-link-link-p1-1",
+          "kind": "hyperlink",
+          "locator": "case-c-irrelevant-link.pdf / PDF page 1 / link annotation",
+          "text": "uri target=https://legacy.example.invalid/old-applicant/3.2.S.1.1; target_exists=None; fixture_relevance=unverified"
+        }
+      ],
+      "fixture_id": "case-c-irrelevant-link",
+      "material": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "123456",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1",
+          "href": "documents/case-c-irrelevant-link.pdf",
+          "hyperlinks": [
+            {
+              "author_verified_relevant": false,
+              "page": 1,
+              "target": "https://legacy.example.invalid/old-applicant/3.2.S.1.1",
+              "target_exists": null,
+              "target_type": "uri"
+            }
+          ],
+          "keywords": [],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "case-c-irrelevant-link.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Legacy external hyperlink The legacy applicant portal is linked below for the former dossier context. Open legacy applicant portal"
+            }
+          ],
+          "title": "Legacy external hyperlink"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "current_operational",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "package_sha256": "0ccee6f32b08602334d8e32da841bd8e84e9b91847b58685b72a532ad8c82e54",
+      "selected_file_sha256": "760e43120b0f81ed84cfd26c859b7a7219eb6e1f56209d0bbf481f2c8e5838a2",
+      "selected_leaf_id": "leaf-c-irrelevant-link",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "current_operational",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "current-operational"
+    }
+  ],
+  "cases": [
+    {
+      "archetype": "unavailable-heading",
+      "case_id": "A001",
+      "decision_fingerprint_sha256": "b83e7904ffbe4ec8224295f8d8f7abca9f43a08610fb59326194d3589070d9a4",
+      "decision_predicate_sha256": "2aaa5f1f32c6298d377931f5c5c2348402d96190b32558aed76290c5cbb6cc88",
+      "decision_relevant_predicates": {
+        "applicant_name": "Synthetic Research Sponsor",
+        "application_number": "999001",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "package_sha256": "f036e8032b2c866d12dfdd6e093325e01391f8bc07b106a093177962bf4f6d6c",
+        "selected_file_sha256": "eb2a8680ce19e8c0c0b4662c8d1697fd7a42bcbd66733f594337dd78caeb9cb0",
+        "selected_leaf": {
+          "extraction_status": "failed",
+          "heading": "3.2.S.1.1",
+          "href": "documents/substance-name.pdf",
+          "hyperlinks": [],
+          "keywords": [],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [],
+          "title": "Substance name and structure"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "expert_validated": false,
+      "fixture_family": "a-removed-3211-lifecycle",
+      "fixture_id": "case-a-removed-3211",
+      "mutation": {
+        "exact": "new leaf beneath 3.2.S.1.1",
+        "type": "canonical"
+      },
+      "package_sha256": "f036e8032b2c866d12dfdd6e093325e01391f8bc07b106a093177962bf4f6d6c",
+      "reference": {
+        "acceptable_evidence_ids": [
+          "ev-ctoc-321-remains",
+          "ev-ctoc-3211-3213-removed",
+          "ev-tcg-replacement-context-same",
+          "ev-tcg-new-context-and-reuse"
+        ],
+        "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT",
+        "action_mode": "required_condition",
+        "decision": "REUSE_WITH_NEW_CONTEXT",
+        "human_review_required": true,
+        "rationale": "Exact source-supported mapping moves 3.2.S.1.1 to 3.2.S.1 in the prospective scenario.",
+        "required_rule_ids": [
+          "FDA-CDER-M1-REMOVED-SUBHEADING-001"
+        ],
+        "severity": "blocking"
+      },
+      "review_event": {
+        "decision": "accepted",
+        "expert_validated": false,
+        "external_reviewer_qualification": null,
+        "id": "adjudication-m3-a001-author-01",
+        "independent_second_author_check": false,
+        "object_id": "A001",
+        "object_version": "1.0.0",
+        "rationale": "author-01 explicitly approved the realized M3 pre-freeze ledger, including this candidate label, split, fixture family, exact mutation, selected leaf, hashes, evidence, rules, action, and human-review requirement.",
+        "reviewed_at": "2026-08-30T18:18:04Z",
+        "reviewer_id": "author-01",
+        "reviewer_role": "research-author",
+        "source_sha256": "be036671d1a7cf4e526c50fbc23a61df790362f3a560b4eef988bf8caaf9aac8",
+        "source_snapshot_id": "fda-cder-demo-v1",
+        "supporting_source_sha256s": [],
+        "unresolved_assumptions": [
+          "Controlled prospective FDA/CDER research label only; not FDA acceptance or regulatory-expert ground truth."
+        ]
+      },
+      "review_status": "author_adjudicated_for_demo",
+      "selected_file_sha256": "eb2a8680ce19e8c0c0b4662c8d1697fd7a42bcbd66733f594337dd78caeb9cb0",
+      "selected_leaf_id": "leaf-3211",
+      "source_fixture_id": null,
+      "split": "train",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "prospective-reference",
+      "target_context_sha256": "b66bdf396cdf2862ce09d20d340f970cc040d1c954ab54861239326f5a7df0f3"
+    },
+    {
+      "archetype": "unavailable-heading",
+      "case_id": "A003",
+      "decision_fingerprint_sha256": "8e660b443abdad87726e8947b7a3f265a15c1cb60b4c44cecafa97df56b94445",
+      "decision_predicate_sha256": "a552f82fa0fa69853f495dd3cdb1c173c0c5f6f71645665c0cbf3bd652acd7a6",
+      "decision_relevant_predicates": {
+        "applicant_name": "Synthetic Research Sponsor",
+        "application_number": "999003",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "package_sha256": "aab0171abe2721e8692d2a8a40ba7298c0ca482eda5a51688386c35eb93d9a69",
+        "selected_file_sha256": "f1bdb07786a40b77c0c7fccbfb3bd8d56839115b1064eae9f8e12ba84860b6eb",
+        "selected_leaf": {
+          "extraction_status": "failed",
+          "heading": "3.2.S.1.3",
+          "href": "documents/manufacturer.pdf",
+          "hyperlinks": [],
+          "keywords": [],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [],
+          "title": "Manufacturer information"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "expert_validated": false,
+      "fixture_family": "a-removed-3213",
+      "fixture_id": "case-a-removed-3213",
+      "mutation": {
+        "exact": "new leaf beneath 3.2.S.1.3",
+        "type": "canonical"
+      },
+      "package_sha256": "aab0171abe2721e8692d2a8a40ba7298c0ca482eda5a51688386c35eb93d9a69",
+      "reference": {
+        "acceptable_evidence_ids": [
+          "ev-ctoc-321-remains",
+          "ev-ctoc-3211-3213-removed",
+          "ev-tcg-replacement-context-same",
+          "ev-tcg-new-context-and-reuse"
+        ],
+        "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT",
+        "action_mode": "required_condition",
+        "decision": "REUSE_WITH_NEW_CONTEXT",
+        "human_review_required": true,
+        "rationale": "Exact source-supported mapping moves 3.2.S.1.3 to 3.2.S.1 in the prospective scenario.",
+        "required_rule_ids": [
+          "FDA-CDER-M1-REMOVED-SUBHEADING-001"
+        ],
+        "severity": "blocking"
+      },
+      "review_event": {
+        "decision": "accepted",
+        "expert_validated": false,
+        "external_reviewer_qualification": null,
+        "id": "adjudication-m3-a003-author-01",
+        "independent_second_author_check": false,
+        "object_id": "A003",
+        "object_version": "1.0.0",
+        "rationale": "author-01 explicitly approved the realized M3 pre-freeze ledger, including this candidate label, split, fixture family, exact mutation, selected leaf, hashes, evidence, rules, action, and human-review requirement.",
+        "reviewed_at": "2026-08-30T18:18:04Z",
+        "reviewer_id": "author-01",
+        "reviewer_role": "research-author",
+        "source_sha256": "be036671d1a7cf4e526c50fbc23a61df790362f3a560b4eef988bf8caaf9aac8",
+        "source_snapshot_id": "fda-cder-demo-v1",
+        "supporting_source_sha256s": [],
+        "unresolved_assumptions": [
+          "Controlled prospective FDA/CDER research label only; not FDA acceptance or regulatory-expert ground truth."
+        ]
+      },
+      "review_status": "author_adjudicated_for_demo",
+      "selected_file_sha256": "f1bdb07786a40b77c0c7fccbfb3bd8d56839115b1064eae9f8e12ba84860b6eb",
+      "selected_leaf_id": "leaf-3213",
+      "source_fixture_id": null,
+      "split": "development",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "prospective-reference",
+      "target_context_sha256": "b66bdf396cdf2862ce09d20d340f970cc040d1c954ab54861239326f5a7df0f3"
+    },
+    {
+      "archetype": "unavailable-heading",
+      "case_id": "A004",
+      "decision_fingerprint_sha256": "4f34a6a54933b9d17c4f4cefd4a5a973b9a916b2b850a4bc5e9ddba5ad359f02",
+      "decision_predicate_sha256": "acc873f400851faeea86cf3c49f8405f9df6dfb3ef6ca83e197d15dcac6280c8",
+      "decision_relevant_predicates": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "930004",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "package_sha256": "44cbba823d6eb99edec11d950680104e3d38f9c8e0481907b4b5d361e2e942cb",
+        "predecessor_file_sha256": "7e973216b1f0822cde1d95c4070ffd00f8a163065d165be8273478b845e72d1d",
+        "selected_file_sha256": "10d234f050bf0d336c630e66a3c73c7023eef0af00973d3912e58cab5dffca85",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1.1",
+          "href": "documents/leaf-a004-selected.pdf",
+          "hyperlinks": [],
+          "keywords": [],
+          "modified_leaf_id": "leaf-a004-predecessor",
+          "operation": "replace",
+          "predecessor_exists": true,
+          "predecessor_heading": "3.2.S.1.1",
+          "predecessor_operation": "new",
+          "text_spans": [
+            {
+              "locator": "leaf-a004-selected.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Replacement substance name description Replacement synthetic content remains located under legacy heading 3.2.S.1.1."
+            }
+          ],
+          "title": "Replacement substance name description"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "expert_validated": false,
+      "fixture_family": "a-removed-3211-lifecycle",
+      "fixture_id": "case-a-004-replacement-3211",
+      "mutation": {
+        "exact": "selected replace leaf modifies existing predecessor beneath 3.2.S.1.1",
+        "type": "lifecycle"
+      },
+      "package_sha256": "44cbba823d6eb99edec11d950680104e3d38f9c8e0481907b4b5d361e2e942cb",
+      "reference": {
+        "acceptable_evidence_ids": [
+          "ev-ctoc-321-remains",
+          "ev-ctoc-3211-3213-removed",
+          "ev-tcg-replacement-context-same",
+          "ev-tcg-new-context-and-reuse"
+        ],
+        "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT",
+        "action_mode": "required_condition",
+        "decision": "REUSE_WITH_NEW_CONTEXT",
+        "human_review_required": true,
+        "rationale": "Replacement lifecycle does not alter the exact removed-heading mapping.",
+        "required_rule_ids": [
+          "FDA-CDER-M1-REMOVED-SUBHEADING-001"
+        ],
+        "severity": "blocking"
+      },
+      "review_event": {
+        "decision": "accepted",
+        "expert_validated": false,
+        "external_reviewer_qualification": null,
+        "id": "adjudication-m3-a004-author-01",
+        "independent_second_author_check": false,
+        "object_id": "A004",
+        "object_version": "1.0.0",
+        "rationale": "author-01 explicitly approved the realized M3 pre-freeze ledger, including this candidate label, split, fixture family, exact mutation, selected leaf, hashes, evidence, rules, action, and human-review requirement.",
+        "reviewed_at": "2026-08-30T18:18:04Z",
+        "reviewer_id": "author-01",
+        "reviewer_role": "research-author",
+        "source_sha256": "be036671d1a7cf4e526c50fbc23a61df790362f3a560b4eef988bf8caaf9aac8",
+        "source_snapshot_id": "fda-cder-demo-v1",
+        "supporting_source_sha256s": [],
+        "unresolved_assumptions": [
+          "Controlled prospective FDA/CDER research label only; not FDA acceptance or regulatory-expert ground truth."
+        ]
+      },
+      "review_status": "author_adjudicated_for_demo",
+      "selected_file_sha256": "10d234f050bf0d336c630e66a3c73c7023eef0af00973d3912e58cab5dffca85",
+      "selected_leaf_id": "leaf-a004-selected",
+      "source_fixture_id": "case-a-removed-3211",
+      "split": "train",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "prospective-reference",
+      "target_context_sha256": "b66bdf396cdf2862ce09d20d340f970cc040d1c954ab54861239326f5a7df0f3"
+    },
+    {
+      "archetype": "unavailable-heading",
+      "case_id": "A008",
+      "decision_fingerprint_sha256": "d8307865c2b2b107ade89c5f7be8e731e0fa32e48a150ccdc54b6f3a5f0d6696",
+      "decision_predicate_sha256": "2c3536bd02459296616241cce5581c9f4fe614d264b3e3c012cf340af5f31bd9",
+      "decision_relevant_predicates": {
+        "applicant_name": "Synthetic Research Sponsor",
+        "application_number": "999005",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "package_sha256": "5ed4dd8546e4c1352602bcda02088af25d463edb1b807590f05fa36e29d3d628",
+        "selected_file_sha256": "e0f69577bc6594657975e9ad86541cf0382af2d2b8d0cf9c562581e26e966e47",
+        "selected_leaf": {
+          "extraction_status": "failed",
+          "heading": "3.2.S.1.4",
+          "href": "documents/unmapped-content.pdf",
+          "hyperlinks": [],
+          "keywords": [],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [],
+          "title": "Unmapped controlled example"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "expert_validated": false,
+      "fixture_family": "a-unmapped-heading",
+      "fixture_id": "case-a-ambiguous-3214",
+      "mutation": {
+        "exact": "new leaf beneath unsupported 3.2.S.1.4",
+        "type": "unmapped-heading"
+      },
+      "package_sha256": "5ed4dd8546e4c1352602bcda02088af25d463edb1b807590f05fa36e29d3d628",
+      "reference": {
+        "acceptable_evidence_ids": [
+          "ev-ctoc-321-remains",
+          "ev-ctoc-3211-3213-removed"
+        ],
+        "action": "AUTHOR_REVIEW_HEADING_MAPPING",
+        "action_mode": "suggested_check",
+        "decision": "HUMAN_REGULATORY_REVIEW",
+        "human_review_required": true,
+        "rationale": "No generic nearest-parent inference is allowed for 3.2.S.1.4.",
+        "required_rule_ids": [],
+        "severity": "unresolved"
+      },
+      "review_event": {
+        "decision": "accepted",
+        "expert_validated": false,
+        "external_reviewer_qualification": null,
+        "id": "adjudication-m3-a008-author-01",
+        "independent_second_author_check": false,
+        "object_id": "A008",
+        "object_version": "1.0.0",
+        "rationale": "author-01 explicitly approved the realized M3 pre-freeze ledger, including this candidate label, split, fixture family, exact mutation, selected leaf, hashes, evidence, rules, action, and human-review requirement.",
+        "reviewed_at": "2026-08-30T18:18:04Z",
+        "reviewer_id": "author-01",
+        "reviewer_role": "research-author",
+        "source_sha256": "be036671d1a7cf4e526c50fbc23a61df790362f3a560b4eef988bf8caaf9aac8",
+        "source_snapshot_id": "fda-cder-demo-v1",
+        "supporting_source_sha256s": [],
+        "unresolved_assumptions": [
+          "Controlled prospective FDA/CDER research label only; not FDA acceptance or regulatory-expert ground truth."
+        ]
+      },
+      "review_status": "author_adjudicated_for_demo",
+      "selected_file_sha256": "e0f69577bc6594657975e9ad86541cf0382af2d2b8d0cf9c562581e26e966e47",
+      "selected_leaf_id": "leaf-3214",
+      "source_fixture_id": null,
+      "split": "train",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "prospective-reference",
+      "target_context_sha256": "b66bdf396cdf2862ce09d20d340f970cc040d1c954ab54861239326f5a7df0f3"
+    },
+    {
+      "archetype": "unavailable-heading",
+      "case_id": "A009",
+      "decision_fingerprint_sha256": "14391afd8241298570ed1a68fa16219724afd14ff9dcbe034deab3a0217930c3",
+      "decision_predicate_sha256": "fc3026f820d79c236dc083378a844bfd8a01d0328e1e26cbfc94f53bb4c37401",
+      "decision_relevant_predicates": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "930009",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "package_sha256": "27496e73670ede6362876816f3f24b232720f69ad49281ae6b017057a013e9f5",
+        "selected_file_sha256": "65b64878168d9c0e098fc21161e58ce0ce553c27e0d34553760f0e468d699712",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1.5",
+          "href": "documents/leaf-a009-selected.pdf",
+          "hyperlinks": [],
+          "keywords": [],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "leaf-a009-selected.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Unsupported synthetic subheading Synthetic content is located under unverified heading 3.2.S.1.5."
+            }
+          ],
+          "title": "Unsupported synthetic subheading"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "expert_validated": false,
+      "fixture_family": "a-unmapped-heading",
+      "fixture_id": "case-a-009-unmapped-3215",
+      "mutation": {
+        "exact": "new leaf beneath distinct unsupported 3.2.S.1.5",
+        "type": "unmapped-heading"
+      },
+      "package_sha256": "27496e73670ede6362876816f3f24b232720f69ad49281ae6b017057a013e9f5",
+      "reference": {
+        "acceptable_evidence_ids": [
+          "ev-ctoc-321-remains",
+          "ev-ctoc-3211-3213-removed"
+        ],
+        "action": "AUTHOR_REVIEW_HEADING_MAPPING",
+        "action_mode": "suggested_check",
+        "decision": "HUMAN_REGULATORY_REVIEW",
+        "human_review_required": true,
+        "rationale": "No source-supported mapping is encoded for 3.2.S.1.5.",
+        "required_rule_ids": [],
+        "severity": "unresolved"
+      },
+      "review_event": {
+        "decision": "accepted",
+        "expert_validated": false,
+        "external_reviewer_qualification": null,
+        "id": "adjudication-m3-a009-author-01",
+        "independent_second_author_check": false,
+        "object_id": "A009",
+        "object_version": "1.0.0",
+        "rationale": "author-01 explicitly approved the realized M3 pre-freeze ledger, including this candidate label, split, fixture family, exact mutation, selected leaf, hashes, evidence, rules, action, and human-review requirement.",
+        "reviewed_at": "2026-08-30T18:18:04Z",
+        "reviewer_id": "author-01",
+        "reviewer_role": "research-author",
+        "source_sha256": "be036671d1a7cf4e526c50fbc23a61df790362f3a560b4eef988bf8caaf9aac8",
+        "source_snapshot_id": "fda-cder-demo-v1",
+        "supporting_source_sha256s": [],
+        "unresolved_assumptions": [
+          "Controlled prospective FDA/CDER research label only; not FDA acceptance or regulatory-expert ground truth."
+        ]
+      },
+      "review_status": "author_adjudicated_for_demo",
+      "selected_file_sha256": "65b64878168d9c0e098fc21161e58ce0ce553c27e0d34553760f0e468d699712",
+      "selected_leaf_id": "leaf-a009-selected",
+      "source_fixture_id": "case-a-ambiguous-3214",
+      "split": "train",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "prospective-reference",
+      "target_context_sha256": "b66bdf396cdf2862ce09d20d340f970cc040d1c954ab54861239326f5a7df0f3"
+    },
+    {
+      "archetype": "unavailable-heading",
+      "case_id": "A010",
+      "decision_fingerprint_sha256": "40f7fbb796e22e030e765fc5df806b91fe8755ec0cfc133a16826528bb502664",
+      "decision_predicate_sha256": "c58813c1dac0d2f24f703db354f719ddbd78108a096c7d3b06d5125b47b8a325",
+      "decision_relevant_predicates": {
+        "applicant_name": "Synthetic Research Sponsor",
+        "application_number": "999001",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "package_sha256": "f036e8032b2c866d12dfdd6e093325e01391f8bc07b106a093177962bf4f6d6c",
+        "selected_file_sha256": "eb2a8680ce19e8c0c0b4662c8d1697fd7a42bcbd66733f594337dd78caeb9cb0",
+        "selected_leaf": {
+          "extraction_status": "failed",
+          "heading": "3.2.S.1.1",
+          "href": "documents/substance-name.pdf",
+          "hyperlinks": [],
+          "keywords": [],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [],
+          "title": "Substance name and structure"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "current_operational",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "expert_validated": false,
+      "fixture_family": "a-operational-guard",
+      "fixture_id": "case-a-removed-3211",
+      "mutation": {
+        "exact": "current operational mode",
+        "type": "scenario-mode"
+      },
+      "package_sha256": "f036e8032b2c866d12dfdd6e093325e01391f8bc07b106a093177962bf4f6d6c",
+      "reference": {
+        "acceptable_evidence_ids": [],
+        "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+        "action_mode": "required_condition",
+        "decision": "HUMAN_REGULATORY_REVIEW",
+        "human_review_required": true,
+        "rationale": "FDA forward compatibility remains not operational and prospective rules must not execute.",
+        "required_rule_ids": [],
+        "severity": "unresolved"
+      },
+      "review_event": {
+        "decision": "accepted",
+        "expert_validated": false,
+        "external_reviewer_qualification": null,
+        "id": "adjudication-m3-a010-author-01",
+        "independent_second_author_check": false,
+        "object_id": "A010",
+        "object_version": "1.0.0",
+        "rationale": "author-01 explicitly approved the realized M3 pre-freeze ledger, including this candidate label, split, fixture family, exact mutation, selected leaf, hashes, evidence, rules, action, and human-review requirement.",
+        "reviewed_at": "2026-08-30T18:18:04Z",
+        "reviewer_id": "author-01",
+        "reviewer_role": "research-author",
+        "source_sha256": "be036671d1a7cf4e526c50fbc23a61df790362f3a560b4eef988bf8caaf9aac8",
+        "source_snapshot_id": "fda-cder-demo-v1",
+        "supporting_source_sha256s": [],
+        "unresolved_assumptions": [
+          "Controlled prospective FDA/CDER research label only; not FDA acceptance or regulatory-expert ground truth."
+        ]
+      },
+      "review_status": "author_adjudicated_for_demo",
+      "selected_file_sha256": "eb2a8680ce19e8c0c0b4662c8d1697fd7a42bcbd66733f594337dd78caeb9cb0",
+      "selected_leaf_id": "leaf-3211",
+      "source_fixture_id": null,
+      "split": "development",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "current_operational",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "current-operational",
+      "target_context_sha256": "f5494643dc2723d8936b25ec03c9790b79e7d4ab5d5c7751b07cb20e98f1da29"
+    },
+    {
+      "archetype": "legacy-metadata-tension",
+      "case_id": "B002",
+      "decision_fingerprint_sha256": "840f4aff037d0b0b29551b74ca31f6c93244a4161fce25c9f171d2712ddff956",
+      "decision_predicate_sha256": "5bdb5008a498fecd8a8c146f9fe9693f1074babbba8434fb28665b2a2b0bdcb8",
+      "decision_relevant_predicates": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "123456",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "package_sha256": "6333ec84167f1a970b8a72de2fd333cfecfbb5bc89730ad05fb2bfb921bb5a56",
+        "selected_file_sha256": "9c2c001a9f096651c1483ea3febfb033274f8450826eba4ac9787691c2834a69",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1",
+          "href": "documents/case-b-preserve-all.pdf",
+          "hyperlinks": [],
+          "keywords": [
+            {
+              "name": "manufacturer",
+              "normalized_value": "all",
+              "raw_value": "all"
+            }
+          ],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "case-b-preserve-all.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Manufacturer overview - preserve lifecycle Current manufacturer overview for Northstar Therapeutics. No embedded hyperlinks."
+            }
+          ],
+          "title": "Manufacturer overview - preserve lifecycle"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": {
+            "intent": "preserve-existing-lifecycle",
+            "manufacturer_partitioning": "unknown",
+            "replacement_manufacturer_value": null
+          },
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "expert_validated": false,
+      "fixture_family": "b-manufacturer-all-preservation",
+      "fixture_id": "case-b-preserve-all",
+      "mutation": {
+        "exact": "preserve exact manufacturer all lifecycle",
+        "type": "metadata-intent"
+      },
+      "package_sha256": "6333ec84167f1a970b8a72de2fd333cfecfbb5bc89730ad05fb2bfb921bb5a56",
+      "reference": {
+        "acceptable_evidence_ids": [
+          "ev-m4-manufacturer-general-values",
+          "ev-tcg-replacement-context-same",
+          "ev-tcg-hyperlinks-relevant-to-context"
+        ],
+        "action": "PRESERVE_EXACT_CONTEXT_GROUP_KEYWORDS",
+        "action_mode": "required_condition",
+        "decision": "REUSE_AS_LEGACY_REFERENCE",
+        "human_review_required": false,
+        "rationale": "Explicit preservation with exact keywords and no hyperlinks passes the controlled technical gate; the manufacturer advisory remains visible.",
+        "required_rule_ids": [
+          "FDA-CDER-M2-DISCOURAGED-MANUFACTURER-ALL-001",
+          "FDA-CDER-M2-PRESERVE-EXISTING-CONTEXT-002"
+        ],
+        "severity": "medium"
+      },
+      "review_event": {
+        "decision": "accepted",
+        "expert_validated": false,
+        "external_reviewer_qualification": null,
+        "id": "adjudication-m3-b002-author-01",
+        "independent_second_author_check": false,
+        "object_id": "B002",
+        "object_version": "1.0.0",
+        "rationale": "author-01 explicitly approved the realized M3 pre-freeze ledger, including this candidate label, split, fixture family, exact mutation, selected leaf, hashes, evidence, rules, action, and human-review requirement.",
+        "reviewed_at": "2026-08-30T18:18:04Z",
+        "reviewer_id": "author-01",
+        "reviewer_role": "research-author",
+        "source_sha256": "be036671d1a7cf4e526c50fbc23a61df790362f3a560b4eef988bf8caaf9aac8",
+        "source_snapshot_id": "fda-cder-demo-v1",
+        "supporting_source_sha256s": [],
+        "unresolved_assumptions": [
+          "Controlled prospective FDA/CDER research label only; not FDA acceptance or regulatory-expert ground truth."
+        ]
+      },
+      "review_status": "author_adjudicated_for_demo",
+      "selected_file_sha256": "9c2c001a9f096651c1483ea3febfb033274f8450826eba4ac9787691c2834a69",
+      "selected_leaf_id": "leaf-b-preserve-all",
+      "source_fixture_id": null,
+      "split": "train",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": {
+          "intent": "preserve-existing-lifecycle",
+          "manufacturer_partitioning": "unknown",
+          "replacement_manufacturer_value": null
+        },
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "preserve-reference",
+      "target_context_sha256": "50a649cd60a0654aa4819cbaed028962de8710a7dba6c3a7cb53947c68cb29a9"
+    },
+    {
+      "archetype": "legacy-metadata-tension",
+      "case_id": "B003",
+      "decision_fingerprint_sha256": "aaf3e2ff1fd29ad884c42dcc91419a77ed6e2f0d8214a2898010c5c02dcd39e6",
+      "decision_predicate_sha256": "81f92485cdec95596852de2abf08607a794b0ecfc2fdcd9ea673d6b54d7d56a3",
+      "decision_relevant_predicates": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "123456",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "package_sha256": "d14b067af92fca852572b1bc08e9dcea539a9134bb6bbeab9a48a2abe889eec3",
+        "selected_file_sha256": "f0e729c7a870a79e48f948b86ba9f3bf61539b39eb0a5c390873717766f8763e",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1",
+          "href": "documents/case-b-unspecified-all.pdf",
+          "hyperlinks": [],
+          "keywords": [
+            {
+              "name": "manufacturer",
+              "normalized_value": "all",
+              "raw_value": " ALL "
+            }
+          ],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "case-b-unspecified-all.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Manufacturer overview - intent unspecified Current manufacturer overview for Northstar Therapeutics. No embedded hyperlinks."
+            }
+          ],
+          "title": "Manufacturer overview - intent unspecified"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": {
+            "intent": "unspecified",
+            "manufacturer_partitioning": "unknown",
+            "replacement_manufacturer_value": null
+          },
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "expert_validated": false,
+      "fixture_family": "b-manufacturer-all-preservation",
+      "fixture_id": "case-b-unspecified-all",
+      "mutation": {
+        "exact": "manufacturer all with unspecified migration intent",
+        "type": "metadata-intent"
+      },
+      "package_sha256": "d14b067af92fca852572b1bc08e9dcea539a9134bb6bbeab9a48a2abe889eec3",
+      "reference": {
+        "acceptable_evidence_ids": [
+          "ev-m4-manufacturer-general-values"
+        ],
+        "action": "DECLARE_METADATA_MIGRATION_INTENT",
+        "action_mode": "required_condition",
+        "decision": "HUMAN_REGULATORY_REVIEW",
+        "human_review_required": true,
+        "rationale": "The analyzer cannot choose preservation or normalization without explicit intent.",
+        "required_rule_ids": [
+          "FDA-CDER-M2-DISCOURAGED-MANUFACTURER-ALL-001"
+        ],
+        "severity": "unresolved"
+      },
+      "review_event": {
+        "decision": "accepted",
+        "expert_validated": false,
+        "external_reviewer_qualification": null,
+        "id": "adjudication-m3-b003-author-01",
+        "independent_second_author_check": false,
+        "object_id": "B003",
+        "object_version": "1.0.0",
+        "rationale": "author-01 explicitly approved the realized M3 pre-freeze ledger, including this candidate label, split, fixture family, exact mutation, selected leaf, hashes, evidence, rules, action, and human-review requirement.",
+        "reviewed_at": "2026-08-30T18:18:04Z",
+        "reviewer_id": "author-01",
+        "reviewer_role": "research-author",
+        "source_sha256": "be036671d1a7cf4e526c50fbc23a61df790362f3a560b4eef988bf8caaf9aac8",
+        "source_snapshot_id": "fda-cder-demo-v1",
+        "supporting_source_sha256s": [],
+        "unresolved_assumptions": [
+          "Controlled prospective FDA/CDER research label only; not FDA acceptance or regulatory-expert ground truth."
+        ]
+      },
+      "review_status": "author_adjudicated_for_demo",
+      "selected_file_sha256": "f0e729c7a870a79e48f948b86ba9f3bf61539b39eb0a5c390873717766f8763e",
+      "selected_leaf_id": "leaf-b-unspecified-all",
+      "source_fixture_id": null,
+      "split": "train",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": {
+          "intent": "unspecified",
+          "manufacturer_partitioning": "unknown",
+          "replacement_manufacturer_value": null
+        },
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "unspecified-reference",
+      "target_context_sha256": "408c18da59e1b9545cd513353a249fa4221fa2ec98e47cee18f61d714bed89c5"
+    },
+    {
+      "archetype": "legacy-metadata-tension",
+      "case_id": "B006",
+      "decision_fingerprint_sha256": "7004e5650141fa38237409452485544d1f929e261567afee02538e9771afc4e7",
+      "decision_predicate_sha256": "78a7e469339fdae360d302d69a216573bed6f9e56673ccea82a9353596d6826c",
+      "decision_relevant_predicates": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "123456",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "package_sha256": "959230ee8991b1825fca61b81f3f4a1d2b3e63cf515ef8be4078c3958ea7d09d",
+        "selected_file_sha256": "6368392b240f4300e9e6e5913cbe2764ecde4a36f0047959ed35ce9db22f8ebd",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1",
+          "href": "documents/case-b-clean-specific.pdf",
+          "hyperlinks": [],
+          "keywords": [
+            {
+              "name": "manufacturer",
+              "normalized_value": "northstar river site",
+              "raw_value": "Northstar River Site"
+            }
+          ],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "case-b-clean-specific.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Manufacturer overview - stable value Manufacturing information for Northstar River Site. No embedded hyperlinks."
+            }
+          ],
+          "title": "Manufacturer overview - stable value"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "expert_validated": false,
+      "fixture_family": "b-specific-manufacturer-scope",
+      "fixture_id": "case-b-clean-specific",
+      "mutation": {
+        "exact": "stable site-distinguishing manufacturer value",
+        "type": "clean-negative"
+      },
+      "package_sha256": "959230ee8991b1825fca61b81f3f4a1d2b3e63cf515ef8be4078c3958ea7d09d",
+      "reference": {
+        "acceptable_evidence_ids": [
+          "leaf-b-clean-specific-metadata-manufacturer"
+        ],
+        "action": "NO_MATERIAL_REPAIR",
+        "action_mode": "no_action",
+        "decision": "REUSE_AS_LEGACY_REFERENCE",
+        "human_review_required": false,
+        "rationale": "A stable specific manufacturer value does not trigger the scoped manufacturer-all rule.",
+        "required_rule_ids": [],
+        "severity": "informational"
+      },
+      "review_event": {
+        "decision": "accepted",
+        "expert_validated": false,
+        "external_reviewer_qualification": null,
+        "id": "adjudication-m3-b006-author-01",
+        "independent_second_author_check": false,
+        "object_id": "B006",
+        "object_version": "1.0.0",
+        "rationale": "author-01 explicitly approved the realized M3 pre-freeze ledger, including this candidate label, split, fixture family, exact mutation, selected leaf, hashes, evidence, rules, action, and human-review requirement.",
+        "reviewed_at": "2026-08-30T18:18:04Z",
+        "reviewer_id": "author-01",
+        "reviewer_role": "research-author",
+        "source_sha256": "be036671d1a7cf4e526c50fbc23a61df790362f3a560b4eef988bf8caaf9aac8",
+        "source_snapshot_id": "fda-cder-demo-v1",
+        "supporting_source_sha256s": [],
+        "unresolved_assumptions": [
+          "Controlled prospective FDA/CDER research label only; not FDA acceptance or regulatory-expert ground truth."
+        ]
+      },
+      "review_status": "author_adjudicated_for_demo",
+      "selected_file_sha256": "6368392b240f4300e9e6e5913cbe2764ecde4a36f0047959ed35ce9db22f8ebd",
+      "selected_leaf_id": "leaf-b-clean-specific",
+      "source_fixture_id": null,
+      "split": "development",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "prospective-reference",
+      "target_context_sha256": "b66bdf396cdf2862ce09d20d340f970cc040d1c954ab54861239326f5a7df0f3"
+    },
+    {
+      "archetype": "legacy-metadata-tension",
+      "case_id": "B007",
+      "decision_fingerprint_sha256": "38f260189e8237ab1cae8c09f72ff545736e98ed796f8b35e36dcb64e67ab5b9",
+      "decision_predicate_sha256": "8d2f04ae20adb4d3b4be4797d9c48acac09242c7c13f646e26f3d51a748a5d0c",
+      "decision_relevant_predicates": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "123456",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "package_sha256": "959230ee8991b1825fca61b81f3f4a1d2b3e63cf515ef8be4078c3958ea7d09d",
+        "selected_file_sha256": "6368392b240f4300e9e6e5913cbe2764ecde4a36f0047959ed35ce9db22f8ebd",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1",
+          "href": "documents/case-b-clean-specific.pdf",
+          "hyperlinks": [],
+          "keywords": [
+            {
+              "name": "manufacturer",
+              "normalized_value": "northstar river site",
+              "raw_value": "Northstar River Site"
+            }
+          ],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "case-b-clean-specific.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Manufacturer overview - stable value Manufacturing information for Northstar River Site. No embedded hyperlinks."
+            }
+          ],
+          "title": "Manufacturer overview - stable value"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "create-new-target-artifact",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "expert_validated": false,
+      "fixture_family": "b-specific-manufacturer-scope",
+      "fixture_id": "case-b-clean-specific",
+      "mutation": {
+        "exact": "create new target artifact outside identifier-reuse rule scope",
+        "type": "reuse-operation"
+      },
+      "package_sha256": "959230ee8991b1825fca61b81f3f4a1d2b3e63cf515ef8be4078c3958ea7d09d",
+      "reference": {
+        "acceptable_evidence_ids": [
+          "leaf-b-clean-specific-metadata-manufacturer"
+        ],
+        "action": "SELECT_SUPPORTED_REUSE_OPERATION",
+        "action_mode": "required_condition",
+        "decision": "HUMAN_REGULATORY_REVIEW",
+        "human_review_required": true,
+        "rationale": "New-artifact creation is outside the approved identifier-reuse rules.",
+        "required_rule_ids": [],
+        "severity": "unresolved"
+      },
+      "review_event": {
+        "decision": "accepted",
+        "expert_validated": false,
+        "external_reviewer_qualification": null,
+        "id": "adjudication-m3-b007-author-01",
+        "independent_second_author_check": false,
+        "object_id": "B007",
+        "object_version": "1.0.0",
+        "rationale": "author-01 explicitly approved the realized M3 pre-freeze ledger, including this candidate label, split, fixture family, exact mutation, selected leaf, hashes, evidence, rules, action, and human-review requirement.",
+        "reviewed_at": "2026-08-30T18:18:04Z",
+        "reviewer_id": "author-01",
+        "reviewer_role": "research-author",
+        "source_sha256": "be036671d1a7cf4e526c50fbc23a61df790362f3a560b4eef988bf8caaf9aac8",
+        "source_snapshot_id": "fda-cder-demo-v1",
+        "supporting_source_sha256s": [],
+        "unresolved_assumptions": [
+          "Controlled prospective FDA/CDER research label only; not FDA acceptance or regulatory-expert ground truth."
+        ]
+      },
+      "review_status": "author_adjudicated_for_demo",
+      "selected_file_sha256": "6368392b240f4300e9e6e5913cbe2764ecde4a36f0047959ed35ce9db22f8ebd",
+      "selected_leaf_id": "leaf-b-clean-specific",
+      "source_fixture_id": null,
+      "split": "development",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "create-new-target-artifact",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "create-new-target",
+      "target_context_sha256": "eeecbc35f06ebef91c0642af5bd64e5e05b321ee2b93d8f27110b0608c9128cd"
+    },
+    {
+      "archetype": "legacy-metadata-tension",
+      "case_id": "B008",
+      "decision_fingerprint_sha256": "a463d56a02d2af70408e0b058e4cfcc1a36664aa870a756ec234b5047f0150b6",
+      "decision_predicate_sha256": "6d9e7ebdff068f23cb893619d7b2e6b31fe3d2fb42541dd4cfc8089e599e8770",
+      "decision_relevant_predicates": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "123456",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "package_sha256": "9994ea55fb8631549af92a6937a1c094e803e2fd67ebf33d9dcac6af4bb4180c",
+        "selected_file_sha256": "4ba2bca5f46c922093196e740ca24fde7441edc6a934ef85316163a9575e16b0",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1",
+          "href": "documents/case-b-out-of-scope-product-all.pdf",
+          "hyperlinks": [],
+          "keywords": [
+            {
+              "name": "product",
+              "normalized_value": "all",
+              "raw_value": "all"
+            }
+          ],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "case-b-out-of-scope-product-all.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Product keyword control Product overview using an out-of-scope keyword for this rule."
+            }
+          ],
+          "title": "Product keyword control"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "expert_validated": false,
+      "fixture_family": "b-product-keyword-scope",
+      "fixture_id": "case-b-out-of-scope-product-all",
+      "mutation": {
+        "exact": "product equals all while manufacturer is absent",
+        "type": "keyword-scope"
+      },
+      "package_sha256": "9994ea55fb8631549af92a6937a1c094e803e2fd67ebf33d9dcac6af4bb4180c",
+      "reference": {
+        "acceptable_evidence_ids": [
+          "leaf-b-product-all-metadata-product"
+        ],
+        "action": "NO_MATERIAL_REPAIR",
+        "action_mode": "no_action",
+        "decision": "REUSE_AS_LEGACY_REFERENCE",
+        "human_review_required": false,
+        "rationale": "The rule is scoped to manufacturer and must not fire for product.",
+        "required_rule_ids": [],
+        "severity": "informational"
+      },
+      "review_event": {
+        "decision": "accepted",
+        "expert_validated": false,
+        "external_reviewer_qualification": null,
+        "id": "adjudication-m3-b008-author-01",
+        "independent_second_author_check": false,
+        "object_id": "B008",
+        "object_version": "1.0.0",
+        "rationale": "author-01 explicitly approved the realized M3 pre-freeze ledger, including this candidate label, split, fixture family, exact mutation, selected leaf, hashes, evidence, rules, action, and human-review requirement.",
+        "reviewed_at": "2026-08-30T18:18:04Z",
+        "reviewer_id": "author-01",
+        "reviewer_role": "research-author",
+        "source_sha256": "be036671d1a7cf4e526c50fbc23a61df790362f3a560b4eef988bf8caaf9aac8",
+        "source_snapshot_id": "fda-cder-demo-v1",
+        "supporting_source_sha256s": [],
+        "unresolved_assumptions": [
+          "Controlled prospective FDA/CDER research label only; not FDA acceptance or regulatory-expert ground truth."
+        ]
+      },
+      "review_status": "author_adjudicated_for_demo",
+      "selected_file_sha256": "4ba2bca5f46c922093196e740ca24fde7441edc6a934ef85316163a9575e16b0",
+      "selected_leaf_id": "leaf-b-product-all",
+      "source_fixture_id": null,
+      "split": "train",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "prospective-reference",
+      "target_context_sha256": "b66bdf396cdf2862ce09d20d340f970cc040d1c954ab54861239326f5a7df0f3"
+    },
+    {
+      "archetype": "legacy-metadata-tension",
+      "case_id": "B009",
+      "decision_fingerprint_sha256": "fcbe7f6968549b77fba9cc26fdf9ec22fc62c528c3481a99a369740d28185076",
+      "decision_predicate_sha256": "74887e6bcf335206b650c8e8d5d5cade8d04892036eed9383e519869963f5ce9",
+      "decision_relevant_predicates": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "123456",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "package_sha256": "d14b067af92fca852572b1bc08e9dcea539a9134bb6bbeab9a48a2abe889eec3",
+        "selected_file_sha256": "f0e729c7a870a79e48f948b86ba9f3bf61539b39eb0a5c390873717766f8763e",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1",
+          "href": "documents/case-b-unspecified-all.pdf",
+          "hyperlinks": [],
+          "keywords": [
+            {
+              "name": "manufacturer",
+              "normalized_value": "all",
+              "raw_value": " ALL "
+            }
+          ],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "case-b-unspecified-all.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Manufacturer overview - intent unspecified Current manufacturer overview for Northstar Therapeutics. No embedded hyperlinks."
+            }
+          ],
+          "title": "Manufacturer overview - intent unspecified"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": {
+            "intent": "preserve-existing-lifecycle",
+            "manufacturer_partitioning": "unknown",
+            "replacement_manufacturer_value": null
+          },
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "expert_validated": false,
+      "fixture_family": "b-manufacturer-all-preservation",
+      "fixture_id": "case-b-unspecified-all",
+      "mutation": {
+        "exact": "raw manufacturer whitespace and case normalize exactly to all under explicit preservation",
+        "type": "normalization"
+      },
+      "package_sha256": "d14b067af92fca852572b1bc08e9dcea539a9134bb6bbeab9a48a2abe889eec3",
+      "reference": {
+        "acceptable_evidence_ids": [
+          "ev-m4-manufacturer-general-values",
+          "ev-tcg-replacement-context-same",
+          "ev-tcg-hyperlinks-relevant-to-context"
+        ],
+        "action": "PRESERVE_EXACT_CONTEXT_GROUP_KEYWORDS",
+        "action_mode": "required_condition",
+        "decision": "REUSE_AS_LEGACY_REFERENCE",
+        "human_review_required": false,
+        "rationale": "Exact preservation intent satisfies the controlled gate after deterministic keyword normalization; the advisory remains visible.",
+        "required_rule_ids": [
+          "FDA-CDER-M2-DISCOURAGED-MANUFACTURER-ALL-001",
+          "FDA-CDER-M2-PRESERVE-EXISTING-CONTEXT-002"
+        ],
+        "severity": "medium"
+      },
+      "review_event": {
+        "decision": "accepted",
+        "expert_validated": false,
+        "external_reviewer_qualification": null,
+        "id": "adjudication-m3-b009-author-01",
+        "independent_second_author_check": false,
+        "object_id": "B009",
+        "object_version": "1.0.0",
+        "rationale": "author-01 explicitly approved the realized M3 pre-freeze ledger, including this candidate label, split, fixture family, exact mutation, selected leaf, hashes, evidence, rules, action, and human-review requirement.",
+        "reviewed_at": "2026-08-30T18:18:04Z",
+        "reviewer_id": "author-01",
+        "reviewer_role": "research-author",
+        "source_sha256": "be036671d1a7cf4e526c50fbc23a61df790362f3a560b4eef988bf8caaf9aac8",
+        "source_snapshot_id": "fda-cder-demo-v1",
+        "supporting_source_sha256s": [],
+        "unresolved_assumptions": [
+          "Controlled prospective FDA/CDER research label only; not FDA acceptance or regulatory-expert ground truth."
+        ]
+      },
+      "review_status": "author_adjudicated_for_demo",
+      "selected_file_sha256": "f0e729c7a870a79e48f948b86ba9f3bf61539b39eb0a5c390873717766f8763e",
+      "selected_leaf_id": "leaf-b-unspecified-all",
+      "source_fixture_id": null,
+      "split": "train",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": {
+          "intent": "preserve-existing-lifecycle",
+          "manufacturer_partitioning": "unknown",
+          "replacement_manufacturer_value": null
+        },
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "preserve-reference",
+      "target_context_sha256": "50a649cd60a0654aa4819cbaed028962de8710a7dba6c3a7cb53947c68cb29a9"
+    },
+    {
+      "archetype": "stale-content-or-hyperlink",
+      "case_id": "C001",
+      "decision_fingerprint_sha256": "e5d27cb91537a4b3a686d0f6be9957369ad7b516690becda021fd709d2872b2a",
+      "decision_predicate_sha256": "14071f12036832fe26de48847339e1aa2425c6bdce1272ad6deb0297f6b391ae",
+      "decision_relevant_predicates": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "123456",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "package_sha256": "0ccd3d76b8049c10629aac3441b9bc9ae5a167a0badb93a73b5ce889f359c3fe",
+        "selected_file_sha256": "552535d156d9b20a4d421226cb035812ff00689bbe0b177bca926e518e928adc",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1",
+          "href": "documents/case-c-stale-heading.pdf",
+          "hyperlinks": [],
+          "keywords": [],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "case-c-stale-heading.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Stale internal heading See legacy section 3.2.S.1.1 Name and Nomenclature for the controlling description."
+            }
+          ],
+          "title": "Stale internal heading"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "expert_validated": false,
+      "fixture_family": "c-heading-context-contrast",
+      "fixture_id": "case-c-stale-heading",
+      "mutation": {
+        "exact": "removed heading presented as current controlling reference",
+        "type": "semantic-text"
+      },
+      "package_sha256": "0ccd3d76b8049c10629aac3441b9bc9ae5a167a0badb93a73b5ce889f359c3fe",
+      "reference": {
+        "acceptable_evidence_ids": [
+          "leaf-c-stale-heading-text-p1-1"
+        ],
+        "action": "HUMAN_VERIFY_STALE_CONTENT",
+        "action_mode": "suggested_check",
+        "decision": "HUMAN_REGULATORY_REVIEW",
+        "human_review_required": true,
+        "rationale": "Supported stale wording is a semantic signal and requires human review.",
+        "required_rule_ids": [],
+        "severity": "unresolved"
+      },
+      "review_event": {
+        "decision": "accepted",
+        "expert_validated": false,
+        "external_reviewer_qualification": null,
+        "id": "adjudication-m3-c001-author-01",
+        "independent_second_author_check": false,
+        "object_id": "C001",
+        "object_version": "1.0.0",
+        "rationale": "author-01 explicitly approved the realized M3 pre-freeze ledger, including this candidate label, split, fixture family, exact mutation, selected leaf, hashes, evidence, rules, action, and human-review requirement.",
+        "reviewed_at": "2026-08-30T18:18:04Z",
+        "reviewer_id": "author-01",
+        "reviewer_role": "research-author",
+        "source_sha256": "be036671d1a7cf4e526c50fbc23a61df790362f3a560b4eef988bf8caaf9aac8",
+        "source_snapshot_id": "fda-cder-demo-v1",
+        "supporting_source_sha256s": [],
+        "unresolved_assumptions": [
+          "Controlled prospective FDA/CDER research label only; not FDA acceptance or regulatory-expert ground truth."
+        ]
+      },
+      "review_status": "author_adjudicated_for_demo",
+      "selected_file_sha256": "552535d156d9b20a4d421226cb035812ff00689bbe0b177bca926e518e928adc",
+      "selected_leaf_id": "leaf-c-stale-heading",
+      "source_fixture_id": null,
+      "split": "train",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "prospective-reference",
+      "target_context_sha256": "b66bdf396cdf2862ce09d20d340f970cc040d1c954ab54861239326f5a7df0f3"
+    },
+    {
+      "archetype": "stale-content-or-hyperlink",
+      "case_id": "C003",
+      "decision_fingerprint_sha256": "82ad46c9178d632b73e9356fc7ba8b642d673effb60ad1a60ed82260ba77a80a",
+      "decision_predicate_sha256": "562e2d81d647a2636c124d1894f32c1b375c5b218f1c9a8c4fdd25d2d0c8b2c2",
+      "decision_relevant_predicates": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "123456",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "package_sha256": "0ccee6f32b08602334d8e32da841bd8e84e9b91847b58685b72a532ad8c82e54",
+        "selected_file_sha256": "760e43120b0f81ed84cfd26c859b7a7219eb6e1f56209d0bbf481f2c8e5838a2",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1",
+          "href": "documents/case-c-irrelevant-link.pdf",
+          "hyperlinks": [
+            {
+              "author_verified_relevant": false,
+              "page": 1,
+              "target": "https://legacy.example.invalid/old-applicant/3.2.S.1.1",
+              "target_exists": null,
+              "target_type": "uri"
+            }
+          ],
+          "keywords": [],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "case-c-irrelevant-link.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Legacy external hyperlink The legacy applicant portal is linked below for the former dossier context. Open legacy applicant portal"
+            }
+          ],
+          "title": "Legacy external hyperlink"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "expert_validated": false,
+      "fixture_family": "c-external-link-operational",
+      "fixture_id": "case-c-irrelevant-link",
+      "mutation": {
+        "exact": "external hyperlink relevance not author verified",
+        "type": "hyperlink"
+      },
+      "package_sha256": "0ccee6f32b08602334d8e32da841bd8e84e9b91847b58685b72a532ad8c82e54",
+      "reference": {
+        "acceptable_evidence_ids": [
+          "ev-tcg-hyperlinks-relevant-to-context",
+          "leaf-c-irrelevant-link-link-p1-1"
+        ],
+        "action": "VERIFY_HYPERLINK_RELEVANCE",
+        "action_mode": "suggested_check",
+        "decision": "HUMAN_REGULATORY_REVIEW",
+        "human_review_required": true,
+        "rationale": "A model-only no-problem result cannot establish hyperlink relevance.",
+        "required_rule_ids": [
+          "FDA-CDER-M2-HYPERLINK-RELEVANCE-004"
+        ],
+        "severity": "unresolved"
+      },
+      "review_event": {
+        "decision": "accepted",
+        "expert_validated": false,
+        "external_reviewer_qualification": null,
+        "id": "adjudication-m3-c003-author-01",
+        "independent_second_author_check": false,
+        "object_id": "C003",
+        "object_version": "1.0.0",
+        "rationale": "author-01 explicitly approved the realized M3 pre-freeze ledger, including this candidate label, split, fixture family, exact mutation, selected leaf, hashes, evidence, rules, action, and human-review requirement.",
+        "reviewed_at": "2026-08-30T18:18:04Z",
+        "reviewer_id": "author-01",
+        "reviewer_role": "research-author",
+        "source_sha256": "be036671d1a7cf4e526c50fbc23a61df790362f3a560b4eef988bf8caaf9aac8",
+        "source_snapshot_id": "fda-cder-demo-v1",
+        "supporting_source_sha256s": [],
+        "unresolved_assumptions": [
+          "Controlled prospective FDA/CDER research label only; not FDA acceptance or regulatory-expert ground truth."
+        ]
+      },
+      "review_status": "author_adjudicated_for_demo",
+      "selected_file_sha256": "760e43120b0f81ed84cfd26c859b7a7219eb6e1f56209d0bbf481f2c8e5838a2",
+      "selected_leaf_id": "leaf-c-irrelevant-link",
+      "source_fixture_id": null,
+      "split": "development",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "prospective-reference",
+      "target_context_sha256": "b66bdf396cdf2862ce09d20d340f970cc040d1c954ab54861239326f5a7df0f3"
+    },
+    {
+      "archetype": "stale-content-or-hyperlink",
+      "case_id": "C006",
+      "decision_fingerprint_sha256": "dfe28bfaf9130807233ea6b35f8f5ac9d32bec7642ce60de7135e69b779facbe",
+      "decision_predicate_sha256": "4b71bd72516efa05ead169fd9e268c1a66d6403212788cbff8c2c5a3ba664664",
+      "decision_relevant_predicates": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "123456",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "package_sha256": "326d9db55783318d49fad40058ab74952b0f4335365209cdce7cdaed8aea2fc6",
+        "selected_file_sha256": "a91ac26db788e852fe3cd14ffcad22b17d93cbb3e64d8d530049594a8d2dd248",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1",
+          "href": "documents/case-c-ambiguous.pdf",
+          "hyperlinks": [],
+          "keywords": [],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "case-c-ambiguous.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Ambiguous historical wording Prior placement may have differed; confirm whether the referenced description remains current."
+            }
+          ],
+          "title": "Ambiguous historical wording"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "expert_validated": false,
+      "fixture_family": "c-ambiguous-wording",
+      "fixture_id": "case-c-ambiguous",
+      "mutation": {
+        "exact": "ambiguous historical wording",
+        "type": "semantic-text"
+      },
+      "package_sha256": "326d9db55783318d49fad40058ab74952b0f4335365209cdce7cdaed8aea2fc6",
+      "reference": {
+        "acceptable_evidence_ids": [
+          "leaf-c-ambiguous-text-p1-1"
+        ],
+        "action": "HUMAN_VERIFY_STALE_CONTENT",
+        "action_mode": "suggested_check",
+        "decision": "HUMAN_REGULATORY_REVIEW",
+        "human_review_required": true,
+        "rationale": "Ambiguity is not converted into a permissive recommendation.",
+        "required_rule_ids": [],
+        "severity": "unresolved"
+      },
+      "review_event": {
+        "decision": "accepted",
+        "expert_validated": false,
+        "external_reviewer_qualification": null,
+        "id": "adjudication-m3-c006-author-01",
+        "independent_second_author_check": false,
+        "object_id": "C006",
+        "object_version": "1.0.0",
+        "rationale": "author-01 explicitly approved the realized M3 pre-freeze ledger, including this candidate label, split, fixture family, exact mutation, selected leaf, hashes, evidence, rules, action, and human-review requirement.",
+        "reviewed_at": "2026-08-30T18:18:04Z",
+        "reviewer_id": "author-01",
+        "reviewer_role": "research-author",
+        "source_sha256": "be036671d1a7cf4e526c50fbc23a61df790362f3a560b4eef988bf8caaf9aac8",
+        "source_snapshot_id": "fda-cder-demo-v1",
+        "supporting_source_sha256s": [],
+        "unresolved_assumptions": [
+          "Controlled prospective FDA/CDER research label only; not FDA acceptance or regulatory-expert ground truth."
+        ]
+      },
+      "review_status": "author_adjudicated_for_demo",
+      "selected_file_sha256": "a91ac26db788e852fe3cd14ffcad22b17d93cbb3e64d8d530049594a8d2dd248",
+      "selected_leaf_id": "leaf-c-ambiguous",
+      "source_fixture_id": null,
+      "split": "train",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "prospective-reference",
+      "target_context_sha256": "b66bdf396cdf2862ce09d20d340f970cc040d1c954ab54861239326f5a7df0f3"
+    },
+    {
+      "archetype": "stale-content-or-hyperlink",
+      "case_id": "C007",
+      "decision_fingerprint_sha256": "a061b66ffadff9d78c42dcd5f6dfc20eb72fc81fae8e67512bd4eced2561da04",
+      "decision_predicate_sha256": "246988758a8eb4c5d1c2c928e3d59627c6d9a07a73419bbe301b2a7b7bd2c1fb",
+      "decision_relevant_predicates": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "940007",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "package_sha256": "046df99f548897218a4eeac1495e96f5b01d8f62864398c0e9a2432a1fb56926",
+        "selected_file_sha256": "ac004b92432129cccccac44365d9d53251761804af561873adcc5ca310b77c58",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1",
+          "href": "documents/leaf-c007-selected.pdf",
+          "hyperlinks": [],
+          "keywords": [],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "leaf-c007-selected.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Stale properties heading instruction Use section 3.2.S.1.2 Properties as the current controlling location for this material."
+            }
+          ],
+          "title": "Stale properties heading instruction"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "expert_validated": false,
+      "fixture_family": "c-heading-context-contrast",
+      "fixture_id": "case-c-007-stale-heading-3212",
+      "mutation": {
+        "exact": "alternate wording presents 3.2.S.1.2 as current controlling location",
+        "type": "semantic-text"
+      },
+      "package_sha256": "046df99f548897218a4eeac1495e96f5b01d8f62864398c0e9a2432a1fb56926",
+      "reference": {
+        "acceptable_evidence_ids": [
+          "leaf-c007-selected-text-p1-1"
+        ],
+        "action": "HUMAN_VERIFY_STALE_CONTENT",
+        "action_mode": "suggested_check",
+        "decision": "HUMAN_REGULATORY_REVIEW",
+        "human_review_required": true,
+        "rationale": "Alternate stale heading wording remains a semantic signal requiring human review.",
+        "required_rule_ids": [],
+        "severity": "unresolved"
+      },
+      "review_event": {
+        "decision": "accepted",
+        "expert_validated": false,
+        "external_reviewer_qualification": null,
+        "id": "adjudication-m3-c007-author-01",
+        "independent_second_author_check": false,
+        "object_id": "C007",
+        "object_version": "1.0.0",
+        "rationale": "author-01 explicitly approved the realized M3 pre-freeze ledger, including this candidate label, split, fixture family, exact mutation, selected leaf, hashes, evidence, rules, action, and human-review requirement.",
+        "reviewed_at": "2026-08-30T18:18:04Z",
+        "reviewer_id": "author-01",
+        "reviewer_role": "research-author",
+        "source_sha256": "be036671d1a7cf4e526c50fbc23a61df790362f3a560b4eef988bf8caaf9aac8",
+        "source_snapshot_id": "fda-cder-demo-v1",
+        "supporting_source_sha256s": [],
+        "unresolved_assumptions": [
+          "Controlled prospective FDA/CDER research label only; not FDA acceptance or regulatory-expert ground truth."
+        ]
+      },
+      "review_status": "author_adjudicated_for_demo",
+      "selected_file_sha256": "ac004b92432129cccccac44365d9d53251761804af561873adcc5ca310b77c58",
+      "selected_leaf_id": "leaf-c007-selected",
+      "source_fixture_id": "case-c-stale-heading",
+      "split": "train",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "prospective-reference",
+      "target_context_sha256": "b66bdf396cdf2862ce09d20d340f970cc040d1c954ab54861239326f5a7df0f3"
+    },
+    {
+      "archetype": "stale-content-or-hyperlink",
+      "case_id": "C009",
+      "decision_fingerprint_sha256": "c6a0b37bccfd5579b40e0dba6134ae120ddcf97ad36f7ff2377365cca0eef8a9",
+      "decision_predicate_sha256": "e11643e5d3e014a956b271855fdb3daf863f2066c64473c156afb5df48b681d3",
+      "decision_relevant_predicates": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "940009",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "package_sha256": "05e1b7b5021f1cf5b785a7dfa991b706960cc2ef34f8d8a13368243caa021153",
+        "selected_file_sha256": "79de7097254cc5ce63a7f55265761d1627d41aff9628871c537cd13eaa2cb0cb",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1",
+          "href": "documents/leaf-c009-selected.pdf",
+          "hyperlinks": [],
+          "keywords": [],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "leaf-c009-selected.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Historical heading note In a 2022 dossier this material appeared under 3.2.S.1.1. That statement is historical only and is not current placement guidance."
+            }
+          ],
+          "title": "Historical heading note"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "prospective_forward_compatibility",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "expert_validated": false,
+      "fixture_family": "c-heading-context-contrast",
+      "fixture_id": "case-c-009-benign-heading-history",
+      "mutation": {
+        "exact": "old heading explicitly historical and explicitly not current guidance",
+        "type": "semantic-text"
+      },
+      "package_sha256": "05e1b7b5021f1cf5b785a7dfa991b706960cc2ef34f8d8a13368243caa021153",
+      "reference": {
+        "acceptable_evidence_ids": [
+          "leaf-c009-selected-text-p1-1"
+        ],
+        "action": "NO_MATERIAL_REPAIR",
+        "action_mode": "no_action",
+        "decision": "REUSE_AS_LEGACY_REFERENCE",
+        "human_review_required": false,
+        "rationale": "The old heading is explicitly historical and not presented as current guidance.",
+        "required_rule_ids": [],
+        "severity": "informational"
+      },
+      "review_event": {
+        "decision": "accepted",
+        "expert_validated": false,
+        "external_reviewer_qualification": null,
+        "id": "adjudication-m3-c009-author-01",
+        "independent_second_author_check": false,
+        "object_id": "C009",
+        "object_version": "1.0.0",
+        "rationale": "author-01 explicitly approved the realized M3 pre-freeze ledger, including this candidate label, split, fixture family, exact mutation, selected leaf, hashes, evidence, rules, action, and human-review requirement.",
+        "reviewed_at": "2026-08-30T18:18:04Z",
+        "reviewer_id": "author-01",
+        "reviewer_role": "research-author",
+        "source_sha256": "be036671d1a7cf4e526c50fbc23a61df790362f3a560b4eef988bf8caaf9aac8",
+        "source_snapshot_id": "fda-cder-demo-v1",
+        "supporting_source_sha256s": [],
+        "unresolved_assumptions": [
+          "Controlled prospective FDA/CDER research label only; not FDA acceptance or regulatory-expert ground truth."
+        ]
+      },
+      "review_status": "author_adjudicated_for_demo",
+      "selected_file_sha256": "79de7097254cc5ce63a7f55265761d1627d41aff9628871c537cd13eaa2cb0cb",
+      "selected_leaf_id": "leaf-c009-selected",
+      "source_fixture_id": "case-c-clean",
+      "split": "train",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "prospective_forward_compatibility",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "prospective-reference",
+      "target_context_sha256": "b66bdf396cdf2862ce09d20d340f970cc040d1c954ab54861239326f5a7df0f3"
+    },
+    {
+      "archetype": "stale-content-or-hyperlink",
+      "case_id": "C010",
+      "decision_fingerprint_sha256": "98713889e2ca0afd5853457eefb908339e82ccbbda5b503bc0dd516f15fefd81",
+      "decision_predicate_sha256": "b37c8c249d53ac3d13362ddd30316d10e41827fbf37527f878d6ef64cf290cb6",
+      "decision_relevant_predicates": {
+        "applicant_name": "Northstar Therapeutics",
+        "application_number": "123456",
+        "has_stf": false,
+        "operational_availability": "not_operational",
+        "package_sha256": "0ccee6f32b08602334d8e32da841bd8e84e9b91847b58685b72a532ad8c82e54",
+        "selected_file_sha256": "760e43120b0f81ed84cfd26c859b7a7219eb6e1f56209d0bbf481f2c8e5838a2",
+        "selected_leaf": {
+          "extraction_status": "completed",
+          "heading": "3.2.S.1",
+          "href": "documents/case-c-irrelevant-link.pdf",
+          "hyperlinks": [
+            {
+              "author_verified_relevant": false,
+              "page": 1,
+              "target": "https://legacy.example.invalid/old-applicant/3.2.S.1.1",
+              "target_exists": null,
+              "target_type": "uri"
+            }
+          ],
+          "keywords": [],
+          "modified_leaf_id": null,
+          "operation": "new",
+          "predecessor_exists": false,
+          "predecessor_heading": null,
+          "predecessor_operation": null,
+          "text_spans": [
+            {
+              "locator": "case-c-irrelevant-link.pdf / PDF page 1 / text 1",
+              "page": 1,
+              "text": "Legacy external hyperlink The legacy applicant portal is linked below for the former dossier context. Open legacy applicant portal"
+            }
+          ],
+          "title": "Legacy external hyperlink"
+        },
+        "source_standard": "eCTD-3.2.2",
+        "submission_type": "original",
+        "target_context": {
+          "analysis_date": "2026-08-29",
+          "application_type": "NDA",
+          "authority": "FDA",
+          "center": "CDER",
+          "metadata_plan": null,
+          "reuse_operation": "reference-existing-content",
+          "scenario_mode": "current_operational",
+          "source_standard": "eCTD-3.2.2",
+          "standards_snapshot_id": "fda-cder-demo-v1",
+          "target_standard": "eCTD-4.0"
+        }
+      },
+      "expert_validated": false,
+      "fixture_family": "c-external-link-operational",
+      "fixture_id": "case-c-irrelevant-link",
+      "mutation": {
+        "exact": "current operational mode",
+        "type": "scenario-mode"
+      },
+      "package_sha256": "0ccee6f32b08602334d8e32da841bd8e84e9b91847b58685b72a532ad8c82e54",
+      "reference": {
+        "acceptable_evidence_ids": [],
+        "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+        "action_mode": "required_condition",
+        "decision": "HUMAN_REGULATORY_REVIEW",
+        "human_review_required": true,
+        "rationale": "FDA forward compatibility remains not operational and prospective analysis must not execute.",
+        "required_rule_ids": [],
+        "severity": "unresolved"
+      },
+      "review_event": {
+        "decision": "accepted",
+        "expert_validated": false,
+        "external_reviewer_qualification": null,
+        "id": "adjudication-m3-c010-author-01",
+        "independent_second_author_check": false,
+        "object_id": "C010",
+        "object_version": "1.0.0",
+        "rationale": "author-01 explicitly approved the realized M3 pre-freeze ledger, including this candidate label, split, fixture family, exact mutation, selected leaf, hashes, evidence, rules, action, and human-review requirement.",
+        "reviewed_at": "2026-08-30T18:18:04Z",
+        "reviewer_id": "author-01",
+        "reviewer_role": "research-author",
+        "source_sha256": "be036671d1a7cf4e526c50fbc23a61df790362f3a560b4eef988bf8caaf9aac8",
+        "source_snapshot_id": "fda-cder-demo-v1",
+        "supporting_source_sha256s": [],
+        "unresolved_assumptions": [
+          "Controlled prospective FDA/CDER research label only; not FDA acceptance or regulatory-expert ground truth."
+        ]
+      },
+      "review_status": "author_adjudicated_for_demo",
+      "selected_file_sha256": "760e43120b0f81ed84cfd26c859b7a7219eb6e1f56209d0bbf481f2c8e5838a2",
+      "selected_leaf_id": "leaf-c-irrelevant-link",
+      "source_fixture_id": null,
+      "split": "development",
+      "target_context": {
+        "analysis_date": "2026-08-29",
+        "application_type": "NDA",
+        "authority": "FDA",
+        "center": "CDER",
+        "metadata_plan": null,
+        "reuse_operation": "reference-existing-content",
+        "scenario_mode": "current_operational",
+        "source_standard": "eCTD-3.2.2",
+        "standards_snapshot_id": "fda-cder-demo-v1",
+        "target_standard": "eCTD-4.0"
+      },
+      "target_context_id": "current-operational",
+      "target_context_sha256": "f5494643dc2723d8936b25ec03c9790b79e7d4ab5d5c7751b07cb20e98f1da29"
+    }
+  ],
+  "expert_validated": false,
+  "exporter_version": "1.0.0",
+  "fixture_metadata": [
+    {
+      "author_verified_relevant_hyperlink_ids": [],
+      "fixture_id": "case-a-004-replacement-3211",
+      "relative_path": "case-a-004-replacement-3211"
+    },
+    {
+      "author_verified_relevant_hyperlink_ids": [],
+      "fixture_id": "case-a-009-unmapped-3215",
+      "relative_path": "case-a-009-unmapped-3215"
+    },
+    {
+      "author_verified_relevant_hyperlink_ids": [],
+      "fixture_id": "case-a-ambiguous-3214",
+      "relative_path": "case-a-ambiguous-3214"
+    },
+    {
+      "author_verified_relevant_hyperlink_ids": [],
+      "fixture_id": "case-a-removed-3211",
+      "relative_path": "case-a-removed-3211"
+    },
+    {
+      "author_verified_relevant_hyperlink_ids": [],
+      "fixture_id": "case-a-removed-3213",
+      "relative_path": "case-a-removed-3213"
+    },
+    {
+      "author_verified_relevant_hyperlink_ids": [],
+      "fixture_id": "case-b-clean-specific",
+      "relative_path": "case-b-clean-specific"
+    },
+    {
+      "author_verified_relevant_hyperlink_ids": [],
+      "fixture_id": "case-b-out-of-scope-product-all",
+      "relative_path": "case-b-out-of-scope-product-all"
+    },
+    {
+      "author_verified_relevant_hyperlink_ids": [],
+      "fixture_id": "case-b-preserve-all",
+      "relative_path": "case-b-preserve-all"
+    },
+    {
+      "author_verified_relevant_hyperlink_ids": [],
+      "fixture_id": "case-b-unspecified-all",
+      "relative_path": "case-b-unspecified-all"
+    },
+    {
+      "author_verified_relevant_hyperlink_ids": [],
+      "fixture_id": "case-c-007-stale-heading-3212",
+      "relative_path": "case-c-007-stale-heading-3212"
+    },
+    {
+      "author_verified_relevant_hyperlink_ids": [],
+      "fixture_id": "case-c-009-benign-heading-history",
+      "relative_path": "case-c-009-benign-heading-history"
+    },
+    {
+      "author_verified_relevant_hyperlink_ids": [],
+      "fixture_id": "case-c-ambiguous",
+      "relative_path": "case-c-ambiguous"
+    },
+    {
+      "author_verified_relevant_hyperlink_ids": [],
+      "fixture_id": "case-c-irrelevant-link",
+      "relative_path": "case-c-irrelevant-link"
+    },
+    {
+      "author_verified_relevant_hyperlink_ids": [],
+      "fixture_id": "case-c-stale-heading",
+      "relative_path": "case-c-stale-heading"
+    }
+  ],
+  "operational_availability": "not_operational",
+  "schema_version": "1.0.0",
+  "selected_input_hashes": {
+    "A001": "7aabe029756bcb802066aad0076790a705527193ae47fd7d78ff3a51cb43d2db",
+    "A003": "6d4d4a0cf05bc6265f52292969e8f37ab630755ac233036916eaa77aa0daa953",
+    "A004": "7af6c164a92e9a07826453c334862bb0d0e8d9c210b62b4ae9a135e4c2cdaa5b",
+    "A008": "340ea52d34f06912831676bceb6500fc1102790ef28570ff95a1f90300280b72",
+    "A009": "d4902f1ac5ef8ca341c80b3e791e6d87f980736250b269d49af018d655827317",
+    "A010": "0526298ff00968e68b1ab588dd157049594743ae39d54b21d721025304cb5615",
+    "B002": "a05fd71a4333e128c0a940f2acb60018f2b84a2b408f2446c6542b76e88235ef",
+    "B003": "e8fcafa24b8cf9623060d6ee7221909622ab5e9397a3c5f373c5493820b84caa",
+    "B006": "519645c9a0a7d43561c4bfcd7deef981d521341bcc8ad43ca63918eeb0e98030",
+    "B007": "99d87a4a159ed7e0f0aba29128732f8d4f97d3dedd1ae8c2a031e89239d54056",
+    "B008": "3a246667a8d7c6f1edc4d81d871d8a8bb35035d02417468674096b5fba216a51",
+    "B009": "4f84b69b4c303f59c994253bf2b506dc994d1c2e04f8af2de989da3c9bb6396a",
+    "C001": "f7d3387e7989668c71d6f9478f1cbc63ffefcb2f28944510ce91e4cc1dc848b7",
+    "C003": "eaf4f30bf9e86cbb02080889cf525791bdade33699de12973e09ab257ac001a9",
+    "C006": "986767640fb371f837f57039fc8617fece53a09c52ecb3ec349a2d1db7dee672",
+    "C007": "93d1bc13e67741e064dd361a73f3047df20be4e37c62267309a4f85031c30a98",
+    "C009": "070d0b51d2b369d384761a534f39e74d46bf5486bc9b92ad96f709fea2ba157f",
+    "C010": "4391b21f883f529d5f34366149e3447b9149dd4067275ea4923d459390c93fda"
+  },
+  "source_benchmark": "data/benchmark/frozen/benchmark-v1.0.0.json"
+}

@@ -327,7 +327,8 @@
     "result_status": {
       "enum": [
         "fixture validation only",
-        "genuine deterministic experimental output"
+        "genuine deterministic experimental output",
+        "live model output"
       ],
       "title": "Result Status",
       "type": "string"
@@ -348,7 +349,10 @@
     "scope": {
       "enum": [
         "held-out-test",
-        "all-cases-secondary"
+        "all-cases-secondary",
+        "phase1-train",
+        "phase1-development",
+        "phase1-train-development"
       ],
       "title": "Scope",
       "type": "string"

@@ -4,6 +4,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import cast
 
+from app.analyzer.prompts import SEMANTIC_INSPECTION_PROMPT_VERSION, SEMANTIC_INSPECTION_TASK
 from app.analyzer.repository import AnalysisRepository
 from app.config import Settings, get_settings
 from app.domain.enums import (
@@ -45,7 +46,7 @@ SCENARIO_DISCLOSURE = (
     "currently not operational. Results are author-adjudicated for a controlled demonstration "
     "and are not regulatory-expert validated."
 )
-PROMPT_VERSION = "1.0.0"
+PROMPT_VERSION = SEMANTIC_INSPECTION_PROMPT_VERSION
 
 
 def _configured_model(settings: Settings) -> StructuredModel:
@@ -546,11 +547,7 @@ class AnalysisService:
         fixture_id = inventory.fixture_id or "uncontrolled-upload"
         request = ModelRequest(
             fixture_lookup_key=fixture_id,
-            task=(
-                "Identify supported stale headings, applicant names, or hyperlink relevance risks. "
-                "Classify benign historical references separately and abstain when evidence "
-                "is inadequate."
-            ),
+            task=SEMANTIC_INSPECTION_TASK,
             context={
                 "authority": target.authority.value,
                 "center": target.center.value,

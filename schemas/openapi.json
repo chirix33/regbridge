@@ -1499,7 +1499,8 @@
           "result_status": {
             "enum": [
               "fixture validation only",
-              "genuine deterministic experimental output"
+              "genuine deterministic experimental output",
+              "live model output"
             ],
             "title": "Result Status",
             "type": "string"
@@ -1520,7 +1521,10 @@
           "scope": {
             "enum": [
               "held-out-test",
-              "all-cases-secondary"
+              "all-cases-secondary",
+              "phase1-train",
+              "phase1-development",
+              "phase1-train-development"
             ],
             "title": "Scope",
             "type": "string"
@@ -2636,7 +2640,6 @@
             "$ref": "#/components/schemas/Decision"
           },
           "empirical_model_observation": {
-            "const": false,
             "default": false,
             "title": "Empirical Model Observation",
             "type": "boolean"
@@ -2684,7 +2687,9 @@
             "enum": [
               "contract_fixture",
               "genuine_rule_only",
-              "hybrid_contract_fixture"
+              "hybrid_contract_fixture",
+              "live_direct_model",
+              "live_hybrid_model"
             ],
             "title": "Prediction Source",
             "type": "string"

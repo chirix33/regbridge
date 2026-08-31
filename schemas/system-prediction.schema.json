@@ -68,7 +68,6 @@
       "$ref": "#/$defs/Decision"
     },
     "empirical_model_observation": {
-      "const": false,
       "default": false,
       "title": "Empirical Model Observation",
       "type": "boolean"
@@ -117,7 +116,9 @@
       "enum": [
         "contract_fixture",
         "genuine_rule_only",
-        "hybrid_contract_fixture"
+        "hybrid_contract_fixture",
+        "live_direct_model",
+        "live_hybrid_model"
       ],
       "title": "Prediction Source",
       "type": "string"

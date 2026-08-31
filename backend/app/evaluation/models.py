@@ -153,8 +153,14 @@ class SystemPrediction(DomainModel):
     evidence_ids: tuple[StableId, ...] = ()
     rule_ids: tuple[StableId, ...] = ()
     confidence: float | None = Field(default=None, ge=0, le=1)
-    prediction_source: Literal["contract_fixture", "genuine_rule_only", "hybrid_contract_fixture"]
-    empirical_model_observation: Literal[False] = False
+    prediction_source: Literal[
+        "contract_fixture",
+        "genuine_rule_only",
+        "hybrid_contract_fixture",
+        "live_direct_model",
+        "live_hybrid_model",
+    ]
+    empirical_model_observation: bool = False
     latency_ms: float = Field(ge=0)
     requests: int = Field(ge=0)
     input_tokens: int = Field(ge=0)
@@ -197,13 +203,21 @@ class FamilySensitivity(DomainModel):
 class MetricsReport(DomainModel):
     system: SystemName
     result_status: Literal[
-        "fixture validation only", "genuine deterministic experimental output"
+        "fixture validation only",
+        "genuine deterministic experimental output",
+        "live model output",
     ]
     interval_interpretation: Literal[
         "scorer validation only; no statistical interpretation",
         "exploratory only; no independence or significance claim",
     ]
-    scope: Literal["held-out-test", "all-cases-secondary"]
+    scope: Literal[
+        "held-out-test",
+        "all-cases-secondary",
+        "phase1-train",
+        "phase1-development",
+        "phase1-train-development",
+    ]
     represented_classes: tuple[Decision, ...]
     unsafe_false_negative_rate: RateMetric
     high_blocking_unsafe_false_negative_rate: RateMetric

@@ -2,6 +2,7 @@ import json
 from dataclasses import dataclass
 from typing import Any
 
+from app.baselines.prompts import DIRECT_DECISION_TASK
 from app.domain.enums import Decision, Severity
 from app.domain.models import EvidenceSpan
 from app.evaluation.models import CaseInput, DirectDecisionOutput
@@ -69,10 +70,7 @@ def prepare_case(case_input: CaseInput) -> PreparedCase:
 def serialize_direct_request(prepared: PreparedCase, evidence: tuple[EvidenceSpan, ...]) -> str:
     ordered = tuple(sorted(evidence, key=lambda item: item.id))
     packet = {
-        "task": (
-            "Choose one allowed reuse-risk decision from only the supplied case material and "
-            "source-verified evidence. Cite supplied evidence IDs and abstain on uncertainty."
-        ),
+        "task": DIRECT_DECISION_TASK,
         "case_material": prepared.material,
         "evidence": [
             {
