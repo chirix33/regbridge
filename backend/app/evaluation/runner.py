@@ -243,7 +243,7 @@ def _summary(reports: tuple[MetricsReport, ...]) -> str:
         "Labels are controlled prospective `author_adjudicated_for_demo` research labels with "
         "`expert_validated: false`.",
         "",
-        "## Headline: 12 held-out cases",
+        "## M3 harness validation: 12 held-out cases",
         "",
         "| System | Unsafe FNR (n/N) | 95% Wilson interval | Review bypass | Macro-F1 | Accuracy |",
         "|---|---:|---:|---:|---:|---:|",
