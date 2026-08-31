@@ -43,6 +43,7 @@ from app.evaluation.models import (
     SystemName,
     SystemPrediction,
 )
+from app.evaluation.phase1_b2 import B2_RESULT_STATUS, B2Rescore, rescore_b2
 from app.evaluation.phase1_bundle import (
     PHASE1_ALLOWED_SPLITS,
     PHASE1_BUNDLE,
@@ -61,7 +62,7 @@ from app.parsers.ectd322 import parse_directory
 from app.standards.evidence import EvidenceRegistry
 
 LIVE_SYSTEMS: tuple[SystemName, ...] = ("B0", "B1", "RegBridge")
-LIVE_CONFIGURATION_ID = "m3-live-phase1-gpt-5.5-contract-v2"
+LIVE_CONFIGURATION_ID = "m3-live-phase1-gpt-5.5-contract-v2-defined-actions"
 LIVE_RUN_TYPE = "live_model_run"
 LIVE_REASONING_EFFORT = "medium"
 LIVE_PILOT_OUTPUT_CEILING = 25_000
@@ -722,6 +723,8 @@ def _manifest(
         "architecture_disclosure": {
             "permitted_decisions": configuration["shared_output_vocabulary"]["decisions"],
             "shared_action_vocabulary": configuration["shared_output_vocabulary"]["actions"],
+            "shared_output_vocabulary_packet": configuration["shared_output_vocabulary"],
+            "action_vocabulary_disclosure": configuration["action_vocabulary_disclosure"],
             "regbridge_rule_set_structurally_emits": [
                 "REUSE_WITH_NEW_CONTEXT", "REUSE_AS_LEGACY_REFERENCE", "HUMAN_REGULATORY_REVIEW",
             ],
@@ -770,6 +773,7 @@ async def run_phase1_live() -> Path:
         raise LivePhase1Error("Isolated bundle missing; live runner cannot load combined benchmark")
     bundle = load_phase1_bundle()
     _guard_phase1_cases(bundle.cases, location="bundle load")
+    b2_rescore = await rescore_b2(bundle, seed=LIVE_SEED)
     settings = _settings()
     tokenizer_name, counter = _token_counter(cast(str, settings.llm_model))
     evidence = tuple(sorted(EvidenceRegistry().load(), key=lambda item: item.id))
@@ -781,8 +785,14 @@ async def run_phase1_live() -> Path:
     outcomes: list[LiveOutcome] = []
     run_id = f"m3-live-phase1-{datetime.now(UTC).strftime('%Y%m%dT%H%M%S%fZ')}"
     first_request = True
+    _write_artifacts(
+        bundle=bundle, tokenizer_name=tokenizer_name, outcomes=(), stopped_reason=None,
+        run_id=run_id, running=True, b2_rescore=b2_rescore,
+    )
     for system in LIVE_SYSTEMS:
         for case in ordered_cases:
+            require_development_approval()
+            b2_rescore.validate_for_comparison(bundle)
             _guard_case(case, location=f"{system} dispatch")
             if system in {"B0", "B1"}:
                 outcome = await _run_direct(
@@ -810,16 +820,19 @@ async def run_phase1_live() -> Path:
                     outcomes=tuple(outcomes),
                     stopped_reason="pilot_output_ceiling_hit",
                     run_id=run_id,
+                    b2_rescore=b2_rescore,
                 )
             if any(attempt.status == "failed" for attempt in outcome.attempts):
                 return _write_artifacts(
                     bundle=bundle, tokenizer_name=tokenizer_name, outcomes=tuple(outcomes),
                     stopped_reason="new_failure_class_requires_author_review",
                     run_id=run_id,
+                    b2_rescore=b2_rescore,
                 )
             _write_artifacts(
                 bundle=bundle, tokenizer_name=tokenizer_name, outcomes=tuple(outcomes),
                 stopped_reason=None, run_id=run_id, running=True,
+                b2_rescore=b2_rescore,
             )
             print(f"Phase 1: {len(outcomes)}/54 outcomes recorded ({system}).", flush=True)
     _guard_phase1_cases(bundle.cases, location="scoring")
@@ -829,6 +842,7 @@ async def run_phase1_live() -> Path:
         outcomes=tuple(outcomes),
         stopped_reason=None,
         run_id=run_id,
+        b2_rescore=b2_rescore,
     )
 
 
@@ -840,7 +854,10 @@ def _write_artifacts(
     stopped_reason: str | None,
     run_id: str | None = None,
     running: bool = False,
+    b2_rescore: B2Rescore | None = None,
 ) -> Path:
+    if b2_rescore is not None:
+        b2_rescore.validate_for_comparison(bundle)
     run_id = run_id or f"m3-live-phase1-{datetime.now(UTC).strftime('%Y%m%dT%H%M%S%fZ')}"
     result_dir = LIVE_RESULTS_ROOT / run_id
     paper_dir = LIVE_PAPER_ROOT / run_id
@@ -903,10 +920,32 @@ def _write_artifacts(
         "complete" if sum(item.system == "RegBridge" for item in outcomes) == len(bundle.cases)
         else "withheld_until_all_18_outcomes_complete"
     )
-    manifest["cross_system_comparison_status"] = (
-        "complete_development_only" if len(outcomes) == len(bundle.cases) * len(LIVE_SYSTEMS)
-        else "prohibited_incomplete_system_coverage"
+    complete = all(
+        {item.case_id for item in outcomes if item.system == system}
+        == {item.case_id for item in bundle.cases}
+        and sum(item.system == system for item in outcomes) == len(bundle.cases)
+        for system in LIVE_SYSTEMS
     )
+    if complete and b2_rescore is None:
+        raise ValueError("Complete development comparison requires a fresh B2 contract rescore")
+    manifest["cross_system_comparison_status"] = (
+        "prohibited_incomplete_system_coverage" if not complete else
+        "complete_development_only"
+    )
+    if b2_rescore is not None:
+        b2_artifact = b2_rescore.artifact()
+        b2_json = json.dumps(b2_artifact, indent=2, sort_keys=True) + "\n"
+        manifest["b2_rescore"] = {
+            "artifact": "b2-contract-rescore.json",
+            "sha256": _digest_bytes(b2_json.encode("utf-8")),
+            "configuration_sha256": b2_rescore.configuration_sha256,
+            "result_status": B2_RESULT_STATUS,
+            "model_calls": 0,
+            "outside_live_schedule": True,
+            "cases": len(b2_rescore.predictions),
+        }
+        _atomic_write(result_dir / "b2-contract-rescore.json", b2_json)
+        _atomic_write(paper_dir / "b2-contract-rescore.json", b2_json)
     if running:
         manifest["state"] = "running"
     if running or stopped_reason:
@@ -940,7 +979,10 @@ def _write_artifacts(
     )
     _atomic_write(paper_dir / "m3-live-phase1-development-metrics.json", metrics_json)
     _atomic_write(paper_dir / "m3-live-phase1-development-per-case.csv", _per_case_csv(outcomes))
-    summary = _summary_markdown(manifest, tuple(reports), outcomes)
+    presentation_reports = tuple(reports)
+    if complete and b2_rescore is not None:
+        presentation_reports += b2_rescore.reports
+    summary = _summary_markdown(manifest, presentation_reports, outcomes)
     _atomic_write(result_dir / "summary.md", summary)
     _atomic_write(paper_dir / "m3-live-phase1-development-summary.md", summary)
     return result_dir
@@ -955,6 +997,9 @@ def _summary_markdown(
         "FDA availability: `not_operational`; `expert_validated: false`. "
         "Empirical model observations, **ineligible for performance claims**. "
         "Configuration/artifact reproducibility only; no output-determinism claim.\n",
+        "B0/B1 receive RegBridge's repair-semantics action taxonomy with neutral definitions "
+        "in their inputs; they are not naive generic-LLM baselines. The identical packet is "
+        "used by RegBridge's semantic request and B2's scoring contract.\n",
         f"Completed {len(outcomes)}/54 system-case outcomes from train/development only. "
         f"Stop reason: `{manifest.get('stopped_reason', 'none')}`.\n",
         "| System | Scope | Result status | Valid n | Accuracy | Macro-F1 | "
@@ -963,8 +1008,9 @@ def _summary_markdown(
     ]
     for report in reports:
         unsafe = report.unsafe_false_negative_rate
+        result_status = B2_RESULT_STATUS if report.system == "B2" else "live development only"
         rows.append(
-            f"| {report.system} | {report.scope} | live development only | "
+            f"| {report.system} | {report.scope} | {result_status} | "
             f"{sum(item.support for item in report.per_class.values())} | "
             f"{report.accuracy:.3f} | {report.macro_f1:.3f} | "
             f"{unsafe.numerator}/{unsafe.denominator} | "
@@ -973,6 +1019,8 @@ def _summary_markdown(
     rows.extend([
         "\nRegBridge decision metrics are withheld until all 18 outcomes complete. "
         "Incomplete runs cannot support cross-system comparison.",
+        f"\nComparison status: `{manifest['cross_system_comparison_status']}`. "
+        "A matching fresh B2 rescore is required and is outside the live schedule.",
         "\n| System | Scope | Outside represented classes / valid | "
         "Counts and rates by predicted class | "
         "Sensitivity-only accuracy excluding outside predictions |",

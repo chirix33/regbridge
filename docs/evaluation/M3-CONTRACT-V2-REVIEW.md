@@ -1,5 +1,11 @@
 # M3 development contract v2 — author approval checkpoint
 
+Historical code-only contract review. The codes have since been approved; the subsequent
+effect-only definitions and B2 rescore gate are documented in
+[M3-ACTION-DEFINITIONS-REVIEW.md](M3-ACTION-DEFINITIONS-REVIEW.md). Definition approval is still
+required. The configuration digest and verification counts below describe the prior snapshot,
+not the new defined-action packet. Its raw artifacts remain unchanged.
+
 No new live calls have been made. No held-out data has been loaded, no prompt freeze has
 occurred, and Phase 2 remains inactive. FDA availability is `not_operational` and
 `expert_validated: false`. Current development diagnostics cannot support cross-system
@@ -25,7 +31,7 @@ Separately, original semantic requests did contain case/leaf-derived evidence ID
 locators. Request-local aliasing now removes these, and UUID-bearing generated output is
 rejected rather than accepted as an action or asserted identifier.
 
-## Proposed shared action vocabulary — approval requested
+## Shared action codes — approved; definitions require separate approval
 
 These are the exact existing action codes, extracted from analyzer `RepairAction` constructors
 and `data/rules/heading-rules.yaml` / `metadata-rules.yaml`. Tests compare the enum to that
@@ -33,19 +39,9 @@ source-derived set. No reference labels, model outputs, case mappings, or expect
 hints determine this vocabulary. All codes remain available together to every system;
 there are no case- or decision-conditioned restrictions.
 
-| Action code | Existing meaning | Source |
-|---|---|---|
-| `AUTHOR_REVIEW_HEADING_MAPPING` | Author review of the evidence for an unsupported heading mapping. | Analyzer |
-| `CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT` | New context and suspended legacy placement, retaining identifier reuse. | Heading rule |
-| `CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD` | New context and suspended old group for declared metadata normalization. | Metadata rule |
-| `DECLARE_MANUFACTURER_PARTITIONING` | Specify whether manufacturer differentiation is needed. | Analyzer |
-| `DECLARE_METADATA_MIGRATION_INTENT` | Declare preservation versus normalization intent. | Analyzer |
-| `HUMAN_VERIFY_STALE_CONTENT` | Human verification of potentially stale text or references. | Analyzer |
-| `NO_MATERIAL_REPAIR` | No material repair identified within the scoped evidence. | Analyzer |
-| `PRESERVE_EXACT_CONTEXT_GROUP_KEYWORDS` | Preserve the existing context group's exact keyword codes/values. | Metadata rule |
-| `SELECT_SUPPORTED_REUSE_OPERATION` | Select supported identifier reuse or obtain review for another operation. | Analyzer |
-| `VERIFY_HYPERLINK_RELEVANCE` | Human verification of hyperlink relevance to the target context. | Analyzer and metadata rule |
-| `WAIT_FOR_OPERATIONAL_AVAILABILITY` | Report operational unavailability and wait for an operational pathway. | Analyzer |
+The earlier provenance glosses are superseded by the eleven effect-only definitions in
+[the definition review](M3-ACTION-DEFINITIONS-REVIEW.md). The packet now includes those
+proposed definitions, identical across systems, and has no predicates or rule-source mapping.
 
 The two context-creation codes remain distinct to preserve existing repair semantics and
 reference-action compatibility; neither is renamed or merged. No new lifecycle-break or
@@ -54,9 +50,10 @@ There is no schema-level decision/action mapping that would reveal the reference
 
 B0/B1 `DirectDecisionOutput.action`, all-system `SystemPrediction.action`, and RegBridge/B2
 `RepairAction.type` use this identical enum. The RegBridge semantic request receives the
-same full six-decision and 11-action lists, but continues to produce evidence-bounded
-semantic findings; deterministic synthesis owns the final decision/repair. The shared lists
-contain codes only, not this provenance table or rule predicates. Existing prompt sentences
+same full six-decision and 11-action packet, but continues to produce evidence-bounded
+semantic findings; deterministic synthesis owns the final decision/repair. The original v2
+packet contained codes only; the pending revision adds neutral definitions, not predicates.
+Existing prompt sentences
 are unchanged; the vocabulary packet and corrected schemas are declared contract changes.
 
 ## Before/after defect validation
@@ -74,7 +71,7 @@ the corrected contract; they were neither edited nor reclassified. After-live de
 and metrics are explicitly null until the vocabulary is approved and a new run executes.
 Synthetic tests cannot establish that every future response will be valid.
 
-Run the network-free audit with:
+The prior network-free audit was generated with (do not rerun into the old snapshot):
 
 ```powershell
 .\.venv\Scripts\python.exe -m app.evaluation.contract_audit

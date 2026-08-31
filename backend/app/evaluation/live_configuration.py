@@ -9,7 +9,7 @@ from typing import Any, TypeVar
 from app.analyzer.prompts import SEMANTIC_INSPECTION_TASK
 from app.baselines.prompts import DIRECT_DECISION_TASK
 from app.config import REPOSITORY_ROOT
-from app.domain.vocabulary import output_vocabulary
+from app.domain.vocabulary import action_vocabulary_disclosure, output_vocabulary
 from app.evaluation.models import DirectDecisionOutput
 from app.llm.models import SemanticRiskOutput
 from app.llm.responses import SYSTEM_INSTRUCTIONS, TEMPERATURE_HANDLING, _strict_json_schema
@@ -51,7 +51,9 @@ def configuration_material(*, max_output_tokens: int = 25_000) -> dict[str, Any]
         "semantic_validators": source("backend/app/llm/models.py"),
         "request_aliasing": source("backend/app/llm/serialization.py"),
         "shared_output_vocabulary": output_vocabulary(),
+        "action_vocabulary_disclosure": action_vocabulary_disclosure(),
         "action_vocabulary_source": source("backend/app/domain/vocabulary.py"),
+        "b2_scoring_contract_source": source("backend/app/evaluation/phase1_b2.py"),
         "scorer": source("backend/app/evaluation/metrics.py"),
         "decision_scoring_policy": "option-a-exact-match-three-represented-reference-classes",
         "tokenizer": "tiktoken==0.12.0:o200k_base",
@@ -65,7 +67,9 @@ def require_development_approval() -> None:
     """Approval is an external author event; neither exporter nor runner can create it."""
     path = REPOSITORY_ROOT / "data/evaluation/phase1-v2-approval.json"
     if not path.is_file():
-        raise ValueError("Phase 1 rerun blocked: action vocabulary awaits author-01 approval")
+        raise ValueError(
+            "Phase 1 rerun blocked: action vocabulary awaits author-01 approval of definitions"
+        )
     approval = json.loads(path.read_text(encoding="utf-8"))
     if (
         approval.get("author_id") != "author-01"
@@ -80,6 +84,7 @@ def template_digests(material: dict[str, Any]) -> dict[str, str]:
         key: content_digest(material[key]) for key in (
             "direct_prompt", "semantic_prompt", "system_instructions", "direct_schema",
             "semantic_schema", "serializer", "semantic_serializer",
+            "shared_output_vocabulary",
         )
     }
 

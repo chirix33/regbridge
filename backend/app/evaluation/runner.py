@@ -16,7 +16,7 @@ from app.baselines.direct import (
 from app.baselines.retrieval import BM25_CONFIGURATION
 from app.baselines.runner import BaselineRunner
 from app.config import REPOSITORY_ROOT
-from app.domain.vocabulary import output_vocabulary
+from app.domain.vocabulary import action_vocabulary_disclosure, output_vocabulary
 from app.evaluation.benchmark import FROZEN_BENCHMARK, load_frozen_benchmark
 from app.evaluation.metrics import score_system
 from app.evaluation.models import (
@@ -469,6 +469,7 @@ def _manifest(
         "eligible_for_performance_claims": False,
         "genuine_experimental_systems": ["B2"],
         "shared_output_vocabulary": output_vocabulary(),
+        "action_vocabulary_disclosure": action_vocabulary_disclosure(),
         "architecture_disclosure": {
             "regbridge_rule_set_structurally_emits": [
                 "REUSE_WITH_NEW_CONTEXT", "REUSE_AS_LEGACY_REFERENCE", "HUMAN_REGULATORY_REVIEW",

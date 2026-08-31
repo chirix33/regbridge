@@ -541,9 +541,26 @@ or select the final hybrid decision. The current rule set structurally emits onl
 the six permitted decisions. Disclose this architectural restriction in manifests, rather
 than restricting any model's output options to the benchmark distribution.
 
-The proposed 11-action vocabulary is in `docs/evaluation/M3-CONTRACT-V2-REVIEW.md`.
+The 11 action codes are approved; the effect-only definitions proposed in
+`docs/evaluation/M3-ACTION-DEFINITIONS-REVIEW.md` require separate author-01 approval before
+any new run. Supply the identical alphabetically ordered code/definition packet to B0, B1,
+RegBridge's semantic request, and B2's scoring contract. Definitions describe effects, never
+trigger conditions or decision associations. Keep the two context-creation codes distinct:
+content-placement change versus context-group metadata change, both with identifier reuse.
+Record the packet and its origin in configuration and manifests: B0/B1 receive the taxonomy
+derived from RegBridge's repair semantics, not an unassisted generic-LLM action space.
 The Phase 1 runner fails before data/model access until explicit author-01 approval identifies
-the vocabulary and current configuration digests. No approval event is created automatically.
+the complete packet (including definitions) and current configuration digests. No approval
+event is created automatically. Recompute the configuration digest after definition approval;
+do not create a prompt freeze. All subsequent Phase 1 responses must be freshly generated.
+
+Before live inference in the approved rerun, freshly rescore B2 from only the isolated 18-case
+train/development bundle using option (a) and the shared action enum. It is outside the 54
+live-system/case schedule and makes no model calls. Preserve its genuine deterministic
+experimental status but mark development results ineligible for performance claims. Export
+its own prediction/metric artifact and reference its digest from the live manifest. A complete
+cross-system development table requires all 54 fresh live outcomes plus B2 coverage and exact
+configuration/packet/bundle digest agreement. Old-contract B2 artifacts cannot substitute.
 
 Option (a) scoring is exact match against the reference. A prediction outside the three
 represented reference classes is an error and reduces recall for its true reference class;

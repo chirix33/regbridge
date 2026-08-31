@@ -22,6 +22,7 @@ from app.llm.responses import LiveModelInvalidOutput, ResponsesStructuredModel
     "direct_schema", "semantic_schema", "direct_prompt", "semantic_prompt", "serializer",
     "reasoning_effort", "max_output_tokens", "final_structured_answer_token_limit",
     "temperature_handling", "system_instructions", "input_character_limit", "retry_limit",
+    "shared_output_vocabulary", "action_vocabulary_disclosure", "b2_scoring_contract_source",
 ])
 def test_every_configuration_change_aborts_before_any_heldout_operation(
     key: str, monkeypatch: pytest.MonkeyPatch,
