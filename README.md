@@ -55,9 +55,19 @@ Declared M3 live development evaluation: ` .\scripts\evaluate-live-phase1.ps1` (
 configured `gpt-5.5` credentials. Temperature is omitted with
 `temperature_handling: unsupported_by_endpoint_parameter`. Live runs reproduce configuration
 and artifacts, **not model outputs**; fixture-mode determinism is unchanged. Phase 1 outputs
-are development diagnostics with `eligible_for_performance_claims: false`. Phase 2 remains
-gated on explicit author-01 approval, with three separate repetitions to characterize variation.
+are development diagnostics with `eligible_for_performance_claims: false`. Author-01 approved
+the frozen Phase 2 configuration with `max_output_tokens: 4000`, while retaining the 800-token
+structured-answer bound. Phase 2 uses three separate held-out repetitions to characterize
+variation; it never votes or pools predictions.
 See [the reproducibility record](IMPLEMENTATION.md#143-reproducibility-record).
+
+Phase 2 is deliberately two-step so its manifest and frozen digests are inspectable before the
+held-out bundle is loaded:
+
+```powershell
+.\scripts\evaluate-live-phase2.ps1 -Prepare
+.\scripts\evaluate-live-phase2.ps1 -Execute <generated-run-id>
+```
 
 - Python 3.12 or 3.13
 - Node.js 22 or later and npm 11 or later

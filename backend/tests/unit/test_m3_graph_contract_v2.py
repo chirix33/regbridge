@@ -19,12 +19,22 @@ from app.domain.enums import (
 )
 from app.domain.models import ModelRunRecord
 from app.evaluation.benchmark import load_frozen_benchmark
+from app.graph.builder import GRAPH_CONTRACT_DEVIATION
 from app.graph.models import GRAPH_SCHEMA_VERSION, GraphEdge, GraphNeighborhood, GraphNode
 from app.llm.models import ModelCompletion, ModelRequest, SemanticRiskOutput
 from app.llm.protocol import StructuredModel
 from app.llm.responses import ResponsesStructuredModel
 from app.parsers.ectd322 import FixtureCatalog
 from pydantic import SecretStr, ValidationError
+
+
+def test_approved_graph_representation_deviation_is_explicit() -> None:
+    assert GRAPH_CONTRACT_DEVIATION["status"] == "approved_deviation"
+    assert GRAPH_CONTRACT_DEVIATION["implementation_assessment"] == (
+        "replaced_by_simpler_semantically_equivalent_representation"
+    )
+    assert "DOSSIER_EVIDENCE" in GRAPH_CONTRACT_DEVIATION["implementation"]
+    assert "METADATA_EVIDENCE" in GRAPH_CONTRACT_DEVIATION["approved_design"]
 
 
 def _node(node_id: str, node_type: NodeType, **kwargs: Any) -> GraphNode:

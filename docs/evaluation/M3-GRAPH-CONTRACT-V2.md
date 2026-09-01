@@ -7,6 +7,22 @@ artifacts remain retained and are not rewritten.
 
 ## Graph correction
 
+### Approved representation deviation
+
+The approved design described a discriminated occurrence-evidence union:
+`DOCUMENT_EVIDENCE | METADATA_EVIDENCE | STRUCTURAL_EVIDENCE`, with
+`METADATA_EVIDENCE --OBSERVES--> KEYWORD`. That union was **not implemented**. The built graph
+replaced it with the simpler, semantically equivalent M3 representation
+`DOSSIER_EVIDENCE`, whose `evidence_kind` property discriminates metadata, document, and
+structural occurrences where needed.
+
+Author-01 approved retaining this implementation on 2026-09-01. The rationale is that the
+uniform occurrence node preserves every required semantic invariant: exact raw value, owner,
+locator, provenance, server-side de-aliasing, occurrence-level citation, normalized keyword
+observation, and valid evidence coverage for Cases A, B, and C. It avoids unused subtype nodes
+without weakening domain/range validation. The paper and evaluation manifests must describe
+the contract as built, not as the originally proposed union.
+
 The saved first RegBridge response for B003 correctly cited the supplied manufacturer metadata
 occurrence. Graph schema v1 incorrectly materialized that occurrence as a `KEYWORD`, making the
 otherwise correct citation fail the `MODEL_FINDING --CITES--> DOSSIER_EVIDENCE` domain/range

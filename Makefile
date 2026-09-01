@@ -1,4 +1,4 @@
-.PHONY: setup lint typecheck test build check dev schemas evaluate evaluate-live-phase1
+.PHONY: setup lint typecheck test build check dev schemas evaluate evaluate-live-phase1 evaluate-live-phase2-prepare
 
 PYTHON ?= python3
 VENV_PYTHON := .venv/bin/python
@@ -40,3 +40,6 @@ evaluate:
 
 evaluate-live-phase1:
 	$(VENV_PYTHON) -m app.evaluation.live_phase1
+
+evaluate-live-phase2-prepare:
+	$(VENV_PYTHON) -m app.evaluation.live_phase2 --prepare

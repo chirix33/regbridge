@@ -28,7 +28,7 @@ from app.evaluation.models import (
     SystemName,
     SystemPrediction,
 )
-from app.graph.builder import GRAPH_CONTRACT_CHANGE
+from app.graph.builder import GRAPH_CONTRACT_CHANGE, GRAPH_CONTRACT_DEVIATION
 from app.graph.models import GRAPH_SCHEMA_VERSION
 from app.standards.evidence import EvidenceRegistry
 
@@ -531,6 +531,7 @@ def _manifest(
             "graph_schema_version": GRAPH_SCHEMA_VERSION,
             "benchmark_version": "1.0.0-unchanged",
             "contract_change": GRAPH_CONTRACT_CHANGE,
+            "approved_design_deviation": GRAPH_CONTRACT_DEVIATION,
             "rationale": (
                 "The B003 manufacturer-metadata citation was correct; graph v1 could not "
                 "represent a finding about metadata and could fail the Case B family."

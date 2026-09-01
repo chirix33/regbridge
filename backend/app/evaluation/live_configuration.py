@@ -1,4 +1,4 @@
-"""Content-addressed live configuration; Phase 2 remains explicitly gated and inactive."""
+"""Content-addressed live configuration and author-approved Phase 2 freeze gate."""
 
 import hashlib
 import json
@@ -11,12 +11,19 @@ from app.baselines.prompts import DIRECT_DECISION_TASK
 from app.config import REPOSITORY_ROOT
 from app.domain.vocabulary import action_vocabulary_disclosure, output_vocabulary
 from app.evaluation.models import DirectDecisionOutput
-from app.graph.builder import GRAPH_CONTRACT_CHANGE
+from app.graph.builder import GRAPH_CONTRACT_CHANGE, GRAPH_CONTRACT_DEVIATION
 from app.graph.models import GRAPH_SCHEMA_VERSION
 from app.llm.models import SemanticRiskOutput
 from app.llm.responses import SYSTEM_INSTRUCTIONS, TEMPERATURE_HANDLING, _strict_json_schema
 
 ResultT = TypeVar("ResultT")
+PHASE2_MAX_OUTPUT_TOKENS = 4_000
+PHASE2_REPETITIONS = 3
+PHASE2_APPROVAL_PATH = REPOSITORY_ROOT / "data/evaluation/phase2-approval.json"
+
+
+class HeldOutConfigurationMismatch(ValueError):
+    """A frozen held-out boundary changed; the run must stop without retrying."""
 
 
 def content_digest(value: Any) -> str:
@@ -65,6 +72,7 @@ def configuration_material(*, max_output_tokens: int = 25_000) -> dict[str, Any]
         "graph_contract": {
             "schema_version": GRAPH_SCHEMA_VERSION,
             "change": GRAPH_CONTRACT_CHANGE,
+            "approved_deviation": GRAPH_CONTRACT_DEVIATION,
             "occurrence_identity": (
                 "raw value, owner, locator, and provenance resolve server-side after "
                 "request-local evidence de-aliasing"
@@ -88,6 +96,9 @@ def configuration_material(*, max_output_tokens: int = 25_000) -> dict[str, Any]
         "analysis_pipeline_source": source("backend/app/analyzer/service.py"),
         "analysis_repository_source": source("backend/app/analyzer/repository.py"),
         "live_retry_and_summary_source": source("backend/app/evaluation/live_phase1.py"),
+        "held_out_bundle_source": source("backend/app/evaluation/phase2_bundle.py"),
+        "phase2_b2_source": source("backend/app/evaluation/phase2_b2.py"),
+        "phase2_runner_source": source("backend/app/evaluation/live_phase2.py"),
         "tokenizer": "tiktoken==0.12.0:o200k_base",
         "input_counting_policy": (
             "Unicode characters: instructions + serialized input + JSON schema"
@@ -122,6 +133,34 @@ def template_digests(material: dict[str, Any]) -> dict[str, str]:
     }
 
 
+def phase2_freeze_components(material: dict[str, Any]) -> dict[str, str]:
+    """Named digest coverage required by the author-approved held-out freeze."""
+    return {
+        "direct_output_schema": content_digest(material["direct_schema"]),
+        "semantic_output_schema": content_digest(material["semantic_schema"]),
+        "direct_prompt_template": content_digest(material["direct_prompt"]),
+        "semantic_prompt_template": content_digest(material["semantic_prompt"]),
+        "system_instructions": content_digest(material["system_instructions"]),
+        "direct_serializer": content_digest(material["serializer"]),
+        "semantic_serializer": content_digest(material["semantic_serializer"]),
+        "action_vocabulary_packet_and_definitions": content_digest(
+            material["shared_output_vocabulary"]
+        ),
+        "graph_contract": content_digest(material["graph_contract"]),
+        "reasoning_effort": content_digest(material["reasoning_effort"]),
+        "max_output_tokens": content_digest(material["max_output_tokens"]),
+        "structured_answer_token_limit": content_digest(
+            material["final_structured_answer_token_limit"]
+        ),
+        "input_character_limit": content_digest(material["input_character_limit"]),
+        "temperature_handling": content_digest(material["temperature_handling"]),
+        "retry_policy": content_digest({
+            "retry_limit": material["retry_limit"],
+            "retry_policy": material["retry_policy"],
+        }),
+    }
+
+
 @dataclass(frozen=True)
 class HeldOutApprovalGate:
     """No benchmark loading here. Guard every future loader/repetition/dispatch callback."""
@@ -133,12 +172,18 @@ class HeldOutApprovalGate:
 
     def guard(self) -> None:
         if self.author_id != "author-01":
-            raise ValueError("Held-out execution requires explicit author-01 approval")
+            raise HeldOutConfigurationMismatch(
+                "Held-out execution requires explicit author-01 approval"
+            )
         material = configuration_material(max_output_tokens=self.max_output_tokens)
         if content_digest(material) != self.frozen_configuration_digest:
-            raise ValueError("Held-out run aborted: frozen configuration digest mismatch")
+            raise HeldOutConfigurationMismatch(
+                "Held-out run aborted: frozen configuration digest mismatch"
+            )
         if content_digest(template_digests(material)) != self.frozen_prompt_digest:
-            raise ValueError("Held-out run aborted: frozen prompt digest mismatch")
+            raise HeldOutConfigurationMismatch(
+                "Held-out run aborted: frozen prompt digest mismatch"
+            )
 
     def before_loading(self, loader: Callable[[], ResultT]) -> ResultT:
         self.guard()
@@ -151,3 +196,31 @@ class HeldOutApprovalGate:
     def before_dispatch(self, dispatch: Callable[[], ResultT]) -> ResultT:
         self.guard()
         return dispatch()
+
+
+def load_phase2_approval_gate() -> HeldOutApprovalGate:
+    if not PHASE2_APPROVAL_PATH.is_file():
+        raise ValueError("Held-out execution blocked: Phase 2 author approval record is missing")
+    approval = json.loads(PHASE2_APPROVAL_PATH.read_text(encoding="utf-8"))
+    material = configuration_material(max_output_tokens=PHASE2_MAX_OUTPUT_TOKENS)
+    expected_prompt = content_digest(template_digests(material))
+    expected_configuration = content_digest(material)
+    if (
+        approval.get("author_id") != "author-01"
+        or approval.get("held_out_authorized") is not True
+        or approval.get("prompt_freeze_authorized") is not True
+        or approval.get("repetitions") != PHASE2_REPETITIONS
+        or approval.get("max_output_tokens") != PHASE2_MAX_OUTPUT_TOKENS
+        or approval.get("final_structured_answer_token_limit") != 800
+        or approval.get("frozen_prompt_digest") != expected_prompt
+        or approval.get("frozen_configuration_digest") != expected_configuration
+    ):
+        raise ValueError("Held-out execution blocked: Phase 2 approval or frozen digest mismatch")
+    gate = HeldOutApprovalGate(
+        author_id="author-01",
+        frozen_prompt_digest=expected_prompt,
+        frozen_configuration_digest=expected_configuration,
+        max_output_tokens=PHASE2_MAX_OUTPUT_TOKENS,
+    )
+    gate.guard()
+    return gate

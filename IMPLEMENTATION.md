@@ -203,6 +203,17 @@ MODEL_FINDING --ABOUT--> KEYWORD
 DOSSIER_EVIDENCE --OBSERVES--> KEYWORD
 ```
 
+This is an author-01-approved M3 design deviation from the originally proposed discriminated
+occurrence-evidence union (`DOCUMENT_EVIDENCE`, `METADATA_EVIDENCE`, and
+`STRUCTURAL_EVIDENCE`). The union was **not implemented**. It was replaced by one
+`DOSSIER_EVIDENCE` occurrence node type carrying an `evidence_kind` discriminator. This simpler
+representation is semantically equivalent for the controlled M3 graph operations: every
+occurrence still carries raw value, owner, locator, and provenance; request-local aliases still
+protect durable identity; and Case A, B, and C evidence remains in the valid `CITES` range.
+The built edge is therefore `DOSSIER_EVIDENCE → OBSERVES → KEYWORD`, rather than the originally
+named `METADATA_EVIDENCE → OBSERVES → KEYWORD`. This deviation and its rationale are inputs to
+the evaluation configuration digest and are disclosed in graph-build and live-run manifests.
+
 `CITES → KEYWORD` is invalid. `ABOUT` never substitutes for an occurrence citation. For a
 metadata finding, its `ABOUT` target must equal the keyword `OBSERVES` target of cited metadata
 evidence unless a separately supported cross-concept relation is encoded; M3 encodes no such
@@ -625,6 +636,10 @@ informational/low/medium/high boundary preserves semantic-signal governance.
 Graph contract v2 is a versioned graph-build correction, not a benchmark-label change.
 Metadata occurrences remain `DOSSIER_EVIDENCE`; separate normalized `KEYWORD` nodes are linked
 by `OBSERVES`, while a model finding both `CITES` the occurrence and is `ABOUT` the keyword.
+The approved discriminated evidence union was not implemented; a single occurrence node with
+an `evidence_kind` discriminator replaced it as a simpler semantically equivalent M3
+representation. This approved deviation is a paper disclosure item and participates in live
+configuration digests.
 The prior frozen M3 fixture artifacts remain available for audit. A new deterministic validation
 build and manifest record the new graph schema, unchanged benchmark digest, prompt/serializer
 digests, and reproducible graph content digests.
@@ -679,9 +694,17 @@ analysis pipeline, and persistence boundary participate in `configuration_sha256
 `prompt_template_digests` includes `direct_schema` and `semantic_schema`. Author approval must
 identify the prompts, derived cap, temperature handling, and complete configuration before
 Phase 2. The frozen configuration and prompt digests are recomputed before held-out loading,
-every repetition, and every dispatch; any mismatch aborts before the operation. Phase 2 remains
-inactive until explicit author-01 approval. FDA availability remains `not_operational` and
-`expert_validated: false` throughout.
+every repetition, and every dispatch; any mismatch aborts before the operation. Author-01
+approved Phase 1 as complete and authorized the Phase 2 prompt freeze on 2026-09-01. The
+held-out configuration uses `gpt-5.5`, reasoning effort `medium`,
+`max_output_tokens: 4000`, the unchanged 800-token structured-answer limit, the unchanged
+16,000-character input limit, omitted temperature with
+`unsupported_by_endpoint_parameter`, and the existing transport/provider-API-only retry
+policy. The prepared manifest exposes both frozen digests before the held-out bundle is loaded.
+Three repetitions per live system remain separate runs; do not vote, pool, or substitute cached
+responses. B2 is recomputed once without a model call. Only a complete Phase 2 held-out audit
+may set `eligible_for_performance_claims: true`. FDA availability remains `not_operational`
+and `expert_validated: false` throughout.
 
 ### 14.4 M3 presentation safeguards
 

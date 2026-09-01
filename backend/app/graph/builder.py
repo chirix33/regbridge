@@ -10,6 +10,28 @@ GRAPH_CONTRACT_CHANGE = (
     "keyword; model findings CITE the occurrence and are ABOUT the observed keyword."
 )
 
+GRAPH_CONTRACT_DEVIATION = {
+    "status": "approved_deviation",
+    "approved_by": "author-01",
+    "approved_design": (
+        "discriminated occurrence-evidence union: DOCUMENT_EVIDENCE, METADATA_EVIDENCE, "
+        "and STRUCTURAL_EVIDENCE"
+    ),
+    "implementation": (
+        "one DOSSIER_EVIDENCE occurrence node type with an evidence_kind discriminator"
+    ),
+    "implementation_assessment": "replaced_by_simpler_semantically_equivalent_representation",
+    "edge_realization": (
+        "MODEL_FINDING-CITES-DOSSIER_EVIDENCE; MODEL_FINDING-ABOUT-KEYWORD; "
+        "DOSSIER_EVIDENCE-OBSERVES-KEYWORD"
+    ),
+    "rationale": (
+        "The uniform occurrence node preserves exact raw value, owner, locator, provenance, "
+        "request-local aliasing, occurrence citation, concept normalization, and Case A/B/C "
+        "domain-range coverage without adding unused graph node subtypes during M3."
+    ),
+}
+
 
 def _slug(value: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", value.casefold()).strip("-") or "empty"

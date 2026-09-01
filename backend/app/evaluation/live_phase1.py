@@ -10,6 +10,7 @@ import statistics
 import tempfile
 import time
 from collections import defaultdict
+from collections.abc import Callable
 from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 from pathlib import Path
@@ -29,6 +30,7 @@ from app.baselines.retrieval import BM25Retriever
 from app.config import REPOSITORY_ROOT, Settings
 from app.domain.enums import Decision, LlmMode
 from app.evaluation.live_configuration import (
+    HeldOutConfigurationMismatch,
     configuration_material,
     content_digest,
     require_development_approval,
@@ -231,7 +233,7 @@ def _token_counter(model: str) -> tuple[str, Any]:
 def _settings() -> Settings:
     settings = Settings(llm_mode=LlmMode.LIVE)
     if settings.llm_model != "gpt-5.5":
-        raise LivePhase1Error("Phase 1 is approved only for LLM_MODEL=gpt-5.5")
+        raise LivePhase1Error("The declared M3 live evaluation requires LLM_MODEL=gpt-5.5")
     return settings
 
 
@@ -276,8 +278,11 @@ async def _run_direct(
     evidence: tuple[Any, ...],
     retriever: BM25Retriever,
     first_authorized_request: bool,
+    guard_case: Any = _guard_case,
+    phase_name: str = "Phase 1",
+    dispatch_guard: Callable[[], None] | None = None,
 ) -> LiveOutcome:
-    _guard_case(case, location=f"{system} input preparation")
+    guard_case(case, location=f"{system} input preparation")
     case_input = next(item for item in bundle.case_inputs if item.case_id == case.case_id)
     prepared = prepare_case(case_input)
     retrieval: RetrievalTrace | None = None
@@ -288,9 +293,9 @@ async def _run_direct(
         selected = tuple(by_id[item.evidence_id] for item in retrieval.hits)
     serialized = serialize_direct_request(prepared, selected)
     if len(serialized) > LIVE_INPUT_CHARACTER_LIMIT:
-        raise LivePhase1Error("Phase 1 direct request exceeded the input character limit")
+        raise LivePhase1Error(f"{phase_name} direct request exceeded the input character limit")
     async def direct_call() -> Any:
-        _guard_case(case, location=f"{system} model dispatch")
+        guard_case(case, location=f"{system} model dispatch")
         completion = await model.complete_text(
             input_text=serialized,
             output_type=DirectDecisionOutput,
@@ -309,6 +314,7 @@ async def _run_direct(
         model=model,
         call=direct_call,
         first_authorized_request=first_authorized_request,
+        dispatch_guard=dispatch_guard,
     )
     deviations = _deviations(attempts)
     if output is None:
@@ -368,8 +374,10 @@ async def _run_regbridge(
     bundle: Phase1Bundle,
     model: ResponsesStructuredModel,
     first_authorized_request: bool,
+    guard_case: Any = _guard_case,
+    dispatch_guard: Callable[[], None] | None = None,
 ) -> LiveOutcome:
-    _guard_case(case, location="RegBridge input preparation")
+    guard_case(case, location="RegBridge input preparation")
     metadata = {item.fixture_id: item for item in bundle.fixture_metadata}
     fixture = metadata[case.fixture_id]
     fixture_path = (REPOSITORY_ROOT / "data" / "demo-cases" / fixture.relative_path).resolve()
@@ -391,6 +399,7 @@ async def _run_regbridge(
         model=model,
         call=lambda: service.analyze_async(inventory, case.selected_leaf_id, case.target_context),
         first_authorized_request=first_authorized_request,
+        dispatch_guard=dispatch_guard,
     )
     deviations = _deviations(attempts)
     if result is None or (result.model_run.status == "failed" and attempts):
@@ -447,15 +456,18 @@ async def _retry_live_call(
     model: ResponsesStructuredModel,
     call: Any,
     first_authorized_request: bool,
+    dispatch_guard: Callable[[], None] | None = None,
 ) -> tuple[tuple[ResponsesAttempt, ...], Any | None, str | None]:
     attempts: list[ResponsesAttempt] = []
     for retry_index in range(LIVE_RETRY_LIMIT + 1):
         model.last_attempts = ()
         try:
+            if dispatch_guard is not None:
+                dispatch_guard()
             completion = await call()
             attempts.extend(_renumber_attempts(model.last_attempts, start=len(attempts) + 1))
             if any(attempt.ceiling_hit for attempt in attempts):
-                return tuple(attempts), None, "pilot_output_ceiling_hit"
+                return tuple(attempts), None, "max_output_tokens_ceiling_hit"
             _validate_attempts(tuple(attempts))
             return tuple(attempts), getattr(completion, "output", completion), None
         except RetryableLiveModelError as error:
@@ -465,6 +477,8 @@ async def _retry_live_call(
             failure = current[-1].cause if current else f"api_or_transport:{type(error).__name__}"
             if retry_index >= LIVE_RETRY_LIMIT:
                 return tuple(attempts), None, failure
+        except HeldOutConfigurationMismatch:
+            raise
         except LiveModelInvalidOutput as error:
             current = _renumber_attempts(model.last_attempts, start=len(attempts) + 1)
             attempts.extend(current)
@@ -530,7 +544,7 @@ def _deviations(attempts: tuple[ResponsesAttempt, ...]) -> tuple[dict[str, Any],
         if attempt.ceiling_hit:
             deviations.append(
                 {
-                    "type": "pilot_output_ceiling_hit",
+                    "type": "max_output_tokens_ceiling_hit",
                     "attempt_index": attempt.attempt_index,
                     "cause": attempt.finish_reason,
                 }
@@ -810,6 +824,15 @@ def _manifest(
             "passed": audit_state.audit_passed,
             "source": "same validated outcomes and attempts used for metrics and summary",
         },
+        "progress": {
+            "completed_outcomes": len(outcomes),
+            "scheduled_outcomes": len(bundle.cases) * len(LIVE_SYSTEMS),
+            "terminal_audit_complete": audit_state.state != "running",
+            "completed_by_system": {
+                system: sum(outcome.system == system for outcome in outcomes)
+                for system in LIVE_SYSTEMS
+            },
+        },
         "systems": LIVE_SYSTEMS,
         "current_fda_operational_availability": "not_operational",
         "expert_validated": False,
@@ -1002,11 +1025,12 @@ async def run_phase1_live() -> Path:
                     run_id=run_id,
                     b2_rescore=b2_rescore,
                 )
-            _write_artifacts(
-                bundle=bundle, tokenizer_name=tokenizer_name, outcomes=tuple(outcomes),
-                stopped_reason=None, run_id=run_id, running=True,
-                b2_rescore=b2_rescore,
-            )
+            if len(outcomes) < len(bundle.cases) * len(LIVE_SYSTEMS):
+                _write_artifacts(
+                    bundle=bundle, tokenizer_name=tokenizer_name, outcomes=tuple(outcomes),
+                    stopped_reason=None, run_id=run_id, running=True,
+                    b2_rescore=b2_rescore,
+                )
             print(f"Phase 1: {len(outcomes)}/54 outcomes recorded ({system}).", flush=True)
     _guard_phase1_cases(bundle.cases, location="scoring")
     return _write_artifacts(
@@ -1185,8 +1209,17 @@ def _summary_markdown(
         "B0/B1 receive RegBridge's repair-semantics action taxonomy with neutral definitions "
         "in their inputs; they are not naive generic-LLM baselines. The identical packet is "
         "used by RegBridge's semantic request and B2's scoring contract.\n",
-        f"Completed {len(outcomes)}/54 system-case outcomes from train/development only. "
-        f"Stop reason: `{manifest['stop_reason']}`.\n",
+        (
+            f"Recorded {manifest['progress']['completed_outcomes']}/"
+            f"{manifest['progress']['scheduled_outcomes']} system-case outcomes from "
+            "train/development only. "
+            + (
+                "Terminal audit is pending. "
+                if not manifest["progress"]["terminal_audit_complete"]
+                else "Terminal audit is complete. "
+            )
+            + f"Stop reason: `{manifest['stop_reason']}`.\n"
+        ),
         "| System | Scope | Result status | Valid n | Accuracy | Macro-F1 | "
         "Unsafe misses / eligible | Review bypass / HUMAN |",
         "|---|---|---|---:|---:|---:|---:|---:|",

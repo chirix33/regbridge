@@ -4,7 +4,8 @@ import copy
 import json
 from dataclasses import replace
 from pathlib import Path
-from typing import Any
+from types import SimpleNamespace
+from typing import Any, cast
 
 import httpx
 import pytest
@@ -13,7 +14,9 @@ from app.config import Settings
 from app.domain.enums import LlmMode
 from app.evaluation import live_configuration as config
 from app.evaluation import live_phase1 as live
-from app.evaluation.models import DirectDecisionOutput
+from app.evaluation import live_phase2 as phase2
+from app.evaluation.metrics import score_system
+from app.evaluation.models import DirectDecisionOutput, SystemName, SystemPrediction
 from app.evaluation.phase1_bundle import load_phase1_bundle
 from app.llm.models import SemanticRiskOutput
 from app.llm.responses import LiveModelInvalidOutput, ResponsesStructuredModel
@@ -26,7 +29,8 @@ from app.llm.responses import LiveModelInvalidOutput, ResponsesStructuredModel
     "shared_output_vocabulary", "action_vocabulary_disclosure", "b2_scoring_contract_source",
     "retry_policy", "graph_contract", "graph_enums_source", "graph_models_source",
     "graph_builder_source", "analysis_pipeline_source", "analysis_repository_source",
-    "live_retry_and_summary_source",
+    "live_retry_and_summary_source", "semantic_serializer", "held_out_bundle_source",
+    "phase2_b2_source", "phase2_runner_source",
 ])
 def test_every_configuration_change_aborts_before_any_heldout_operation(
     key: str, monkeypatch: pytest.MonkeyPatch,
@@ -58,6 +62,280 @@ def test_actual_direct_schema_mutation_changes_template_and_configuration_digest
         config.template_digests(after)["direct_schema"]
     )
     assert config.content_digest(before) != config.content_digest(after)
+
+
+def test_phase2_prepare_publishes_freeze_manifest_without_loading_heldout(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    material = config.configuration_material(max_output_tokens=4000)
+    gate = config.HeldOutApprovalGate(
+        author_id="author-01",
+        frozen_prompt_digest=config.content_digest(config.template_digests(material)),
+        frozen_configuration_digest=config.content_digest(material),
+        max_output_tokens=4000,
+    )
+    monkeypatch.setattr(phase2, "load_phase2_approval_gate", lambda: gate)
+    monkeypatch.setattr(phase2, "PHASE2_RESULTS_ROOT", tmp_path / "results" / "live")
+    monkeypatch.setattr(phase2, "PHASE2_PAPER_ROOT", tmp_path / "paper" / "tables" / "live")
+    monkeypatch.setattr(
+        phase2, "write_phase2_bundle",
+        lambda: pytest.fail("prepare must not load or export the held-out split"),
+    )
+    path = phase2.prepare_phase2_run()
+    manifest = json.loads((path / "manifest.pre-run.json").read_text())
+    assert manifest["state"] == "prepared"
+    assert manifest["benchmark"]["held_out_loaded_at_manifest_creation"] is False
+    assert manifest["frozen_prompt_digest"] == gate.frozen_prompt_digest
+    assert manifest["frozen_configuration_digest"] == gate.frozen_configuration_digest
+    assert manifest["model_configuration"]["max_output_tokens"] == 4000
+    assert manifest["model_configuration"]["final_structured_answer_token_limit"] == 800
+    assert set(manifest["freeze_component_digests"]) == {
+        "direct_output_schema", "semantic_output_schema", "direct_prompt_template",
+        "semantic_prompt_template", "system_instructions", "direct_serializer",
+        "semantic_serializer", "action_vocabulary_packet_and_definitions", "graph_contract",
+        "reasoning_effort", "max_output_tokens", "structured_answer_token_limit",
+        "input_character_limit", "temperature_handling", "retry_policy",
+    }
+
+
+@pytest.mark.asyncio
+async def test_frozen_dispatch_mismatch_is_nonretryable_and_makes_no_request() -> None:
+    model = ResponsesStructuredModel(
+        base_url="https://example.invalid/v1", api_key="test-secret", model="gpt-5.5",
+        timeout_seconds=1, count_final_tokens=lambda _: 10,
+        transport=httpx.MockTransport(
+            lambda _: pytest.fail("frozen mismatch must abort before provider dispatch")
+        ),
+    )
+    with pytest.raises(config.HeldOutConfigurationMismatch):
+        await live._retry_live_call(
+            model=model,
+            first_authorized_request=False,
+            dispatch_guard=lambda: (_ for _ in ()).throw(
+                config.HeldOutConfigurationMismatch("synthetic frozen mutation")
+            ),
+            call=lambda: model.complete_text(
+                input_text="synthetic",
+                output_type=SemanticRiskOutput,
+                prompt_template_version="synthetic",
+            ),
+        )
+    assert model.last_attempts == ()
+
+
+@pytest.mark.asyncio
+async def test_phase2_schedules_three_separate_repetitions_and_no_complete_partial(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    source = load_phase1_bundle()
+    cases = tuple(case.model_copy(update={"split": "test"}) for case in source.cases[:12])
+    bundle = SimpleNamespace(
+        cases=cases,
+        case_inputs=source.case_inputs[:12],
+        fixture_metadata=source.fixture_metadata,
+    )
+    material = config.configuration_material(max_output_tokens=4000)
+    gate = config.HeldOutApprovalGate(
+        "author-01",
+        config.content_digest(config.template_digests(material)),
+        config.content_digest(material),
+        4000,
+    )
+    monkeypatch.setattr(phase2, "load_phase2_approval_gate", lambda: gate)
+    monkeypatch.setattr(
+        phase2, "_load_prepared_manifest",
+        lambda *_: {"model_configuration": {}, "run_id": "synthetic"},
+    )
+    monkeypatch.setattr(phase2, "write_phase2_bundle", lambda: bundle)
+    monkeypatch.setattr(phase2, "load_phase2_bundle", lambda: bundle)
+    monkeypatch.setattr(phase2, "_settings", lambda: SimpleNamespace(llm_model="gpt-5.5"))
+    monkeypatch.setattr(phase2, "_token_counter", lambda _: ("synthetic", lambda _: []))
+    monkeypatch.setattr(phase2, "_phase2_model", lambda *_: SimpleNamespace())
+
+    async def fake_b2(*args: Any, **kwargs: Any) -> Any:
+        return SimpleNamespace()
+
+    async def outcome_for(system: str, case: Any) -> live.LiveOutcome:
+        system_name = cast(SystemName, system)
+        prediction = SystemPrediction(
+            system=system_name,
+            case_id=case.case_id,
+            decision=case.reference.decision,
+            severity=case.reference.severity,
+            action=case.reference.action,
+            human_review_required=case.reference.human_review_required,
+            unconditional_reuse=False,
+            rationale="Synthetic held-out scheduler validation.",
+            evidence_ids=(),
+            rule_ids=(),
+            confidence=0.5,
+            prediction_source=(
+                "live_hybrid_model" if system == "RegBridge" else "live_direct_model"
+            ),
+            empirical_model_observation=True,
+            latency_ms=0,
+            requests=0,
+            input_tokens=0,
+            output_tokens=0,
+            cost_usd=0,
+        )
+        return live.LiveOutcome(
+            system=system_name,
+            case_id=case.case_id,
+            split="test",
+            outcome="valid_prediction",
+            prediction=prediction,
+            retrieval=None,
+            attempts=(),
+            deviation_log=(),
+            failure=None,
+        )
+
+    async def fake_direct(**kwargs: Any) -> live.LiveOutcome:
+        return await outcome_for(kwargs["system"], kwargs["case"])
+
+    async def fake_regbridge(**kwargs: Any) -> live.LiveOutcome:
+        return await outcome_for("RegBridge", kwargs["case"])
+
+    monkeypatch.setattr(phase2, "rescore_phase2_b2", fake_b2)
+    monkeypatch.setattr(phase2, "_run_direct", fake_direct)
+    monkeypatch.setattr(phase2, "_run_regbridge", fake_regbridge)
+    writes: list[tuple[str, int]] = []
+
+    def fake_write(**kwargs: Any) -> Path:
+        writes.append((kwargs["state"], len(kwargs["outcomes"])))
+        return tmp_path
+
+    monkeypatch.setattr(phase2, "_write_artifacts", fake_write)
+    result = await phase2.execute_phase2("m3-live-phase2-20260901T000000000000Z")
+    assert result == tmp_path
+    assert writes[-1] == ("completed", 108)
+    assert ("running", 108) not in writes
+    assert sum(state == "running" for state, _ in writes) == 108
+
+
+def test_phase2_terminal_artifacts_are_complete_and_claim_eligible(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    source = load_phase1_bundle()
+    cases = tuple(case.model_copy(update={"split": "test"}) for case in source.cases[:12])
+    bundle = SimpleNamespace(cases=cases)
+    inputs = {item.case_id: item for item in source.case_inputs[:12]}
+    evidence = tuple(sorted(phase2.EvidenceRegistry().load(), key=lambda item: item.id))
+    retriever = phase2.BM25Retriever(evidence)
+    outcomes: list[phase2.RepetitionOutcome] = []
+    for repetition in range(1, 4):
+        for system in ("B0", "B1", "RegBridge"):
+            system_name = cast(SystemName, system)
+            for case in cases:
+                prediction = SystemPrediction(
+                    system=system_name,
+                    case_id=case.case_id,
+                    decision=case.reference.decision,
+                    severity=case.reference.severity,
+                    action=cast(Any, case.reference.action),
+                    human_review_required=case.reference.human_review_required,
+                    unconditional_reuse=False,
+                    rationale="Synthetic terminal artifact validation.",
+                    evidence_ids=(),
+                    rule_ids=(),
+                    confidence=0.5,
+                    prediction_source=(
+                        "live_hybrid_model" if system == "RegBridge" else "live_direct_model"
+                    ),
+                    empirical_model_observation=True,
+                    latency_ms=0,
+                    requests=0,
+                    input_tokens=0,
+                    output_tokens=0,
+                    cost_usd=0,
+                )
+                outcomes.append(phase2.RepetitionOutcome(
+                    repetition,
+                    live.LiveOutcome(
+                        system=system_name,
+                        case_id=case.case_id,
+                        split="test",
+                        outcome="valid_prediction",
+                        prediction=prediction,
+                        retrieval=(
+                            retriever.retrieve(
+                                case_id=case.case_id,
+                                query=json.dumps(inputs[case.case_id].material, sort_keys=True),
+                            )
+                            if system == "B1" else None
+                        ),
+                        attempts=(),
+                        deviation_log=(),
+                        failure=None,
+                    ),
+                ))
+    b2_predictions = tuple(
+        SystemPrediction(
+            system="B2",
+            case_id=case.case_id,
+            decision=case.reference.decision,
+            severity=case.reference.severity,
+            action=cast(Any, case.reference.action),
+            human_review_required=case.reference.human_review_required,
+            unconditional_reuse=False,
+            rationale="Synthetic B2 artifact validation.",
+            prediction_source="genuine_rule_only",
+            empirical_model_observation=False,
+            latency_ms=0,
+            requests=0,
+            input_tokens=0,
+            output_tokens=0,
+            cost_usd=0,
+        ) for case in cases
+    )
+    b2_report, _ = score_system(
+        cases=cases,
+        predictions=b2_predictions,
+        retrieval_traces=(),
+        scope="held-out-test",
+        seed=1,
+        regulatory_evidence_ids=frozenset(),
+    )
+    b2 = SimpleNamespace(
+        report=b2_report,
+        artifact=lambda: {
+            "predictions": [item.model_dump(mode="json") for item in b2_predictions]
+        },
+    )
+    monkeypatch.setattr(phase2, "PHASE2_RESULTS_ROOT", tmp_path / "results" / "live")
+    monkeypatch.setattr(phase2, "PHASE2_PAPER_ROOT", tmp_path / "paper" / "tables" / "live")
+    monkeypatch.setattr(phase2, "phase2_bundle_sha256", lambda: "f" * 64)
+    monkeypatch.setattr(
+        phase2,
+        "PHASE2_BUNDLE",
+        phase2.REPOSITORY_ROOT / "data/benchmark/phase2/absent-test-bundle.json",
+    )
+    prepared = {
+        "run_id": "m3-live-phase2-20260901T000000000000Z",
+        "state": "prepared",
+        "eligible_for_performance_claims": False,
+        "frozen_prompt_digest": "a" * 64,
+        "frozen_configuration_digest": "b" * 64,
+    }
+    path = phase2._write_artifacts(
+        run_id=cast(str, prepared["run_id"]),
+        prepared=prepared,
+        bundle=cast(Any, bundle),
+        outcomes=tuple(outcomes),
+        b2=cast(Any, b2),
+        state="completed",
+        stop_reason="completed_without_failure",
+    )
+    manifest = json.loads((path / "manifest.json").read_text())
+    metrics = json.loads((path / "metrics.json").read_text())
+    audit = json.loads((path / "completion-audit.json").read_text())
+    assert manifest["progress"]["completed_outcomes"] == 108
+    assert len(manifest["per_repetition_reports"]) == 9
+    assert manifest["eligible_for_performance_claims"] is True
+    assert metrics["eligible_for_performance_claims"] is True
+    assert audit["integrity_audit_passed"] is True
+    assert "| B2 | once |" in (path / "summary.md").read_text()
 
 
 def test_phase1_claim_flags_and_deviations(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -109,6 +387,11 @@ def test_summary_reports_recorded_b2_rescore_without_withheld_contradiction() ->
         "stop_reason": "completed_without_failure",
         "regbridge_metrics_status": "complete",
         "cross_system_comparison_status": "complete_development_only",
+        "progress": {
+            "completed_outcomes": 54,
+            "scheduled_outcomes": 54,
+            "terminal_audit_complete": True,
+        },
         "b2_rescore": {"artifact": "b2-contract-rescore.json"},
         "usage_summary": {
             system: {
@@ -128,6 +411,38 @@ def test_summary_reports_recorded_b2_rescore_without_withheld_contradiction() ->
     assert "matching fresh B2 rescore is recorded" in summary
     assert "RegBridge completed all 18 development outcomes" in summary
     assert "RegBridge decision metrics are withheld" not in summary
+
+
+def test_running_summary_reports_actual_progress_and_pending_terminal_audit() -> None:
+    manifest = {
+        "run_id": "synthetic-running",
+        "state": "running",
+        "stop_reason": "run_in_progress",
+        "regbridge_metrics_status": "withheld_until_all_18_outcomes_complete",
+        "cross_system_comparison_status": "prohibited_incomplete_system_coverage",
+        "progress": {
+            "completed_outcomes": 7,
+            "scheduled_outcomes": 54,
+            "terminal_audit_complete": False,
+        },
+        "usage_summary": {
+            system: {
+                "attempts": 0,
+                "reasoning_tokens_min": None,
+                "reasoning_tokens_median": None,
+                "reasoning_tokens_p95": None,
+                "reasoning_tokens_max": None,
+                "ceiling_hit_count": 0,
+                "cost_usd": 0,
+            }
+            for system in live.LIVE_SYSTEMS
+        },
+        "phase2_cap_proposal": {"status": "withheld"},
+    }
+    summary = live._summary_markdown(manifest, (), ())
+    assert "Recorded 7/54 system-case outcomes" in summary
+    assert "Terminal audit is pending" in summary
+    assert "Recorded 54/54" not in summary
 
 
 def response_body() -> dict[str, Any]:

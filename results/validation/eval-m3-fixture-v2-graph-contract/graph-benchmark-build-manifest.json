@@ -29,7 +29,7 @@
     "prompt_sha256": "7c2e0879cc1a33150367e7e6f114dfa077407f1a348c1e81d39499a4dc623984",
     "retrieval_sha256": "c48eab5d5b94f717985cccba58c77980d0ab812b7258e89d77de205a29a3632c",
     "rules_sha256": "0fb935b70eb9624befe87f766dcf0f4c1357c47bed32f39efa8160dddac17ae9",
-    "source_tree_sha256": "6993d41410e8200333a165c3c733d5c7faa7497561372c29ad29c47b83c4eaf6",
+    "source_tree_sha256": "4c4ae5a7da0b614244282ac587c146a1b6f066f772bbf094695abed0c3c33071",
     "standards_sha256": "1f6d68c1ace188f682da74f357ceff25aac04449d4f4b3525895d856cda817b5"
   },
   "eligible_for_performance_claims": false,
@@ -52,6 +52,15 @@
     "B2"
   ],
   "graph_benchmark_build": {
+    "approved_design_deviation": {
+      "approved_by": "author-01",
+      "approved_design": "discriminated occurrence-evidence union: DOCUMENT_EVIDENCE, METADATA_EVIDENCE, and STRUCTURAL_EVIDENCE",
+      "edge_realization": "MODEL_FINDING-CITES-DOSSIER_EVIDENCE; MODEL_FINDING-ABOUT-KEYWORD; DOSSIER_EVIDENCE-OBSERVES-KEYWORD",
+      "implementation": "one DOSSIER_EVIDENCE occurrence node type with an evidence_kind discriminator",
+      "implementation_assessment": "replaced_by_simpler_semantically_equivalent_representation",
+      "rationale": "The uniform occurrence node preserves exact raw value, owner, locator, provenance, request-local aliasing, occurrence citation, concept normalization, and Case A/B/C domain-range coverage without adding unused graph node subtypes during M3.",
+      "status": "approved_deviation"
+    },
     "benchmark_version": "1.0.0-unchanged",
     "contract_change": "Metadata is represented as occurrence-level dossier evidence which OBSERVES a normalized keyword; model findings CITE the occurrence and are ABOUT the observed keyword.",
     "edge_contract": {
@@ -81,7 +90,7 @@
     "occurrence_level_evidence": "Every dossier evidence node carries raw value, owner, locator, and provenance; models receive only request-local aliases and resolution is server-side.",
     "rationale": "The B003 manufacturer-metadata citation was correct; graph v1 could not represent a finding about metadata and could fail the Case B family.",
     "source_digests": {
-      "builder": "e6b9494cd8c480f732422ff18fed2d2d6a14de0589e79f5601b7fd7b66359dcb",
+      "builder": "b889511d3c1573177af273d0f38871e6fb4099daf05ca578982ff5f6298e66df",
       "enums": "e5256ad960fbdf9911fb3ad845c94543d42fbcf5b32975dc69c589ad1ecc9879",
       "models": "31fd3aef393d106e769c313f6fd5b9ea93fd6e395f2a4e874777237f854d4b90"
     }
