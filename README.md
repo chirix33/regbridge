@@ -129,7 +129,7 @@ Useful endpoints:
 - controlled fixture catalog: <http://127.0.0.1:8000/api/v1/fixtures>
 - baseline runner: `POST http://127.0.0.1:8000/api/v1/baselines/run`
 - deterministic evaluation: `POST http://127.0.0.1:8000/api/v1/evaluations`
-- evaluation status: `GET http://127.0.0.1:8000/api/v1/evaluations/eval-m3-fixture-v1`
+- evaluation status: `GET http://127.0.0.1:8000/api/v1/evaluations/eval-m3-fixture-v2-graph-contract`
 - unavailable-heading case: <http://127.0.0.1:5173/case-a>
 - metadata/lifecycle case: <http://127.0.0.1:5173/case-b>
 - semantic PDF/hyperlink case: <http://127.0.0.1:5173/case-c>

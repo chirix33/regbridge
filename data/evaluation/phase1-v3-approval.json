@@ -1,0 +1,29 @@
+{
+  "approval_type": "declared_phase1_development_configuration_graph_contract_v2",
+  "author_id": "author-01",
+  "approved_at": "2026-09-01T00:15:00Z",
+  "configuration_id": "m3-live-phase1-gpt-5.5-contract-v3-graph-v2",
+  "configuration_sha256": "e374ded10e622ee1e6dfd3be982b4510e8e7d581d9b40e12679a6ad06045bbb0",
+  "prompt_template_digest": "e7e140da12fe33c91e5203a9e070d27037fa755d0b12ad9305bfa970dbb04167",
+  "action_vocabulary_version": "2.1.0",
+  "action_vocabulary_sha256": "372f3966b53fd49a9c738c2b634c10315d6bd5c4f1a4e413fa85e27df3c445e4",
+  "graph_schema_version": "2.0.0",
+  "approved_graph_contract": [
+    "MODEL_FINDING-CITES-DOSSIER_EVIDENCE",
+    "MODEL_FINDING-ABOUT-KEYWORD",
+    "DOSSIER_EVIDENCE-OBSERVES-KEYWORD"
+  ],
+  "forbidden_graph_contract": "MODEL_FINDING-CITES-KEYWORD",
+  "about_integrity": "ABOUT must agree with OBSERVES for cited metadata occurrence evidence; no cross-concept relation is currently encoded.",
+  "retry_policy": "Only transport and provider-API failures are retryable. Schema, citation, graph, persistence, and synthesis failures halt immediately with rollback and an auditable non-null cause.",
+  "scope": "one fresh complete Phase 1 train/development run only",
+  "systems": ["B0", "B1", "B2", "RegBridge"],
+  "live_systems": ["B0", "B1", "RegBridge"],
+  "prior_response_reuse": false,
+  "b003_saved_response_use": "diagnostic replay only; never a fresh empirical observation",
+  "held_out_authorized": false,
+  "prompt_freeze": false,
+  "current_fda_operational_availability": "not_operational",
+  "expert_validated": false,
+  "notes": "Explicit author-01 approval was given after clarifying the graph interpretation and retry semantics. Frozen benchmark bytes, labels, families, and splits remain unchanged."
+}

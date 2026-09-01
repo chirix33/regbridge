@@ -1,0 +1,23 @@
+{
+  "run_id": "eval-m3-fixture-v2-graph-contract",
+  "run_type": "deterministic_fixture_validation",
+  "graph_schema_version": "2.0.0",
+  "executions": 2,
+  "command": ".\\scripts\\evaluate.ps1",
+  "first": {
+    "prediction_content_sha256": "f05cc1411bc031e2e34e962f57f5cffa5a2f5db7206e1f4b62ff403e0b85e853",
+    "metrics_content_sha256": "3905e03eab3680bb1c7ee1ceadf5e04bbd6a374421ee7e07ea2f5cbb95952906",
+    "graph_sha256": "ced15b79af80be4bb1f4e1292948b6ab46d58871d16636ee8160a96374de0959"
+  },
+  "second": {
+    "prediction_content_sha256": "f05cc1411bc031e2e34e962f57f5cffa5a2f5db7206e1f4b62ff403e0b85e853",
+    "metrics_content_sha256": "3905e03eab3680bb1c7ee1ceadf5e04bbd6a374421ee7e07ea2f5cbb95952906",
+    "graph_sha256": "ced15b79af80be4bb1f4e1292948b6ab46d58871d16636ee8160a96374de0959"
+  },
+  "content_digests_match": true,
+  "benchmark_sha256": "9b1e94fd0709cbbe8573e6882687b931d88c1da775932f0cbaf9dd55eca6fc75",
+  "benchmark_bytes_labels_families_splits_changed": false,
+  "previous_validation_run_rewritten": false,
+  "current_fda_operational_availability": "not_operational",
+  "expert_validated": false
+}

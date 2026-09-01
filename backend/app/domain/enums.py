@@ -130,6 +130,8 @@ class EdgeType(StrEnum):
     TRIGGERS_DECISION = "TRIGGERS_DECISION"
     HAS_KEYWORD = "HAS_KEYWORD"
     CITES = "CITES"
+    ABOUT = "ABOUT"
+    OBSERVES = "OBSERVES"
 
 
 class ExtractionMethod(StrEnum):

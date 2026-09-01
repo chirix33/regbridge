@@ -68,6 +68,26 @@ def test_semantic_schema_matches_validator_without_relaxing_second_boundary() ->
         )
 
 
+def test_unresolved_severity_is_intended_only_in_direct_decision_contract() -> None:
+    direct = DirectDecisionOutput.model_validate({
+        "decision": "HUMAN_REGULATORY_REVIEW",
+        "severity": "unresolved",
+        "action": "HUMAN_VERIFY_STALE_CONTENT",
+        "human_review_required": True,
+        "rationale": "The direct agent cannot resolve the supplied evidence.",
+        "evidence_ids": [],
+    })
+    assert direct.severity == Severity.UNRESOLVED
+    with pytest.raises(ValidationError):
+        SemanticFinding.model_validate({
+            "id": "finding-001",
+            "basis": "inference",
+            "summary": "Unresolved is forbidden for a semantic signal.",
+            "severity": "unresolved",
+            "evidence_ids": ["case-evidence-001"],
+        })
+
+
 @pytest.mark.parametrize("action", [
     "Doage-making.uispendedlyolinking", "Do_gnot_resubmit_gthe",
     "Createousealvidenceary_access_safety.allergy.v1.0.0-beta5",
@@ -190,9 +210,9 @@ async def test_no_rerun_before_action_vocabulary_approval(
 
     monkeypatch.setattr(live, "load_phase1_bundle", forbidden)
     monkeypatch.setattr(live_config, "REPOSITORY_ROOT", tmp_path)
-    with pytest.raises(ValueError, match="vocabulary awaits author-01"):
+    with pytest.raises(ValueError, match="graph-contract-v2.*author-01"):
         require_development_approval()
-    with pytest.raises(ValueError, match="vocabulary awaits author-01"):
+    with pytest.raises(ValueError, match="graph-contract-v2.*author-01"):
         await live.run_phase1_live()
 
 

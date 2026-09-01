@@ -11,6 +11,7 @@ from app.baselines.direct import (
 )
 from app.baselines.retrieval import BM25Retriever, tokenize
 from app.baselines.runner import BaselineRunner
+from app.domain.enums import Decision
 from app.evaluation.benchmark import (
     BenchmarkPromotionError,
     load_frozen_benchmark,
@@ -63,12 +64,12 @@ def test_case_input_and_direct_serialization_exclude_reference_information() -> 
         case.case_id,
         case.fixture_id,
         case.selected_leaf_id,
-        case.reference.decision.value,
         case.reference.rationale,
         *case.reference.required_rule_ids,
     ):
         assert forbidden not in request
     assert "acceptable_evidence_ids" not in request
+    assert all(decision.value in request for decision in Decision)
 
 
 def test_direct_input_fails_closed_above_character_limit() -> None:
@@ -127,7 +128,6 @@ def test_b1_query_is_label_free_and_logs_fixed_hashes_and_scores() -> None:
     for forbidden in (
         case.case_id,
         case.fixture_id,
-        case.reference.decision.value,
         case.reference.rationale,
         *case.reference.required_rule_ids,
         *case.reference.acceptable_evidence_ids,

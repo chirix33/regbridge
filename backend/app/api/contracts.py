@@ -113,7 +113,7 @@ class BaselineRunResponse(ApiModel):
 
 
 class EvaluationCreateRequest(ApiModel):
-    configuration_id: Literal["m3-fixture-all-systems-v1"]
+    configuration_id: Literal["m3-fixture-all-systems-v2-graph-contract"]
 
 
 class EvaluationResponse(ApiModel):
