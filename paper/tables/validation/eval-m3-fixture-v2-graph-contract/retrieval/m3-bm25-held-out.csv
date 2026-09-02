@@ -1,0 +1,2 @@
+system,scope,result_status,evaluated_cases,recall_at_3,precision_at_3,mrr,expert_validated,current_fda_operational_availability
+B1 BM25 retrieval,held-out-test,genuine deterministic retrieval measurement,7,0.7023809523809524,0.47619047619047616,1.0,False,not_operational

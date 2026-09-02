@@ -1,0 +1,245 @@
+{
+  "action_vocabulary_disclosure": {
+    "b0_b1_receive_taxonomy_in_input": true,
+    "baseline_interpretation": "B0 and B1 are evaluated with the proposed system's action taxonomy supplied; they are not naive generic-LLM baselines.",
+    "derived_from": "RegBridge's existing analyzer and rule repair semantics",
+    "ordering": "alphabetical by action code; no frequency implication",
+    "version": "2.1.0"
+  },
+  "architecture_disclosure": {
+    "benchmark_taxonomy": "three represented reference classes",
+    "permitted_schema_decisions": "all six; no benchmark-distribution restriction",
+    "regbridge_rule_set_structurally_emits": [
+      "REUSE_WITH_NEW_CONTEXT",
+      "REUSE_AS_LEGACY_REFERENCE",
+      "HUMAN_REGULATORY_REVIEW"
+    ]
+  },
+  "canned_interval_use": "scorer validation only; no statistical interpretation",
+  "claims_boundary": "No model-comparison or RegBridge-superiority claim is permitted without a later declared live-model run.",
+  "created_at": "2026-09-01T00:00:00Z",
+  "current_fda_operational_availability": "not_operational",
+  "digests": {
+    "benchmark_sha256": "9b1e94fd0709cbbe8573e6882687b931d88c1da775932f0cbaf9dd55eca6fc75",
+    "configuration_sha256": "0d9d679db01e416f33b90f15327f155723a439ab4aab533c62657cce7afc902f",
+    "evidence_sha256": "5a26f20e0a24c8a6b8bd2f88decd464c79ed6b11b0f0afbe410521c44dc91ce7",
+    "graph_sha256": "ced15b79af80be4bb1f4e1292948b6ab46d58871d16636ee8160a96374de0959",
+    "metrics_content_sha256": "3905e03eab3680bb1c7ee1ceadf5e04bbd6a374421ee7e07ea2f5cbb95952906",
+    "prediction_content_sha256": "f05cc1411bc031e2e34e962f57f5cffa5a2f5db7206e1f4b62ff403e0b85e853",
+    "prompt_sha256": "7c2e0879cc1a33150367e7e6f114dfa077407f1a348c1e81d39499a4dc623984",
+    "retrieval_sha256": "c48eab5d5b94f717985cccba58c77980d0ab812b7258e89d77de205a29a3632c",
+    "rules_sha256": "0fb935b70eb9624befe87f766dcf0f4c1357c47bed32f39efa8160dddac17ae9",
+    "source_tree_sha256": "4c4ae5a7da0b614244282ac587c146a1b6f066f772bbf094695abed0c3c33071",
+    "standards_sha256": "1f6d68c1ace188f682da74f357ceff25aac04449d4f4b3525895d856cda817b5"
+  },
+  "eligible_for_performance_claims": false,
+  "empirical_model_run": false,
+  "evaluation_configuration": {
+    "configuration_id": "m3-fixture-all-systems-v2-graph-contract",
+    "headline_split": "test",
+    "network_required": false,
+    "secondary_scope": "all-30",
+    "seed": 20270829,
+    "systems": [
+      "B0",
+      "B1",
+      "B2",
+      "RegBridge"
+    ]
+  },
+  "expert_validated": false,
+  "genuine_experimental_systems": [
+    "B2"
+  ],
+  "graph_benchmark_build": {
+    "approved_design_deviation": {
+      "approved_by": "author-01",
+      "approved_design": "discriminated occurrence-evidence union: DOCUMENT_EVIDENCE, METADATA_EVIDENCE, and STRUCTURAL_EVIDENCE",
+      "edge_realization": "MODEL_FINDING-CITES-DOSSIER_EVIDENCE; MODEL_FINDING-ABOUT-KEYWORD; DOSSIER_EVIDENCE-OBSERVES-KEYWORD",
+      "implementation": "one DOSSIER_EVIDENCE occurrence node type with an evidence_kind discriminator",
+      "implementation_assessment": "replaced_by_simpler_semantically_equivalent_representation",
+      "rationale": "The uniform occurrence node preserves exact raw value, owner, locator, provenance, request-local aliasing, occurrence citation, concept normalization, and Case A/B/C domain-range coverage without adding unused graph node subtypes during M3.",
+      "status": "approved_deviation"
+    },
+    "benchmark_version": "1.0.0-unchanged",
+    "contract_change": "Metadata is represented as occurrence-level dossier evidence which OBSERVES a normalized keyword; model findings CITE the occurrence and are ABOUT the observed keyword.",
+    "edge_contract": {
+      "about_integrity": "ABOUT must match OBSERVES for cited metadata occurrence evidence; no cross-concept relationship is currently encoded",
+      "finding_citation": "MODEL_FINDING-CITES-DOSSIER_EVIDENCE",
+      "finding_subject": "MODEL_FINDING-ABOUT-KEYWORD",
+      "forbidden": "MODEL_FINDING-CITES-KEYWORD",
+      "occurrence_normalization": "DOSSIER_EVIDENCE-OBSERVES-KEYWORD"
+    },
+    "frozen_material": {
+      "benchmark_sha256": "9b1e94fd0709cbbe8573e6882687b931d88c1da775932f0cbaf9dd55eca6fc75",
+      "fixture_validation_v1_rewritten": false,
+      "labels_families_splits_changed": false
+    },
+    "governance": "CITES and ABOUT remain disabled candidate semantic signals and cannot promote finding or evidence provenance.",
+    "graph_schema_version": "2.0.0",
+    "model_facing_contract": {
+      "direct_prompt_source_sha256": "7e9c68061e10ee4f5e92364ef834785b7b2320a359940af501aaa5c77a9e407c",
+      "direct_serializer_changed_by_graph_correction": false,
+      "direct_serializer_source_sha256": "08712be326a924b6236b4f8ad859fd9253fe941466a2e1d05d1befbe7bd12b8a",
+      "prompt_text_changed_by_graph_correction": false,
+      "request_local_aliasing_retained": true,
+      "semantic_prompt_source_sha256": "cf989b7ad0619a9b0d42cc1a767cf1ee5dd63f38fb435bc368fca137c2fe2f5e",
+      "semantic_serializer_changed_by_graph_correction": false,
+      "semantic_serializer_source_sha256": "9a59e4a66e5f435e4749fbcd52bf974d94845f157a9e80fb74d8761deb236a02"
+    },
+    "occurrence_level_evidence": "Every dossier evidence node carries raw value, owner, locator, and provenance; models receive only request-local aliases and resolution is server-side.",
+    "rationale": "The B003 manufacturer-metadata citation was correct; graph v1 could not represent a finding about metadata and could fail the Case B family.",
+    "source_digests": {
+      "builder": "b889511d3c1573177af273d0f38871e6fb4099daf05ca578982ff5f6298e66df",
+      "enums": "e5256ad960fbdf9911fb3ad845c94543d42fbcf5b32975dc69c589ad1ecc9879",
+      "models": "31fd3aef393d106e769c313f6fd5b9ea93fd6e395f2a4e874777237f854d4b90"
+    }
+  },
+  "graph_snapshot_digests": {
+    "B2:A001": "4eb9d849ddf07110e72f53f1e884d31af63ea4a4f7889cccc8c1907d0ab076bc",
+    "B2:A002": "8ceea1364779c8e4dfe2c0f8861561d03d8ca394dd5cc62f84cb4f364df39347",
+    "B2:A003": "cbef940ad5c6e3c6b11d6624b3842280e260c3a6dcd54cbe6c4ab614e84750a5",
+    "B2:A004": "1c2df9ab8c153db77f25ae0f3dd9fcc5749f915e8459abc397506dfdfd20ac65",
+    "B2:A005": "00a9f8a91c43d0f3dabee34a46918e8595802c1df3d4951ab5f653ad64e4708b",
+    "B2:A006": "5ea12a4eb09e331b77c97775d2014866b9749ce523a4bd8278b685bafe0ca91c",
+    "B2:A007": "baca118c856770850ea224e385bb3342cccf41182bb3636b0e434a68379172d6",
+    "B2:A008": "d4183ad4c6b06ef9350f4310025e7bd5d3b15efdc84adda0b12fba3427d3d9d2",
+    "B2:A009": "f0565d76ace3d888b24b457b6f2ee30b4fb6ad21a475f3f2b49f0f9a6438ed72",
+    "B2:A010": "b6586b5514aad3facfac1b28b14fab4210b801a08c4c6e4b9dd8efc72d46d70b",
+    "B2:B001": "d001d5db0420874818d593064019e77ef8e1c585f1528b7c23dd5871f6d5a022",
+    "B2:B002": "596ab6e5dc74f8db585e3d77f0e232ab781407a5a7296b3d4b6624bd2c040e94",
+    "B2:B003": "71f7cde3c27b2067e58a9bf68a9fea124fa2fa231961cf7098e7edafc7103cee",
+    "B2:B004": "818970eec4d8da7f097da60aff0fa4d6e15182497dff316b034fd98bad99cd66",
+    "B2:B005": "05fc636af6f058f35856c68cc5825ca860a7c4107eaa421f9443611a65cd5ae2",
+    "B2:B006": "722d959d1bf469984317097276d9d66c69ca0d7bb0560d27cad901e5a5d949fb",
+    "B2:B007": "43a2242cbc1745ae4d204bb286202ba8b456ad1db463a944a033d9dcb2fddd79",
+    "B2:B008": "44bc4e2413d3a221363b93e6c654ff6d9d3a9c9232b23cf5a834f59278ac99f9",
+    "B2:B009": "3fc7c7f6254b9f3ab7c61693717b0b2bb6c84864a03d23972f9758f949474cd9",
+    "B2:B010": "b4fd424e4df7a59296af64a1b2a12156ca76fd504a1786fc5bb8eb19df0071b0",
+    "B2:C001": "7ab2d80ad608c2464e6d06eabd73ba177ab3b0b091e905bf4d234231b6d45fe5",
+    "B2:C002": "95bb7b04d5e6de1e3e5940d27f77090aa64b31ed63608954adce7bdb3a5b20a4",
+    "B2:C003": "2ded4339240f7078bfc214a7a2062d68f1de1cf18e30294550db8bee74947652",
+    "B2:C004": "03fbcf3f736c11101f326dcf061da4362265c7553e6b394f48b7c74549e0bd30",
+    "B2:C005": "95a9190afefdaa887a0bdcc7786f4b0ba8034b82f9a22fe137a5c3b739258a83",
+    "B2:C006": "a4159308d06f510e5e0e69d21bb5e90f58924523c6d2dff11d936c7dcbf7704c",
+    "B2:C007": "f891c76b0de30a4bc14279127d291f892a373ad9d06901c1ae4c8d83600f04f5",
+    "B2:C008": "4a2ba2ec6739e3673851272a5e308af69fce16e093d9400442f3c879f41788a9",
+    "B2:C009": "d33ad0dcf5286b24c6e01ff8cd824ec888b9b60886697e7dee42c21d0152bfb1",
+    "B2:C010": "ae4cfceaf345e4e033ea318a9e11ce0df515c8c87ae828f8ad7179be3b4525b6",
+    "RegBridge:A001": "4eb9d849ddf07110e72f53f1e884d31af63ea4a4f7889cccc8c1907d0ab076bc",
+    "RegBridge:A002": "8ceea1364779c8e4dfe2c0f8861561d03d8ca394dd5cc62f84cb4f364df39347",
+    "RegBridge:A003": "cbef940ad5c6e3c6b11d6624b3842280e260c3a6dcd54cbe6c4ab614e84750a5",
+    "RegBridge:A004": "1c2df9ab8c153db77f25ae0f3dd9fcc5749f915e8459abc397506dfdfd20ac65",
+    "RegBridge:A005": "00a9f8a91c43d0f3dabee34a46918e8595802c1df3d4951ab5f653ad64e4708b",
+    "RegBridge:A006": "5ea12a4eb09e331b77c97775d2014866b9749ce523a4bd8278b685bafe0ca91c",
+    "RegBridge:A007": "baca118c856770850ea224e385bb3342cccf41182bb3636b0e434a68379172d6",
+    "RegBridge:A008": "d4183ad4c6b06ef9350f4310025e7bd5d3b15efdc84adda0b12fba3427d3d9d2",
+    "RegBridge:A009": "f0565d76ace3d888b24b457b6f2ee30b4fb6ad21a475f3f2b49f0f9a6438ed72",
+    "RegBridge:A010": "b6586b5514aad3facfac1b28b14fab4210b801a08c4c6e4b9dd8efc72d46d70b",
+    "RegBridge:B001": "d001d5db0420874818d593064019e77ef8e1c585f1528b7c23dd5871f6d5a022",
+    "RegBridge:B002": "596ab6e5dc74f8db585e3d77f0e232ab781407a5a7296b3d4b6624bd2c040e94",
+    "RegBridge:B003": "71f7cde3c27b2067e58a9bf68a9fea124fa2fa231961cf7098e7edafc7103cee",
+    "RegBridge:B004": "818970eec4d8da7f097da60aff0fa4d6e15182497dff316b034fd98bad99cd66",
+    "RegBridge:B005": "05fc636af6f058f35856c68cc5825ca860a7c4107eaa421f9443611a65cd5ae2",
+    "RegBridge:B006": "722d959d1bf469984317097276d9d66c69ca0d7bb0560d27cad901e5a5d949fb",
+    "RegBridge:B007": "43a2242cbc1745ae4d204bb286202ba8b456ad1db463a944a033d9dcb2fddd79",
+    "RegBridge:B008": "44bc4e2413d3a221363b93e6c654ff6d9d3a9c9232b23cf5a834f59278ac99f9",
+    "RegBridge:B009": "3fc7c7f6254b9f3ab7c61693717b0b2bb6c84864a03d23972f9758f949474cd9",
+    "RegBridge:B010": "b4fd424e4df7a59296af64a1b2a12156ca76fd504a1786fc5bb8eb19df0071b0",
+    "RegBridge:C001": "19bf988d610bdc7b638411555c36496c4ea0340a78faffe803b74cd1fd896589",
+    "RegBridge:C002": "6aa887a08cc410bf0b83b04c816d9004327c6a5cb84124e0316e5069a30ca9b8",
+    "RegBridge:C003": "318cd7b212eed17adf3b18f4fb72a6db9986c841b2917b900c373a1557c9f506",
+    "RegBridge:C004": "03fbcf3f736c11101f326dcf061da4362265c7553e6b394f48b7c74549e0bd30",
+    "RegBridge:C005": "95a9190afefdaa887a0bdcc7786f4b0ba8034b82f9a22fe137a5c3b739258a83",
+    "RegBridge:C006": "ef67fdcdebfe138c89dc2bffa58a941c89c8509c26653419594f30c7acc0a6f1",
+    "RegBridge:C007": "516fd4eba20a81480a9f269b62a8fca81633ea8c097cc13d264176bcf6a108d6",
+    "RegBridge:C008": "e1382db87be0bc1bdd8c23bc73c208744d1837b581f937a3584d20c11494b4a0",
+    "RegBridge:C009": "1d1b07562426b0511f2717ca6998d2268fe5b4ae5c92a994693e8ae5f269e1b7",
+    "RegBridge:C010": "ae4cfceaf345e4e033ea318a9e11ce0df515c8c87ae828f8ad7179be3b4525b6"
+  },
+  "manifest_version": "1.0.0",
+  "prompt_configuration": {
+    "case_serialization": "identical-for-b0-b1",
+    "evidence_ordering": "evidence-id-ascending",
+    "input_character_limit": 16000,
+    "latency_measurement": "fixed-zero-fixture-placeholder-not-runtime-measurement",
+    "output_token_limit": 800,
+    "over_limit_behavior": "fail-validation",
+    "regbridge_schema_difference": "RegBridge uses the existing evidence-bounded SemanticRiskOutput schema before deterministic synthesis.",
+    "shared_direct_schema": "DirectDecisionOutput-v2",
+    "shared_model": "contract-fixture-direct-decision-v1",
+    "temperature": 0,
+    "usage_measurement": "synthetic-character-estimates-not-provider-token-usage"
+  },
+  "result_status_by_system": {
+    "B0": "fixture validation only",
+    "B1": "fixture validation only",
+    "B2": "genuine deterministic experimental output",
+    "RegBridge": "fixture validation only"
+  },
+  "retrieval_configuration": {
+    "b": 0.75,
+    "configuration_sha256": "f67a23fe4255faa45798e71d0f46a7b6a7e6acaab63dd6a6bf5270f0b2811480",
+    "corpus_sha256": "e53cd4205672ef7153d633e28bc21aa73d6f264c97066e7b4303c3e574e2c4ae",
+    "idf_formula": "log(1+(N-df+0.5)/(df+0.5))",
+    "k1": 1.5,
+    "name": "dependency-free-bm25",
+    "tie_break": "evidence-id-ascending",
+    "tokenization": "NFKC-casefold-preserve-dotted-ctd-identifiers",
+    "top_k": 3
+  },
+  "retrieval_measurements": {
+    "end_to_end_decision_scores_are_empirical": false,
+    "metrics": [
+      "recall_at_3",
+      "precision_at_3",
+      "mrr"
+    ],
+    "result_status": "genuine deterministic retrieval measurement",
+    "system": "B1"
+  },
+  "run_id": "eval-m3-fixture-v2-graph-contract",
+  "run_type": "deterministic_fixture_validation",
+  "shared_output_vocabulary": {
+    "action_definitions": {
+      "AUTHOR_REVIEW_HEADING_MAPPING": "Have an author review a proposed content-placement mapping and its supporting evidence.",
+      "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT": "Change content placement through a new context group, suspend the legacy placement, and reuse the unchanged document by identifier without resubmitting its file or element.",
+      "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD": "Change context-group metadata through a new context group, suspend the previous group, and reuse the unchanged document by identifier without resubmitting its file or element.",
+      "DECLARE_MANUFACTURER_PARTITIONING": "Record the manufacturer's content-partitioning requirements and distinguishing values.",
+      "DECLARE_METADATA_MIGRATION_INTENT": "Record the intended preservation or modification of context-group metadata.",
+      "HUMAN_VERIFY_STALE_CONTENT": "Have a human review cited content and references against the target context and document any corrections needed.",
+      "NO_MATERIAL_REPAIR": "Retain the document and its context without material changes.",
+      "PRESERVE_EXACT_CONTEXT_GROUP_KEYWORDS": "Retain the existing context-group keyword codes and values unchanged.",
+      "SELECT_SUPPORTED_REUSE_OPERATION": "Record either a supported identifier-based content-reuse operation or a human-reviewed operation outside the supported operation vocabulary.",
+      "VERIFY_HYPERLINK_RELEVANCE": "Have a human check hyperlink targets and relevance to the target context and document any corrections needed.",
+      "WAIT_FOR_OPERATIONAL_AVAILABILITY": "Defer operational submission activity pending availability of the submission pathway."
+    },
+    "actions": [
+      "AUTHOR_REVIEW_HEADING_MAPPING",
+      "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT",
+      "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD",
+      "DECLARE_MANUFACTURER_PARTITIONING",
+      "DECLARE_METADATA_MIGRATION_INTENT",
+      "HUMAN_VERIFY_STALE_CONTENT",
+      "NO_MATERIAL_REPAIR",
+      "PRESERVE_EXACT_CONTEXT_GROUP_KEYWORDS",
+      "SELECT_SUPPORTED_REUSE_OPERATION",
+      "VERIFY_HYPERLINK_RELEVANCE",
+      "WAIT_FOR_OPERATIONAL_AVAILABILITY"
+    ],
+    "decisions": [
+      "REUSE_AS_LEGACY_REFERENCE",
+      "REUSE_WITH_NEW_CONTEXT",
+      "REUSE_AFTER_METADATA_REPAIR",
+      "BREAK_LIFECYCLE_AND_RESUBMIT",
+      "DO_NOT_REUSE",
+      "HUMAN_REGULATORY_REVIEW"
+    ]
+  },
+  "statistical_scope": "Headline results use 12 held-out cases across six non-overlapping fixture families. B2 intervals are exploratory. Intervals for canned outputs are scorer validation only and have no statistical interpretation. No independence or significance claims are made.",
+  "synthetic_contract_fixture_systems": [
+    "B0",
+    "B1",
+    "RegBridge"
+  ]
+}

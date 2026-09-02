@@ -1,0 +1,93 @@
+{
+  "$defs": {
+    "DemoPreset": {
+      "additionalProperties": false,
+      "properties": {
+        "fixture_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Fixture Id",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "metadata_plan": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metadata Plan"
+        },
+        "primary_path": {
+          "title": "Primary Path",
+          "type": "boolean"
+        },
+        "purpose": {
+          "title": "Purpose",
+          "type": "string"
+        },
+        "route": {
+          "enum": [
+            "/demo/case-a",
+            "/demo/case-b",
+            "/demo/case-c"
+          ],
+          "title": "Route",
+          "type": "string"
+        },
+        "scenario_mode": {
+          "const": "prospective_forward_compatibility",
+          "title": "Scenario Mode",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "route",
+        "label",
+        "fixture_id",
+        "purpose",
+        "primary_path",
+        "scenario_mode"
+      ],
+      "title": "DemoPreset",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "presets": {
+      "items": {
+        "$ref": "#/$defs/DemoPreset"
+      },
+      "title": "Presets",
+      "type": "array"
+    }
+  },
+  "required": [
+    "presets"
+  ],
+  "title": "DemoPresetsResponse",
+  "type": "object"
+}

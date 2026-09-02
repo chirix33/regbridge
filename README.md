@@ -8,9 +8,10 @@ It is not FDA-certified, is not a substitute for regulatory review, and does not
 guarantee filing or application acceptance. Use only public, synthetic, or deliberately
 de-identified materials. Do not upload confidential sponsor submissions.
 
-## Current delivery state: M3
+## Current delivery state: M4
 
-M3 preserves the shared analyzer path and adds a frozen, auditable evaluation capability:
+M4 preserves the shared analyzer path and frozen M3 evaluation, then adds an offline-first
+presentation layer:
 
 - FastAPI health, FDA/CDER scope, and frozen-snapshot endpoints;
 - React/TypeScript/Tailwind scope UI with a visible research disclaimer;
@@ -39,8 +40,11 @@ M3 preserves the shared analyzer path and adds a frozen, auditable evaluation ca
   family-clustered metrics;
 - deterministic manifests, raw outputs, CSV/JSON/Markdown exports, evaluation APIs, and one-
   command evaluation;
-- an interactive shared UI for parsed inventory, findings, evidence, model record, repair,
-  uncertainty, graph, and chronological trace.
+- an immutable, digest-verified M4 presentation snapshot derived from the held-out Phase 2 run;
+- read-only presentation APIs and a comparison dashboard for repetitions, safety, stability,
+  retrieval, usage, cost, and per-case traces;
+- a guided three-case demonstration with reset behavior and accessible evidence/graph tables;
+- screenshot and five-minute recording workflow documentation.
 
 M1/M2 are a **prospective forward-compatibility research scenario**. FDA forward compatibility is
 currently **`not_operational`**, which is visible in the API and UI. Current-operational mode does
@@ -55,9 +59,19 @@ Declared M3 live development evaluation: ` .\scripts\evaluate-live-phase1.ps1` (
 configured `gpt-5.5` credentials. Temperature is omitted with
 `temperature_handling: unsupported_by_endpoint_parameter`. Live runs reproduce configuration
 and artifacts, **not model outputs**; fixture-mode determinism is unchanged. Phase 1 outputs
-are development diagnostics with `eligible_for_performance_claims: false`. Phase 2 remains
-gated on explicit author-01 approval, with three separate repetitions to characterize variation.
+are development diagnostics with `eligible_for_performance_claims: false`. Author-01 approved
+the frozen Phase 2 configuration with `max_output_tokens: 4000`, while retaining the 800-token
+structured-answer bound. Phase 2 uses three separate held-out repetitions to characterize
+variation; it never votes or pools predictions.
 See [the reproducibility record](IMPLEMENTATION.md#143-reproducibility-record).
+
+Phase 2 is deliberately two-step so its manifest and frozen digests are inspectable before the
+held-out bundle is loaded:
+
+```powershell
+.\scripts\evaluate-live-phase2.ps1 -Prepare
+.\scripts\evaluate-live-phase2.ps1 -Execute <generated-run-id>
+```
 
 - Python 3.12 or 3.13
 - Node.js 22 or later and npm 11 or later
@@ -129,10 +143,24 @@ Useful endpoints:
 - controlled fixture catalog: <http://127.0.0.1:8000/api/v1/fixtures>
 - baseline runner: `POST http://127.0.0.1:8000/api/v1/baselines/run`
 - deterministic evaluation: `POST http://127.0.0.1:8000/api/v1/evaluations`
-- evaluation status: `GET http://127.0.0.1:8000/api/v1/evaluations/eval-m3-fixture-v1`
-- unavailable-heading case: <http://127.0.0.1:5173/case-a>
-- metadata/lifecycle case: <http://127.0.0.1:5173/case-b>
-- semantic PDF/hyperlink case: <http://127.0.0.1:5173/case-c>
+- evaluation status: `GET http://127.0.0.1:8000/api/v1/evaluations/eval-m3-fixture-v2-graph-contract`
+- M4 presentation snapshot: <http://127.0.0.1:8000/api/v1/presentation/m3>
+- demo presets: <http://127.0.0.1:8000/api/v1/demo/presets>
+- unavailable-heading case: <http://127.0.0.1:5173/demo/case-a>
+- metadata/lifecycle case: <http://127.0.0.1:5173/demo/case-b>
+- semantic PDF/hyperlink case: <http://127.0.0.1:5173/demo/case-c>
+- held-out dashboard: <http://127.0.0.1:5173/evaluation>
+
+Verify the M4 presentation layer:
+
+```powershell
+.\scripts\m4-verify.ps1
+```
+
+`m4-verify` validates the committed presentation snapshot, checks protected M3 hashes, and runs
+the scripted fixture-mode demo twice to compare decision, evidence, graph, and trace digests. The
+GNU Make target additionally runs frontend component/build/E2E checks when Playwright browsers are
+installed.
 
 The server binds only to `127.0.0.1`. Authentication and public deployment are out of scope.
 
@@ -145,6 +173,7 @@ The server binds only to `127.0.0.1`. Authentication and public deployment are o
 - `backend/app/llm/` — structured model protocol and deterministic fixture implementation
 - `backend/app/baselines/` and `backend/app/evaluation/` — comparison systems, benchmark,
   scoring, manifests, and exports
+- `backend/app/presentation/` — M4 immutable snapshot loader, generator, and verifier
 - `frontend/src/` — accessible scope-first demonstration shell
 - `data/standards/` — source-verified registry, source ledger, and immutable source snapshots
 - `data/model-fixtures/` — versioned offline structured outputs

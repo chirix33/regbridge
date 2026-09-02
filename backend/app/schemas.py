@@ -32,6 +32,12 @@ from app.graph.models import GraphNeighborhood
 from app.llm.models import ModelRequest, SemanticRiskOutput
 from app.main import create_app
 from app.parsers.models import ApplicationInventory
+from app.presentation.models import (
+    DemoPresetsResponse,
+    M4PresentationCasesResponse,
+    M4PresentationResponse,
+    M4PresentationSnapshot,
+)
 from app.rules.models import HeadingRule, MetadataRule
 from app.standards.operational import OperationalAvailability
 
@@ -65,6 +71,10 @@ SCHEMA_MODELS: dict[str, type[BaseModel]] = {
     "target-context.schema.json": TargetContext,
     "system-prediction.schema.json": SystemPrediction,
     "direct-decision-output.schema.json": DirectDecisionOutput,
+    "m4-presentation-cases-response.schema.json": M4PresentationCasesResponse,
+    "m4-presentation-response.schema.json": M4PresentationResponse,
+    "m4-presentation-snapshot.schema.json": M4PresentationSnapshot,
+    "demo-presets-response.schema.json": DemoPresetsResponse,
 }
 SCHEMA_DIRECTORY = REPOSITORY_ROOT / "schemas"
 

@@ -2,12 +2,31 @@ import csv
 import hashlib
 import io
 import json
+import shutil
+from collections.abc import Generator
 from pathlib import Path
 
 import pytest
 from app.evaluation import runner
 from app.evaluation.metrics import wilson_interval
 from app.evaluation.runner import CONFIGURATION_ID, run_evaluation
+
+
+@pytest.fixture(autouse=True)
+def isolated_runner_artifacts(monkeypatch: pytest.MonkeyPatch) -> Generator[None]:
+    result_directory = runner.REPOSITORY_ROOT / "results" / "validation" / ".pytest-m3-runner"
+    paper_directory = (
+        runner.REPOSITORY_ROOT / "paper" / "tables" / "validation" / ".pytest-m3-runner"
+    )
+    shutil.rmtree(result_directory, ignore_errors=True)
+    shutil.rmtree(paper_directory, ignore_errors=True)
+    monkeypatch.setattr(runner, "RESULT_DIRECTORY", result_directory)
+    monkeypatch.setattr(runner, "PAPER_DIRECTORY", paper_directory)
+    monkeypatch.setattr(runner, "PAPER_DETERMINISTIC_DIRECTORY", paper_directory / "deterministic")
+    monkeypatch.setattr(runner, "PAPER_RETRIEVAL_DIRECTORY", paper_directory / "retrieval")
+    yield
+    shutil.rmtree(result_directory, ignore_errors=True)
+    shutil.rmtree(paper_directory, ignore_errors=True)
 
 
 def test_wilson_interval_matches_held_out_zero_miss_boundary() -> None:
@@ -21,6 +40,18 @@ def test_deterministic_evaluation_reproduces_prediction_and_metric_content() -> 
     first = run_evaluation(CONFIGURATION_ID)
     manifest_path = runner.RESULT_DIRECTORY / "manifest.json"
     first_manifest = manifest_path.read_bytes()
+    build_manifest = runner.RESULT_DIRECTORY / "graph-benchmark-build-manifest.json"
+    assert build_manifest.read_bytes() == first_manifest
+    manifest = json.loads(first_manifest)
+    assert manifest["graph_benchmark_build"]["graph_schema_version"] == "2.0.0"
+    assert manifest["graph_benchmark_build"]["frozen_material"] == {
+        "benchmark_sha256": "9b1e94fd0709cbbe8573e6882687b931d88c1da775932f0cbaf9dd55eca6fc75",
+        "fixture_validation_v1_rewritten": False,
+        "labels_families_splits_changed": False,
+    }
+    assert manifest["graph_benchmark_build"]["model_facing_contract"][
+        "request_local_aliasing_retained"
+    ] is True
     second = run_evaluation(CONFIGURATION_ID)
     assert first_manifest == manifest_path.read_bytes()
     assert first.state == "completed"

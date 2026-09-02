@@ -32,6 +32,34 @@ export function GraphNeighborhood({ graph }: { graph: GraphData }) {
           {graph.text_alternative.map((item) => <li key={item}>{item}</li>)}
         </ul>
       </details>
+      <div className="table-scroll graph-edge-table">
+        <table className="metrics-table compact" aria-label="Graph edge table">
+          <thead>
+            <tr>
+              <th>Source</th>
+              <th>Edge</th>
+              <th>Target</th>
+              <th>Review status</th>
+              <th>Evidence</th>
+            </tr>
+          </thead>
+          <tbody>
+            {graph.edges.map((edge) => {
+              const source = graph.nodes.find((node) => node.id === edge.source);
+              const target = graph.nodes.find((node) => node.id === edge.target);
+              return (
+                <tr key={edge.id}>
+                  <td>{source?.label ?? edge.source}</td>
+                  <td>{edge.type}</td>
+                  <td>{target?.label ?? edge.target}</td>
+                  <td>{edge.review_status ?? "parsed source fact"}</td>
+                  <td>{edge.evidence_ids.join(", ") || "none"}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </section>
   );
 }

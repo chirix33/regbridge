@@ -6,13 +6,15 @@ import {
   CheckCircle,
   Database,
   Flask,
+  Restart,
   WarningTriangle,
 } from "iconoir-react";
 
-import { createAnalysis, getAnalysisGraph, getFixtures, parseFixture } from "../api/client";
+import { createAnalysis, getAnalysisGraph, getDemoPresets, getFixtures, parseFixture } from "../api/client";
 import type {
   AnalysisResult,
   ApplicationInventory,
+  DemoPreset,
   FixtureSummary,
   GraphNeighborhood as GraphData,
   ManufacturerPartitioning,
@@ -27,33 +29,42 @@ const disclosure =
   "is not operational, and this author-adjudicated demonstration is not regulatory-expert validated.";
 
 const routeConfig = {
-  "/case-a": {
+  "case-a": {
     archetype: "unavailable-heading",
     eyebrow: "M1 · unavailable target heading",
     title: "Inspect the placement. Follow the evidence. Preserve the document.",
     subtitle: "Run a controlled heading-placement scenario and inspect the evidence-backed decision trace.",
     control: "Choose a structural variant",
+    demoRoute: "/demo/case-a",
   },
-  "/case-b": {
+  "case-b": {
     archetype: "legacy-metadata-tension",
     eyebrow: "M2 · legacy metadata tension",
     title: "Declare the lifecycle intent. Keep the advisory visible.",
     subtitle: "Compare exact preservation, explicit normalization, and the abstention boundary for manufacturer metadata.",
     control: "Choose a metadata variant",
+    demoRoute: "/demo/case-b",
   },
-  "/case-c": {
+  "case-c": {
     archetype: "stale-content-or-hyperlink",
     eyebrow: "M2 · stale content or hyperlink",
     title: "Technical reuse can pass while the document is stale.",
     subtitle: "Inspect bounded PDF text and hyperlink evidence through the same production analysis path.",
     control: "Choose a semantic variant",
+    demoRoute: "/demo/case-c",
   },
 } as const;
 
 export function HeadingCasePage() {
   const location = useLocation();
-  const config = routeConfig[location.pathname as keyof typeof routeConfig] ?? routeConfig["/case-a"];
+  const caseKey = location.pathname.endsWith("case-b")
+    ? "case-b"
+    : location.pathname.endsWith("case-c")
+      ? "case-c"
+      : "case-a";
+  const config = routeConfig[caseKey];
   const [fixtures, setFixtures] = useState<FixtureSummary[]>([]);
+  const [presets, setPresets] = useState<DemoPreset[]>([]);
   const [fixtureId, setFixtureId] = useState("");
   const [metadataIntent, setMetadataIntent] = useState<MetadataIntent>("unspecified");
   const [partitioning, setPartitioning] = useState<ManufacturerPartitioning>("unknown");
@@ -65,25 +76,30 @@ export function HeadingCasePage() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const resultsRef = useRef<HTMLDivElement | null>(null);
+  const runButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
-    void getFixtures()
-      .then((response) => {
-        const matching = response.fixtures.filter((fixture) => fixture.archetype === config.archetype);
+    void Promise.all([getFixtures(), getDemoPresets()])
+      .then(([fixtureResponse, presetResponse]) => {
+        const matching = fixtureResponse.fixtures.filter((fixture) => fixture.archetype === config.archetype);
+        const routePresets = presetResponse.presets ?? [];
+        setPresets(routePresets);
         setFixtures(matching);
-        const first = matching[0];
+        const preset = routePresets.find((item) => item.route === config.demoRoute);
+        const first = matching.find((item) => item.id === preset?.fixture_id) ?? matching[0];
         if (first) {
           setFixtureId(first.id);
-          setMetadataIntent(first.default_metadata_intent ?? "unspecified");
-          setPartitioning(first.manufacturer_partitioning ?? "unknown");
-          setReplacementValue(first.replacement_manufacturer_value ?? "");
+          setMetadataIntent((preset?.metadata_plan?.intent as MetadataIntent | undefined) ?? first.default_metadata_intent ?? "unspecified");
+          setPartitioning((preset?.metadata_plan?.manufacturer_partitioning as ManufacturerPartitioning | undefined) ?? first.manufacturer_partitioning ?? "unknown");
+          setReplacementValue(preset?.metadata_plan?.replacement_manufacturer_value ?? first.replacement_manufacturer_value ?? "");
+          setMode("prospective_forward_compatibility");
           setInventory(null);
           setAnalysis(null);
           setGraph(null);
         }
       })
       .catch((reason: Error) => setError(reason.message));
-  }, [config.archetype]);
+  }, [config.archetype, config.demoRoute]);
 
   function selectFixture(id: string, available = fixtures) {
     setFixtureId(id);
@@ -94,6 +110,23 @@ export function HeadingCasePage() {
     setInventory(null);
     setAnalysis(null);
     setGraph(null);
+  }
+
+  function resetDemo() {
+    const preset = presets.find((item) => item.route === config.demoRoute);
+    const selected = fixtures.find((fixture) => fixture.id === preset?.fixture_id) ?? fixtures[0];
+    if (selected) {
+      setFixtureId(selected.id);
+      setMetadataIntent((preset?.metadata_plan?.intent as MetadataIntent | undefined) ?? selected.default_metadata_intent ?? "unspecified");
+      setPartitioning((preset?.metadata_plan?.manufacturer_partitioning as ManufacturerPartitioning | undefined) ?? selected.manufacturer_partitioning ?? "unknown");
+      setReplacementValue(preset?.metadata_plan?.replacement_manufacturer_value ?? selected.replacement_manufacturer_value ?? "");
+    }
+    setMode("prospective_forward_compatibility");
+    setInventory(null);
+    setAnalysis(null);
+    setGraph(null);
+    setError(null);
+    window.setTimeout(() => runButtonRef.current?.focus(), 0);
   }
 
   useEffect(() => {
@@ -142,6 +175,11 @@ export function HeadingCasePage() {
           <span className="brand-mark" aria-hidden="true">R</span>
           <span>RegBridge</span>
         </Link>
+        <nav className="top-nav" aria-label="Primary navigation">
+          <Link to="/">Scope</Link>
+          <Link aria-current="page" to={config.demoRoute}>Demonstration</Link>
+          <Link to="/evaluation">Evaluation</Link>
+        </nav>
         <span className="operational-chip">not_operational</span>
       </header>
 
@@ -214,7 +252,10 @@ export function HeadingCasePage() {
               Current operational
             </label>
           </fieldset>
-          <button className="primary-button" type="button" onClick={() => void runAnalysis()} disabled={busy || !fixtures.length}>
+          <button className="secondary-button" type="button" onClick={resetDemo} disabled={!fixtures.length}>
+            <Restart aria-hidden="true" /> Reset demo
+          </button>
+          <button ref={runButtonRef} className="primary-button" type="button" onClick={() => void runAnalysis()} disabled={busy || !fixtures.length}>
             {busy ? "Analyzing…" : "Parse and analyze"}<ArrowRight aria-hidden="true" />
           </button>
         </section>
@@ -300,6 +341,16 @@ export function HeadingCasePage() {
             )}
 
             {graph && <GraphNeighborhood graph={graph} />}
+
+            <section className="result-section" aria-labelledby="graph-contract-built-title">
+              <p className="panel-kicker">Built graph contract</p>
+              <h2 id="graph-contract-built-title">Occurrence evidence remains the cited object</h2>
+              <p>
+                M4 displays graph schema v2 as implemented: FINDING cites DOSSIER_EVIDENCE,
+                FINDING is about KEYWORD, and DOSSIER_EVIDENCE observes KEYWORD. The planned
+                discriminated evidence union was replaced by one occurrence node type plus evidence_kind.
+              </p>
+            </section>
 
             <section className="result-section model-run" aria-label="Semantic inspection record">
               <p className="panel-kicker">Evidence-bounded model record</p>

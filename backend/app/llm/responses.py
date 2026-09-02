@@ -23,6 +23,10 @@ class LiveModelInvalidOutput(RuntimeError):
     """A redacted live-model failure that must not be mapped into a decision class."""
 
 
+class RetryableLiveModelError(LiveModelInvalidOutput):
+    """A transport or provider-API failure eligible for the bounded retry controller."""
+
+
 TEMPERATURE_HANDLING = "unsupported_by_endpoint_parameter"
 
 
@@ -32,6 +36,7 @@ class ResponsesAttempt:
     request_digest: str
     status: str
     cause: str | None
+    retryable: bool
     http_status: int | None
     error_type: str | None
     error_code: str | None
@@ -59,6 +64,7 @@ class ResponsesAttempt:
             "request_digest": self.request_digest,
             "status": self.status,
             "cause": self.cause,
+            "retryable": self.retryable,
             "http_status": self.http_status,
             "error_type": self.error_type,
             "error_code": self.error_code,
@@ -194,6 +200,9 @@ class ResponsesStructuredModel:
                 raise LiveModelInvalidOutput("provider refusal")
             failure_class = "incomplete_response"
             if body.get("status") != "completed":
+                if body.get("status") == "failed" and isinstance(body.get("error"), dict):
+                    failure_class = "api_response_failed"
+                    raise RetryableLiveModelError("provider reported a failed response")
                 raise LiveModelInvalidOutput("response did not complete")
             failure_class = "missing_final_json"
             text = _response_text(body)
@@ -219,6 +228,7 @@ class ResponsesStructuredModel:
                 latency_ms=(time.perf_counter() - started) * 1000,
                 status="completed",
                 cause=None,
+                retryable=False,
                 final_json_text=text,
             )
             self.last_attempts = (attempt,)
@@ -247,6 +257,10 @@ class ResponsesStructuredModel:
             body = _safe_json(response)
             if response is not None:
                 body["_http_status"] = response.status_code
+            retryable = isinstance(
+                error,
+                httpx.TransportError | httpx.HTTPStatusError | RetryableLiveModelError,
+            )
             attempt = _attempt_from_body(
                 attempt_index=1,
                 request_digest=digest,
@@ -258,10 +272,13 @@ class ResponsesStructuredModel:
                 latency_ms=(time.perf_counter() - started) * 1000,
                 status="failed",
                 cause=failure_class,
+                retryable=retryable,
                 final_json_text=text,
             )
             self.last_attempts = (attempt,)
             message = f"live response invalid: {failure_class}"
+            if retryable:
+                raise RetryableLiveModelError(message) from error
             raise LiveModelInvalidOutput(message) from error
 
 
@@ -329,6 +346,7 @@ def _attempt_from_body(
     latency_ms: float,
     status: str,
     cause: str | None,
+    retryable: bool,
     final_json_text: str | None = None,
 ) -> ResponsesAttempt:
     raw_usage = body.get("usage")
@@ -351,6 +369,7 @@ def _attempt_from_body(
         request_digest=request_digest,
         status=status,
         cause=cause,
+        retryable=retryable,
         http_status=body.get("_http_status") if isinstance(body.get("_http_status"), int) else None,
         error_type=error.get("type") if isinstance(error.get("type"), str) else None,
         error_code=error.get("code") if isinstance(error.get("code"), str) else None,

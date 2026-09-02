@@ -51,6 +51,15 @@ SCENARIO_DISCLOSURE = (
 PROMPT_VERSION = SEMANTIC_INSPECTION_PROMPT_VERSION
 
 
+class AnalysisPipelineError(RuntimeError):
+    """A non-retryable failure after inference, with an auditable pipeline stage."""
+
+    def __init__(self, stage: str, cause: Exception) -> None:
+        self.stage = stage
+        self.cause_type = type(cause).__name__
+        super().__init__(f"{stage}:{self.cause_type}")
+
+
 def _configured_model(settings: Settings) -> StructuredModel:
     if settings.llm_mode.value == "disabled":
         return DisabledModel()
@@ -477,7 +486,14 @@ class AnalysisService:
         return self.repository.graph(analysis_id)
 
     def _persist(self, result: AnalysisResult) -> AnalysisResult:
-        self.repository.save(result, build_neighborhood(result))
+        try:
+            graph = build_neighborhood(result)
+        except Exception as error:
+            raise AnalysisPipelineError("graph", error) from error
+        try:
+            self.repository.save(result, graph)
+        except Exception as error:
+            raise AnalysisPipelineError("persistence", error) from error
         return result
 
     @staticmethod
@@ -568,6 +584,8 @@ class AnalysisService:
             # Declared live evaluation retries and records invalid_output outside synthesis.
             raise
         except Exception as error:
+            if self.settings.llm_mode.value == "live":
+                raise AnalysisPipelineError("semantic_processing", error) from error
             digest = hashlib.sha256(request.model_dump_json().encode()).hexdigest()
             return (
                 SemanticRiskOutput(

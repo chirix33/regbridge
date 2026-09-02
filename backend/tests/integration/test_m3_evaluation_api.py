@@ -1,20 +1,39 @@
+import shutil
 from collections.abc import Generator
+from pathlib import Path
 
 import pytest
 from app.api.routes import _evaluation_manager
-from app.evaluation import jobs
+from app.evaluation import jobs, runner
 from app.evaluation.jobs import EvaluationBusyError, EvaluationManager
 from app.evaluation.runner import CONFIGURATION_ID, RUN_ID
 from app.main import create_app
 from fastapi.testclient import TestClient
 
 
+def _isolate_evaluation_artifacts(monkeypatch: pytest.MonkeyPatch) -> tuple[Path, Path]:
+    result_directory = runner.REPOSITORY_ROOT / "results" / "validation" / ".pytest-m3-api"
+    paper_directory = runner.REPOSITORY_ROOT / "paper" / "tables" / "validation" / ".pytest-m3-api"
+    shutil.rmtree(result_directory, ignore_errors=True)
+    shutil.rmtree(paper_directory, ignore_errors=True)
+    monkeypatch.setattr(runner, "RESULT_DIRECTORY", result_directory)
+    monkeypatch.setattr(runner, "PAPER_DIRECTORY", paper_directory)
+    monkeypatch.setattr(runner, "PAPER_DETERMINISTIC_DIRECTORY", paper_directory / "deterministic")
+    monkeypatch.setattr(runner, "PAPER_RETRIEVAL_DIRECTORY", paper_directory / "retrieval")
+    return result_directory, paper_directory
+
+
 @pytest.fixture
-def client() -> Generator[TestClient]:
+def client(
+    monkeypatch: pytest.MonkeyPatch,
+) -> Generator[TestClient]:
+    result_directory, paper_directory = _isolate_evaluation_artifacts(monkeypatch)
     _evaluation_manager.reset_for_tests()
     with TestClient(create_app()) as test_client:
         yield test_client
     _evaluation_manager.reset_for_tests()
+    shutil.rmtree(result_directory, ignore_errors=True)
+    shutil.rmtree(paper_directory, ignore_errors=True)
 
 
 def test_named_baseline_runs_only_frozen_cases(client: TestClient) -> None:

@@ -23,6 +23,11 @@ from app.evaluation.models import (
 )
 from app.graph.models import GraphNeighborhood
 from app.parsers.models import FixtureSummary
+from app.presentation.models import (
+    DemoPresetsResponse,
+    M4PresentationCasesResponse,
+    M4PresentationResponse,
+)
 
 
 class ApiModel(BaseModel):
@@ -113,8 +118,27 @@ class BaselineRunResponse(ApiModel):
 
 
 class EvaluationCreateRequest(ApiModel):
-    configuration_id: Literal["m3-fixture-all-systems-v1"]
+    configuration_id: Literal["m3-fixture-all-systems-v2-graph-contract"]
 
 
 class EvaluationResponse(ApiModel):
     evaluation: EvaluationRun
+
+
+__all__ = [
+    "AnalysisRequest",
+    "AnalysisResponse",
+    "BaselineRunRequest",
+    "BaselineRunResponse",
+    "DemoPresetsResponse",
+    "EvaluationCreateRequest",
+    "EvaluationResponse",
+    "FixtureListResponse",
+    "GraphResponse",
+    "HealthResponse",
+    "M4PresentationCasesResponse",
+    "M4PresentationResponse",
+    "ScopeResponse",
+    "StandardSourceSummary",
+    "StandardsSnapshotResponse",
+]

@@ -8,7 +8,9 @@ import math
 import os
 import statistics
 import tempfile
+import time
 from collections import defaultdict
+from collections.abc import Callable
 from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 from pathlib import Path
@@ -16,7 +18,7 @@ from typing import Any, Literal, cast
 
 from pydantic import SecretStr
 
-from app.analyzer.service import AnalysisService
+from app.analyzer.service import AnalysisPipelineError, AnalysisService
 from app.baselines.direct import (
     DIRECT_INPUT_CHARACTER_LIMIT,
     DIRECT_OUTPUT_TOKEN_LIMIT,
@@ -28,12 +30,13 @@ from app.baselines.retrieval import BM25Retriever
 from app.config import REPOSITORY_ROOT, Settings
 from app.domain.enums import Decision, LlmMode
 from app.evaluation.live_configuration import (
+    HeldOutConfigurationMismatch,
     configuration_material,
     content_digest,
     require_development_approval,
     template_digests,
 )
-from app.evaluation.metrics import score_system
+from app.evaluation.metrics import MetricsScope, score_system
 from app.evaluation.models import (
     BenchmarkCase,
     CaseEvaluation,
@@ -57,12 +60,13 @@ from app.llm.responses import (
     LiveModelInvalidOutput,
     ResponsesAttempt,
     ResponsesStructuredModel,
+    RetryableLiveModelError,
 )
 from app.parsers.ectd322 import parse_directory
 from app.standards.evidence import EvidenceRegistry
 
 LIVE_SYSTEMS: tuple[SystemName, ...] = ("B0", "B1", "RegBridge")
-LIVE_CONFIGURATION_ID = "m3-live-phase1-gpt-5.5-contract-v2-defined-actions"
+LIVE_CONFIGURATION_ID = "m3-live-phase1-gpt-5.5-contract-v3-graph-v2"
 LIVE_RUN_TYPE = "live_model_run"
 LIVE_REASONING_EFFORT = "medium"
 LIVE_PILOT_OUTPUT_CEILING = 25_000
@@ -73,6 +77,11 @@ LIVE_SEED = 20270829
 LIVE_RESULTS_ROOT = REPOSITORY_ROOT / "results" / "live"
 LIVE_PAPER_ROOT = REPOSITORY_ROOT / "paper" / "tables" / "live"
 PRICING_PER_MILLION = {"input": 5.00, "cached_input": 0.50, "output": 30.00}
+
+__all__ = [
+    "DirectDecisionOutput",
+    "ResponsesAttempt",
+]
 
 
 class LivePhase1Error(RuntimeError):
@@ -90,6 +99,86 @@ class LiveOutcome:
     attempts: tuple[ResponsesAttempt, ...]
     deviation_log: tuple[dict[str, Any], ...]
     failure: str | None
+
+
+@dataclass(frozen=True)
+class RunAuditState:
+    state: Literal["running", "failed", "awaiting_author_01_approval"]
+    stop_reason: str
+    audit_passed: bool
+    regbridge_metrics_status: str
+    cross_system_comparison_status: str
+    phase2_cap_proposal: dict[str, Any]
+
+    def __post_init__(self) -> None:
+        if not self.stop_reason:
+            raise LivePhase1Error("run audit state requires a non-null stop reason")
+        if not self.audit_passed and self.phase2_cap_proposal.get("status", "").startswith(
+            "proposed"
+        ):
+            raise LivePhase1Error(
+                "failed audit state cannot coexist with a Phase 2 cap proposal"
+            )
+        if self.audit_passed != (self.state == "awaiting_author_01_approval"):
+            raise LivePhase1Error("run state and integrity-audit result disagree")
+
+
+def _derive_run_audit_state(
+    *,
+    bundle: Phase1Bundle,
+    outcomes: tuple[LiveOutcome, ...],
+    running: bool,
+    stopped_reason: str | None,
+) -> RunAuditState:
+    complete = all(
+        {item.case_id for item in outcomes if item.system == system}
+        == {item.case_id for item in bundle.cases}
+        and sum(item.system == system for item in outcomes) == len(bundle.cases)
+        for system in LIVE_SYSTEMS
+    )
+    regbridge_complete = sum(item.system == "RegBridge" for item in outcomes) == len(bundle.cases)
+    invalid = next((item for item in outcomes if item.outcome == "invalid_output"), None)
+    if running:
+        state = RunAuditState(
+            state="running",
+            stop_reason="run_in_progress",
+            audit_passed=False,
+            regbridge_metrics_status=(
+                "complete" if regbridge_complete else "withheld_until_all_18_outcomes_complete"
+            ),
+            cross_system_comparison_status="prohibited_incomplete_system_coverage",
+            phase2_cap_proposal={
+                "status": "withheld",
+                "reason": "Phase 1 is still running; no cap proposed from partial data",
+            },
+        )
+    elif stopped_reason or invalid or not complete:
+        reason = stopped_reason or (
+            f"invalid_output:{invalid.failure}" if invalid else "incomplete_system_coverage"
+        )
+        state = RunAuditState(
+            state="failed",
+            stop_reason=reason,
+            audit_passed=False,
+            regbridge_metrics_status=(
+                "complete" if regbridge_complete else "withheld_until_all_18_outcomes_complete"
+            ),
+            cross_system_comparison_status="prohibited_failed_or_incomplete_audit",
+            phase2_cap_proposal={
+                "status": "withheld",
+                "reason": "Phase 1 failed or is incomplete; no cap proposed",
+            },
+        )
+    else:
+        state = RunAuditState(
+            state="awaiting_author_01_approval",
+            stop_reason="completed_without_failure",
+            audit_passed=True,
+            regbridge_metrics_status="complete",
+            cross_system_comparison_status="complete_development_only",
+            phase2_cap_proposal=_phase2_cap(outcomes),
+        )
+    return state
 
 
 def _canonical(value: Any) -> str:
@@ -121,9 +210,18 @@ def _atomic_write(path: Path, content: str) -> None:
             temporary.unlink()
 
 
+def _durable_write(path: Path, content: str) -> None:
+    """Write a terminal status in place so readers never retain a replaced stale handle."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="\n") as output:
+        output.write(content)
+        output.flush()
+        os.fsync(output.fileno())
+
+
 def _token_counter(model: str) -> tuple[str, Any]:
     try:
-        import tiktoken  # type: ignore[import-not-found]
+        import tiktoken
     except ImportError as error:
         raise LivePhase1Error(
             "tiktoken is required for exact final-answer token validation before live calls"
@@ -140,7 +238,7 @@ def _token_counter(model: str) -> tuple[str, Any]:
 def _settings() -> Settings:
     settings = Settings(llm_mode=LlmMode.LIVE)
     if settings.llm_model != "gpt-5.5":
-        raise LivePhase1Error("Phase 1 is approved only for LLM_MODEL=gpt-5.5")
+        raise LivePhase1Error("The declared M3 live evaluation requires LLM_MODEL=gpt-5.5")
     return settings
 
 
@@ -185,8 +283,11 @@ async def _run_direct(
     evidence: tuple[Any, ...],
     retriever: BM25Retriever,
     first_authorized_request: bool,
+    guard_case: Any = _guard_case,
+    phase_name: str = "Phase 1",
+    dispatch_guard: Callable[[], None] | None = None,
 ) -> LiveOutcome:
-    _guard_case(case, location=f"{system} input preparation")
+    guard_case(case, location=f"{system} input preparation")
     case_input = next(item for item in bundle.case_inputs if item.case_id == case.case_id)
     prepared = prepare_case(case_input)
     retrieval: RetrievalTrace | None = None
@@ -197,9 +298,9 @@ async def _run_direct(
         selected = tuple(by_id[item.evidence_id] for item in retrieval.hits)
     serialized = serialize_direct_request(prepared, selected)
     if len(serialized) > LIVE_INPUT_CHARACTER_LIMIT:
-        raise LivePhase1Error("Phase 1 direct request exceeded the input character limit")
+        raise LivePhase1Error(f"{phase_name} direct request exceeded the input character limit")
     async def direct_call() -> Any:
-        _guard_case(case, location=f"{system} model dispatch")
+        guard_case(case, location=f"{system} model dispatch")
         completion = await model.complete_text(
             input_text=serialized,
             output_type=DirectDecisionOutput,
@@ -218,6 +319,7 @@ async def _run_direct(
         model=model,
         call=direct_call,
         first_authorized_request=first_authorized_request,
+        dispatch_guard=dispatch_guard,
     )
     deviations = _deviations(attempts)
     if output is None:
@@ -277,8 +379,10 @@ async def _run_regbridge(
     bundle: Phase1Bundle,
     model: ResponsesStructuredModel,
     first_authorized_request: bool,
+    guard_case: Any = _guard_case,
+    dispatch_guard: Callable[[], None] | None = None,
 ) -> LiveOutcome:
-    _guard_case(case, location="RegBridge input preparation")
+    guard_case(case, location="RegBridge input preparation")
     metadata = {item.fixture_id: item for item in bundle.fixture_metadata}
     fixture = metadata[case.fixture_id]
     fixture_path = (REPOSITORY_ROOT / "data" / "demo-cases" / fixture.relative_path).resolve()
@@ -290,7 +394,7 @@ async def _run_regbridge(
     service = AnalysisService(
         settings=Settings(
             llm_mode=LlmMode.LIVE,
-            llm_model=cast(str, model.model),
+            llm_model=model.model,
             llm_base_url=model.base_url,
             llm_api_key=SecretStr("redacted"),
         ),
@@ -300,6 +404,7 @@ async def _run_regbridge(
         model=model,
         call=lambda: service.analyze_async(inventory, case.selected_leaf_id, case.target_context),
         first_authorized_request=first_authorized_request,
+        dispatch_guard=dispatch_guard,
     )
     deviations = _deviations(attempts)
     if result is None or (result.model_run.status == "failed" and attempts):
@@ -356,46 +461,95 @@ async def _retry_live_call(
     model: ResponsesStructuredModel,
     call: Any,
     first_authorized_request: bool,
+    dispatch_guard: Callable[[], None] | None = None,
 ) -> tuple[tuple[ResponsesAttempt, ...], Any | None, str | None]:
     attempts: list[ResponsesAttempt] = []
-    failure: str | None = None
     for retry_index in range(LIVE_RETRY_LIMIT + 1):
         model.last_attempts = ()
         try:
+            if dispatch_guard is not None:
+                dispatch_guard()
             completion = await call()
-            attempts.extend(
-                attempt.__class__(**{**attempt.to_json(), "attempt_index": len(attempts) + 1})
-                for attempt in cast(tuple[ResponsesAttempt, ...], model.last_attempts)
-            )
+            attempts.extend(_renumber_attempts(model.last_attempts, start=len(attempts) + 1))
             if any(attempt.ceiling_hit for attempt in attempts):
-                failure = "pilot output ceiling was hit"
-            return tuple(attempts), getattr(completion, "output", completion), failure
-        except (LiveModelInvalidOutput, ValueError) as error:
-            attempts.extend(
-                attempt.__class__(**{**attempt.to_json(), "attempt_index": len(attempts) + 1})
-                for attempt in cast(tuple[ResponsesAttempt, ...], model.last_attempts)
-            )
-            failure = attempts[-1].cause if attempts else type(error).__name__
+                return tuple(attempts), None, "max_output_tokens_ceiling_hit"
+            _validate_attempts(tuple(attempts))
+            return tuple(attempts), getattr(completion, "output", completion), None
+        except RetryableLiveModelError as error:
+            current = _renumber_attempts(model.last_attempts, start=len(attempts) + 1)
+            attempts.extend(current)
+            _validate_attempts(tuple(attempts))
+            failure = current[-1].cause if current else f"api_or_transport:{type(error).__name__}"
             if retry_index >= LIVE_RETRY_LIMIT:
                 return tuple(attempts), None, failure
-    return tuple(attempts), None, failure
+        except HeldOutConfigurationMismatch:
+            raise
+        except LiveModelInvalidOutput as error:
+            current = _renumber_attempts(model.last_attempts, start=len(attempts) + 1)
+            attempts.extend(current)
+            _validate_attempts(tuple(attempts))
+            failure = current[-1].cause if current else f"invalid_output:{type(error).__name__}"
+            return tuple(attempts), None, failure
+        except Exception as error:
+            stage = error.stage if isinstance(error, AnalysisPipelineError) else "downstream"
+            cause = f"non_retryable_{stage}:{type(error).__name__}"
+            current_items: list[ResponsesAttempt] = []
+            recorded_attempts = cast(tuple[ResponsesAttempt, ...], model.last_attempts)
+            for recorded_attempt in recorded_attempts:
+                current_items.append(
+                    replace(
+                        recorded_attempt,
+                        status="failed",
+                        cause=cause,
+                        retryable=False,
+                    )
+                    if recorded_attempt.status == "completed"
+                    else recorded_attempt
+                )
+            current = tuple(current_items)
+            attempts.extend(_renumber_attempts(current, start=len(attempts) + 1))
+            _validate_attempts(tuple(attempts))
+            return tuple(attempts), None, cause
+    raise LivePhase1Error("retry controller exited without a terminal outcome")
+
+
+def _renumber_attempts(
+    values: tuple[ResponsesAttempt, ...], *, start: int,
+) -> tuple[ResponsesAttempt, ...]:
+    return tuple(replace(item, attempt_index=index) for index, item in enumerate(values, start))
+
+
+def _validate_attempts(attempts: tuple[ResponsesAttempt, ...]) -> None:
+    for index, attempt in enumerate(attempts):
+        if attempt.status == "failed" and not attempt.cause:
+            raise LivePhase1Error("fatal attempt-integrity error: failed attempt has null cause")
+        if attempt.status == "completed" and attempt.cause is not None:
+            raise LivePhase1Error("fatal attempt-integrity error: completed attempt has a cause")
+        if index and not attempts[index - 1].retryable:
+            raise LivePhase1Error(
+                "fatal attempt-integrity error: request followed a non-retryable failure"
+            )
 
 
 def _deviations(attempts: tuple[ResponsesAttempt, ...]) -> tuple[dict[str, Any], ...]:
+    _validate_attempts(attempts)
     deviations: list[dict[str, Any]] = []
     for index, attempt in enumerate(attempts):
         if attempt.attempt_index > 1:
+            prior_cause = attempts[index - 1].cause
+            if not prior_cause:
+                raise LivePhase1Error("fatal retry-integrity error: retry cause is null")
             deviations.append(
                 {
                     "type": "retry",
                     "attempt_index": attempt.attempt_index,
-                    "cause": attempts[index - 1].cause,
+                    "cause": prior_cause,
                 }
             )
         if attempt.ceiling_hit:
             deviations.append(
                 {
-                    "type": "pilot_output_ceiling_hit",
+                    "type": "max_output_tokens_ceiling_hit",
                     "attempt_index": attempt.attempt_index,
                     "cause": attempt.finish_reason,
                 }
@@ -429,7 +583,7 @@ def _score_valid(
     cases: tuple[BenchmarkCase, ...],
     predictions: tuple[SystemPrediction, ...],
     retrieval_traces: tuple[RetrievalTrace, ...],
-    scope: str,
+    scope: MetricsScope,
     seed: int,
 ) -> tuple[MetricsReport | None, tuple[CaseEvaluation, ...]]:
     _guard_phase1_cases(cases, location="scoring")
@@ -620,6 +774,32 @@ def _per_case_csv(outcomes: tuple[LiveOutcome, ...]) -> str:
     return output.getvalue()
 
 
+def _validate_outcomes_for_write(outcomes: tuple[LiveOutcome, ...]) -> None:
+    keys = [(outcome.system, outcome.case_id) for outcome in outcomes]
+    if len(keys) != len(set(keys)):
+        raise LivePhase1Error("fatal outcome-integrity error: duplicate system-case outcome")
+    for outcome in outcomes:
+        _validate_attempts(outcome.attempts)
+        if outcome.outcome == "invalid_output":
+            if outcome.prediction is not None or not outcome.failure:
+                raise LivePhase1Error(
+                    "fatal outcome-integrity error: invalid_output requires a non-null failure "
+                    "and no prediction"
+                )
+        elif outcome.prediction is None or outcome.failure is not None:
+            raise LivePhase1Error(
+                "fatal outcome-integrity error: valid_prediction requires a prediction and no "
+                "failure"
+            )
+        if outcome.outcome == "valid_prediction" and any(
+            attempt.status == "failed" and not attempt.retryable for attempt in outcome.attempts
+        ):
+            raise LivePhase1Error(
+                "fatal outcome-integrity error: downstream failure contaminated a prediction"
+            )
+        _deviations(outcome.attempts)
+
+
 def _manifest(
     *,
     run_id: str,
@@ -629,6 +809,7 @@ def _manifest(
     reports: tuple[MetricsReport, ...],
     predictions_digest: str,
     metrics_digest: str,
+    audit_state: RunAuditState,
 ) -> dict[str, Any]:
     configuration = configuration_material(max_output_tokens=LIVE_PILOT_OUTPUT_CEILING)
     prompt_material = template_digests(configuration)
@@ -642,7 +823,21 @@ def _manifest(
         "eligible_for_performance_claims": False,
         "reproducibility": "configuration and artifacts only; live outputs are not deterministic",
         "phase": "phase1-development-train-dev-only",
-        "state": "awaiting_author_01_approval",
+        "state": audit_state.state,
+        "stop_reason": audit_state.stop_reason,
+        "integrity_audit": {
+            "passed": audit_state.audit_passed,
+            "source": "same validated outcomes and attempts used for metrics and summary",
+        },
+        "progress": {
+            "completed_outcomes": len(outcomes),
+            "scheduled_outcomes": len(bundle.cases) * len(LIVE_SYSTEMS),
+            "terminal_audit_complete": audit_state.state != "running",
+            "completed_by_system": {
+                system: sum(outcome.system == system for outcome in outcomes)
+                for system in LIVE_SYSTEMS
+            },
+        },
         "systems": LIVE_SYSTEMS,
         "current_fda_operational_availability": "not_operational",
         "expert_validated": False,
@@ -659,7 +854,11 @@ def _manifest(
             "pilot_output_ceiling": LIVE_PILOT_OUTPUT_CEILING,
             "max_output_tokens": LIVE_PILOT_OUTPUT_CEILING,
             "pilot_output_ceiling_status": "phase1_pilot_instrument_not_phase2_cap",
-            "retry_policy": "initial_attempt_plus_two_retries_unchanged_prompt_and_settings",
+            "retry_policy": (
+                "initial attempt plus at most two retries for transport or provider-API "
+                "failures only; schema, citation, graph, persistence, and synthesis failures "
+                "are non-retryable"
+            ),
             "tokenizer": tokenizer_name,
         },
         "deviation_log": [
@@ -734,7 +933,9 @@ def _manifest(
             ),
         },
         "usage_summary": _usage_summary(outcomes),
-        "phase2_cap_proposal": _phase2_cap(outcomes),
+        "phase2_cap_proposal": audit_state.phase2_cap_proposal,
+        "regbridge_metrics_status": audit_state.regbridge_metrics_status,
+        "cross_system_comparison_status": audit_state.cross_system_comparison_status,
         "retry_log": [
             {
                 "system": outcome.system,
@@ -822,18 +1023,19 @@ async def run_phase1_live() -> Path:
                     run_id=run_id,
                     b2_rescore=b2_rescore,
                 )
-            if any(attempt.status == "failed" for attempt in outcome.attempts):
+            if outcome.outcome == "invalid_output":
                 return _write_artifacts(
                     bundle=bundle, tokenizer_name=tokenizer_name, outcomes=tuple(outcomes),
-                    stopped_reason="new_failure_class_requires_author_review",
+                    stopped_reason=outcome.failure or "non_retryable_failure",
                     run_id=run_id,
                     b2_rescore=b2_rescore,
                 )
-            _write_artifacts(
-                bundle=bundle, tokenizer_name=tokenizer_name, outcomes=tuple(outcomes),
-                stopped_reason=None, run_id=run_id, running=True,
-                b2_rescore=b2_rescore,
-            )
+            if len(outcomes) < len(bundle.cases) * len(LIVE_SYSTEMS):
+                _write_artifacts(
+                    bundle=bundle, tokenizer_name=tokenizer_name, outcomes=tuple(outcomes),
+                    stopped_reason=None, run_id=run_id, running=True,
+                    b2_rescore=b2_rescore,
+                )
             print(f"Phase 1: {len(outcomes)}/54 outcomes recorded ({system}).", flush=True)
     _guard_phase1_cases(bundle.cases, location="scoring")
     return _write_artifacts(
@@ -856,15 +1058,28 @@ def _write_artifacts(
     running: bool = False,
     b2_rescore: B2Rescore | None = None,
 ) -> Path:
+    _validate_outcomes_for_write(outcomes)
     if b2_rescore is not None:
         b2_rescore.validate_for_comparison(bundle)
+    complete = all(
+        {item.case_id for item in outcomes if item.system == system}
+        == {item.case_id for item in bundle.cases}
+        and sum(item.system == system for item in outcomes) == len(bundle.cases)
+        for system in LIVE_SYSTEMS
+    )
+    if complete and b2_rescore is None:
+        raise ValueError("Complete development comparison requires a fresh B2 contract rescore")
+    audit_state = _derive_run_audit_state(
+        bundle=bundle,
+        outcomes=outcomes,
+        running=running,
+        stopped_reason=stopped_reason,
+    )
     run_id = run_id or f"m3-live-phase1-{datetime.now(UTC).strftime('%Y%m%dT%H%M%S%fZ')}"
     result_dir = LIVE_RESULTS_ROOT / run_id
     paper_dir = LIVE_PAPER_ROOT / run_id
     valid_predictions = tuple(
-        cast(SystemPrediction, outcome.prediction)
-        for outcome in outcomes
-        if outcome.prediction is not None
+        outcome.prediction for outcome in outcomes if outcome.prediction is not None
     )
     retrievals = tuple(outcome.retrieval for outcome in outcomes if outcome.retrieval is not None)
     reports: list[MetricsReport] = []
@@ -879,14 +1094,15 @@ def _write_artifacts(
         system_cases = tuple(case for case in bundle.cases if case.case_id in completed_case_ids)
         system_predictions = tuple(pred for pred in valid_predictions if pred.system == system)
         system_traces = tuple(trace for trace in retrievals if trace and system == "B1")
-        for scope, scoped_cases in (
+        scoped_case_groups: tuple[tuple[MetricsScope, tuple[BenchmarkCase, ...]], ...] = (
             ("phase1-train", tuple(case for case in system_cases if case.split == "train")),
             (
                 "phase1-development",
                 tuple(case for case in system_cases if case.split == "development"),
             ),
             ("phase1-train-development", system_cases),
-        ):
+        )
+        for scope, scoped_cases in scoped_case_groups:
             scoped_case_ids = {case.case_id for case in scoped_cases}
             scoped_predictions = tuple(
                 pred for pred in system_predictions if pred.case_id in scoped_case_ids
@@ -913,24 +1129,7 @@ def _write_artifacts(
         reports=tuple(reports),
         predictions_digest=predictions_digest,
         metrics_digest=metrics_digest,
-    )
-    if stopped_reason:
-        manifest["stopped_reason"] = stopped_reason
-    manifest["regbridge_metrics_status"] = (
-        "complete" if sum(item.system == "RegBridge" for item in outcomes) == len(bundle.cases)
-        else "withheld_until_all_18_outcomes_complete"
-    )
-    complete = all(
-        {item.case_id for item in outcomes if item.system == system}
-        == {item.case_id for item in bundle.cases}
-        and sum(item.system == system for item in outcomes) == len(bundle.cases)
-        for system in LIVE_SYSTEMS
-    )
-    if complete and b2_rescore is None:
-        raise ValueError("Complete development comparison requires a fresh B2 contract rescore")
-    manifest["cross_system_comparison_status"] = (
-        "prohibited_incomplete_system_coverage" if not complete else
-        "complete_development_only"
+        audit_state=audit_state,
     )
     if b2_rescore is not None:
         b2_artifact = b2_rescore.artifact()
@@ -946,23 +1145,22 @@ def _write_artifacts(
         }
         _atomic_write(result_dir / "b2-contract-rescore.json", b2_json)
         _atomic_write(paper_dir / "b2-contract-rescore.json", b2_json)
-    if running:
-        manifest["state"] = "running"
-    if running or stopped_reason:
-        manifest["phase2_cap_proposal"] = {
-            "status": "withheld", "reason": "Phase 1 incomplete; no cap proposed from partial data",
-        }
+    artifact_suffix = ".partial" if running else ""
     manifest_json = json.dumps(manifest, indent=2, sort_keys=True) + "\n"
-    _atomic_write(result_dir / "manifest.json", manifest_json)
-    _atomic_write(result_dir / "predictions.jsonl", predictions_jsonl)
-    _atomic_write(result_dir / "metrics.json", metrics_json)
-    _atomic_write(result_dir / "per-case.csv", _per_case_csv(outcomes))
+    manifest_path = result_dir / f"manifest{artifact_suffix}.json"
+    if running:
+        _atomic_write(manifest_path, manifest_json)
+    else:
+        _durable_write(manifest_path, manifest_json)
+    _atomic_write(result_dir / f"predictions{artifact_suffix}.jsonl", predictions_jsonl)
+    _atomic_write(result_dir / f"metrics{artifact_suffix}.json", metrics_json)
+    _atomic_write(result_dir / f"per-case{artifact_suffix}.csv", _per_case_csv(outcomes))
     _atomic_write(
-        result_dir / "retrieval.jsonl",
+        result_dir / f"retrieval{artifact_suffix}.jsonl",
         "".join(trace.model_dump_json() + "\n" for trace in retrievals),
     )
     _atomic_write(
-        result_dir / "attempts.jsonl",
+        result_dir / f"attempts{artifact_suffix}.jsonl",
         "".join(
             json.dumps(
                 {
@@ -977,14 +1175,29 @@ def _write_artifacts(
             for attempt in outcome.attempts
         ),
     )
-    _atomic_write(paper_dir / "m3-live-phase1-development-metrics.json", metrics_json)
-    _atomic_write(paper_dir / "m3-live-phase1-development-per-case.csv", _per_case_csv(outcomes))
+    _atomic_write(
+        paper_dir / f"m3-live-phase1-development-metrics{artifact_suffix}.json", metrics_json,
+    )
+    _atomic_write(
+        paper_dir / f"m3-live-phase1-development-per-case{artifact_suffix}.csv",
+        _per_case_csv(outcomes),
+    )
     presentation_reports = tuple(reports)
     if complete and b2_rescore is not None:
         presentation_reports += b2_rescore.reports
     summary = _summary_markdown(manifest, presentation_reports, outcomes)
-    _atomic_write(result_dir / "summary.md", summary)
-    _atomic_write(paper_dir / "m3-live-phase1-development-summary.md", summary)
+    _atomic_write(result_dir / f"summary{artifact_suffix}.md", summary)
+    _atomic_write(
+        paper_dir / f"m3-live-phase1-development-summary{artifact_suffix}.md", summary,
+    )
+    if not running:
+        for _ in range(100):
+            observed = json.loads(manifest_path.read_text(encoding="utf-8"))
+            if observed.get("stop_reason") == audit_state.stop_reason:
+                break
+            time.sleep(0.01)
+        else:
+            raise LivePhase1Error("terminal manifest did not become durably readable")
     return result_dir
 
 
@@ -1000,8 +1213,17 @@ def _summary_markdown(
         "B0/B1 receive RegBridge's repair-semantics action taxonomy with neutral definitions "
         "in their inputs; they are not naive generic-LLM baselines. The identical packet is "
         "used by RegBridge's semantic request and B2's scoring contract.\n",
-        f"Completed {len(outcomes)}/54 system-case outcomes from train/development only. "
-        f"Stop reason: `{manifest.get('stopped_reason', 'none')}`.\n",
+        (
+            f"Recorded {manifest['progress']['completed_outcomes']}/"
+            f"{manifest['progress']['scheduled_outcomes']} system-case outcomes from "
+            "train/development only. "
+            + (
+                "Terminal audit is pending. "
+                if not manifest["progress"]["terminal_audit_complete"]
+                else "Terminal audit is complete. "
+            )
+            + f"Stop reason: `{manifest['stop_reason']}`.\n"
+        ),
         "| System | Scope | Result status | Valid n | Accuracy | Macro-F1 | "
         "Unsafe misses / eligible | Review bypass / HUMAN |",
         "|---|---|---|---:|---:|---:|---:|---:|",
@@ -1016,11 +1238,20 @@ def _summary_markdown(
             f"{unsafe.numerator}/{unsafe.denominator} | "
             f"{report.review_bypass_rate.numerator}/{report.review_bypass_rate.denominator} |"
         )
+    if manifest["regbridge_metrics_status"] != "complete":
+        rows.append(
+            "\nRegBridge decision metrics are withheld until all 18 outcomes complete. "
+            "Incomplete runs cannot support cross-system comparison."
+        )
+    else:
+        rows.append("\nRegBridge completed all 18 development outcomes.")
+    b2_status = (
+        "The matching fresh B2 rescore is recorded in this manifest."
+        if manifest.get("b2_rescore")
+        else "A matching fresh B2 rescore is still required."
+    )
     rows.extend([
-        "\nRegBridge decision metrics are withheld until all 18 outcomes complete. "
-        "Incomplete runs cannot support cross-system comparison.",
-        f"\nComparison status: `{manifest['cross_system_comparison_status']}`. "
-        "A matching fresh B2 rescore is required and is outside the live schedule.",
+        f"\nComparison status: `{manifest['cross_system_comparison_status']}`. {b2_status}",
         "\n| System | Scope | Outside represented classes / valid | "
         "Counts and rates by predicted class | "
         "Sensitivity-only accuracy excluding outside predictions |",

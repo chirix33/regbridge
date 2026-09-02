@@ -1,0 +1,258 @@
+{
+  "$defs": {
+    "PresentationCasePrediction": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "title": "Action",
+          "type": "string"
+        },
+        "cost_usd": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Cost Usd"
+        },
+        "decision": {
+          "title": "Decision",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "failure": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Failure"
+        },
+        "human_review_required": {
+          "title": "Human Review Required",
+          "type": "boolean"
+        },
+        "latency_ms": {
+          "title": "Latency Ms",
+          "type": "number"
+        },
+        "outcome": {
+          "title": "Outcome",
+          "type": "string"
+        },
+        "outside_represented_class": {
+          "title": "Outside Represented Class",
+          "type": "boolean"
+        },
+        "repetition_index": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Repetition Index"
+        },
+        "requests": {
+          "title": "Requests",
+          "type": "integer"
+        },
+        "result_status": {
+          "title": "Result Status",
+          "type": "string"
+        },
+        "review_bypass": {
+          "title": "Review Bypass",
+          "type": "boolean"
+        },
+        "rule_ids": {
+          "default": [],
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "type": "string"
+          },
+          "title": "Rule Ids",
+          "type": "array"
+        },
+        "system": {
+          "enum": [
+            "B0",
+            "B1",
+            "B2",
+            "RegBridge"
+          ],
+          "title": "System",
+          "type": "string"
+        },
+        "unsafe_false_negative": {
+          "title": "Unsafe False Negative",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "system",
+        "repetition_index",
+        "result_status",
+        "outcome",
+        "decision",
+        "action",
+        "human_review_required",
+        "evidence_ids",
+        "unsafe_false_negative",
+        "review_bypass",
+        "outside_represented_class",
+        "cost_usd",
+        "latency_ms",
+        "requests"
+      ],
+      "title": "PresentationCasePrediction",
+      "type": "object"
+    },
+    "PresentationCaseTrace": {
+      "additionalProperties": false,
+      "properties": {
+        "archetype": {
+          "title": "Archetype",
+          "type": "string"
+        },
+        "case_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "decision_fingerprint_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Decision Fingerprint Sha256",
+          "type": "string"
+        },
+        "fixture_family": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Fixture Family",
+          "type": "string"
+        },
+        "fixture_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Fixture Id",
+          "type": "string"
+        },
+        "mutation": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Mutation",
+          "type": "object"
+        },
+        "package_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Package Sha256",
+          "type": "string"
+        },
+        "predictions": {
+          "items": {
+            "$ref": "#/$defs/PresentationCasePrediction"
+          },
+          "title": "Predictions",
+          "type": "array"
+        },
+        "reference_action": {
+          "title": "Reference Action",
+          "type": "string"
+        },
+        "reference_decision": {
+          "title": "Reference Decision",
+          "type": "string"
+        },
+        "reference_human_review_required": {
+          "title": "Reference Human Review Required",
+          "type": "boolean"
+        },
+        "reference_severity": {
+          "title": "Reference Severity",
+          "type": "string"
+        },
+        "selected_file_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Selected File Sha256",
+          "type": "string"
+        },
+        "selected_leaf_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Selected Leaf Id",
+          "type": "string"
+        },
+        "split": {
+          "const": "test",
+          "title": "Split",
+          "type": "string"
+        },
+        "varied_predictions": {
+          "title": "Varied Predictions",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "case_id",
+        "fixture_id",
+        "fixture_family",
+        "archetype",
+        "split",
+        "selected_leaf_id",
+        "reference_decision",
+        "reference_action",
+        "reference_severity",
+        "reference_human_review_required",
+        "mutation",
+        "package_sha256",
+        "selected_file_sha256",
+        "decision_fingerprint_sha256",
+        "predictions",
+        "varied_predictions"
+      ],
+      "title": "PresentationCaseTrace",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "cases": {
+      "items": {
+        "$ref": "#/$defs/PresentationCaseTrace"
+      },
+      "title": "Cases",
+      "type": "array"
+    },
+    "snapshot_version": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "title": "Snapshot Version",
+      "type": "string"
+    },
+    "source_run_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "title": "Source Run Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "snapshot_version",
+    "source_run_id",
+    "cases"
+  ],
+  "title": "M4PresentationCasesResponse",
+  "type": "object"
+}

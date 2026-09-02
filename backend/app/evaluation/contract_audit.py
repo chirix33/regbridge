@@ -11,7 +11,7 @@ from app.domain.enums import Decision, Severity
 from app.domain.vocabulary import ACTION_CODES, output_vocabulary
 from app.evaluation.live_configuration import configuration_material, content_digest
 from app.evaluation.live_phase1 import LIVE_CONFIGURATION_ID, _atomic_write
-from app.evaluation.metrics import score_system
+from app.evaluation.metrics import MetricsScope, score_system
 from app.evaluation.models import DirectDecisionOutput, RetrievalTrace, SystemPrediction
 from app.evaluation.phase1_bundle import load_phase1_bundle, phase1_bundle_sha256
 from app.llm.models import ModelRequest, SemanticFinding
@@ -154,8 +154,11 @@ def generate_audit() -> dict[str, Any]:
                 raw["decision"] = Decision(raw["decision"])
                 raw["severity"] = Severity(raw["severity"])
                 predictions.append(SystemPrediction.model_construct(**raw))
-        for split, scope in (("train", "phase1-train"), ("development", "phase1-development"),
-                             (None, "phase1-train-development")):
+        scoped_splits: tuple[tuple[str | None, MetricsScope], ...] = (
+            ("train", "phase1-train"), ("development", "phase1-development"),
+            (None, "phase1-train-development"),
+        )
+        for split, scope in scoped_splits:
             cases = tuple(case for case in bundle.cases if split is None or case.split == split)
             ids = {case.case_id for case in cases}
             rescored, _ = score_system(

@@ -1,19 +1,50 @@
-from app.domain.enums import EdgeType, EnforcementMode, NodeType, ReviewStatus
+import re
+
+from app.domain.enums import EdgeType, EnforcementMode, NodeType, ReviewStatus, VerificationBasis
 from app.domain.models import AnalysisResult, DossierEvidence
 from app.graph.models import GraphEdge, GraphNeighborhood, GraphNode
 from app.rules.registry import APPROVED_M1_MAPPING
 
-_EDGE_DOMAINS: dict[EdgeType, tuple[set[NodeType], set[NodeType]]] = {
-    EdgeType.LOCATED_UNDER: ({NodeType.ARTIFACT}, {NodeType.HEADING}),
-    EdgeType.SUPPORTED_BY: ({NodeType.RULE}, {NodeType.EVIDENCE, NodeType.DOSSIER_EVIDENCE}),
-    EdgeType.REQUIRES_REPAIR: ({NodeType.RULE, NodeType.MODEL_FINDING}, {NodeType.REPAIR}),
-    EdgeType.TRIGGERS_DECISION: ({NodeType.RULE, NodeType.MODEL_FINDING}, {NodeType.DECISION}),
-    EdgeType.HAS_KEYWORD: ({NodeType.ARTIFACT}, {NodeType.KEYWORD}),
-    EdgeType.CITES: ({NodeType.MODEL_FINDING}, {NodeType.DOSSIER_EVIDENCE}),
-    EdgeType.AVAILABLE_IN: ({NodeType.HEADING}, {NodeType.STANDARD_VERSION}),
-    EdgeType.REMOVED_IN: ({NodeType.HEADING}, {NodeType.STANDARD_VERSION}),
-    EdgeType.MAPS_TO: ({NodeType.HEADING}, {NodeType.HEADING}),
+GRAPH_CONTRACT_CHANGE = (
+    "Metadata is represented as occurrence-level dossier evidence which OBSERVES a normalized "
+    "keyword; model findings CITE the occurrence and are ABOUT the observed keyword."
+)
+
+GRAPH_CONTRACT_DEVIATION = {
+    "status": "approved_deviation",
+    "approved_by": "author-01",
+    "approved_design": (
+        "discriminated occurrence-evidence union: DOCUMENT_EVIDENCE, METADATA_EVIDENCE, "
+        "and STRUCTURAL_EVIDENCE"
+    ),
+    "implementation": (
+        "one DOSSIER_EVIDENCE occurrence node type with an evidence_kind discriminator"
+    ),
+    "implementation_assessment": "replaced_by_simpler_semantically_equivalent_representation",
+    "edge_realization": (
+        "MODEL_FINDING-CITES-DOSSIER_EVIDENCE; MODEL_FINDING-ABOUT-KEYWORD; "
+        "DOSSIER_EVIDENCE-OBSERVES-KEYWORD"
+    ),
+    "rationale": (
+        "The uniform occurrence node preserves exact raw value, owner, locator, provenance, "
+        "request-local aliasing, occurrence citation, concept normalization, and Case A/B/C "
+        "domain-range coverage without adding unused graph node subtypes during M3."
+    ),
 }
+
+
+def _slug(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", value.casefold()).strip("-") or "empty"
+
+
+def _metadata_identity(evidence: DossierEvidence) -> tuple[str, str, str, str]:
+    name, separator, raw_value = evidence.text.partition("=")
+    if not separator or not name.strip():
+        raise ValueError(f"metadata evidence {evidence.id} lacks an exact name=value occurrence")
+    normalized_name = name.strip().casefold()
+    normalized_value = raw_value.strip().casefold()
+    keyword_id = f"keyword-{_slug(normalized_name)}-{_slug(normalized_value)}"
+    return keyword_id, normalized_name, normalized_value, raw_value
 
 
 def build_neighborhood(result: AnalysisResult) -> GraphNeighborhood:
@@ -113,23 +144,72 @@ def build_neighborhood(result: AnalysisResult) -> GraphNeighborhood:
                     ),
                 )
             )
+    observed_keyword_by_evidence: dict[str, str] = {}
     for evidence in result.evidence:
         if isinstance(evidence, DossierEvidence):
-            node_type = (
-                NodeType.KEYWORD if evidence.kind == "metadata" else NodeType.DOSSIER_EVIDENCE
-            )
             evidence_node_id = f"dossier-{evidence.id}"
-            add(GraphNode(id=evidence_node_id, type=node_type, label=evidence.locator))
+            properties = {
+                "evidence_identity": "dossier_occurrence",
+                "evidence_kind": evidence.kind,
+                "raw_value": evidence.text,
+                "owner": evidence.artifact_id,
+                "locator": evidence.locator,
+                "provenance": {
+                    "evidence_id": evidence.id,
+                    "file_sha256": evidence.file_sha256,
+                    "extraction_method": evidence.extraction_method.value,
+                },
+            }
             if evidence.kind == "metadata":
+                keyword_id, name, normalized_value, raw_value = _metadata_identity(evidence)
+                properties["raw_value"] = raw_value
+                properties["raw_record"] = evidence.text
+                properties["normalized_keyword_id"] = keyword_id
+                existing = nodes.get(keyword_id)
+                keyword_label = f'{name}="{normalized_value}"'
+                if existing is not None and existing.label != keyword_label:
+                    raise ValueError(f"normalized keyword identifier collision: {keyword_id}")
+                add(
+                    GraphNode(
+                        id=keyword_id,
+                        type=NodeType.KEYWORD,
+                        label=keyword_label,
+                        properties={
+                            "name": name,
+                            "normalized_value": normalized_value,
+                            "ontology_role": "normalized_keyword_concept",
+                        },
+                    )
+                )
+                observed_keyword_by_evidence[evidence.id] = keyword_id
                 edges.append(
                     GraphEdge(
                         id=f"edge-{artifact_id}-{evidence.id}",
                         source=artifact_id,
-                        target=evidence_node_id,
+                        target=keyword_id,
                         type=EdgeType.HAS_KEYWORD,
                         label="has parsed keyword",
                     )
                 )
+                edges.append(
+                    GraphEdge(
+                        id=f"edge-{evidence.id}-observes-{keyword_id}",
+                        source=evidence_node_id,
+                        target=keyword_id,
+                        type=EdgeType.OBSERVES,
+                        label="observes normalized keyword",
+                        evidence_ids=(evidence.id,),
+                        verification_basis=VerificationBasis.MECHANICAL_DERIVATION,
+                    )
+                )
+            add(
+                GraphNode(
+                    id=evidence_node_id,
+                    type=NodeType.DOSSIER_EVIDENCE,
+                    label=evidence.locator,
+                    properties=properties,
+                )
+            )
         else:
             evidence_node_id = f"evidence-{evidence.id}"
             add(
@@ -159,11 +239,16 @@ def build_neighborhood(result: AnalysisResult) -> GraphNeighborhood:
                 ),
             )
         )
+        finding_about_targets: set[tuple[str, str]] = set()
         for evidence_id in finding.evidence_ids:
-            evidence = next(item for item in result.evidence if item.id == evidence_id)
+            cited_evidence = next(
+                (item for item in result.evidence if item.id == evidence_id), None
+            )
+            if cited_evidence is None:
+                raise ValueError(f"finding cites unknown evidence occurrence: {evidence_id}")
             target_id = (
                 f"dossier-{evidence_id}"
-                if isinstance(evidence, DossierEvidence)
+                if isinstance(cited_evidence, DossierEvidence)
                 else f"evidence-{evidence_id}"
             )
             edge_type = EdgeType.CITES if is_model else EdgeType.SUPPORTED_BY
@@ -186,6 +271,31 @@ def build_neighborhood(result: AnalysisResult) -> GraphNeighborhood:
                     ),
                 )
             )
+            if is_model and evidence_id in observed_keyword_by_evidence:
+                keyword_id = observed_keyword_by_evidence[evidence_id]
+                finding_about_targets.add((keyword_id, evidence_id))
+        for keyword_id in sorted({item[0] for item in finding_about_targets}):
+            about_evidence_ids = tuple(
+                sorted(
+                    evidence_id
+                    for target, evidence_id in finding_about_targets
+                    if target == keyword_id
+                )
+            )
+            if is_model:
+                edges.append(
+                    GraphEdge(
+                        id=f"edge-{finding.id}-about-{keyword_id}",
+                        source=finding_node_id,
+                        target=keyword_id,
+                        type=EdgeType.ABOUT,
+                        label="about normalized keyword",
+                        evidence_ids=about_evidence_ids,
+                        review_status=ReviewStatus.CANDIDATE,
+                        verification_basis=finding.verification_basis,
+                        enforcement_mode=EnforcementMode.DISABLED,
+                    )
+                )
         edges.extend(
             (
                 GraphEdge(
@@ -204,17 +314,6 @@ def build_neighborhood(result: AnalysisResult) -> GraphNeighborhood:
                 ),
             )
         )
-    edge_ids: set[str] = set()
-    for edge in edges:
-        source_types, target_types = _EDGE_DOMAINS[edge.type]
-        if (
-            nodes[edge.source].type not in source_types
-            or nodes[edge.target].type not in target_types
-        ):
-            raise ValueError(f"invalid graph domain/range for edge {edge.id}")
-        if edge.id in edge_ids:
-            raise ValueError("graph edge identifiers must be unique")
-        edge_ids.add(edge.id)
     ordered_edges = tuple(sorted(edges, key=lambda item: item.id))
     return GraphNeighborhood(
         analysis_id=result.id,

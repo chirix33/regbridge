@@ -199,3 +199,144 @@ export interface GraphNeighborhood {
   }>;
   text_alternative: string[];
 }
+
+export interface PresentationRate {
+  numerator: number;
+  denominator: number;
+  rate: number | null;
+}
+
+export interface PresentationMetricReport {
+  system: "B0" | "B1" | "B2" | "RegBridge";
+  repetition_index: number | null;
+  result_status: string;
+  accuracy: number;
+  macro_f1: number;
+  unsafe_false_negative_rate: PresentationRate;
+  review_bypass_rate: PresentationRate;
+  outside_represented_rate: number | null;
+  invalid_outputs: number;
+  invalid_output_rate: number;
+  requests: number;
+  input_tokens: number;
+  output_tokens: number;
+  latency_ms_total: number;
+  cost_usd: number | null;
+  retrieval: {
+    result_status: string;
+    evaluated_cases: number;
+    recall_at_3: number | null;
+    precision_at_3: number | null;
+    mrr: number | null;
+  } | null;
+  family_sensitivity: Array<{
+    fixture_family: string;
+    unsafe_misses: number;
+    eligible_cases: number;
+  }>;
+}
+
+export interface PresentationCasePrediction {
+  system: "B0" | "B1" | "B2" | "RegBridge";
+  repetition_index: number | null;
+  result_status: string;
+  outcome: string;
+  decision: string;
+  action: string;
+  human_review_required: boolean;
+  evidence_ids: string[];
+  rule_ids: string[];
+  unsafe_false_negative: boolean;
+  review_bypass: boolean;
+  outside_represented_class: boolean;
+  cost_usd: number | null;
+  latency_ms: number;
+  requests: number;
+  failure: string | null;
+}
+
+export interface PresentationCaseTrace {
+  case_id: string;
+  fixture_id: string;
+  fixture_family: string;
+  archetype: string;
+  split: "test";
+  selected_leaf_id: string;
+  reference_decision: string;
+  reference_action: string;
+  reference_severity: string;
+  reference_human_review_required: boolean;
+  mutation: Record<string, string>;
+  package_sha256: string;
+  selected_file_sha256: string;
+  decision_fingerprint_sha256: string;
+  predictions: PresentationCasePrediction[];
+  varied_predictions: boolean;
+}
+
+export interface DemoPreset {
+  id: string;
+  route: "/demo/case-a" | "/demo/case-b" | "/demo/case-c";
+  label: string;
+  fixture_id: string;
+  purpose: string;
+  primary_path: boolean;
+  scenario_mode: "prospective_forward_compatibility";
+  metadata_plan: Record<string, string | null> | null;
+}
+
+export interface M4PresentationSnapshot {
+  schema_version: "m4.presentation.v1";
+  snapshot_version: string;
+  snapshot_sha256: string;
+  source_run_id: string;
+  source_run_directory: string;
+  source_run_file_sha256: Record<string, string>;
+  predictions_sha256: string;
+  metrics_sha256: string;
+  repository_commit: string;
+  benchmark_sha256: string;
+  frozen_prompt_digest: string;
+  frozen_configuration_digest: string;
+  run_type: "live_model_run";
+  empirical_model_run: true;
+  eligible_for_performance_claims: true;
+  current_fda_operational_availability: "not_operational";
+  expert_validated: false;
+  headline_scope: "held-out-test";
+  disclosure: string;
+  limitations: string[];
+  completion_audit: Record<string, unknown>;
+  metric_reports: PresentationMetricReport[];
+  metric_ranges: Record<string, Record<string, { min: number; max: number }>>;
+  retrieval_summary: {
+    result_status: string;
+    per_repetition: Array<{
+      repetition_index: number;
+      recall_at_3: number | null;
+      precision_at_3: number | null;
+      mrr: number | null;
+      evaluated_cases: number;
+    }>;
+  } | null;
+  usage_summary: Record<string, Record<string, unknown>>;
+  cost_summary: Record<string, unknown>;
+  cases: PresentationCaseTrace[];
+  demo_presets: DemoPreset[];
+  graph_contract_disclosure: string;
+  correction_ledger_path: string;
+}
+
+export interface M4PresentationResponse {
+  snapshot: M4PresentationSnapshot;
+}
+
+export interface M4PresentationCasesResponse {
+  snapshot_version: string;
+  source_run_id: string;
+  cases: PresentationCaseTrace[];
+}
+
+export interface DemoPresetsResponse {
+  presets: DemoPreset[];
+}

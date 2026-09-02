@@ -28,17 +28,19 @@ from app.evaluation.models import (
     SystemName,
     SystemPrediction,
 )
+from app.graph.builder import GRAPH_CONTRACT_CHANGE, GRAPH_CONTRACT_DEVIATION
+from app.graph.models import GRAPH_SCHEMA_VERSION
 from app.standards.evidence import EvidenceRegistry
 
-CONFIGURATION_ID = "m3-fixture-all-systems-v1"
+CONFIGURATION_ID = "m3-fixture-all-systems-v2-graph-contract"
 SYSTEMS: tuple[SystemName, ...] = ("B0", "B1", "B2", "RegBridge")
 SEED = 20270829
-FIXED_TIMESTAMP = "2026-08-30T00:00:00Z"
-RUN_ID = "eval-m3-fixture-v1"
+FIXED_TIMESTAMP = "2026-09-01T00:00:00Z"
+RUN_ID = "eval-m3-fixture-v2-graph-contract"
 RESULT_DIRECTORY = REPOSITORY_ROOT / "results" / "validation" / RUN_ID
-PAPER_DIRECTORY = REPOSITORY_ROOT / "paper" / "tables" / "validation"
-PAPER_DETERMINISTIC_DIRECTORY = REPOSITORY_ROOT / "paper" / "tables" / "deterministic"
-PAPER_RETRIEVAL_DIRECTORY = REPOSITORY_ROOT / "paper" / "tables" / "retrieval"
+PAPER_DIRECTORY = REPOSITORY_ROOT / "paper" / "tables" / "validation" / RUN_ID
+PAPER_DETERMINISTIC_DIRECTORY = PAPER_DIRECTORY / "deterministic"
+PAPER_RETRIEVAL_DIRECTORY = PAPER_DIRECTORY / "retrieval"
 
 
 def _canonical(value: Any) -> str:
@@ -432,7 +434,7 @@ def _manifest(
     )
     evidence = (REPOSITORY_ROOT / "data" / "standards" / "evidence.yaml",)
     prompt_config = {
-        "shared_direct_schema": "DirectDecisionOutput-v1",
+        "shared_direct_schema": "DirectDecisionOutput-v2",
         "shared_model": DIRECT_MODEL_NAME,
         "temperature": DIRECT_TEMPERATURE,
         "input_character_limit": DIRECT_INPUT_CHARACTER_LIMIT,
@@ -524,6 +526,62 @@ def _manifest(
         "graph_snapshot_digests": {
             key: _digest_bytes(_canonical(snapshot).encode("utf-8"))
             for key, snapshot in sorted(runner.graph_snapshots.items())
+        },
+        "graph_benchmark_build": {
+            "graph_schema_version": GRAPH_SCHEMA_VERSION,
+            "benchmark_version": "1.0.0-unchanged",
+            "contract_change": GRAPH_CONTRACT_CHANGE,
+            "approved_design_deviation": GRAPH_CONTRACT_DEVIATION,
+            "rationale": (
+                "The B003 manufacturer-metadata citation was correct; graph v1 could not "
+                "represent a finding about metadata and could fail the Case B family."
+            ),
+            "occurrence_level_evidence": (
+                "Every dossier evidence node carries raw value, owner, locator, and provenance; "
+                "models receive only request-local aliases and resolution is server-side."
+            ),
+            "edge_contract": {
+                "finding_citation": "MODEL_FINDING-CITES-DOSSIER_EVIDENCE",
+                "finding_subject": "MODEL_FINDING-ABOUT-KEYWORD",
+                "occurrence_normalization": "DOSSIER_EVIDENCE-OBSERVES-KEYWORD",
+                "forbidden": "MODEL_FINDING-CITES-KEYWORD",
+                "about_integrity": (
+                    "ABOUT must match OBSERVES for cited metadata occurrence evidence; no "
+                    "cross-concept relationship is currently encoded"
+                ),
+            },
+            "governance": (
+                "CITES and ABOUT remain disabled candidate semantic signals and cannot promote "
+                "finding or evidence provenance."
+            ),
+            "source_digests": {
+                "enums": _file_digest(REPOSITORY_ROOT / "backend/app/domain/enums.py"),
+                "models": _file_digest(REPOSITORY_ROOT / "backend/app/graph/models.py"),
+                "builder": _file_digest(REPOSITORY_ROOT / "backend/app/graph/builder.py"),
+            },
+            "frozen_material": {
+                "benchmark_sha256": _file_digest(FROZEN_BENCHMARK),
+                "labels_families_splits_changed": False,
+                "fixture_validation_v1_rewritten": False,
+            },
+            "model_facing_contract": {
+                "prompt_text_changed_by_graph_correction": False,
+                "direct_serializer_changed_by_graph_correction": False,
+                "semantic_serializer_changed_by_graph_correction": False,
+                "request_local_aliasing_retained": True,
+                "direct_prompt_source_sha256": _file_digest(
+                    REPOSITORY_ROOT / "backend/app/baselines/prompts.py"
+                ),
+                "semantic_prompt_source_sha256": _file_digest(
+                    REPOSITORY_ROOT / "backend/app/analyzer/prompts.py"
+                ),
+                "direct_serializer_source_sha256": _file_digest(
+                    REPOSITORY_ROOT / "backend/app/baselines/direct.py"
+                ),
+                "semantic_serializer_source_sha256": _file_digest(
+                    REPOSITORY_ROOT / "backend/app/llm/serialization.py"
+                ),
+            },
         },
         "retrieval_configuration": retrieval_config,
         "evaluation_configuration": configuration,
@@ -619,6 +677,7 @@ def run_evaluation(configuration_id: str = CONFIGURATION_ID) -> EvaluationRun:
 
     paths = {
         "manifest": RESULT_DIRECTORY / "manifest.json",
+        "graph_build_manifest": RESULT_DIRECTORY / "graph-benchmark-build-manifest.json",
         "predictions": RESULT_DIRECTORY / "predictions.jsonl",
         "retrieval": RESULT_DIRECTORY / "retrieval-traces.jsonl",
         "per_case": RESULT_DIRECTORY / "per-case.csv",
@@ -631,6 +690,7 @@ def run_evaluation(configuration_id: str = CONFIGURATION_ID) -> EvaluationRun:
     }
     for path, content in (
         (paths["manifest"], manifest_json),
+        (paths["graph_build_manifest"], manifest_json),
         (paths["predictions"], prediction_jsonl),
         (paths["retrieval"], retrieval_jsonl),
         (paths["per_case"], per_case_csv),

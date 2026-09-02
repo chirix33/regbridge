@@ -2,7 +2,7 @@
   "additionalProperties": false,
   "properties": {
     "configuration_id": {
-      "const": "m3-fixture-all-systems-v1",
+      "const": "m3-fixture-all-systems-v2-graph-contract",
       "title": "Configuration Id",
       "type": "string"
     }

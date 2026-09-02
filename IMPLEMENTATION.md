@@ -183,6 +183,8 @@ At minimum:
 | `ApplicationContext` | Authority, center, application type, dates, standards, and operation. |
 | `CTDHeading` | A heading identifier and its availability in a standard version. |
 | `KeywordDefinition` | A controlled metadata name/value and applicable definition. |
+| `DossierEvidence` | One exact dossier occurrence with raw value, owner, locator, and deterministic provenance. |
+| `ModelFinding` | A non-enforceable candidate semantic finding grounded in supplied occurrence evidence. |
 | `ValidationCriterion` | A criterion identifier, severity, condition, and expected result. |
 | `LegacyLeaf` | A parsed v3.2.2 lifecycle leaf. |
 | `DossierDocument` | A referenced PDF or other allowed dossier file. |
@@ -191,7 +193,32 @@ At minimum:
 
 ### 7.3 Core edge types
 
-`VERSION_OF`, `SUPERSEDES`, `APPLIES_TO`, `DEFINED_BY`, `SUPPORTED_BY`, `LOCATED_UNDER`, `AVAILABLE_IN`, `REMOVED_IN`, `MAPS_TO`, `HAS_KEYWORD`, `REFERENCES_DOCUMENT`, `REPLACES`, `CONFLICTS_WITH`, `REQUIRES`, `PROHIBITS`, `RECOMMENDS`, `TRIGGERS_DECISION`, and `REQUIRES_REPAIR`.
+`VERSION_OF`, `SUPERSEDES`, `APPLIES_TO`, `DEFINED_BY`, `SUPPORTED_BY`, `LOCATED_UNDER`, `AVAILABLE_IN`, `REMOVED_IN`, `MAPS_TO`, `HAS_KEYWORD`, `CITES`, `ABOUT`, `OBSERVES`, `REFERENCES_DOCUMENT`, `REPLACES`, `CONFLICTS_WITH`, `REQUIRES`, `PROHIBITS`, `RECOMMENDS`, `TRIGGERS_DECISION`, and `REQUIRES_REPAIR`.
+
+Graph schema v2 represents semantic metadata evidence as:
+
+```text
+MODEL_FINDING --CITES--> DOSSIER_EVIDENCE
+MODEL_FINDING --ABOUT--> KEYWORD
+DOSSIER_EVIDENCE --OBSERVES--> KEYWORD
+```
+
+This is an author-01-approved M3 design deviation from the originally proposed discriminated
+occurrence-evidence union (`DOCUMENT_EVIDENCE`, `METADATA_EVIDENCE`, and
+`STRUCTURAL_EVIDENCE`). The union was **not implemented**. It was replaced by one
+`DOSSIER_EVIDENCE` occurrence node type carrying an `evidence_kind` discriminator. This simpler
+representation is semantically equivalent for the controlled M3 graph operations: every
+occurrence still carries raw value, owner, locator, and provenance; request-local aliases still
+protect durable identity; and Case A, B, and C evidence remains in the valid `CITES` range.
+The built edge is therefore `DOSSIER_EVIDENCE → OBSERVES → KEYWORD`, rather than the originally
+named `METADATA_EVIDENCE → OBSERVES → KEYWORD`. This deviation and its rationale are inputs to
+the evaluation configuration digest and are disclosed in graph-build and live-run manifests.
+
+`CITES → KEYWORD` is invalid. `ABOUT` never substitutes for an occurrence citation. For a
+metadata finding, its `ABOUT` target must equal the keyword `OBSERVES` target of cited metadata
+evidence unless a separately supported cross-concept relation is encoded; M3 encodes no such
+relation. Durable occurrence identifiers and provenance resolve server-side after de-aliasing;
+the model receives request-local aliases only.
 
 Every node and edge has a stable identifier and type. Regulatory graph assertions also carry:
 
@@ -318,6 +345,10 @@ Fail the build when:
 - an evidence span points to an unknown source digest;
 - an edge violates its domain or range;
 - a heading availability assertion has no standard version;
+- a model finding cites a concept instead of supplied occurrence evidence;
+- an `ABOUT` edge lacks occurrence-level `CITES` evidence or disagrees with the keyword
+  `OBSERVES` target of the cited metadata occurrence;
+- a model-originated `CITES` or `ABOUT` edge is promoted beyond disabled candidate status;
 - two source-verified or author-adjudicated assertions conflict at the same scope without an explicit conflict record;
 - a decision-triggering rule points to an unknown decision or repair;
 - a `hard` rule is based on `author_interpretation`, `semantic_inference`, or `synthetic_assumption`;
@@ -417,10 +448,11 @@ Tests and the default demo must use `fixture`. The live path must be opt-in and 
 - Reject unknown labels, uncited claims, malformed JSON, and citations to absent evidence.
 - Record prompt-template version, model configuration, token usage, latency, and validation errors.
 - Do not log API keys or entire uploaded documents.
-- The declared live evaluation permits an initial attempt plus two retries for transport,
-  refusal, schema, citation, incomplete-response, or answer-length failures, without changing
-  prompts/settings. Exhaustion is `invalid_output`, never a decision or abstention. Stop Phase 1
-  on a new failure class after finishing only that case's permitted retry sequence.
+- The declared live evaluation permits an initial attempt plus two retries only for transport
+  or provider-API failures, without changing prompts or settings. Refusal, schema, citation,
+  graph, persistence, synthesis, incomplete-response, and answer-length failures are
+  non-retryable. They halt Phase 1 immediately, remain `invalid_output`, roll back transactional
+  persistence, and carry a non-null auditable cause. A null retry cause is itself fatal.
 
 The semantic-risk output should distinguish direct observation from inference and include `abstain_reason`.
 
@@ -531,7 +563,7 @@ For model-based systems, hold model, decoding parameters, schema, and maximum re
 
 ### 14.2 Supporting metrics
 
-#### Declared development contract v2 (approval required before inference)
+#### Declared development contract v3 / graph schema v2
 
 All four final output schemas permit the same six decisions in `AGENTS.md` §5. B0/B1 direct
 outputs and RegBridge/B2 final repairs use one case-independent action enum derived from the
@@ -543,7 +575,9 @@ than restricting any model's output options to the benchmark distribution.
 
 The 11 action codes and all 11 effect-only definitions are approved by author-01 for the
 declared fresh Phase 1 development run. The approved packet and configuration digests are
-recorded in `data/evaluation/phase1-v2-approval.json`; this is not held-out authorization or
+The action packet approval remains recorded in `data/evaluation/phase1-v2-approval.json`.
+The subsequent graph-contract/retry-integrity development authorization is recorded separately
+in `data/evaluation/phase1-v3-approval.json`; neither is held-out authorization or
 a prompt freeze. Supply the identical alphabetically ordered code/definition packet to B0, B1,
 RegBridge's semantic request, and B2's scoring contract. Definitions describe effects, never
 trigger conditions or decision associations. Keep the two context-creation codes distinct:
@@ -594,6 +628,22 @@ existing runtime validator retained. Source artifacts, labels, and regulatory ru
 not changed by these contract corrections. Both schemas, the action/decision vocabulary,
 serializers, and scoring policy are included in the new configuration digest.
 
+`DirectDecisionOutput.severity` intentionally retains the complete decision-level severity
+vocabulary, including `unresolved`, because a direct system may issue a final human-review
+decision under unresolved uncertainty. That value is not allowed for `SemanticFinding`, whose
+informational/low/medium/high boundary preserves semantic-signal governance.
+
+Graph contract v2 is a versioned graph-build correction, not a benchmark-label change.
+Metadata occurrences remain `DOSSIER_EVIDENCE`; separate normalized `KEYWORD` nodes are linked
+by `OBSERVES`, while a model finding both `CITES` the occurrence and is `ABOUT` the keyword.
+The approved discriminated evidence union was not implemented; a single occurrence node with
+an `evidence_kind` discriminator replaced it as a simpler semantically equivalent M3
+representation. This approved deviation is a paper disclosure item and participates in live
+configuration digests.
+The prior frozen M3 fixture artifacts remain available for audit. A new deterministic validation
+build and manifest record the new graph schema, unchanged benchmark digest, prompt/serializer
+digests, and reproducible graph content digests.
+
 - decision accuracy;
 - heading mapping accuracy;
 - evidence citation precision/recall and citation validity;
@@ -639,13 +689,22 @@ being requested or taking effect in subsequent runs. Prompt wording is unchanged
 
 Both actual API output schemas, both validation schemas, both prompt templates, the wrapper
 instructions, serializers, reasoning effort, total output cap, final-answer bound, input limit,
-temperature handling, and retry policy participate in `configuration_sha256`.
+temperature handling, retry policy, graph domain/range contract, occurrence-identity policy,
+analysis pipeline, and persistence boundary participate in `configuration_sha256`.
 `prompt_template_digests` includes `direct_schema` and `semantic_schema`. Author approval must
 identify the prompts, derived cap, temperature handling, and complete configuration before
 Phase 2. The frozen configuration and prompt digests are recomputed before held-out loading,
-every repetition, and every dispatch; any mismatch aborts before the operation. Phase 2 remains
-inactive until explicit author-01 approval. FDA availability remains `not_operational` and
-`expert_validated: false` throughout.
+every repetition, and every dispatch; any mismatch aborts before the operation. Author-01
+approved Phase 1 as complete and authorized the Phase 2 prompt freeze on 2026-09-01. The
+held-out configuration uses `gpt-5.5`, reasoning effort `medium`,
+`max_output_tokens: 4000`, the unchanged 800-token structured-answer limit, the unchanged
+16,000-character input limit, omitted temperature with
+`unsupported_by_endpoint_parameter`, and the existing transport/provider-API-only retry
+policy. The prepared manifest exposes both frozen digests before the held-out bundle is loaded.
+Three repetitions per live system remain separate runs; do not vote, pool, or substitute cached
+responses. B2 is recomputed once without a model call. Only a complete Phase 2 held-out audit
+may set `eligible_for_performance_claims: true`. FDA availability remains `not_operational`
+and `expert_validated: false` throughout.
 
 ### 14.4 M3 presentation safeguards
 

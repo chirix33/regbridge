@@ -7,8 +7,13 @@ from pydantic import SecretStr, ValidationError
 def test_default_configuration_is_offline(monkeypatch: pytest.MonkeyPatch) -> None:
     for key in ("LLM_MODE", "LLM_BASE_URL", "LLM_API_KEY", "LLM_MODEL"):
         monkeypatch.delenv(key, raising=False)
+    monkeypatch.setitem(Settings.model_config, "env_file", None)
 
-    settings = Settings(llm_base_url=None, llm_api_key=None, llm_model=None)
+    settings = Settings(
+        llm_base_url=None,
+        llm_api_key=None,
+        llm_model=None,
+    )
 
     assert settings.llm_mode == LlmMode.FIXTURE
     assert settings.llm_api_key is None

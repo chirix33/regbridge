@@ -48,7 +48,7 @@ def valid_analysis_payload() -> dict[str, object]:
         "evidence": [],
         "rationale": "No material finding in this synthetic contract example.",
         "repair": {
-            "type": "no-action",
+            "type": "NO_MATERIAL_REPAIR",
             "description": "No repair is supported or required.",
             "evidence_ids": [],
         },

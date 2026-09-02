@@ -10,7 +10,9 @@
         "REQUIRES_REPAIR",
         "TRIGGERS_DECISION",
         "HAS_KEYWORD",
-        "CITES"
+        "CITES",
+        "ABOUT",
+        "OBSERVES"
       ],
       "title": "EdgeType",
       "type": "string"

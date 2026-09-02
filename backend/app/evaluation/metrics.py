@@ -1,5 +1,6 @@
 import math
 import random
+from typing import Literal
 
 from app.domain.enums import Decision, Severity
 from app.evaluation.models import (
@@ -20,6 +21,14 @@ REPRESENTED_CLASSES = (
     Decision.REUSE_AS_LEGACY_REFERENCE,
     Decision.HUMAN_REGULATORY_REVIEW,
 )
+
+MetricsScope = Literal[
+    "held-out-test",
+    "all-cases-secondary",
+    "phase1-train",
+    "phase1-development",
+    "phase1-train-development",
+]
 
 
 def wilson_interval(numerator: int, denominator: int) -> tuple[float | None, float | None]:
@@ -84,7 +93,7 @@ def score_system(
     cases: tuple[BenchmarkCase, ...],
     predictions: tuple[SystemPrediction, ...],
     retrieval_traces: tuple[RetrievalTrace, ...],
-    scope: str,
+    scope: MetricsScope,
     seed: int,
     regulatory_evidence_ids: frozenset[str],
 ) -> tuple[MetricsReport, tuple[CaseEvaluation, ...]]:
@@ -260,7 +269,7 @@ def score_system(
             "exploratory only; no independence or significance claim"
             if system == "B2" else "scorer validation only; no statistical interpretation"
         ),
-        scope=scope,  # type: ignore[arg-type]
+        scope=scope,
         represented_classes=REPRESENTED_CLASSES,
         unsafe_false_negative_rate=_rate(unsafe_numerator, unsafe_denominator),
         high_blocking_unsafe_false_negative_rate=_rate(high_numerator, high_denominator),

@@ -4,6 +4,7 @@ import json
 import os
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Literal, cast
 from uuid import uuid4
 
 from app.config import REPOSITORY_ROOT
@@ -87,7 +88,7 @@ def promote_approved_ledger(
                 target_context_id=candidate.target_context_id,
                 target_context=candidate.target_context,
                 fixture_family=candidate.fixture_family,
-                split=candidate.split,  # type: ignore[arg-type]
+                split=cast(Literal["train", "development", "test"], candidate.split),
                 mutation=candidate.mutation.model_dump(),
                 package_sha256=candidate.input_hashes.package_sha256,
                 selected_file_sha256=candidate.input_hashes.selected_file_sha256,
@@ -99,7 +100,10 @@ def promote_approved_ledger(
                     decision=candidate.reference_decision,
                     severity=candidate.reference_severity,
                     action=candidate.action,
-                    action_mode=candidate.action_mode,  # type: ignore[arg-type]
+                    action_mode=cast(
+                        Literal["required_condition", "suggested_check", "no_action"],
+                        candidate.action_mode,
+                    ),
                     required_rule_ids=candidate.required_rule_ids,
                     acceptable_evidence_ids=candidate.acceptable_evidence_ids,
                     human_review_required=candidate.human_review_required,
