@@ -3,6 +3,9 @@ import type {
   ApplicationInventory,
   FixtureListResponse,
   GraphNeighborhood,
+  DemoPresetsResponse,
+  M4PresentationCasesResponse,
+  M4PresentationResponse,
   MetadataPlan,
   ScenarioMode,
   ScopeResponse,
@@ -39,6 +42,18 @@ export function getStandardsSnapshot(): Promise<StandardsSnapshotResponse> {
 
 export function getFixtures(): Promise<FixtureListResponse> {
   return getJson<FixtureListResponse>("/api/v1/fixtures");
+}
+
+export function getM3Presentation(): Promise<M4PresentationResponse> {
+  return getJson<M4PresentationResponse>("/api/v1/presentation/m3");
+}
+
+export function getM3PresentationCases(): Promise<M4PresentationCasesResponse> {
+  return getJson<M4PresentationCasesResponse>("/api/v1/presentation/m3/cases");
+}
+
+export function getDemoPresets(): Promise<DemoPresetsResponse> {
+  return getJson<DemoPresetsResponse>("/api/v1/demo/presets");
 }
 
 export async function parseFixture(fixtureId: string): Promise<ApplicationInventory> {

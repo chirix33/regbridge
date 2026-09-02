@@ -48,7 +48,7 @@ from app.evaluation.live_phase1 import (
     _validate_outcomes_for_write,
 )
 from app.evaluation.metrics import score_system
-from app.evaluation.models import BenchmarkCase, CaseEvaluation, SystemPrediction
+from app.evaluation.models import BenchmarkCase, CaseEvaluation
 from app.evaluation.phase2_b2 import Phase2B2Rescore, rescore_phase2_b2
 from app.evaluation.phase2_bundle import (
     PHASE2_BUNDLE,
@@ -66,6 +66,12 @@ PHASE2_RESULTS_ROOT = REPOSITORY_ROOT / "results" / "live"
 PHASE2_PAPER_ROOT = REPOSITORY_ROOT / "paper" / "tables" / "live"
 PHASE2_SCHEDULED_OUTCOMES = PHASE2_CASE_COUNT * len(LIVE_SYSTEMS) * PHASE2_REPETITIONS
 PHASE2_RUN_ID_PATTERN = re.compile(r"^m3-live-phase2-[0-9]{8}T[0-9]{12}Z$")
+
+__all__ = [
+    "REPOSITORY_ROOT",
+    "BM25Retriever",
+    "EvidenceRegistry",
+]
 
 
 class LivePhase2Error(RuntimeError):
@@ -218,7 +224,7 @@ def _load_prepared_manifest(run_id: str, gate: HeldOutApprovalGate) -> dict[str,
         or manifest.get("benchmark", {}).get("held_out_loaded_at_manifest_creation") is not False
     ):
         raise LivePhase2Error("Prepared Phase 2 manifest failed integrity validation")
-    return manifest
+    return cast(dict[str, Any], manifest)
 
 
 def _validate_repetition_outcomes(outcomes: tuple[RepetitionOutcome, ...]) -> None:
@@ -245,8 +251,7 @@ def _score_repetitions(
             if len(system_outcomes) != PHASE2_CASE_COUNT:
                 continue
             predictions = tuple(
-                cast(SystemPrediction, item.prediction)
-                for item in system_outcomes if item.prediction is not None
+                item.prediction for item in system_outcomes if item.prediction is not None
             )
             if not predictions:
                 continue

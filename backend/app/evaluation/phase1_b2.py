@@ -9,13 +9,17 @@ from app.config import REPOSITORY_ROOT, Settings
 from app.domain.enums import Decision, LlmMode
 from app.domain.vocabulary import action_vocabulary_disclosure, output_vocabulary
 from app.evaluation.live_configuration import configuration_material, content_digest
-from app.evaluation.metrics import score_system
+from app.evaluation.metrics import MetricsScope, score_system
 from app.evaluation.models import CaseInput, MetricsReport, SystemPrediction
 from app.evaluation.phase1_bundle import Phase1Bundle, Phase1FixtureMetadata
 from app.parsers.ectd322 import parse_directory
 from app.standards.evidence import EvidenceRegistry
 
 B2_RESULT_STATUS = "genuine deterministic experimental output"
+
+__all__ = [
+    "OmittedSemanticModel",
+]
 
 
 def scoring_contract() -> dict[str, Any]:
@@ -126,10 +130,11 @@ async def rescore_b2(bundle: Phase1Bundle, *, seed: int) -> B2Rescore:
     # Reference labels are joined only here, after all predictions exist.
     evidence_ids = frozenset(item.id for item in EvidenceRegistry().load())
     reports = []
-    for scope, splits in (
+    scoped_splits: tuple[tuple[MetricsScope, set[str]], ...] = (
         ("phase1-train", {"train"}), ("phase1-development", {"development"}),
         ("phase1-train-development", {"train", "development"}),
-    ):
+    )
+    for scope, splits in scoped_splits:
         cases = tuple(item for item in bundle.cases if item.split in splits)
         ids = {item.case_id for item in cases}
         report, _ = score_system(

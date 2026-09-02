@@ -1,5 +1,6 @@
 from datetime import date
 from pathlib import Path
+from typing import Any
 
 import pytest
 from app.analyzer.repository import AnalysisRepository
@@ -46,7 +47,7 @@ def service(tmp_path: Path) -> AnalysisService:
     return AnalysisService(repository=AnalysisRepository(tmp_path / "analyses.sqlite3"))
 
 
-def analyze(fixture_id: str, target_context: TargetContext, tmp_path: Path):
+def analyze(fixture_id: str, target_context: TargetContext, tmp_path: Path) -> Any:
     inventory = FixtureCatalog().parse(fixture_id)
     return service(tmp_path).analyze(inventory, inventory.leaves[0].id, target_context)
 

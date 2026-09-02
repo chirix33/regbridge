@@ -2,12 +2,31 @@ import csv
 import hashlib
 import io
 import json
+import shutil
+from collections.abc import Generator
 from pathlib import Path
 
 import pytest
 from app.evaluation import runner
 from app.evaluation.metrics import wilson_interval
 from app.evaluation.runner import CONFIGURATION_ID, run_evaluation
+
+
+@pytest.fixture(autouse=True)
+def isolated_runner_artifacts(monkeypatch: pytest.MonkeyPatch) -> Generator[None]:
+    result_directory = runner.REPOSITORY_ROOT / "results" / "validation" / ".pytest-m3-runner"
+    paper_directory = (
+        runner.REPOSITORY_ROOT / "paper" / "tables" / "validation" / ".pytest-m3-runner"
+    )
+    shutil.rmtree(result_directory, ignore_errors=True)
+    shutil.rmtree(paper_directory, ignore_errors=True)
+    monkeypatch.setattr(runner, "RESULT_DIRECTORY", result_directory)
+    monkeypatch.setattr(runner, "PAPER_DIRECTORY", paper_directory)
+    monkeypatch.setattr(runner, "PAPER_DETERMINISTIC_DIRECTORY", paper_directory / "deterministic")
+    monkeypatch.setattr(runner, "PAPER_RETRIEVAL_DIRECTORY", paper_directory / "retrieval")
+    yield
+    shutil.rmtree(result_directory, ignore_errors=True)
+    shutil.rmtree(paper_directory, ignore_errors=True)
 
 
 def test_wilson_interval_matches_held_out_zero_miss_boundary() -> None:

@@ -58,7 +58,7 @@ def test_semantic_schema_matches_validator_without_relaxing_second_boundary() ->
     ]
     forged = SemanticFinding.model_construct(
         id="synthetic-finding", basis="observation", summary="Synthetic",
-        severity=Severity.UNRESOLVED, evidence_ids=("supplied-001",),
+        severity=Severity.UNRESOLVED, evidence_ids=("supplied-001",),  # type: ignore[arg-type]
         category="ambiguous_reference",
     )
     with pytest.raises(ValidationError, match="may not claim blocking or unresolved"):

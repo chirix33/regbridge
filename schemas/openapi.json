@@ -480,6 +480,96 @@
         "title": "Decision",
         "type": "string"
       },
+      "DemoPreset": {
+        "additionalProperties": false,
+        "properties": {
+          "fixture_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Fixture Id",
+            "type": "string"
+          },
+          "id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "metadata_plan": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metadata Plan"
+          },
+          "primary_path": {
+            "title": "Primary Path",
+            "type": "boolean"
+          },
+          "purpose": {
+            "title": "Purpose",
+            "type": "string"
+          },
+          "route": {
+            "enum": [
+              "/demo/case-a",
+              "/demo/case-b",
+              "/demo/case-c"
+            ],
+            "title": "Route",
+            "type": "string"
+          },
+          "scenario_mode": {
+            "const": "prospective_forward_compatibility",
+            "title": "Scenario Mode",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "route",
+          "label",
+          "fixture_id",
+          "purpose",
+          "primary_path",
+          "scenario_mode"
+        ],
+        "title": "DemoPreset",
+        "type": "object"
+      },
+      "DemoPresetsResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "presets": {
+            "items": {
+              "$ref": "#/components/schemas/DemoPreset"
+            },
+            "title": "Presets",
+            "type": "array"
+          }
+        },
+        "required": [
+          "presets"
+        ],
+        "title": "DemoPresetsResponse",
+        "type": "object"
+      },
       "DossierEvidence": {
         "additionalProperties": false,
         "properties": {
@@ -1304,6 +1394,262 @@
         "title": "LlmMode",
         "type": "string"
       },
+      "M4PresentationCasesResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "cases": {
+            "items": {
+              "$ref": "#/components/schemas/PresentationCaseTrace"
+            },
+            "title": "Cases",
+            "type": "array"
+          },
+          "snapshot_version": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Snapshot Version",
+            "type": "string"
+          },
+          "source_run_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Source Run Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "snapshot_version",
+          "source_run_id",
+          "cases"
+        ],
+        "title": "M4PresentationCasesResponse",
+        "type": "object"
+      },
+      "M4PresentationResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "snapshot": {
+            "$ref": "#/components/schemas/M4PresentationSnapshot"
+          }
+        },
+        "required": [
+          "snapshot"
+        ],
+        "title": "M4PresentationResponse",
+        "type": "object"
+      },
+      "M4PresentationSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "benchmark_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Benchmark Sha256",
+            "type": "string"
+          },
+          "cases": {
+            "items": {
+              "$ref": "#/components/schemas/PresentationCaseTrace"
+            },
+            "maxItems": 12,
+            "minItems": 12,
+            "title": "Cases",
+            "type": "array"
+          },
+          "completion_audit": {
+            "additionalProperties": true,
+            "title": "Completion Audit",
+            "type": "object"
+          },
+          "correction_ledger_path": {
+            "title": "Correction Ledger Path",
+            "type": "string"
+          },
+          "cost_summary": {
+            "additionalProperties": true,
+            "title": "Cost Summary",
+            "type": "object"
+          },
+          "current_fda_operational_availability": {
+            "const": "not_operational",
+            "title": "Current Fda Operational Availability",
+            "type": "string"
+          },
+          "demo_presets": {
+            "items": {
+              "$ref": "#/components/schemas/DemoPreset"
+            },
+            "title": "Demo Presets",
+            "type": "array"
+          },
+          "disclosure": {
+            "title": "Disclosure",
+            "type": "string"
+          },
+          "eligible_for_performance_claims": {
+            "const": true,
+            "title": "Eligible For Performance Claims",
+            "type": "boolean"
+          },
+          "empirical_model_run": {
+            "const": true,
+            "title": "Empirical Model Run",
+            "type": "boolean"
+          },
+          "expert_validated": {
+            "const": false,
+            "title": "Expert Validated",
+            "type": "boolean"
+          },
+          "frozen_configuration_digest": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Frozen Configuration Digest",
+            "type": "string"
+          },
+          "frozen_prompt_digest": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Frozen Prompt Digest",
+            "type": "string"
+          },
+          "generated_from": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Generated From",
+            "type": "object"
+          },
+          "graph_contract_disclosure": {
+            "title": "Graph Contract Disclosure",
+            "type": "string"
+          },
+          "headline_scope": {
+            "const": "held-out-test",
+            "title": "Headline Scope",
+            "type": "string"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "metric_ranges": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "type": "object"
+              },
+              "type": "object"
+            },
+            "title": "Metric Ranges",
+            "type": "object"
+          },
+          "metric_reports": {
+            "items": {
+              "$ref": "#/components/schemas/PresentationMetricReport"
+            },
+            "title": "Metric Reports",
+            "type": "array"
+          },
+          "repository_commit": {
+            "title": "Repository Commit",
+            "type": "string"
+          },
+          "retrieval_summary": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retrieval Summary"
+          },
+          "run_type": {
+            "const": "live_model_run",
+            "title": "Run Type",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "m4.presentation.v1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "snapshot_sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Snapshot Sha256"
+          },
+          "snapshot_version": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Snapshot Version",
+            "type": "string"
+          },
+          "source_run_directory": {
+            "title": "Source Run Directory",
+            "type": "string"
+          },
+          "source_run_file_sha256": {
+            "additionalProperties": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "title": "Source Run File Sha256",
+            "type": "object"
+          },
+          "source_run_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Source Run Id",
+            "type": "string"
+          },
+          "usage_summary": {
+            "additionalProperties": true,
+            "title": "Usage Summary",
+            "type": "object"
+          }
+        },
+        "required": [
+          "schema_version",
+          "snapshot_version",
+          "source_run_id",
+          "source_run_directory",
+          "source_run_file_sha256",
+          "repository_commit",
+          "benchmark_sha256",
+          "frozen_prompt_digest",
+          "frozen_configuration_digest",
+          "generated_from",
+          "run_type",
+          "empirical_model_run",
+          "eligible_for_performance_claims",
+          "current_fda_operational_availability",
+          "expert_validated",
+          "headline_scope",
+          "disclosure",
+          "limitations",
+          "completion_audit",
+          "metric_reports",
+          "metric_ranges",
+          "retrieval_summary",
+          "usage_summary",
+          "cost_summary",
+          "cases",
+          "demo_presets",
+          "graph_contract_disclosure",
+          "correction_ledger_path"
+        ],
+        "title": "M4PresentationSnapshot",
+        "type": "object"
+      },
       "ManufacturerPartitioning": {
         "enum": [
           "unnecessary",
@@ -1868,6 +2214,393 @@
           "source_locator"
         ],
         "title": "ParsedLeaf",
+        "type": "object"
+      },
+      "PresentationCasePrediction": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "title": "Action",
+            "type": "string"
+          },
+          "cost_usd": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cost Usd"
+          },
+          "decision": {
+            "title": "Decision",
+            "type": "string"
+          },
+          "evidence_ids": {
+            "items": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "failure": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure"
+          },
+          "human_review_required": {
+            "title": "Human Review Required",
+            "type": "boolean"
+          },
+          "latency_ms": {
+            "title": "Latency Ms",
+            "type": "number"
+          },
+          "outcome": {
+            "title": "Outcome",
+            "type": "string"
+          },
+          "outside_represented_class": {
+            "title": "Outside Represented Class",
+            "type": "boolean"
+          },
+          "repetition_index": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Repetition Index"
+          },
+          "requests": {
+            "title": "Requests",
+            "type": "integer"
+          },
+          "result_status": {
+            "title": "Result Status",
+            "type": "string"
+          },
+          "review_bypass": {
+            "title": "Review Bypass",
+            "type": "boolean"
+          },
+          "rule_ids": {
+            "default": [],
+            "items": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+              "type": "string"
+            },
+            "title": "Rule Ids",
+            "type": "array"
+          },
+          "system": {
+            "enum": [
+              "B0",
+              "B1",
+              "B2",
+              "RegBridge"
+            ],
+            "title": "System",
+            "type": "string"
+          },
+          "unsafe_false_negative": {
+            "title": "Unsafe False Negative",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "system",
+          "repetition_index",
+          "result_status",
+          "outcome",
+          "decision",
+          "action",
+          "human_review_required",
+          "evidence_ids",
+          "unsafe_false_negative",
+          "review_bypass",
+          "outside_represented_class",
+          "cost_usd",
+          "latency_ms",
+          "requests"
+        ],
+        "title": "PresentationCasePrediction",
+        "type": "object"
+      },
+      "PresentationCaseTrace": {
+        "additionalProperties": false,
+        "properties": {
+          "archetype": {
+            "title": "Archetype",
+            "type": "string"
+          },
+          "case_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Case Id",
+            "type": "string"
+          },
+          "decision_fingerprint_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Decision Fingerprint Sha256",
+            "type": "string"
+          },
+          "fixture_family": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Fixture Family",
+            "type": "string"
+          },
+          "fixture_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Fixture Id",
+            "type": "string"
+          },
+          "mutation": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Mutation",
+            "type": "object"
+          },
+          "package_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Package Sha256",
+            "type": "string"
+          },
+          "predictions": {
+            "items": {
+              "$ref": "#/components/schemas/PresentationCasePrediction"
+            },
+            "title": "Predictions",
+            "type": "array"
+          },
+          "reference_action": {
+            "title": "Reference Action",
+            "type": "string"
+          },
+          "reference_decision": {
+            "title": "Reference Decision",
+            "type": "string"
+          },
+          "reference_human_review_required": {
+            "title": "Reference Human Review Required",
+            "type": "boolean"
+          },
+          "reference_severity": {
+            "title": "Reference Severity",
+            "type": "string"
+          },
+          "selected_file_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Selected File Sha256",
+            "type": "string"
+          },
+          "selected_leaf_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Selected Leaf Id",
+            "type": "string"
+          },
+          "split": {
+            "const": "test",
+            "title": "Split",
+            "type": "string"
+          },
+          "varied_predictions": {
+            "title": "Varied Predictions",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "case_id",
+          "fixture_id",
+          "fixture_family",
+          "archetype",
+          "split",
+          "selected_leaf_id",
+          "reference_decision",
+          "reference_action",
+          "reference_severity",
+          "reference_human_review_required",
+          "mutation",
+          "package_sha256",
+          "selected_file_sha256",
+          "decision_fingerprint_sha256",
+          "predictions",
+          "varied_predictions"
+        ],
+        "title": "PresentationCaseTrace",
+        "type": "object"
+      },
+      "PresentationMetricReport": {
+        "additionalProperties": false,
+        "properties": {
+          "accuracy": {
+            "title": "Accuracy",
+            "type": "number"
+          },
+          "cost_usd": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cost Usd"
+          },
+          "family_sensitivity": {
+            "default": [],
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Family Sensitivity",
+            "type": "array"
+          },
+          "input_tokens": {
+            "title": "Input Tokens",
+            "type": "integer"
+          },
+          "invalid_output_rate": {
+            "title": "Invalid Output Rate",
+            "type": "number"
+          },
+          "invalid_outputs": {
+            "title": "Invalid Outputs",
+            "type": "integer"
+          },
+          "latency_ms_total": {
+            "title": "Latency Ms Total",
+            "type": "number"
+          },
+          "macro_f1": {
+            "title": "Macro F1",
+            "type": "number"
+          },
+          "output_tokens": {
+            "title": "Output Tokens",
+            "type": "integer"
+          },
+          "outside_represented_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outside Represented Rate"
+          },
+          "repetition_index": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Repetition Index"
+          },
+          "requests": {
+            "title": "Requests",
+            "type": "integer"
+          },
+          "result_status": {
+            "title": "Result Status",
+            "type": "string"
+          },
+          "retrieval": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retrieval"
+          },
+          "review_bypass_rate": {
+            "$ref": "#/components/schemas/PresentationRate"
+          },
+          "system": {
+            "enum": [
+              "B0",
+              "B1",
+              "B2",
+              "RegBridge"
+            ],
+            "title": "System",
+            "type": "string"
+          },
+          "unsafe_false_negative_rate": {
+            "$ref": "#/components/schemas/PresentationRate"
+          }
+        },
+        "required": [
+          "system",
+          "repetition_index",
+          "result_status",
+          "accuracy",
+          "macro_f1",
+          "unsafe_false_negative_rate",
+          "review_bypass_rate",
+          "outside_represented_rate",
+          "invalid_outputs",
+          "invalid_output_rate",
+          "requests",
+          "input_tokens",
+          "output_tokens",
+          "latency_ms_total",
+          "cost_usd"
+        ],
+        "title": "PresentationMetricReport",
+        "type": "object"
+      },
+      "PresentationRate": {
+        "additionalProperties": false,
+        "properties": {
+          "denominator": {
+            "title": "Denominator",
+            "type": "integer"
+          },
+          "numerator": {
+            "title": "Numerator",
+            "type": "integer"
+          },
+          "rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rate"
+          }
+        },
+        "required": [
+          "numerator",
+          "denominator",
+          "rate"
+        ],
+        "title": "PresentationRate",
         "type": "object"
       },
       "RateMetric": {
@@ -3282,6 +4015,27 @@
         ]
       }
     },
+    "/api/v1/demo/presets": {
+      "get": {
+        "operationId": "get_demo_presets_api_v1_demo_presets_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoPresetsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Demo Presets",
+        "tags": [
+          "presentation"
+        ]
+      }
+    },
     "/api/v1/evaluations": {
       "post": {
         "operationId": "create_evaluation_api_v1_evaluations_post",
@@ -3383,6 +4137,90 @@
         "summary": "Fixtures",
         "tags": [
           "analysis"
+        ]
+      }
+    },
+    "/api/v1/presentation/m3": {
+      "get": {
+        "operationId": "get_m3_presentation_api_v1_presentation_m3_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/M4PresentationResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get M3 Presentation",
+        "tags": [
+          "presentation"
+        ]
+      }
+    },
+    "/api/v1/presentation/m3/cases": {
+      "get": {
+        "operationId": "get_m3_presentation_cases_api_v1_presentation_m3_cases_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/M4PresentationCasesResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get M3 Presentation Cases",
+        "tags": [
+          "presentation"
+        ]
+      }
+    },
+    "/api/v1/presentation/m3/cases/{case_id}": {
+      "get": {
+        "operationId": "get_m3_presentation_case_api_v1_presentation_m3_cases__case_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "case_id",
+            "required": true,
+            "schema": {
+              "title": "Case Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/M4PresentationCasesResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get M3 Presentation Case",
+        "tags": [
+          "presentation"
         ]
       }
     },

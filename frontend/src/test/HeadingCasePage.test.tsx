@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import App from "../App";
@@ -214,7 +214,7 @@ describe("M1 heading case", () => {
     const decision = screen.getByText("REUSE WITH NEW CONTEXT");
     const results = decision.closest(".analysis-results");
     expect(results).not.toBeNull();
-    expect(results).toHaveFocus();
+    await waitFor(() => expect(results).toHaveFocus());
     expect(scrollIntoView).toHaveBeenCalledTimes(1);
   });
 

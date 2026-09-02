@@ -10,11 +10,14 @@ from app.api.contracts import (
     AnalysisResponse,
     BaselineRunRequest,
     BaselineRunResponse,
+    DemoPresetsResponse,
     EvaluationCreateRequest,
     EvaluationResponse,
     FixtureListResponse,
     GraphResponse,
     HealthResponse,
+    M4PresentationCasesResponse,
+    M4PresentationResponse,
     ScopeResponse,
     StandardSourceSummary,
     StandardsSnapshotResponse,
@@ -33,6 +36,7 @@ from app.evaluation.benchmark import load_frozen_benchmark
 from app.evaluation.jobs import EvaluationBusyError, EvaluationManager
 from app.parsers.ectd322 import EctdParseError, FixtureCatalog, parse_zip
 from app.parsers.models import ApplicationInventory
+from app.presentation.repository import load_m4_snapshot
 from app.standards.operational import OperationalStatusRegistry
 from app.standards.registry import StandardsRegistry
 
@@ -119,6 +123,9 @@ def scope(
             "frozen-benchmark",
             "baseline-runner",
             "deterministic-evaluation",
+            "m4-presentation-snapshot",
+            "m4-evaluation-dashboard",
+            "m4-guided-demo",
         ),
         planned_archetypes=(
             "unavailable-heading",
@@ -289,3 +296,57 @@ def get_evaluation(evaluation_id: str) -> EvaluationResponse:
         return EvaluationResponse(evaluation=_evaluation_manager.get(evaluation_id))
     except KeyError as error:
         raise HTTPException(status_code=404, detail=str(error)) from error
+
+
+@router.get(
+    "/api/v1/presentation/m3",
+    response_model=M4PresentationResponse,
+    tags=["presentation"],
+)
+def get_m3_presentation() -> M4PresentationResponse:
+    try:
+        return M4PresentationResponse(snapshot=load_m4_snapshot())
+    except (FileNotFoundError, ValueError) as error:
+        raise HTTPException(status_code=503, detail=str(error)) from error
+
+
+@router.get(
+    "/api/v1/presentation/m3/cases",
+    response_model=M4PresentationCasesResponse,
+    tags=["presentation"],
+)
+def get_m3_presentation_cases() -> M4PresentationCasesResponse:
+    snapshot = load_m4_snapshot()
+    return M4PresentationCasesResponse(
+        snapshot_version=snapshot.snapshot_version,
+        source_run_id=snapshot.source_run_id,
+        cases=snapshot.cases,
+    )
+
+
+@router.get(
+    "/api/v1/presentation/m3/cases/{case_id}",
+    response_model=M4PresentationCasesResponse,
+    tags=["presentation"],
+)
+def get_m3_presentation_case(case_id: str) -> M4PresentationCasesResponse:
+    if "/" in case_id or "\\" in case_id or ".." in case_id:
+        raise HTTPException(status_code=422, detail="case_id must be an opaque case identifier")
+    snapshot = load_m4_snapshot()
+    matching = tuple(case for case in snapshot.cases if case.case_id == case_id)
+    if not matching:
+        raise HTTPException(status_code=404, detail="presentation case not found")
+    return M4PresentationCasesResponse(
+        snapshot_version=snapshot.snapshot_version,
+        source_run_id=snapshot.source_run_id,
+        cases=matching,
+    )
+
+
+@router.get(
+    "/api/v1/demo/presets",
+    response_model=DemoPresetsResponse,
+    tags=["presentation"],
+)
+def get_demo_presets() -> DemoPresetsResponse:
+    return DemoPresetsResponse(presets=load_m4_snapshot().demo_presets)

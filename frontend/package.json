@@ -8,7 +8,9 @@
     "build": "tsc -b && vite build",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc -b --pretty false",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "capture:m4": "node e2e/m4-capture.cjs"
   },
   "dependencies": {
     "@tanstack/react-query": "5.90.20",
@@ -18,7 +20,9 @@
     "react-router-dom": "7.13.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.11.0",
     "@eslint/js": "9.39.3",
+    "@playwright/test": "1.57.0",
     "@tailwindcss/vite": "4.1.18",
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "16.3.2",

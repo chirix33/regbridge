@@ -1,0 +1,4119 @@
+{
+  "benchmark_sha256": "9b1e94fd0709cbbe8573e6882687b931d88c1da775932f0cbaf9dd55eca6fc75",
+  "cases": [
+    {
+      "archetype": "unavailable-heading",
+      "case_id": "A002",
+      "decision_fingerprint_sha256": "30396393b06e8f2823c3983a695beff8c89ddc640ecd81091be0acfe5b6e2c36",
+      "fixture_family": "a-removed-3212-lifecycle",
+      "fixture_id": "case-a-removed-3212",
+      "mutation": {
+        "exact": "new leaf beneath 3.2.S.1.2",
+        "type": "canonical"
+      },
+      "package_sha256": "9b01638c96bf8e715b0f63100e7b34750d4c9a31dc1d52fcd1b7fd8b14922485",
+      "predictions": [
+        {
+          "action": "AUTHOR_REVIEW_HEADING_MAPPING",
+          "cost_usd": 0.061235,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-3211-3213-removed",
+            "ev-ctoc-321-remains",
+            "ev-tcg-new-context-and-reuse",
+            "ev-tcg-hyperlinks-relevant-to-context"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 37674.31069999293,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.044825000000000004,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "ev-ctoc-3211-3213-removed",
+            "ev-tcg-new-context-and-reuse"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 22360.54989999684,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "AUTHOR_REVIEW_HEADING_MAPPING",
+          "cost_usd": 0.029735,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-3211-3213-removed",
+            "ev-ctoc-321-remains",
+            "ev-tcg-new-context-and-reuse"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 12382.862600003136,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.026615,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 13283.178199999384,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.026314999999999998,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 11736.597600000096,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.027125,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "ev-tcg-new-context-and-reuse"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 12081.752600002801,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT",
+          "cost_usd": 0.0,
+          "decision": "REUSE_WITH_NEW_CONTEXT",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "ev-ctoc-3211-3213-removed",
+            "ev-tcg-new-context-and-reuse",
+            "ev-tcg-replacement-context-same"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 0.0,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": null,
+          "requests": 0,
+          "result_status": "genuine deterministic experimental output",
+          "review_bypass": false,
+          "rule_ids": [
+            "FDA-CDER-M1-REMOVED-SUBHEADING-001"
+          ],
+          "system": "B2",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT",
+          "cost_usd": 0.007445,
+          "decision": "REUSE_WITH_NEW_CONTEXT",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "ev-ctoc-3211-3213-removed",
+            "ev-tcg-new-context-and-reuse",
+            "ev-tcg-replacement-context-same"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 2682.82720001298,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [
+            "FDA-CDER-M1-REMOVED-SUBHEADING-001"
+          ],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT",
+          "cost_usd": 0.006665,
+          "decision": "REUSE_WITH_NEW_CONTEXT",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "ev-ctoc-3211-3213-removed",
+            "ev-tcg-new-context-and-reuse",
+            "ev-tcg-replacement-context-same"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 2545.7190000015544,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [
+            "FDA-CDER-M1-REMOVED-SUBHEADING-001"
+          ],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT",
+          "cost_usd": 0.006815,
+          "decision": "REUSE_WITH_NEW_CONTEXT",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "ev-ctoc-3211-3213-removed",
+            "ev-tcg-new-context-and-reuse",
+            "ev-tcg-replacement-context-same"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 2989.6219999936875,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [
+            "FDA-CDER-M1-REMOVED-SUBHEADING-001"
+          ],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        }
+      ],
+      "reference_action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT",
+      "reference_decision": "REUSE_WITH_NEW_CONTEXT",
+      "reference_human_review_required": true,
+      "reference_severity": "blocking",
+      "selected_file_sha256": "d9a0f23ea9492d8f33521bd9142657ef805afed4ba27229c3da82df49164d4aa",
+      "selected_leaf_id": "leaf-3212",
+      "split": "test",
+      "varied_predictions": true
+    },
+    {
+      "archetype": "unavailable-heading",
+      "case_id": "A005",
+      "decision_fingerprint_sha256": "b8380c8acd958779df47449c71ce7658a7b03590c19e40d0bb29f2ad87147f99",
+      "fixture_family": "a-removed-3212-lifecycle",
+      "fixture_id": "case-a-005-append-3212",
+      "mutation": {
+        "exact": "selected append leaf modifies existing predecessor leaf-a005-predecessor beneath 3.2.S.1.2",
+        "type": "lifecycle"
+      },
+      "package_sha256": "4018801c2b103d2bfd60c2071efe97f12f3be72ebf9224e6ce2423d1a322d753",
+      "predictions": [
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT",
+          "cost_usd": 0.02889,
+          "decision": "REUSE_WITH_NEW_CONTEXT",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "ev-ctoc-3211-3213-removed",
+            "ev-tcg-new-context-and-reuse"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 10944.39560000319,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT",
+          "cost_usd": 0.03,
+          "decision": "REUSE_WITH_NEW_CONTEXT",
+          "evidence_ids": [
+            "leaf-a005-selected-text-p1-1",
+            "ev-ctoc-321-remains",
+            "ev-ctoc-3211-3213-removed",
+            "ev-tcg-new-context-and-reuse"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 11237.144099999568,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT",
+          "cost_usd": 0.029670000000000002,
+          "decision": "REUSE_WITH_NEW_CONTEXT",
+          "evidence_ids": [
+            "leaf-a005-selected-text-p1-1",
+            "ev-ctoc-321-remains",
+            "ev-ctoc-3211-3213-removed",
+            "ev-tcg-new-context-and-reuse"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 10286.585900001228,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT",
+          "cost_usd": 0.02808,
+          "decision": "REUSE_WITH_NEW_CONTEXT",
+          "evidence_ids": [
+            "leaf-a005-selected-text-p1-1",
+            "ev-ctoc-321-remains",
+            "ev-ctoc-3211-3213-removed",
+            "ev-tcg-new-context-and-reuse"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 10845.584900001995,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT",
+          "cost_usd": 0.0279,
+          "decision": "REUSE_WITH_NEW_CONTEXT",
+          "evidence_ids": [
+            "leaf-a005-selected-text-p1-1",
+            "ev-ctoc-321-remains",
+            "ev-ctoc-3211-3213-removed",
+            "ev-tcg-new-context-and-reuse"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 9919.353800010867,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT",
+          "cost_usd": 0.02811,
+          "decision": "REUSE_WITH_NEW_CONTEXT",
+          "evidence_ids": [
+            "leaf-a005-selected-text-p1-1",
+            "ev-ctoc-321-remains",
+            "ev-ctoc-3211-3213-removed",
+            "ev-tcg-new-context-and-reuse"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 9808.160600005067,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT",
+          "cost_usd": 0.0,
+          "decision": "REUSE_WITH_NEW_CONTEXT",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "ev-ctoc-3211-3213-removed",
+            "ev-tcg-new-context-and-reuse",
+            "ev-tcg-replacement-context-same",
+            "leaf-a005-selected-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 0.0,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": null,
+          "requests": 0,
+          "result_status": "genuine deterministic experimental output",
+          "review_bypass": false,
+          "rule_ids": [
+            "FDA-CDER-M1-REMOVED-SUBHEADING-001"
+          ],
+          "system": "B2",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "HUMAN_VERIFY_STALE_CONTENT",
+          "cost_usd": 0.013025,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "ev-ctoc-3211-3213-removed",
+            "ev-tcg-new-context-and-reuse",
+            "ev-tcg-replacement-context-same",
+            "leaf-a005-selected-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 4687.157499996829,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [
+            "FDA-CDER-M1-REMOVED-SUBHEADING-001"
+          ],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "HUMAN_VERIFY_STALE_CONTENT",
+          "cost_usd": 0.012995,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "ev-ctoc-3211-3213-removed",
+            "ev-tcg-new-context-and-reuse",
+            "ev-tcg-replacement-context-same",
+            "leaf-a005-selected-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 5293.296100004227,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [
+            "FDA-CDER-M1-REMOVED-SUBHEADING-001"
+          ],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "HUMAN_VERIFY_STALE_CONTENT",
+          "cost_usd": 0.012395,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "ev-ctoc-3211-3213-removed",
+            "ev-tcg-new-context-and-reuse",
+            "ev-tcg-replacement-context-same",
+            "leaf-a005-selected-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 4819.896300003165,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [
+            "FDA-CDER-M1-REMOVED-SUBHEADING-001"
+          ],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        }
+      ],
+      "reference_action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT",
+      "reference_decision": "REUSE_WITH_NEW_CONTEXT",
+      "reference_human_review_required": true,
+      "reference_severity": "blocking",
+      "selected_file_sha256": "93263f43c13040b3b45d5b44e99550bec1529d028c230858409b41b7b329ea47",
+      "selected_leaf_id": "leaf-a005-selected",
+      "split": "test",
+      "varied_predictions": false
+    },
+    {
+      "archetype": "unavailable-heading",
+      "case_id": "A006",
+      "decision_fingerprint_sha256": "97be374b3f93ea7fed9d1978fd884a0e1975799966c9769554fafcea8db691ee",
+      "fixture_family": "a-valid-321-lifecycle",
+      "fixture_id": "case-a-clean-321",
+      "mutation": {
+        "exact": "new leaf beneath available 3.2.S.1",
+        "type": "clean-negative"
+      },
+      "package_sha256": "443722654e748d92fabadba8a2e8a631be81a52824900c34c184a6671e980e65",
+      "predictions": [
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.029035,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "ev-tcg-hyperlinks-relevant-to-context"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 9860.089399997378,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.027985,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 10107.015200002934,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.027385,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 10924.452599996584,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.026305,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 9075.448599993251,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.026574999999999998,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 9718.213400003151,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.027115,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 9133.262999996077,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "NO_MATERIAL_REPAIR",
+          "cost_usd": 0.0,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 0.0,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": null,
+          "requests": 0,
+          "result_status": "genuine deterministic experimental output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B2",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "NO_MATERIAL_REPAIR",
+          "cost_usd": 0.006905,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 2256.0355000023264,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "NO_MATERIAL_REPAIR",
+          "cost_usd": 0.006725,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 2325.0495999964187,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "NO_MATERIAL_REPAIR",
+          "cost_usd": 0.006965000000000001,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 2398.2061999995494,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        }
+      ],
+      "reference_action": "NO_MATERIAL_REPAIR",
+      "reference_decision": "REUSE_AS_LEGACY_REFERENCE",
+      "reference_human_review_required": false,
+      "reference_severity": "informational",
+      "selected_file_sha256": "6d1d2ee53b7e13968d80a7c4e7260ddf392fb13a5aeea0b4b305fe8607b35961",
+      "selected_leaf_id": "leaf-321",
+      "split": "test",
+      "varied_predictions": false
+    },
+    {
+      "archetype": "unavailable-heading",
+      "case_id": "A007",
+      "decision_fingerprint_sha256": "14a3d1df6fd3547f9ec57c851d4a4247921a5e28380c068efa6ef2bf2240efff",
+      "fixture_family": "a-valid-321-lifecycle",
+      "fixture_id": "case-a-007-valid-replacement-321",
+      "mutation": {
+        "exact": "selected replace leaf modifies existing predecessor beneath available 3.2.S.1",
+        "type": "lifecycle"
+      },
+      "package_sha256": "ead42b9f10e1c9849661031c8b83726c10d97e5b3300c885b4c3370a365efb9d",
+      "predictions": [
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.028239999999999994,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "leaf-a007-selected-text-p1-1",
+            "ev-ctoc-321-remains",
+            "ev-tcg-replacement-context-same"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 11196.181400009664,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.028269999999999997,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "ev-tcg-replacement-context-same"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 10326.383699997677,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.027909999999999997,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "ev-tcg-replacement-context-same",
+            "leaf-a007-selected-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 9358.762800009572,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.0262,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-a007-selected-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 9400.13569999428,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.02692,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-a007-selected-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 10233.667299995432,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.02635,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-a007-selected-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 11461.392299999716,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "NO_MATERIAL_REPAIR",
+          "cost_usd": 0.0,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "leaf-a007-selected-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 0.0,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": null,
+          "requests": 0,
+          "result_status": "genuine deterministic experimental output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B2",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "NO_MATERIAL_REPAIR",
+          "cost_usd": 0.01432,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "leaf-a007-selected-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 6390.618599994923,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "NO_MATERIAL_REPAIR",
+          "cost_usd": 0.01,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "leaf-a007-selected-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 4113.527299996349,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "NO_MATERIAL_REPAIR",
+          "cost_usd": 0.01111,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "leaf-a007-selected-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 8959.73740000045,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        }
+      ],
+      "reference_action": "NO_MATERIAL_REPAIR",
+      "reference_decision": "REUSE_AS_LEGACY_REFERENCE",
+      "reference_human_review_required": false,
+      "reference_severity": "informational",
+      "selected_file_sha256": "673a738cd98bd16fe666de87029e88c60462547f8f18b34497eef177d3c4dab8",
+      "selected_leaf_id": "leaf-a007-selected",
+      "split": "test",
+      "varied_predictions": false
+    },
+    {
+      "archetype": "legacy-metadata-tension",
+      "case_id": "B001",
+      "decision_fingerprint_sha256": "fa2e04ec475a6afdc3e520b01dd485b48f377220379fa507abb2e12fe254eac9",
+      "fixture_family": "b-manufacturer-all-normalization",
+      "fixture_id": "case-b-normalize-all",
+      "mutation": {
+        "exact": "normalize manufacturer all with unnecessary partitioning",
+        "type": "metadata-intent"
+      },
+      "package_sha256": "931d2cfce4b11da293231b81de58a8bb6b1d8844faaac3e83deb2373c422a82d",
+      "predictions": [
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD",
+          "cost_usd": 0.029840000000000002,
+          "decision": "REUSE_AFTER_METADATA_REPAIR",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "ev-m4-manufacturer-general-values",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "leaf-b-normalize-all-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 11446.59550000506,
+          "outcome": "valid_prediction",
+          "outside_represented_class": true,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.04478,
+          "decision": "REUSE_AFTER_METADATA_REPAIR",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "ev-m4-manufacturer-general-values",
+            "leaf-b-normalize-all-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 17162.40370000014,
+          "outcome": "valid_prediction",
+          "outside_represented_class": true,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "DECLARE_METADATA_MIGRATION_INTENT",
+          "cost_usd": 0.02903,
+          "decision": "REUSE_AFTER_METADATA_REPAIR",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "ev-m4-manufacturer-general-values",
+            "leaf-b-normalize-all-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 11472.193599998718,
+          "outcome": "valid_prediction",
+          "outside_represented_class": true,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD",
+          "cost_usd": 0.028075000000000003,
+          "decision": "REUSE_AFTER_METADATA_REPAIR",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "ev-m4-manufacturer-general-values"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 10896.165700003621,
+          "outcome": "valid_prediction",
+          "outside_represented_class": true,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.042625,
+          "decision": "REUSE_AFTER_METADATA_REPAIR",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "ev-m4-manufacturer-general-values",
+            "leaf-b-normalize-all-metadata-manufacturer"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 16522.482200001832,
+          "outcome": "valid_prediction",
+          "outside_represented_class": true,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.028554999999999997,
+          "decision": "REUSE_AFTER_METADATA_REPAIR",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "leaf-b-normalize-all-text-p1-1",
+            "ev-m4-manufacturer-general-values"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 11871.335799994995,
+          "outcome": "valid_prediction",
+          "outside_represented_class": true,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD",
+          "cost_usd": 0.0,
+          "decision": "REUSE_WITH_NEW_CONTEXT",
+          "evidence_ids": [
+            "ev-m4-manufacturer-general-values",
+            "ev-tcg-new-context-and-reuse",
+            "ev-tcg-replacement-context-same",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "leaf-b-normalize-all-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 0.0,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": null,
+          "requests": 0,
+          "result_status": "genuine deterministic experimental output",
+          "review_bypass": false,
+          "rule_ids": [
+            "FDA-CDER-M2-DISCOURAGED-MANUFACTURER-ALL-001",
+            "FDA-CDER-M2-NORMALIZE-MANUFACTURER-003"
+          ],
+          "system": "B2",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD",
+          "cost_usd": 0.01328,
+          "decision": "REUSE_WITH_NEW_CONTEXT",
+          "evidence_ids": [
+            "ev-m4-manufacturer-general-values",
+            "ev-tcg-new-context-and-reuse",
+            "ev-tcg-replacement-context-same",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "leaf-b-normalize-all-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 6012.380700005451,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [
+            "FDA-CDER-M2-DISCOURAGED-MANUFACTURER-ALL-001",
+            "FDA-CDER-M2-NORMALIZE-MANUFACTURER-003"
+          ],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD",
+          "cost_usd": 0.01532,
+          "decision": "REUSE_WITH_NEW_CONTEXT",
+          "evidence_ids": [
+            "ev-m4-manufacturer-general-values",
+            "ev-tcg-new-context-and-reuse",
+            "ev-tcg-replacement-context-same",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "leaf-b-normalize-all-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 8854.203199996846,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [
+            "FDA-CDER-M2-DISCOURAGED-MANUFACTURER-ALL-001",
+            "FDA-CDER-M2-NORMALIZE-MANUFACTURER-003"
+          ],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD",
+          "cost_usd": 0.01619,
+          "decision": "REUSE_WITH_NEW_CONTEXT",
+          "evidence_ids": [
+            "ev-m4-manufacturer-general-values",
+            "ev-tcg-new-context-and-reuse",
+            "ev-tcg-replacement-context-same",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "leaf-b-normalize-all-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 7449.189400009345,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [
+            "FDA-CDER-M2-DISCOURAGED-MANUFACTURER-ALL-001",
+            "FDA-CDER-M2-NORMALIZE-MANUFACTURER-003"
+          ],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        }
+      ],
+      "reference_action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD",
+      "reference_decision": "REUSE_WITH_NEW_CONTEXT",
+      "reference_human_review_required": true,
+      "reference_severity": "blocking",
+      "selected_file_sha256": "9569fd860347119e12a8ec2853c6296a4081633a7b98b32ea8813b37732dc14b",
+      "selected_leaf_id": "leaf-b-normalize-all",
+      "split": "test",
+      "varied_predictions": true
+    },
+    {
+      "archetype": "legacy-metadata-tension",
+      "case_id": "B004",
+      "decision_fingerprint_sha256": "1241656264609282bec7ca3efd1d684e2d269f4eb40146dbd534f584eb72cba5",
+      "fixture_family": "b-manufacturer-all-normalization",
+      "fixture_id": "case-b-normalize-all",
+      "mutation": {
+        "exact": "normalize manufacturer all with required partitioning and explicit Northstar River Site value",
+        "type": "metadata-intent"
+      },
+      "package_sha256": "931d2cfce4b11da293231b81de58a8bb6b1d8844faaac3e83deb2373c422a82d",
+      "predictions": [
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.06015500000000001,
+          "decision": "REUSE_AFTER_METADATA_REPAIR",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "ev-m4-manufacturer-general-values"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 29772.67249999568,
+          "outcome": "valid_prediction",
+          "outside_represented_class": true,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD",
+          "cost_usd": 0.030065,
+          "decision": "REUSE_AFTER_METADATA_REPAIR",
+          "evidence_ids": [
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "leaf-b-normalize-all-text-p1-1",
+            "ev-ctoc-321-remains",
+            "ev-m4-manufacturer-general-values"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 11112.127799991868,
+          "outcome": "valid_prediction",
+          "outside_represented_class": true,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD",
+          "cost_usd": 0.030395,
+          "decision": "REUSE_AFTER_METADATA_REPAIR",
+          "evidence_ids": [
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "leaf-b-normalize-all-text-p1-1",
+            "ev-m4-manufacturer-general-values",
+            "ev-ctoc-321-remains"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 11062.197499995818,
+          "outcome": "valid_prediction",
+          "outside_represented_class": true,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD",
+          "cost_usd": 0.02827,
+          "decision": "REUSE_AFTER_METADATA_REPAIR",
+          "evidence_ids": [
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "leaf-b-normalize-all-text-p1-1",
+            "ev-m4-manufacturer-general-values",
+            "ev-ctoc-321-remains"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 11042.67899999104,
+          "outcome": "valid_prediction",
+          "outside_represented_class": true,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD",
+          "cost_usd": 0.043149999999999994,
+          "decision": "REUSE_AFTER_METADATA_REPAIR",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "ev-m4-manufacturer-general-values",
+            "leaf-b-normalize-all-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 17741.7834999942,
+          "outcome": "valid_prediction",
+          "outside_represented_class": true,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD",
+          "cost_usd": 0.028179999999999997,
+          "decision": "REUSE_AFTER_METADATA_REPAIR",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-b-normalize-all-text-p1-1",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "ev-m4-manufacturer-general-values"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 11771.298799998476,
+          "outcome": "valid_prediction",
+          "outside_represented_class": true,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD",
+          "cost_usd": 0.0,
+          "decision": "REUSE_WITH_NEW_CONTEXT",
+          "evidence_ids": [
+            "ev-m4-manufacturer-general-values",
+            "ev-tcg-new-context-and-reuse",
+            "ev-tcg-replacement-context-same",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "leaf-b-normalize-all-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 0.0,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": null,
+          "requests": 0,
+          "result_status": "genuine deterministic experimental output",
+          "review_bypass": false,
+          "rule_ids": [
+            "FDA-CDER-M2-DISCOURAGED-MANUFACTURER-ALL-001",
+            "FDA-CDER-M2-NORMALIZE-MANUFACTURER-003"
+          ],
+          "system": "B2",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD",
+          "cost_usd": 0.01061,
+          "decision": "REUSE_WITH_NEW_CONTEXT",
+          "evidence_ids": [
+            "ev-m4-manufacturer-general-values",
+            "ev-tcg-new-context-and-reuse",
+            "ev-tcg-replacement-context-same",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "leaf-b-normalize-all-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 4957.911899997271,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [
+            "FDA-CDER-M2-DISCOURAGED-MANUFACTURER-ALL-001",
+            "FDA-CDER-M2-NORMALIZE-MANUFACTURER-003"
+          ],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD",
+          "cost_usd": 0.00932,
+          "decision": "REUSE_WITH_NEW_CONTEXT",
+          "evidence_ids": [
+            "ev-m4-manufacturer-general-values",
+            "ev-tcg-new-context-and-reuse",
+            "ev-tcg-replacement-context-same",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "leaf-b-normalize-all-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 4550.357100000838,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [
+            "FDA-CDER-M2-DISCOURAGED-MANUFACTURER-ALL-001",
+            "FDA-CDER-M2-NORMALIZE-MANUFACTURER-003"
+          ],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD",
+          "cost_usd": 0.011269999999999999,
+          "decision": "REUSE_WITH_NEW_CONTEXT",
+          "evidence_ids": [
+            "ev-m4-manufacturer-general-values",
+            "ev-tcg-new-context-and-reuse",
+            "ev-tcg-replacement-context-same",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "leaf-b-normalize-all-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 5735.844199996791,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [
+            "FDA-CDER-M2-DISCOURAGED-MANUFACTURER-ALL-001",
+            "FDA-CDER-M2-NORMALIZE-MANUFACTURER-003"
+          ],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        }
+      ],
+      "reference_action": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD",
+      "reference_decision": "REUSE_WITH_NEW_CONTEXT",
+      "reference_human_review_required": true,
+      "reference_severity": "blocking",
+      "selected_file_sha256": "9569fd860347119e12a8ec2853c6296a4081633a7b98b32ea8813b37732dc14b",
+      "selected_leaf_id": "leaf-b-normalize-all",
+      "split": "test",
+      "varied_predictions": true
+    },
+    {
+      "archetype": "legacy-metadata-tension",
+      "case_id": "B005",
+      "decision_fingerprint_sha256": "6f9664f17e39b38fbe9bbeca9d8c5501ad951a91e06bf01f85374b09f087a7ae",
+      "fixture_family": "b-manufacturer-all-normalization",
+      "fixture_id": "case-b-normalize-all",
+      "mutation": {
+        "exact": "normalize manufacturer all with partitioning need unknown",
+        "type": "metadata-intent"
+      },
+      "package_sha256": "931d2cfce4b11da293231b81de58a8bb6b1d8844faaac3e83deb2373c422a82d",
+      "predictions": [
+        {
+          "action": "DECLARE_MANUFACTURER_PARTITIONING",
+          "cost_usd": 0.044985,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "ev-m4-manufacturer-general-values",
+            "ev-ctoc-321-remains",
+            "leaf-b-normalize-all-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 18646.047200003522,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "DECLARE_MANUFACTURER_PARTITIONING",
+          "cost_usd": 0.07678499999999999,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "ev-m4-manufacturer-general-values"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 32895.68770000187,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "DECLARE_MANUFACTURER_PARTITIONING",
+          "cost_usd": 0.044954999999999995,
+          "decision": "REUSE_AFTER_METADATA_REPAIR",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "ev-m4-manufacturer-general-values"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 17719.169000003603,
+          "outcome": "valid_prediction",
+          "outside_represented_class": true,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.05888,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "ev-m4-manufacturer-general-values"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 25250.98889999208,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.0431,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "ev-m4-manufacturer-general-values"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 17437.337100011064,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.02834,
+          "decision": "REUSE_AFTER_METADATA_REPAIR",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "ev-m4-manufacturer-general-values"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 11977.086200000485,
+          "outcome": "valid_prediction",
+          "outside_represented_class": true,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "DECLARE_MANUFACTURER_PARTITIONING",
+          "cost_usd": 0.0,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-m4-manufacturer-general-values",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "leaf-b-normalize-all-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 0.0,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": null,
+          "requests": 0,
+          "result_status": "genuine deterministic experimental output",
+          "review_bypass": false,
+          "rule_ids": [
+            "FDA-CDER-M2-DISCOURAGED-MANUFACTURER-ALL-001"
+          ],
+          "system": "B2",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "DECLARE_MANUFACTURER_PARTITIONING",
+          "cost_usd": 0.01913,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-m4-manufacturer-general-values",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "leaf-b-normalize-all-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 10325.904199999059,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [
+            "FDA-CDER-M2-DISCOURAGED-MANUFACTURER-ALL-001"
+          ],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "DECLARE_MANUFACTURER_PARTITIONING",
+          "cost_usd": 0.01061,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-m4-manufacturer-general-values",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "leaf-b-normalize-all-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 6329.990999991423,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [
+            "FDA-CDER-M2-DISCOURAGED-MANUFACTURER-ALL-001"
+          ],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "DECLARE_MANUFACTURER_PARTITIONING",
+          "cost_usd": 0.012379999999999999,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-m4-manufacturer-general-values",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "leaf-b-normalize-all-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 6247.34499999613,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [
+            "FDA-CDER-M2-DISCOURAGED-MANUFACTURER-ALL-001"
+          ],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        }
+      ],
+      "reference_action": "DECLARE_MANUFACTURER_PARTITIONING",
+      "reference_decision": "HUMAN_REGULATORY_REVIEW",
+      "reference_human_review_required": true,
+      "reference_severity": "unresolved",
+      "selected_file_sha256": "9569fd860347119e12a8ec2853c6296a4081633a7b98b32ea8813b37732dc14b",
+      "selected_leaf_id": "leaf-b-normalize-all",
+      "split": "test",
+      "varied_predictions": true
+    },
+    {
+      "archetype": "legacy-metadata-tension",
+      "case_id": "B010",
+      "decision_fingerprint_sha256": "c57f1bddefe9087027e9e4e2d2e0fe49b320c3cd62a29b6dbe21d91fc9b6e9c9",
+      "fixture_family": "b-manufacturer-all-normalization",
+      "fixture_id": "case-b-normalize-all",
+      "mutation": {
+        "exact": "current operational mode",
+        "type": "scenario-mode"
+      },
+      "package_sha256": "931d2cfce4b11da293231b81de58a8bb6b1d8844faaac3e83deb2373c422a82d",
+      "predictions": [
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.061295,
+          "decision": "REUSE_AFTER_METADATA_REPAIR",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "ev-m4-manufacturer-general-values",
+            "leaf-b-normalize-all-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 26955.709400004707,
+          "outcome": "valid_prediction",
+          "outside_represented_class": true,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "DECLARE_METADATA_MIGRATION_INTENT",
+          "cost_usd": 0.029345000000000003,
+          "decision": "REUSE_AFTER_METADATA_REPAIR",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "leaf-b-normalize-all-text-p1-1",
+            "ev-m4-manufacturer-general-values"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 11288.240800000494,
+          "outcome": "valid_prediction",
+          "outside_represented_class": true,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "DECLARE_METADATA_MIGRATION_INTENT",
+          "cost_usd": 0.060485,
+          "decision": "REUSE_AFTER_METADATA_REPAIR",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "ev-m4-manufacturer-general-values",
+            "leaf-b-normalize-all-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 25396.307500006515,
+          "outcome": "valid_prediction",
+          "outside_represented_class": true,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "DECLARE_METADATA_MIGRATION_INTENT",
+          "cost_usd": 0.027880000000000002,
+          "decision": "REUSE_AFTER_METADATA_REPAIR",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "leaf-b-normalize-all-text-p1-1",
+            "ev-m4-manufacturer-general-values"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 11722.372899996117,
+          "outcome": "valid_prediction",
+          "outside_represented_class": true,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.04321,
+          "decision": "REUSE_AFTER_METADATA_REPAIR",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "ev-m4-manufacturer-general-values",
+            "leaf-b-normalize-all-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 18053.278099992895,
+          "outcome": "valid_prediction",
+          "outside_represented_class": true,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.02848,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-b-normalize-all-text-p1-1",
+            "leaf-b-normalize-all-metadata-manufacturer",
+            "ev-m4-manufacturer-general-values"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 11159.921200000099,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.0,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 0.0,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": null,
+          "requests": 0,
+          "result_status": "genuine deterministic experimental output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B2",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.0,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 0.0,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 0,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.0,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 0.0,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 0,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.0,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 0.0,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 0,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        }
+      ],
+      "reference_action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+      "reference_decision": "HUMAN_REGULATORY_REVIEW",
+      "reference_human_review_required": true,
+      "reference_severity": "unresolved",
+      "selected_file_sha256": "9569fd860347119e12a8ec2853c6296a4081633a7b98b32ea8813b37732dc14b",
+      "selected_leaf_id": "leaf-b-normalize-all",
+      "split": "test",
+      "varied_predictions": true
+    },
+    {
+      "archetype": "stale-content-or-hyperlink",
+      "case_id": "C002",
+      "decision_fingerprint_sha256": "8d3067709bfa21936014bf92af1bdc719283be9653e7f8a1bb65a3cfb0cb6099",
+      "fixture_family": "c-applicant-mismatch",
+      "fixture_id": "case-c-stale-applicant",
+      "mutation": {
+        "exact": "former applicant presented as current",
+        "type": "semantic-text"
+      },
+      "package_sha256": "6eb2cfe3f9952b7916c3e1bd0240b2cab892d65c964bbd4d5e7b41ecdf7f0409",
+      "predictions": [
+        {
+          "action": "HUMAN_VERIFY_STALE_CONTENT",
+          "cost_usd": 0.028255,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "leaf-c-stale-applicant-text-p1-1",
+            "ev-ctoc-321-remains"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 8035.912599996664,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "HUMAN_VERIFY_STALE_CONTENT",
+          "cost_usd": 0.028825,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-c-stale-applicant-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 10169.327600000543,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "HUMAN_VERIFY_STALE_CONTENT",
+          "cost_usd": 0.044544999999999994,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-c-stale-applicant-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 15774.885499995435,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "HUMAN_VERIFY_STALE_CONTENT",
+          "cost_usd": 0.024864999999999998,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "leaf-c-stale-applicant-text-p1-1",
+            "ev-ctoc-321-remains"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 8261.608100001467,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "HUMAN_VERIFY_STALE_CONTENT",
+          "cost_usd": 0.026785,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-c-stale-applicant-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 9760.474399998202,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "HUMAN_VERIFY_STALE_CONTENT",
+          "cost_usd": 0.024235,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-c-stale-applicant-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 8061.215200010338,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "NO_MATERIAL_REPAIR",
+          "cost_usd": 0.0,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "leaf-c-stale-applicant-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 0.0,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": null,
+          "requests": 0,
+          "result_status": "genuine deterministic experimental output",
+          "review_bypass": true,
+          "rule_ids": [],
+          "system": "B2",
+          "unsafe_false_negative": true
+        },
+        {
+          "action": "HUMAN_VERIFY_STALE_CONTENT",
+          "cost_usd": 0.010454999999999999,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "leaf-c-stale-applicant-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 4411.906099994667,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "HUMAN_VERIFY_STALE_CONTENT",
+          "cost_usd": 0.009975,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "leaf-c-stale-applicant-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 3695.461899988004,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "HUMAN_VERIFY_STALE_CONTENT",
+          "cost_usd": 0.010065000000000001,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "leaf-c-stale-applicant-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 3585.010799986776,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        }
+      ],
+      "reference_action": "HUMAN_VERIFY_STALE_CONTENT",
+      "reference_decision": "HUMAN_REGULATORY_REVIEW",
+      "reference_human_review_required": true,
+      "reference_severity": "unresolved",
+      "selected_file_sha256": "e0a82285f6a67362e3f74db3b61895779218f9ef1bf8b60419b9e72b389169e7",
+      "selected_leaf_id": "leaf-c-stale-applicant",
+      "split": "test",
+      "varied_predictions": false
+    },
+    {
+      "archetype": "stale-content-or-hyperlink",
+      "case_id": "C004",
+      "decision_fingerprint_sha256": "e9ab411cdc1681b7a00699b3e68cdac16c148d7ddcfca1f0eaa931202cd7a5ee",
+      "fixture_family": "c-clean-current",
+      "fixture_id": "case-c-clean",
+      "mutation": {
+        "exact": "current wording and no hyperlinks",
+        "type": "clean-negative"
+      },
+      "package_sha256": "04861c44bd88576b86236e41e27eeca6239c5022f81209f73e96be3d22b2b67e",
+      "predictions": [
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.02811,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-c-clean-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 8874.20910000219,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.02859,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-c-clean-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 10158.878400005051,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.02832,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-c-clean-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 10340.798800010816,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.02633,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-c-clean-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 9081.097800008138,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.02687,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "ev-tcg-new-context-and-reuse",
+            "leaf-c-clean-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 16433.191000003717,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.026269999999999998,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-c-clean-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 9095.256799992057,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "NO_MATERIAL_REPAIR",
+          "cost_usd": 0.0,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "leaf-c-clean-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 0.0,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": null,
+          "requests": 0,
+          "result_status": "genuine deterministic experimental output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B2",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "NO_MATERIAL_REPAIR",
+          "cost_usd": 0.009625000000000002,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "leaf-c-clean-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 4032.2027999936836,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "NO_MATERIAL_REPAIR",
+          "cost_usd": 0.008845,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "leaf-c-clean-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 3029.956000013044,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "NO_MATERIAL_REPAIR",
+          "cost_usd": 0.008305,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "leaf-c-clean-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 4794.731700007105,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        }
+      ],
+      "reference_action": "NO_MATERIAL_REPAIR",
+      "reference_decision": "REUSE_AS_LEGACY_REFERENCE",
+      "reference_human_review_required": false,
+      "reference_severity": "informational",
+      "selected_file_sha256": "bb9c4b0784763b964264d69ef34262bb09bdedafe2ce3a61db2c607f1a324d08",
+      "selected_leaf_id": "leaf-c-clean",
+      "split": "test",
+      "varied_predictions": true
+    },
+    {
+      "archetype": "stale-content-or-hyperlink",
+      "case_id": "C005",
+      "decision_fingerprint_sha256": "cbb0932481a5fc2a1cc8089aeb4d63da0fb4e227cc432dfd010031026c69cf47",
+      "fixture_family": "c-relevant-internal-link",
+      "fixture_id": "case-c-relevant-link",
+      "mutation": {
+        "exact": "internal hyperlink target exists and relevance is author verified for fixture",
+        "type": "hyperlink"
+      },
+      "package_sha256": "6f158951e30205c1c89e40cdfdd91ec69ecc4b76ea124fcc00719b0bbe1571d5",
+      "predictions": [
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.028984999999999997,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "ev-tcg-hyperlinks-relevant-to-context",
+            "leaf-c-relevant-link-link-p1-1",
+            "leaf-c-relevant-link-text-p1-1",
+            "leaf-c-relevant-link-text-p2-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 10003.576200004318,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.028835,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-c-relevant-link-link-p1-1",
+            "leaf-c-relevant-link-text-p1-1",
+            "leaf-c-relevant-link-text-p2-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 10832.847699988633,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "NO_MATERIAL_REPAIR",
+          "cost_usd": 0.028745,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "ev-tcg-hyperlinks-relevant-to-context",
+            "leaf-c-relevant-link-link-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 11252.759000009974,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.026940000000000002,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "ev-tcg-hyperlinks-relevant-to-context",
+            "leaf-c-relevant-link-link-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 11538.054100004956,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.02769,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "ev-tcg-hyperlinks-relevant-to-context",
+            "leaf-c-relevant-link-link-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 10546.798800001852,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.02757,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "ev-tcg-hyperlinks-relevant-to-context",
+            "leaf-c-relevant-link-text-p1-1",
+            "leaf-c-relevant-link-text-p2-1",
+            "leaf-c-relevant-link-link-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 10831.787700008135,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "NO_MATERIAL_REPAIR",
+          "cost_usd": 0.0,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "leaf-c-relevant-link-text-p1-1",
+            "leaf-c-relevant-link-text-p2-1",
+            "leaf-c-relevant-link-link-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 0.0,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": null,
+          "requests": 0,
+          "result_status": "genuine deterministic experimental output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B2",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "NO_MATERIAL_REPAIR",
+          "cost_usd": 0.007715,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "leaf-c-relevant-link-text-p1-1",
+            "leaf-c-relevant-link-text-p2-1",
+            "leaf-c-relevant-link-link-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 2479.3473000027006,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "NO_MATERIAL_REPAIR",
+          "cost_usd": 0.008435,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "leaf-c-relevant-link-text-p1-1",
+            "leaf-c-relevant-link-text-p2-1",
+            "leaf-c-relevant-link-link-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 3730.753800002276,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "NO_MATERIAL_REPAIR",
+          "cost_usd": 0.007835,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "leaf-c-relevant-link-text-p1-1",
+            "leaf-c-relevant-link-text-p2-1",
+            "leaf-c-relevant-link-link-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 2812.6027999969665,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        }
+      ],
+      "reference_action": "NO_MATERIAL_REPAIR",
+      "reference_decision": "REUSE_AS_LEGACY_REFERENCE",
+      "reference_human_review_required": false,
+      "reference_severity": "informational",
+      "selected_file_sha256": "5f5df6765bd9208e6d6c267118356b01ddd20e60b5dc55b7e0f7f8fe2069ab0a",
+      "selected_leaf_id": "leaf-c-relevant-link",
+      "split": "test",
+      "varied_predictions": true
+    },
+    {
+      "archetype": "stale-content-or-hyperlink",
+      "case_id": "C008",
+      "decision_fingerprint_sha256": "8556c8a518dfd3c797545f3bb04473206a7d0f935c69faf69c38b52c15bfb8a6",
+      "fixture_family": "c-applicant-mismatch",
+      "fixture_id": "case-c-008-stale-responsible-applicant",
+      "mutation": {
+        "exact": "current responsible-applicant statement conflicts with regional Northstar Therapeutics metadata",
+        "type": "semantic-text"
+      },
+      "package_sha256": "1e6f195881a7769444c12b6939522e033ee53d36898c1a8fb0784e8befc90b3c",
+      "predictions": [
+        {
+          "action": "HUMAN_VERIFY_STALE_CONTENT",
+          "cost_usd": 0.028145,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "leaf-c008-selected-text-p1-1",
+            "ev-ctoc-321-remains"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 8520.598599992809,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "HUMAN_VERIFY_STALE_CONTENT",
+          "cost_usd": 0.028595000000000002,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "leaf-c008-selected-text-p1-1",
+            "ev-ctoc-321-remains"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 16088.415500009432,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "HUMAN_VERIFY_STALE_CONTENT",
+          "cost_usd": 0.044255,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "ev-ctoc-321-remains",
+            "leaf-c008-selected-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 14971.156800005701,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B0",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "HUMAN_VERIFY_STALE_CONTENT",
+          "cost_usd": 0.042304999999999995,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "leaf-c008-selected-text-p1-1",
+            "ev-ctoc-321-remains"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 15006.06539999717,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "HUMAN_VERIFY_STALE_CONTENT",
+          "cost_usd": 0.026645000000000002,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "leaf-c008-selected-text-p1-1",
+            "ev-ctoc-321-remains"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 8032.630200003041,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "WAIT_FOR_OPERATIONAL_AVAILABILITY",
+          "cost_usd": 0.027455,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "leaf-c008-selected-text-p1-1",
+            "ev-ctoc-321-remains"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 10029.576100001577,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "B1",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "NO_MATERIAL_REPAIR",
+          "cost_usd": 0.0,
+          "decision": "REUSE_AS_LEGACY_REFERENCE",
+          "evidence_ids": [
+            "leaf-c008-selected-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": false,
+          "latency_ms": 0.0,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": null,
+          "requests": 0,
+          "result_status": "genuine deterministic experimental output",
+          "review_bypass": true,
+          "rule_ids": [],
+          "system": "B2",
+          "unsafe_false_negative": true
+        },
+        {
+          "action": "HUMAN_VERIFY_STALE_CONTENT",
+          "cost_usd": 0.01131,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "leaf-c008-selected-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 4473.34119999141,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 1,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "HUMAN_VERIFY_STALE_CONTENT",
+          "cost_usd": 0.01128,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "leaf-c008-selected-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 7024.038399991696,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 2,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        },
+        {
+          "action": "HUMAN_VERIFY_STALE_CONTENT",
+          "cost_usd": 0.01119,
+          "decision": "HUMAN_REGULATORY_REVIEW",
+          "evidence_ids": [
+            "leaf-c008-selected-text-p1-1"
+          ],
+          "failure": null,
+          "human_review_required": true,
+          "latency_ms": 4625.101199999335,
+          "outcome": "valid_prediction",
+          "outside_represented_class": false,
+          "repetition_index": 3,
+          "requests": 1,
+          "result_status": "live model output",
+          "review_bypass": false,
+          "rule_ids": [],
+          "system": "RegBridge",
+          "unsafe_false_negative": false
+        }
+      ],
+      "reference_action": "HUMAN_VERIFY_STALE_CONTENT",
+      "reference_decision": "HUMAN_REGULATORY_REVIEW",
+      "reference_human_review_required": true,
+      "reference_severity": "unresolved",
+      "selected_file_sha256": "d5e66d3ff1ee55553842a9d9b3e01f98ff2506ab142c8b1607e2a06055d5f237",
+      "selected_leaf_id": "leaf-c008-selected",
+      "split": "test",
+      "varied_predictions": true
+    }
+  ],
+  "completion_audit": {
+    "completed_outcomes": 108,
+    "integrity_audit_passed": true,
+    "scheduled_outcomes": 108,
+    "state": "completed",
+    "stop_reason": "completed_without_failure",
+    "truncation_count": 0
+  },
+  "correction_ledger_path": "data/presentation/m4/m4-phase2-20260901T170811002109Z-v1/presentation-corrections.md",
+  "cost_summary": {
+    "total_cost_usd": 2.744325,
+    "unknown_cost_outcomes": 0
+  },
+  "current_fda_operational_availability": "not_operational",
+  "demo_presets": [
+    {
+      "fixture_id": "case-a-removed-3212",
+      "id": "m4-case-a-primary",
+      "label": "Case A: removed 3.2.S.1.2 placement",
+      "metadata_plan": null,
+      "primary_path": true,
+      "purpose": "Identifier reuse with new context group and legacy suspension.",
+      "route": "/demo/case-a",
+      "scenario_mode": "prospective_forward_compatibility"
+    },
+    {
+      "fixture_id": "case-c-stale-applicant",
+      "id": "m4-case-c-primary",
+      "label": "Case C: stale applicant mismatch",
+      "metadata_plan": null,
+      "primary_path": true,
+      "purpose": "Rules-only reuse contrasted with RegBridge human-review escalation.",
+      "route": "/demo/case-c",
+      "scenario_mode": "prospective_forward_compatibility"
+    },
+    {
+      "fixture_id": "case-b-normalize-all",
+      "id": "m4-case-b-contingency",
+      "label": "Case B: lifecycle-sensitive manufacturer metadata",
+      "metadata_plan": {
+        "intent": "normalize-metadata",
+        "manufacturer_partitioning": "unnecessary",
+        "replacement_manufacturer_value": null
+      },
+      "primary_path": false,
+      "purpose": "Metadata normalization and ambiguity variants for reviewer questions.",
+      "route": "/demo/case-b",
+      "scenario_mode": "prospective_forward_compatibility"
+    }
+  ],
+  "disclosure": "Presentation snapshot derived from frozen Phase 2 run m3-live-phase2-20260901T170811002109Z; results are displayed, not recomputed.",
+  "eligible_for_performance_claims": true,
+  "empirical_model_run": true,
+  "expert_validated": false,
+  "frozen_configuration_digest": "4f26aefcb6466049850f2f37e00da81d9c543003e180c17fcbc010237473d3c3",
+  "frozen_prompt_digest": "e7e140da12fe33c91e5203a9e070d27037fa755d0b12ad9305bfa970dbb04167",
+  "generated_from": {
+    "generator": "backend.app.presentation.generate",
+    "mode": "presentation-only derived snapshot",
+    "source": "frozen Phase 2 live artifacts"
+  },
+  "graph_contract_disclosure": "Graph contract v2 is displayed as built: FINDING -> CITES -> DOSSIER_EVIDENCE, FINDING -> ABOUT -> KEYWORD, and DOSSIER_EVIDENCE -> OBSERVES -> KEYWORD. The planned discriminated evidence union was replaced by a single DOSSIER_EVIDENCE occurrence node type plus evidence_kind.",
+  "headline_scope": "held-out-test",
+  "limitations": [
+    "FDA/CDER controlled prospective research scenario only.",
+    "FDA eCTD v4.0 forward compatibility remains not_operational.",
+    "Labels and rules are author-adjudicated for the demo, expert_validated: false.",
+    "Live-mode outputs claim configuration and artifact reproducibility only.",
+    "Clustered intervals are exploratory and make no independence or significance claim."
+  ],
+  "metric_ranges": {
+    "B0": {
+      "abstention_accuracy": {
+        "max": 0.75,
+        "min": 0.5833333333333334
+      },
+      "accuracy": {
+        "max": 0.5833333333333334,
+        "min": 0.4166666666666667
+      },
+      "balanced_accuracy": {
+        "max": 0.5833333333333334,
+        "min": 0.4166666666666667
+      },
+      "evidence_citation_accuracy": {
+        "max": 0.9166666666666666,
+        "min": 0.9166666666666666
+      },
+      "heading_mapping_accuracy": {
+        "max": 0.5,
+        "min": 0.5
+      },
+      "macro_f1": {
+        "max": 0.6412698412698412,
+        "min": 0.5037037037037037
+      },
+      "repair_action_accuracy": {
+        "max": 0.5,
+        "min": 0.4166666666666667
+      },
+      "review_bypass_rate.rate": {
+        "max": 0.25,
+        "min": 0.25
+      },
+      "unsafe_false_negative_rate.rate": {
+        "max": 0.0,
+        "min": 0.0
+      },
+      "vocabulary_diagnostic.outside_represented_rate": {
+        "max": 0.3333333333333333,
+        "min": 0.25
+      }
+    },
+    "B1": {
+      "abstention_accuracy": {
+        "max": 0.6666666666666666,
+        "min": 0.5833333333333334
+      },
+      "accuracy": {
+        "max": 0.5,
+        "min": 0.4166666666666667
+      },
+      "balanced_accuracy": {
+        "max": 0.5,
+        "min": 0.4166666666666667
+      },
+      "evidence_citation_accuracy": {
+        "max": 0.9166666666666666,
+        "min": 0.9166666666666666
+      },
+      "heading_mapping_accuracy": {
+        "max": 0.5,
+        "min": 0.5
+      },
+      "macro_f1": {
+        "max": 0.5555555555555555,
+        "min": 0.4484848484848485
+      },
+      "repair_action_accuracy": {
+        "max": 0.4166666666666667,
+        "min": 0.3333333333333333
+      },
+      "review_bypass_rate.rate": {
+        "max": 0.25,
+        "min": 0.0
+      },
+      "unsafe_false_negative_rate.rate": {
+        "max": 0.0,
+        "min": 0.0
+      },
+      "vocabulary_diagnostic.outside_represented_rate": {
+        "max": 0.25,
+        "min": 0.25
+      }
+    },
+    "RegBridge": {
+      "abstention_accuracy": {
+        "max": 0.9166666666666666,
+        "min": 0.9166666666666666
+      },
+      "accuracy": {
+        "max": 0.9166666666666666,
+        "min": 0.9166666666666666
+      },
+      "balanced_accuracy": {
+        "max": 0.9166666666666666,
+        "min": 0.9166666666666666
+      },
+      "evidence_citation_accuracy": {
+        "max": 0.8333333333333334,
+        "min": 0.8333333333333334
+      },
+      "heading_mapping_accuracy": {
+        "max": 0.75,
+        "min": 0.75
+      },
+      "macro_f1": {
+        "max": 0.9153439153439153,
+        "min": 0.9153439153439153
+      },
+      "repair_action_accuracy": {
+        "max": 0.9166666666666666,
+        "min": 0.9166666666666666
+      },
+      "review_bypass_rate.rate": {
+        "max": 0.0,
+        "min": 0.0
+      },
+      "unsafe_false_negative_rate.rate": {
+        "max": 0.0,
+        "min": 0.0
+      },
+      "vocabulary_diagnostic.outside_represented_rate": {
+        "max": 0.0,
+        "min": 0.0
+      }
+    }
+  },
+  "metric_reports": [
+    {
+      "accuracy": 0.5833333333333334,
+      "cost_usd": null,
+      "family_sensitivity": [
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-removed-3212-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "a-valid-321-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 4,
+          "fixture_family": "b-manufacturer-all-normalization",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-applicant-mismatch",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-clean-current",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-relevant-internal-link",
+          "unsafe_misses": 0
+        }
+      ],
+      "input_tokens": 20490,
+      "invalid_output_rate": 0.0,
+      "invalid_outputs": 0,
+      "latency_ms_total": 191930.2982000081,
+      "macro_f1": 0.6412698412698412,
+      "output_tokens": 11824,
+      "outside_represented_rate": 0.25,
+      "repetition_index": 1,
+      "requests": 12,
+      "result_status": "live model output",
+      "retrieval": null,
+      "review_bypass_rate": {
+        "denominator": 4,
+        "numerator": 1,
+        "rate": 0.25
+      },
+      "system": "B0",
+      "unsafe_false_negative_rate": {
+        "denominator": 8,
+        "numerator": 0,
+        "rate": 0.0
+      }
+    },
+    {
+      "accuracy": 0.5,
+      "cost_usd": null,
+      "family_sensitivity": [
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-removed-3212-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "a-valid-321-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 4,
+          "fixture_family": "b-manufacturer-all-normalization",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-applicant-mismatch",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-clean-current",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-relevant-internal-link",
+          "unsafe_misses": 0
+        }
+      ],
+      "input_tokens": 16681,
+      "invalid_output_rate": 0.0,
+      "invalid_outputs": 0,
+      "latency_ms_total": 145403.3792999835,
+      "macro_f1": 0.5555555555555555,
+      "output_tokens": 9578,
+      "outside_represented_rate": 0.25,
+      "repetition_index": 1,
+      "requests": 12,
+      "result_status": "live model output",
+      "retrieval": {
+        "evaluated_cases": 7,
+        "mrr": 1.0,
+        "precision_at_3": 0.47619047619047616,
+        "recall_at_3": 0.7023809523809524,
+        "result_status": "genuine deterministic retrieval measurement"
+      },
+      "review_bypass_rate": {
+        "denominator": 4,
+        "numerator": 1,
+        "rate": 0.25
+      },
+      "system": "B1",
+      "unsafe_false_negative_rate": {
+        "denominator": 8,
+        "numerator": 0,
+        "rate": 0.0
+      }
+    },
+    {
+      "accuracy": 0.9166666666666666,
+      "cost_usd": null,
+      "family_sensitivity": [
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-removed-3212-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "a-valid-321-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 4,
+          "fixture_family": "b-manufacturer-all-normalization",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-applicant-mismatch",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-clean-current",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-relevant-internal-link",
+          "unsafe_misses": 0
+        }
+      ],
+      "input_tokens": 9674,
+      "invalid_output_rate": 0.0,
+      "invalid_outputs": 0,
+      "latency_ms_total": 52709.6329999913,
+      "macro_f1": 0.9153439153439153,
+      "output_tokens": 2515,
+      "outside_represented_rate": 0.0,
+      "repetition_index": 1,
+      "requests": 11,
+      "result_status": "live model output",
+      "retrieval": null,
+      "review_bypass_rate": {
+        "denominator": 4,
+        "numerator": 0,
+        "rate": 0.0
+      },
+      "system": "RegBridge",
+      "unsafe_false_negative_rate": {
+        "denominator": 8,
+        "numerator": 0,
+        "rate": 0.0
+      }
+    },
+    {
+      "accuracy": 0.5,
+      "cost_usd": null,
+      "family_sensitivity": [
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-removed-3212-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "a-valid-321-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 4,
+          "fixture_family": "b-manufacturer-all-normalization",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-applicant-mismatch",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-clean-current",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-relevant-internal-link",
+          "unsafe_misses": 0
+        }
+      ],
+      "input_tokens": 20490,
+      "invalid_output_rate": 0.0,
+      "invalid_outputs": 0,
+      "latency_ms_total": 173739.02209999505,
+      "macro_f1": 0.5555555555555555,
+      "output_tokens": 10815,
+      "outside_represented_rate": 0.25,
+      "repetition_index": 2,
+      "requests": 12,
+      "result_status": "live model output",
+      "retrieval": null,
+      "review_bypass_rate": {
+        "denominator": 4,
+        "numerator": 1,
+        "rate": 0.25
+      },
+      "system": "B0",
+      "unsafe_false_negative_rate": {
+        "denominator": 8,
+        "numerator": 0,
+        "rate": 0.0
+      }
+    },
+    {
+      "accuracy": 0.4166666666666667,
+      "cost_usd": null,
+      "family_sensitivity": [
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-removed-3212-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "a-valid-321-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 4,
+          "fixture_family": "b-manufacturer-all-normalization",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-applicant-mismatch",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-clean-current",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-relevant-internal-link",
+          "unsafe_misses": 0
+        }
+      ],
+      "input_tokens": 16681,
+      "invalid_output_rate": 0.0,
+      "invalid_outputs": 0,
+      "latency_ms_total": 156135.80740001635,
+      "macro_f1": 0.4484848484848485,
+      "output_tokens": 10146,
+      "outside_represented_rate": 0.25,
+      "repetition_index": 2,
+      "requests": 12,
+      "result_status": "live model output",
+      "retrieval": {
+        "evaluated_cases": 7,
+        "mrr": 1.0,
+        "precision_at_3": 0.47619047619047616,
+        "recall_at_3": 0.7023809523809524,
+        "result_status": "genuine deterministic retrieval measurement"
+      },
+      "review_bypass_rate": {
+        "denominator": 4,
+        "numerator": 1,
+        "rate": 0.25
+      },
+      "system": "B1",
+      "unsafe_false_negative_rate": {
+        "denominator": 8,
+        "numerator": 0,
+        "rate": 0.0
+      }
+    },
+    {
+      "accuracy": 0.9166666666666666,
+      "cost_usd": null,
+      "family_sensitivity": [
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-removed-3212-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "a-valid-321-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 4,
+          "fixture_family": "b-manufacturer-all-normalization",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-applicant-mismatch",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-clean-current",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-relevant-internal-link",
+          "unsafe_misses": 0
+        }
+      ],
+      "input_tokens": 9674,
+      "invalid_output_rate": 0.0,
+      "invalid_outputs": 0,
+      "latency_ms_total": 51492.353399982676,
+      "macro_f1": 0.9153439153439153,
+      "output_tokens": 2060,
+      "outside_represented_rate": 0.0,
+      "repetition_index": 2,
+      "requests": 11,
+      "result_status": "live model output",
+      "retrieval": null,
+      "review_bypass_rate": {
+        "denominator": 4,
+        "numerator": 0,
+        "rate": 0.0
+      },
+      "system": "RegBridge",
+      "unsafe_false_negative_rate": {
+        "denominator": 8,
+        "numerator": 0,
+        "rate": 0.0
+      }
+    },
+    {
+      "accuracy": 0.4166666666666667,
+      "cost_usd": null,
+      "family_sensitivity": [
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-removed-3212-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "a-valid-321-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 4,
+          "fixture_family": "b-manufacturer-all-normalization",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-applicant-mismatch",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-clean-current",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-relevant-internal-link",
+          "unsafe_misses": 0
+        }
+      ],
+      "input_tokens": 20490,
+      "invalid_output_rate": 0.0,
+      "invalid_outputs": 0,
+      "latency_ms_total": 160942.1316000371,
+      "macro_f1": 0.5037037037037037,
+      "output_tokens": 10766,
+      "outside_represented_rate": 0.3333333333333333,
+      "repetition_index": 3,
+      "requests": 12,
+      "result_status": "live model output",
+      "retrieval": null,
+      "review_bypass_rate": {
+        "denominator": 4,
+        "numerator": 1,
+        "rate": 0.25
+      },
+      "system": "B0",
+      "unsafe_false_negative_rate": {
+        "denominator": 8,
+        "numerator": 0,
+        "rate": 0.0
+      }
+    },
+    {
+      "accuracy": 0.5,
+      "cost_usd": null,
+      "family_sensitivity": [
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-removed-3212-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "a-valid-321-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 4,
+          "fixture_family": "b-manufacturer-all-normalization",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-applicant-mismatch",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-clean-current",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-relevant-internal-link",
+          "unsafe_misses": 0
+        }
+      ],
+      "input_tokens": 16681,
+      "invalid_output_rate": 0.0,
+      "invalid_outputs": 0,
+      "latency_ms_total": 127282.04630000982,
+      "macro_f1": 0.5555555555555555,
+      "output_tokens": 8146,
+      "outside_represented_rate": 0.25,
+      "repetition_index": 3,
+      "requests": 12,
+      "result_status": "live model output",
+      "retrieval": {
+        "evaluated_cases": 7,
+        "mrr": 1.0,
+        "precision_at_3": 0.47619047619047616,
+        "recall_at_3": 0.7023809523809524,
+        "result_status": "genuine deterministic retrieval measurement"
+      },
+      "review_bypass_rate": {
+        "denominator": 4,
+        "numerator": 0,
+        "rate": 0.0
+      },
+      "system": "B1",
+      "unsafe_false_negative_rate": {
+        "denominator": 8,
+        "numerator": 0,
+        "rate": 0.0
+      }
+    },
+    {
+      "accuracy": 0.9166666666666666,
+      "cost_usd": null,
+      "family_sensitivity": [
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-removed-3212-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "a-valid-321-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 4,
+          "fixture_family": "b-manufacturer-all-normalization",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-applicant-mismatch",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-clean-current",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-relevant-internal-link",
+          "unsafe_misses": 0
+        }
+      ],
+      "input_tokens": 9674,
+      "invalid_output_rate": 0.0,
+      "invalid_outputs": 0,
+      "latency_ms_total": 54417.2869999893,
+      "macro_f1": 0.9153439153439153,
+      "output_tokens": 2205,
+      "outside_represented_rate": 0.0,
+      "repetition_index": 3,
+      "requests": 11,
+      "result_status": "live model output",
+      "retrieval": null,
+      "review_bypass_rate": {
+        "denominator": 4,
+        "numerator": 0,
+        "rate": 0.0
+      },
+      "system": "RegBridge",
+      "unsafe_false_negative_rate": {
+        "denominator": 8,
+        "numerator": 0,
+        "rate": 0.0
+      }
+    },
+    {
+      "accuracy": 0.8333333333333334,
+      "cost_usd": null,
+      "family_sensitivity": [
+        {
+          "eligible_cases": 2,
+          "fixture_family": "a-removed-3212-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "a-valid-321-lifecycle",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 4,
+          "fixture_family": "b-manufacturer-all-normalization",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 2,
+          "fixture_family": "c-applicant-mismatch",
+          "unsafe_misses": 2
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-clean-current",
+          "unsafe_misses": 0
+        },
+        {
+          "eligible_cases": 0,
+          "fixture_family": "c-relevant-internal-link",
+          "unsafe_misses": 0
+        }
+      ],
+      "input_tokens": 0,
+      "invalid_output_rate": 0.0,
+      "invalid_outputs": 0,
+      "latency_ms_total": 0.0,
+      "macro_f1": 0.8222222222222223,
+      "output_tokens": 0,
+      "outside_represented_rate": 0.0,
+      "repetition_index": null,
+      "requests": 0,
+      "result_status": "genuine deterministic experimental output",
+      "retrieval": null,
+      "review_bypass_rate": {
+        "denominator": 4,
+        "numerator": 2,
+        "rate": 0.5
+      },
+      "system": "B2",
+      "unsafe_false_negative_rate": {
+        "denominator": 8,
+        "numerator": 2,
+        "rate": 0.25
+      }
+    }
+  ],
+  "repository_commit": "04ce54f08f3190f05eac3946531f99e09e5c709c",
+  "retrieval_summary": {
+    "per_repetition": [
+      {
+        "evaluated_cases": 7,
+        "mrr": 1.0,
+        "precision_at_3": 0.47619047619047616,
+        "recall_at_3": 0.7023809523809524,
+        "repetition_index": 1
+      },
+      {
+        "evaluated_cases": 7,
+        "mrr": 1.0,
+        "precision_at_3": 0.47619047619047616,
+        "recall_at_3": 0.7023809523809524,
+        "repetition_index": 2
+      },
+      {
+        "evaluated_cases": 7,
+        "mrr": 1.0,
+        "precision_at_3": 0.47619047619047616,
+        "recall_at_3": 0.7023809523809524,
+        "repetition_index": 3
+      }
+    ],
+    "result_status": "genuine deterministic retrieval measurement"
+  },
+  "run_type": "live_model_run",
+  "schema_version": "m4.presentation.v1",
+  "snapshot_sha256": "824613fc4480ef9ea354eda60618567e45a37a691fac921e5d095a16b7cb27c0",
+  "snapshot_version": "m4-phase2-20260901T170811002109Z-v1",
+  "source_run_directory": "results/live/m3-live-phase2-20260901T170811002109Z",
+  "source_run_file_sha256": {
+    "b2-held-out-rescore.json": "c7f4f3461d5131843a5241902bcb7aceb375fe8210ac76dfbb244124582d3e19",
+    "completion-audit.json": "586b9b9004c223db8d4bc6e29fcfbac6a0e2604ed9dd1dce49a44f98a01ef3d1",
+    "manifest.json": "048532089ada46969adc50f5adf4746d3f287fb7b67baec2db10329dd0d62ee5",
+    "metrics.json": "1640cf2053dfb21d8a7e20bb6c544b29ac71fad3fb6ccfd61435283b5cfd58ae",
+    "per-case.csv": "a8e03c7ab09caac55ad70326cc3b44f815210e46328f4c1bddd87063c5a64929",
+    "predictions.jsonl": "1c1c2e76408fd3a3c19c92e19b34642f9b4b1f9093fb82a9a54fd1dd5e1c0e22",
+    "retrieval.jsonl": "b3784eaa4f1a04cac66b3554105b67f305e3106d8789a2758c6cb54e1b5d229b"
+  },
+  "source_run_id": "m3-live-phase2-20260901T170811002109Z",
+  "usage_summary": {
+    "B0": {
+      "attempts": 36,
+      "cached_input_tokens": 0,
+      "ceiling_hit_count": 0,
+      "cost_usd": 1.3094999999999999,
+      "final_answer_tokens": [
+        201,
+        151,
+        164,
+        131,
+        179,
+        153,
+        166,
+        195,
+        132,
+        127,
+        146,
+        129,
+        172,
+        188,
+        129,
+        132,
+        159,
+        186,
+        190,
+        166,
+        151,
+        143,
+        141,
+        144,
+        187,
+        177,
+        109,
+        120,
+        152,
+        197,
+        165,
+        168,
+        157,
+        134,
+        138,
+        148
+      ],
+      "finish_reasons": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "latency_ms_total": 526611.4519000403,
+      "reasoning_tokens_max": 2070,
+      "reasoning_tokens_median": 516.0,
+      "reasoning_tokens_min": 516,
+      "reasoning_tokens_p95": 1552.0,
+      "total_output_tokens": [
+        1764,
+        678,
+        691,
+        658,
+        706,
+        1716,
+        1211,
+        1758,
+        659,
+        654,
+        673,
+        656,
+        1217,
+        715,
+        656,
+        659,
+        1204,
+        713,
+        2271,
+        693,
+        678,
+        670,
+        668,
+        671,
+        714,
+        704,
+        636,
+        647,
+        679,
+        724,
+        1210,
+        1731,
+        1202,
+        661,
+        665,
+        1193
+      ]
+    },
+    "B1": {
+      "attempts": 36,
+      "cached_input_tokens": 0,
+      "ceiling_hit_count": 0,
+      "cost_usd": 1.0863150000000004,
+      "final_answer_tokens": [
+        134,
+        179,
+        124,
+        114,
+        173,
+        179,
+        164,
+        170,
+        149,
+        124,
+        135,
+        134,
+        124,
+        173,
+        146,
+        138,
+        140,
+        157,
+        156,
+        163,
+        134,
+        142,
+        160,
+        130,
+        151,
+        180,
+        151,
+        119,
+        189,
+        176,
+        182,
+        190,
+        131,
+        122,
+        156,
+        157
+      ],
+      "finish_reasons": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "latency_ms_total": 428821.23300000967,
+      "reasoning_tokens_max": 1552,
+      "reasoning_tokens_median": 516.0,
+      "reasoning_tokens_min": 434,
+      "reasoning_tokens_p95": 1034.0,
+      "total_output_tokens": [
+        661,
+        706,
+        651,
+        641,
+        700,
+        706,
+        1727,
+        697,
+        597,
+        651,
+        662,
+        1179,
+        651,
+        700,
+        660,
+        665,
+        1185,
+        1202,
+        1201,
+        1208,
+        661,
+        669,
+        687,
+        657,
+        678,
+        707,
+        678,
+        646,
+        716,
+        703,
+        709,
+        717,
+        576,
+        649,
+        683,
+        684
+      ]
+    },
+    "RegBridge": {
+      "attempts": 33,
+      "cached_input_tokens": 0,
+      "ceiling_hit_count": 0,
+      "cost_usd": 0.34850999999999993,
+      "final_answer_tokens": [
+        59,
+        107,
+        59,
+        60,
+        33,
+        33,
+        33,
+        101,
+        33,
+        33,
+        115,
+        56,
+        107,
+        56,
+        33,
+        33,
+        33,
+        33,
+        104,
+        33,
+        33,
+        108,
+        56,
+        106,
+        64,
+        62,
+        33,
+        33,
+        33,
+        100,
+        33,
+        33,
+        112
+      ],
+      "finish_reasons": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "latency_ms_total": 158619.27339996328,
+      "reasoning_tokens_max": 444,
+      "reasoning_tokens_median": 112,
+      "reasoning_tokens_min": 17,
+      "reasoning_tokens_p95": 346.0,
+      "total_output_tokens": [
+        110,
+        288,
+        92,
+        332,
+        293,
+        204,
+        488,
+        203,
+        175,
+        98,
+        232,
+        84,
+        287,
+        86,
+        188,
+        361,
+        161,
+        204,
+        187,
+        149,
+        122,
+        231,
+        89,
+        267,
+        94,
+        225,
+        390,
+        226,
+        263,
+        190,
+        131,
+        102,
+        228
+      ]
+    }
+  }
+}

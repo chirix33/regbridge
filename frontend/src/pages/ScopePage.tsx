@@ -91,7 +91,7 @@ export function ScopePage() {
               M1/M2 are clearly labeled prospective research scenarios · expert validated: no
             </span>
           </div>
-          <Link className="primary-link" to="/case-a">
+          <Link className="primary-link" to="/demo/case-a">
             Open shared analyzer <ArrowRight aria-hidden="true" />
           </Link>
         </section>
@@ -161,9 +161,10 @@ export function ScopePage() {
               persistent traces. FDA forward compatibility remains not operational.
             </p>
             <div className="workspace-links">
-              <Link to="/case-a">Heading case</Link>
-              <Link to="/case-b">Metadata case</Link>
-              <Link to="/case-c">Semantic PDF case</Link>
+              <Link to="/demo/case-a">Heading case</Link>
+              <Link to="/demo/case-b">Metadata case</Link>
+              <Link to="/demo/case-c">Semantic PDF case</Link>
+              <Link to="/evaluation">Evaluation dashboard</Link>
             </div>
           </div>
         </section>

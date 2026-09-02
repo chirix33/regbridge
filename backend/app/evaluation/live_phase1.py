@@ -36,7 +36,7 @@ from app.evaluation.live_configuration import (
     require_development_approval,
     template_digests,
 )
-from app.evaluation.metrics import score_system
+from app.evaluation.metrics import MetricsScope, score_system
 from app.evaluation.models import (
     BenchmarkCase,
     CaseEvaluation,
@@ -77,6 +77,11 @@ LIVE_SEED = 20270829
 LIVE_RESULTS_ROOT = REPOSITORY_ROOT / "results" / "live"
 LIVE_PAPER_ROOT = REPOSITORY_ROOT / "paper" / "tables" / "live"
 PRICING_PER_MILLION = {"input": 5.00, "cached_input": 0.50, "output": 30.00}
+
+__all__ = [
+    "DirectDecisionOutput",
+    "ResponsesAttempt",
+]
 
 
 class LivePhase1Error(RuntimeError):
@@ -216,7 +221,7 @@ def _durable_write(path: Path, content: str) -> None:
 
 def _token_counter(model: str) -> tuple[str, Any]:
     try:
-        import tiktoken  # type: ignore[import-not-found]
+        import tiktoken
     except ImportError as error:
         raise LivePhase1Error(
             "tiktoken is required for exact final-answer token validation before live calls"
@@ -389,7 +394,7 @@ async def _run_regbridge(
     service = AnalysisService(
         settings=Settings(
             llm_mode=LlmMode.LIVE,
-            llm_model=cast(str, model.model),
+            llm_model=model.model,
             llm_base_url=model.base_url,
             llm_api_key=SecretStr("redacted"),
         ),
@@ -578,7 +583,7 @@ def _score_valid(
     cases: tuple[BenchmarkCase, ...],
     predictions: tuple[SystemPrediction, ...],
     retrieval_traces: tuple[RetrievalTrace, ...],
-    scope: str,
+    scope: MetricsScope,
     seed: int,
 ) -> tuple[MetricsReport | None, tuple[CaseEvaluation, ...]]:
     _guard_phase1_cases(cases, location="scoring")
@@ -1074,9 +1079,7 @@ def _write_artifacts(
     result_dir = LIVE_RESULTS_ROOT / run_id
     paper_dir = LIVE_PAPER_ROOT / run_id
     valid_predictions = tuple(
-        cast(SystemPrediction, outcome.prediction)
-        for outcome in outcomes
-        if outcome.prediction is not None
+        outcome.prediction for outcome in outcomes if outcome.prediction is not None
     )
     retrievals = tuple(outcome.retrieval for outcome in outcomes if outcome.retrieval is not None)
     reports: list[MetricsReport] = []
@@ -1091,14 +1094,15 @@ def _write_artifacts(
         system_cases = tuple(case for case in bundle.cases if case.case_id in completed_case_ids)
         system_predictions = tuple(pred for pred in valid_predictions if pred.system == system)
         system_traces = tuple(trace for trace in retrievals if trace and system == "B1")
-        for scope, scoped_cases in (
+        scoped_case_groups: tuple[tuple[MetricsScope, tuple[BenchmarkCase, ...]], ...] = (
             ("phase1-train", tuple(case for case in system_cases if case.split == "train")),
             (
                 "phase1-development",
                 tuple(case for case in system_cases if case.split == "development"),
             ),
             ("phase1-train-development", system_cases),
-        ):
+        )
+        for scope, scoped_cases in scoped_case_groups:
             scoped_case_ids = {case.case_id for case in scoped_cases}
             scoped_predictions = tuple(
                 pred for pred in system_predictions if pred.case_id in scoped_case_ids

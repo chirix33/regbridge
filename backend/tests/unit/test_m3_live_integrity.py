@@ -155,8 +155,8 @@ async def test_phase2_schedules_three_separate_repetitions_and_no_complete_parti
     async def fake_b2(*args: Any, **kwargs: Any) -> Any:
         return SimpleNamespace()
 
-    async def outcome_for(system: str, case: Any) -> live.LiveOutcome:
-        system_name = cast(SystemName, system)
+    async def outcome_for(system: SystemName, case: Any) -> live.LiveOutcome:
+        system_name = system
         prediction = SystemPrediction(
             system=system_name,
             case_id=case.case_id,
@@ -226,7 +226,7 @@ def test_phase2_terminal_artifacts_are_complete_and_claim_eligible(
     outcomes: list[phase2.RepetitionOutcome] = []
     for repetition in range(1, 4):
         for system in ("B0", "B1", "RegBridge"):
-            system_name = cast(SystemName, system)
+            system_name: SystemName = system
             for case in cases:
                 prediction = SystemPrediction(
                     system=system_name,
