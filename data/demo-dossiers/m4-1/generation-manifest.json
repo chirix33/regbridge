@@ -1,0 +1,21 @@
+{
+  "archive": "regbridge-m4-1-composite.zip",
+  "archive_sha256": "81d77881a1ab90bcbcbad38b836f4a829852b75e68906c0b23171aa85609e597",
+  "contains_personal_or_sponsor_confidential_data": false,
+  "expected_decisions_embedded": false,
+  "expert_validated": false,
+  "generator": "scripts/generate_m4_1_dossier.py",
+  "legacy_md5_purpose": "eCTD v3.2.2 compatibility only",
+  "operational_status": "not_operational",
+  "profile_id": "fda-ectd-322-regbridge-demo-profile-v1",
+  "provenance_hash": "SHA-256",
+  "public_synthetic_data": true,
+  "schema_version": "m4.1.composite-generation.v1",
+  "sequence_root": "synthetic-application/0000",
+  "source_signals": {
+    "document_applicant": "Legacy Applicant Corporation",
+    "manufacturer_attribute": "all",
+    "regional_applicant": "RegBridge Synthetic Biologics LLC",
+    "structural_heading": "m3-2-s-1-2"
+  }
+}

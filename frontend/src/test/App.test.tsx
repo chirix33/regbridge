@@ -57,6 +57,7 @@ afterEach(() => {
 
 describe("RegBridge scope", () => {
   it("shows the disclaimer, operational status, scope, and source-verified registry", async () => {
+    window.history.pushState({}, "", "/about");
     vi.stubGlobal(
       "fetch",
       vi.fn((input: RequestInfo | URL) => {

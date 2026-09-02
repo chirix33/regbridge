@@ -45,7 +45,19 @@ class ParsedLeaf(DomainModel):
     modified_leaf_id: StableId | None = None
     content_type: str = Field(pattern=r"^[a-z0-9][a-z0-9.+-]*/[a-z0-9][a-z0-9.+-]*$")
     file_sha256: Sha256
-    declared_checksum: Sha256 | None = None
+    declared_checksum_type: Literal["md5", "sha256"] | None = None
+    declared_checksum: str | None = Field(
+        default=None, pattern=r"^(?:[a-fA-F0-9]{32}|[a-f0-9]{64})$"
+    )
+    computed_declared_checksum: str | None = Field(
+        default=None, pattern=r"^(?:[a-f0-9]{32}|[a-f0-9]{64})$"
+    )
+    declared_checksum_matches: bool | None = None
+    raw_heading: str | None = None
+    heading_status: Literal["recognized", "unsupported"] = "recognized"
+    prior_reference_status: Literal["not_applicable", "resolved", "unresolved", "outside_scope"] = (
+        "not_applicable"
+    )
     source_locator: str = Field(min_length=1)
     keywords: tuple[ParsedKeyword, ...] = ()
     text_span_count: int = Field(default=0, ge=0)
@@ -56,11 +68,79 @@ class ParsedLeaf(DomainModel):
 
     @model_validator(mode="after")
     def validate_checksum(self) -> "ParsedLeaf":
-        if self.declared_checksum and self.declared_checksum != self.file_sha256:
+        checksum_fields = (
+            self.declared_checksum_type,
+            self.declared_checksum,
+            self.computed_declared_checksum,
+            self.declared_checksum_matches,
+        )
+        if any(value is not None for value in checksum_fields) and not all(
+            value is not None for value in checksum_fields
+        ):
+            raise ValueError("declared checksum fields must be recorded together")
+        if self.declared_checksum_matches is False:
             raise ValueError(f"declared checksum does not match file content for leaf {self.id}")
-        if self.operation == LifecycleOperation.REPLACE and not self.modified_leaf_id:
-            raise ValueError("replace operations require modified_leaf_id")
+        if (
+            self.operation
+            in {
+                LifecycleOperation.APPEND,
+                LifecycleOperation.REPLACE,
+                LifecycleOperation.DELETE,
+            }
+            and not self.modified_leaf_id
+        ):
+            raise ValueError(f"{self.operation.value} operations require modified_leaf_id")
         return self
+
+
+class PackageFile(DomainModel):
+    path: str = Field(min_length=1)
+    member_type: Literal[
+        "BACKBONE_XML",
+        "REGIONAL_XML",
+        "DOSSIER_DOCUMENT",
+        "STUDY_TAGGING_FILE",
+        "SUPPORT_FILE",
+        "UNSUPPORTED",
+    ]
+    provenance_sha256: Sha256
+    relationship: str = Field(min_length=1)
+    declared_checksum_type: Literal["md5", "sha256"] | None = None
+    declared_checksum: str | None = Field(
+        default=None, pattern=r"^(?:[a-fA-F0-9]{32}|[a-f0-9]{64})$"
+    )
+    computed_declared_checksum: str | None = Field(
+        default=None, pattern=r"^(?:[a-f0-9]{32}|[a-f0-9]{64})$"
+    )
+    declared_checksum_matches: bool | None = None
+
+
+class ProfileCheck(DomainModel):
+    id: StableId
+    label: str = Field(min_length=1)
+    status: Literal["passed", "warning", "unsupported", "failed"]
+    detail: str = Field(min_length=1)
+
+
+class XmlDeclarationRecord(DomainModel):
+    path: str = Field(min_length=1)
+    xml_version: str | None = None
+    root_name: str = Field(min_length=1)
+    namespace: str | None = None
+    declared_doctype: str | None = None
+    doctype_recognized: bool
+    dtd_version_supported: bool
+    dtd_validation_performed: bool = False
+    dtd_validation_result: Literal["not_performed", "passed", "failed"] = "not_performed"
+
+
+class LifecycleReference(DomainModel):
+    leaf_id: StableId
+    operation: LifecycleOperation
+    href: str | None = None
+    modified_file: str | None = None
+    prior_reference_status: Literal["resolved", "unresolved", "outside_scope"]
+    source_locator: str = Field(min_length=1)
 
 
 class ApplicationInventory(DomainModel):
@@ -74,6 +154,23 @@ class ApplicationInventory(DomainModel):
     package_sha256: Sha256
     leaves: tuple[ParsedLeaf, ...] = Field(min_length=1)
     warnings: tuple[ParseWarning, ...] = ()
+    input_profile_id: StableId = "legacy-controlled-layout-v1"
+    input_profile_version: str = "1.0.0"
+    detected_sequence_root: str = "."
+    layout: Literal["authentic_sequence_layout", "legacy_controlled_layout"] = (
+        "legacy_controlled_layout"
+    )
+    parsing_extent: Literal["complete", "bounded"] = "complete"
+    package_profile_status: Literal["passed", "warning", "unsupported", "failed"] = "warning"
+    profile_checks: tuple[ProfileCheck, ...] = ()
+    xml_declarations: tuple[XmlDeclarationRecord, ...] = ()
+    package_files: tuple[PackageFile, ...] = ()
+    lifecycle_references: tuple[LifecycleReference, ...] = ()
+    regional_xml_version: str | None = None
+    regional_xml_sha256: Sha256 | None = None
+    index_md5_declared: str | None = Field(default=None, pattern=r"^[a-fA-F0-9]{32}$")
+    index_md5_computed: str | None = Field(default=None, pattern=r"^[a-f0-9]{32}$")
+    index_md5_matches: bool | None = None
 
     @model_validator(mode="after")
     def validate_leaf_ids(self) -> "ApplicationInventory":

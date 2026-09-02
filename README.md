@@ -162,6 +162,31 @@ the scripted fixture-mode demo twice to compare decision, evidence, graph, and t
 GNU Make target additionally runs frontend component/build/E2E checks when Playwright browsers are
 installed.
 
+## M4.1 end-to-end dossier workspace
+
+The primary route `/` accepts the deterministic controlled-profile dossier and analyzes every
+supported PDF using uploaded `index.xml`, `m1/us/us-regional.xml`, lifecycle metadata, legacy MD5,
+and extracted PDF evidence. `/baselines` runs B0, B1, model-free B2, and RegBridge on the same
+package-derived inputs without reference labels or performance metrics. `/evaluation` remains the
+immutable held-out Phase 2 presentation.
+
+The exact capability boundary is: “RegBridge securely parses and validates a controlled FDA eCTD
+v3.2.2 package profile for supported structural, lifecycle, metadata, checksum, and
+document-evidence predicates. It does not perform complete FDA submission validation.”
+
+Generate the public synthetic package with
+`.\.venv\Scripts\python.exe scripts\generate_m4_1_dossier.py`; its manifest and stable hash are in
+`data/demo-dossiers/m4-1/`. Run `.\scripts\m4-1-verify.ps1` twice for the additive milestone gate.
+See `docs/DEMO_M4_1.md` for the operator workflow. Uploaded inventories are opaque, bounded,
+expiring, memory-local records; ZIP bytes are discarded and records do not survive restart.
+
+New product endpoints:
+
+- `GET /api/v1/models`
+- `GET /api/v1/applications/{inventory_id}`
+- `POST/GET /api/v1/dossier-analyses[/{run_id}]`
+- `POST/GET /api/v1/comparisons[/{comparison_id}]`
+
 The server binds only to `127.0.0.1`. Authentication and public deployment are out of scope.
 
 ## Repository map
@@ -174,6 +199,7 @@ The server binds only to `127.0.0.1`. Authentication and public deployment are o
 - `backend/app/baselines/` and `backend/app/evaluation/` — comparison systems, benchmark,
   scoring, manifests, and exports
 - `backend/app/presentation/` — M4 immutable snapshot loader, generator, and verifier
+- `backend/app/product/` — M4.1 model profiles, bounded stores, dossier jobs, comparisons, verifier
 - `frontend/src/` — accessible scope-first demonstration shell
 - `data/standards/` — source-verified registry, source ledger, and immutable source snapshots
 - `data/model-fixtures/` — versioned offline structured outputs

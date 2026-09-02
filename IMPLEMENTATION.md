@@ -926,6 +926,71 @@ Deliver:
 
 Exit criteria: a fresh local setup can run the scripted demo twice with identical fixture-mode results.
 
+### M4.1 — End-to-End Dossier Workspace and Interactive System Comparison
+
+M4.1 is additive product-demonstration work over immutable M3 and M4 research artifacts. It
+does not modify or reinterpret the frozen benchmark, splits, labels, prompts, rules, Phase 1 or
+Phase 2 outputs, M4 presentation snapshot, paper validation tables, or their claims. The detailed
+governance and acceptance record is [docs/milestones/M4.1.md](docs/milestones/M4.1.md).
+
+The primary workflow is:
+
+```text
+Upload controlled synthetic eCTD v3.2.2 dossier
+→ parse package
+→ analyze every supported leaf
+→ display dossier summary
+→ inspect document decisions, evidence, graph, repair, and trace
+```
+
+The separate `/baselines` product workspace runs B0, B1, B2, and RegBridge on identical
+package-derived, label-free inputs. It reports agreement, decisions, native traces, failures,
+latency, and usage, but never benchmark accuracy, unsafe-FNR, reference labels, winners, or
+superiority for an arbitrary upload. The primary Analyzer workspace contains no baseline,
+benchmark, or system-comparison output. `/evaluation` continues to display only the immutable M4
+presentation snapshot derived from the frozen Phase 2 run.
+
+M4.1 supports one authenticity-hardened controlled input profile,
+`fda-ectd-322-regbridge-demo-profile-v1`. Its exact capability boundary is:
+
+> RegBridge securely parses and validates a controlled FDA eCTD v3.2.2 package profile for supported structural, lifecycle, metadata, checksum, and document-evidence predicates. It does not perform complete FDA submission validation.
+
+The parser discovers exactly one sequence root; recognizes only allowlisted DOCTYPE declarations
+without resolving external resources or expanding entities; distinguishes package/backbone files
+from analyzable dossier documents; parses regional metadata from the supported Module 1 path;
+verifies legacy MD5 declarations independently from SHA-256 research provenance; and reports
+scoped checks as `passed`, `warning`, `unsupported`, or `failed`. It does not claim complete DTD
+conformance, FDA validation-criteria coverage, submission readiness, or FDA acceptance.
+
+Uploaded ZIP bytes are discarded after bounded parsing. Parsed inventories live in a capacity-
+and TTL-bounded local repository under opaque IDs and expire on server restart. Dossier and
+comparison runs have configuration-scoped identities so results from different model profiles
+cannot overwrite each other. Browser requests select only an allowlisted model profile: public
+`gpt-5.5` uses the tested Responses adapter without a temperature parameter when configured;
+`qwen3.6-local` is a disabled `coming_soon` profile until separately validated. Fixture/stub
+profiles remain internal and network-free.
+
+All systems use the complete six-decision and eleven-action vocabulary with the approved neutral
+definitions. B0 and B1 receive equivalent bounded package facts and standards evidence without
+benchmark identifiers, expected outcomes, reference labels, trigger conditions, expected
+evidence, or RegBridge output. B2 uses deterministic parser/graph/rule capability with semantic
+assistance omitted and makes no provider call. RegBridge uses the full hybrid path. Interactive
+product runs are not benchmark evaluations and are not the future local-model paper experiment.
+
+The audience-facing composite ZIP uses an authentic application/sequence wrapper, `index.xml`,
+`index-md5.txt`, `m1/us/us-regional.xml`, and three deterministic synthetic PDFs. Its three signals
+come only from uploaded XML/PDF content: removed heading `3.2.S.1.2`, `manufacturer="all"` plus
+visible preservation intent, and stale applicant prose compared with parsed regional metadata.
+No expected decision, fixture identifier, benchmark identifier, or adjudication rationale appears
+in model-facing material. Metamorphic tests change each source signal and require the production
+result to change through the same upload/parser/analyzer path.
+
+M4.1 completion requires the additive verification command to pass twice, including backend and
+frontend lint/type/test/build, OpenAPI drift, security and accessibility coverage, deterministic
+package/hash reproduction, a network-free real-ZIP journey, and before/after hashes for protected
+M3/M4 artifacts. FDA/CDER-only scope, prospective framing, `not_operational`, and
+`expert_validated: false` remain visible throughout.
+
 ### M5 — Paper and submission support (September 15–18)
 
 Deliver:

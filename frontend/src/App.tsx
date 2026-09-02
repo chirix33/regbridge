@@ -4,6 +4,9 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ScopePage } from "./pages/ScopePage";
 import { HeadingCasePage } from "./pages/HeadingCasePage";
 import { EvaluationDashboard } from "./pages/EvaluationDashboard";
+import { DossierWorkspace } from "./pages/DossierWorkspace";
+import { BaselinesWorkspace } from "./pages/BaselinesWorkspace";
+import { ProductNav } from "./components/ProductNav";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,8 +21,11 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
+        <ProductNav />
         <Routes>
-          <Route path="/" element={<ScopePage />} />
+          <Route path="/" element={<DossierWorkspace />} />
+          <Route path="/baselines" element={<BaselinesWorkspace />} />
+          <Route path="/about" element={<ScopePage />} />
           <Route path="/demo/case-a" element={<HeadingCasePage />} />
           <Route path="/demo/case-b" element={<HeadingCasePage />} />
           <Route path="/demo/case-c" element={<HeadingCasePage />} />

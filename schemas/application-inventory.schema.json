@@ -10,6 +10,159 @@
       "title": "LifecycleOperation",
       "type": "string"
     },
+    "LifecycleReference": {
+      "additionalProperties": false,
+      "properties": {
+        "href": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Href"
+        },
+        "leaf_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Leaf Id",
+          "type": "string"
+        },
+        "modified_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Modified File"
+        },
+        "operation": {
+          "$ref": "#/$defs/LifecycleOperation"
+        },
+        "prior_reference_status": {
+          "enum": [
+            "resolved",
+            "unresolved",
+            "outside_scope"
+          ],
+          "title": "Prior Reference Status",
+          "type": "string"
+        },
+        "source_locator": {
+          "minLength": 1,
+          "title": "Source Locator",
+          "type": "string"
+        }
+      },
+      "required": [
+        "leaf_id",
+        "operation",
+        "prior_reference_status",
+        "source_locator"
+      ],
+      "title": "LifecycleReference",
+      "type": "object"
+    },
+    "PackageFile": {
+      "additionalProperties": false,
+      "properties": {
+        "computed_declared_checksum": {
+          "anyOf": [
+            {
+              "pattern": "^(?:[a-f0-9]{32}|[a-f0-9]{64})$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Computed Declared Checksum"
+        },
+        "declared_checksum": {
+          "anyOf": [
+            {
+              "pattern": "^(?:[a-fA-F0-9]{32}|[a-f0-9]{64})$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Declared Checksum"
+        },
+        "declared_checksum_matches": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Declared Checksum Matches"
+        },
+        "declared_checksum_type": {
+          "anyOf": [
+            {
+              "enum": [
+                "md5",
+                "sha256"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Declared Checksum Type"
+        },
+        "member_type": {
+          "enum": [
+            "BACKBONE_XML",
+            "REGIONAL_XML",
+            "DOSSIER_DOCUMENT",
+            "STUDY_TAGGING_FILE",
+            "SUPPORT_FILE",
+            "UNSUPPORTED"
+          ],
+          "title": "Member Type",
+          "type": "string"
+        },
+        "path": {
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "provenance_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Provenance Sha256",
+          "type": "string"
+        },
+        "relationship": {
+          "minLength": 1,
+          "title": "Relationship",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "member_type",
+        "provenance_sha256",
+        "relationship"
+      ],
+      "title": "PackageFile",
+      "type": "object"
+    },
     "ParseWarning": {
       "additionalProperties": false,
       "properties": {
@@ -134,6 +287,19 @@
     "ParsedLeaf": {
       "additionalProperties": false,
       "properties": {
+        "computed_declared_checksum": {
+          "anyOf": [
+            {
+              "pattern": "^(?:[a-f0-9]{32}|[a-f0-9]{64})$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Computed Declared Checksum"
+        },
         "content_type": {
           "pattern": "^[a-z0-9][a-z0-9.+-]*/[a-z0-9][a-z0-9.+-]*$",
           "title": "Content Type",
@@ -142,7 +308,7 @@
         "declared_checksum": {
           "anyOf": [
             {
-              "pattern": "^[a-f0-9]{64}$",
+              "pattern": "^(?:[a-fA-F0-9]{32}|[a-f0-9]{64})$",
               "type": "string"
             },
             {
@@ -151,6 +317,34 @@
           ],
           "default": null,
           "title": "Declared Checksum"
+        },
+        "declared_checksum_matches": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Declared Checksum Matches"
+        },
+        "declared_checksum_type": {
+          "anyOf": [
+            {
+              "enum": [
+                "md5",
+                "sha256"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Declared Checksum Type"
         },
         "extraction_status": {
           "default": "completed",
@@ -170,6 +364,15 @@
         "heading": {
           "pattern": "^\\d+(?:\\.[A-Za-z0-9]+)+$",
           "title": "Heading",
+          "type": "string"
+        },
+        "heading_status": {
+          "default": "recognized",
+          "enum": [
+            "recognized",
+            "unsupported"
+          ],
+          "title": "Heading Status",
           "type": "string"
         },
         "href": {
@@ -219,6 +422,29 @@
         },
         "operation": {
           "$ref": "#/$defs/LifecycleOperation"
+        },
+        "prior_reference_status": {
+          "default": "not_applicable",
+          "enum": [
+            "not_applicable",
+            "resolved",
+            "unresolved",
+            "outside_scope"
+          ],
+          "title": "Prior Reference Status",
+          "type": "string"
+        },
+        "raw_heading": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raw Heading"
         },
         "source_locator": {
           "minLength": 1,
@@ -292,6 +518,44 @@
       "title": "ParsedTextSpan",
       "type": "object"
     },
+    "ProfileCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "detail": {
+          "minLength": 1,
+          "title": "Detail",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "passed",
+            "warning",
+            "unsupported",
+            "failed"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "status",
+        "detail"
+      ],
+      "title": "ProfileCheck",
+      "type": "object"
+    },
     "StandardVersion": {
       "enum": [
         "eCTD-3.2.2",
@@ -299,6 +563,88 @@
       ],
       "title": "StandardVersion",
       "type": "string"
+    },
+    "XmlDeclarationRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "declared_doctype": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Declared Doctype"
+        },
+        "doctype_recognized": {
+          "title": "Doctype Recognized",
+          "type": "boolean"
+        },
+        "dtd_validation_performed": {
+          "default": false,
+          "title": "Dtd Validation Performed",
+          "type": "boolean"
+        },
+        "dtd_validation_result": {
+          "default": "not_performed",
+          "enum": [
+            "not_performed",
+            "passed",
+            "failed"
+          ],
+          "title": "Dtd Validation Result",
+          "type": "string"
+        },
+        "dtd_version_supported": {
+          "title": "Dtd Version Supported",
+          "type": "boolean"
+        },
+        "namespace": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Namespace"
+        },
+        "path": {
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "root_name": {
+          "minLength": 1,
+          "title": "Root Name",
+          "type": "string"
+        },
+        "xml_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml Version"
+        }
+      },
+      "required": [
+        "path",
+        "root_name",
+        "doctype_recognized",
+        "dtd_version_supported"
+      ],
+      "title": "XmlDeclarationRecord",
+      "type": "object"
     }
   },
   "additionalProperties": false,
@@ -327,6 +673,11 @@
       "default": null,
       "title": "Application Number"
     },
+    "detected_sequence_root": {
+      "default": ".",
+      "title": "Detected Sequence Root",
+      "type": "string"
+    },
     "fixture_id": {
       "anyOf": [
         {
@@ -349,6 +700,64 @@
       "title": "Id",
       "type": "string"
     },
+    "index_md5_computed": {
+      "anyOf": [
+        {
+          "pattern": "^[a-f0-9]{32}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Index Md5 Computed"
+    },
+    "index_md5_declared": {
+      "anyOf": [
+        {
+          "pattern": "^[a-fA-F0-9]{32}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Index Md5 Declared"
+    },
+    "index_md5_matches": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Index Md5 Matches"
+    },
+    "input_profile_id": {
+      "default": "legacy-controlled-layout-v1",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "title": "Input Profile Id",
+      "type": "string"
+    },
+    "input_profile_version": {
+      "default": "1.0.0",
+      "title": "Input Profile Version",
+      "type": "string"
+    },
+    "layout": {
+      "default": "legacy_controlled_layout",
+      "enum": [
+        "authentic_sequence_layout",
+        "legacy_controlled_layout"
+      ],
+      "title": "Layout",
+      "type": "string"
+    },
     "leaves": {
       "items": {
         "$ref": "#/$defs/ParsedLeaf"
@@ -357,10 +766,79 @@
       "title": "Leaves",
       "type": "array"
     },
+    "lifecycle_references": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/LifecycleReference"
+      },
+      "title": "Lifecycle References",
+      "type": "array"
+    },
+    "package_files": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/PackageFile"
+      },
+      "title": "Package Files",
+      "type": "array"
+    },
+    "package_profile_status": {
+      "default": "warning",
+      "enum": [
+        "passed",
+        "warning",
+        "unsupported",
+        "failed"
+      ],
+      "title": "Package Profile Status",
+      "type": "string"
+    },
     "package_sha256": {
       "pattern": "^[a-f0-9]{64}$",
       "title": "Package Sha256",
       "type": "string"
+    },
+    "parsing_extent": {
+      "default": "complete",
+      "enum": [
+        "complete",
+        "bounded"
+      ],
+      "title": "Parsing Extent",
+      "type": "string"
+    },
+    "profile_checks": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/ProfileCheck"
+      },
+      "title": "Profile Checks",
+      "type": "array"
+    },
+    "regional_xml_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Regional Xml Sha256"
+    },
+    "regional_xml_version": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Regional Xml Version"
     },
     "source_standard": {
       "$ref": "#/$defs/StandardVersion"
@@ -383,6 +861,14 @@
         "$ref": "#/$defs/ParseWarning"
       },
       "title": "Warnings",
+      "type": "array"
+    },
+    "xml_declarations": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/XmlDeclarationRecord"
+      },
+      "title": "Xml Declarations",
       "type": "array"
     }
   },

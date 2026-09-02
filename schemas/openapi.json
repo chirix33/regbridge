@@ -189,6 +189,11 @@
             ],
             "title": "Application Number"
           },
+          "detected_sequence_root": {
+            "default": ".",
+            "title": "Detected Sequence Root",
+            "type": "string"
+          },
           "fixture_id": {
             "anyOf": [
               {
@@ -210,6 +215,61 @@
             "title": "Id",
             "type": "string"
           },
+          "index_md5_computed": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{32}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Index Md5 Computed"
+          },
+          "index_md5_declared": {
+            "anyOf": [
+              {
+                "pattern": "^[a-fA-F0-9]{32}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Index Md5 Declared"
+          },
+          "index_md5_matches": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Index Md5 Matches"
+          },
+          "input_profile_id": {
+            "default": "legacy-controlled-layout-v1",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Input Profile Id",
+            "type": "string"
+          },
+          "input_profile_version": {
+            "default": "1.0.0",
+            "title": "Input Profile Version",
+            "type": "string"
+          },
+          "layout": {
+            "default": "legacy_controlled_layout",
+            "enum": [
+              "authentic_sequence_layout",
+              "legacy_controlled_layout"
+            ],
+            "title": "Layout",
+            "type": "string"
+          },
           "leaves": {
             "items": {
               "$ref": "#/components/schemas/ParsedLeaf"
@@ -218,10 +278,77 @@
             "title": "Leaves",
             "type": "array"
           },
+          "lifecycle_references": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/LifecycleReference"
+            },
+            "title": "Lifecycle References",
+            "type": "array"
+          },
+          "package_files": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/PackageFile"
+            },
+            "title": "Package Files",
+            "type": "array"
+          },
+          "package_profile_status": {
+            "default": "warning",
+            "enum": [
+              "passed",
+              "warning",
+              "unsupported",
+              "failed"
+            ],
+            "title": "Package Profile Status",
+            "type": "string"
+          },
           "package_sha256": {
             "pattern": "^[a-f0-9]{64}$",
             "title": "Package Sha256",
             "type": "string"
+          },
+          "parsing_extent": {
+            "default": "complete",
+            "enum": [
+              "complete",
+              "bounded"
+            ],
+            "title": "Parsing Extent",
+            "type": "string"
+          },
+          "profile_checks": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ProfileCheck"
+            },
+            "title": "Profile Checks",
+            "type": "array"
+          },
+          "regional_xml_sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Regional Xml Sha256"
+          },
+          "regional_xml_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Regional Xml Version"
           },
           "source_standard": {
             "$ref": "#/components/schemas/StandardVersion"
@@ -243,6 +370,14 @@
               "$ref": "#/components/schemas/ParseWarning"
             },
             "title": "Warnings",
+            "type": "array"
+          },
+          "xml_declarations": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/XmlDeclarationRecord"
+            },
+            "title": "Xml Declarations",
             "type": "array"
           }
         },
@@ -468,6 +603,353 @@
         "title": "ClassMetrics",
         "type": "object"
       },
+      "ComparisonCell": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "anyOf": [
+              {
+                "enum": [
+                  "AUTHOR_REVIEW_HEADING_MAPPING",
+                  "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT",
+                  "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD",
+                  "DECLARE_MANUFACTURER_PARTITIONING",
+                  "DECLARE_METADATA_MIGRATION_INTENT",
+                  "HUMAN_VERIFY_STALE_CONTENT",
+                  "NO_MATERIAL_REPAIR",
+                  "PRESERVE_EXACT_CONTEXT_GROUP_KEYWORDS",
+                  "SELECT_SUPPORTED_REUSE_OPERATION",
+                  "VERIFY_HYPERLINK_RELEVANCE",
+                  "WAIT_FOR_OPERATIONAL_AVAILABILITY"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Action"
+          },
+          "decision": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Decision"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "evidence_ids": {
+            "default": [],
+            "items": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "failure": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure"
+          },
+          "graph": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GraphNeighborhood"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "human_review_required": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Human Review Required"
+          },
+          "leaf_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Leaf Id",
+            "type": "string"
+          },
+          "model": {
+            "$ref": "#/components/schemas/ModelExecutionRecord"
+          },
+          "package_input_digest": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Package Input Digest",
+            "type": "string"
+          },
+          "package_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Package Sha256",
+            "type": "string"
+          },
+          "rationale": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rationale"
+          },
+          "retrieval": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/RetrievalItem"
+            },
+            "title": "Retrieval",
+            "type": "array"
+          },
+          "rule_ids": {
+            "default": [],
+            "items": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+              "type": "string"
+            },
+            "title": "Rule Ids",
+            "type": "array"
+          },
+          "selected_file_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Selected File Sha256",
+            "type": "string"
+          },
+          "severity": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Severity"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "enum": [
+              "completed",
+              "invalid_output",
+              "failed"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "system": {
+            "enum": [
+              "B0",
+              "B1",
+              "B2",
+              "RegBridge"
+            ],
+            "title": "System",
+            "type": "string"
+          },
+          "trace": {
+            "default": [],
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Trace",
+            "type": "array"
+          }
+        },
+        "required": [
+          "leaf_id",
+          "system",
+          "package_sha256",
+          "selected_file_sha256",
+          "package_input_digest",
+          "model",
+          "status"
+        ],
+        "title": "ComparisonCell",
+        "type": "object"
+      },
+      "ComparisonRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "inventory_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Inventory Id",
+            "type": "string"
+          },
+          "leaf_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Leaf Ids"
+          },
+          "model_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Model Id",
+            "type": "string"
+          },
+          "target_context": {
+            "$ref": "#/components/schemas/TargetContext"
+          }
+        },
+        "required": [
+          "inventory_id",
+          "model_id",
+          "target_context"
+        ],
+        "title": "ComparisonRequest",
+        "type": "object"
+      },
+      "ComparisonRun": {
+        "additionalProperties": false,
+        "properties": {
+          "benchmark_evaluation": {
+            "const": false,
+            "default": false,
+            "title": "Benchmark Evaluation",
+            "type": "boolean"
+          },
+          "comparison_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Comparison Id",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "execution_configuration_digest": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Execution Configuration Digest",
+            "type": "string"
+          },
+          "expert_validated": {
+            "const": false,
+            "default": false,
+            "title": "Expert Validated",
+            "type": "boolean"
+          },
+          "failures": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/DossierLeafFailure"
+            },
+            "title": "Failures",
+            "type": "array"
+          },
+          "input_profile_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Input Profile Id",
+            "type": "string"
+          },
+          "inventory_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Inventory Id",
+            "type": "string"
+          },
+          "operational_status": {
+            "const": "not_operational",
+            "default": "not_operational",
+            "title": "Operational Status",
+            "type": "string"
+          },
+          "requested_leaf_ids": {
+            "items": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+              "type": "string"
+            },
+            "title": "Requested Leaf Ids",
+            "type": "array"
+          },
+          "results": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ComparisonCell"
+            },
+            "title": "Results",
+            "type": "array"
+          },
+          "selected_model": {
+            "$ref": "#/components/schemas/ModelProfile"
+          },
+          "state": {
+            "enum": [
+              "queued",
+              "running",
+              "completed",
+              "partial_failed",
+              "failed"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "systems": {
+            "default": [
+              "B0",
+              "B1",
+              "B2",
+              "RegBridge"
+            ],
+            "items": {
+              "enum": [
+                "B0",
+                "B1",
+                "B2",
+                "RegBridge"
+              ],
+              "type": "string"
+            },
+            "title": "Systems",
+            "type": "array"
+          },
+          "target_context": {
+            "$ref": "#/components/schemas/TargetContext"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "comparison_id",
+          "state",
+          "inventory_id",
+          "input_profile_id",
+          "selected_model",
+          "target_context",
+          "execution_configuration_digest",
+          "requested_leaf_ids",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ComparisonRun",
+        "type": "object"
+      },
       "Decision": {
         "enum": [
           "REUSE_AS_LEGACY_REFERENCE",
@@ -570,6 +1052,269 @@
         "title": "DemoPresetsResponse",
         "type": "object"
       },
+      "DossierAnalysisRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "inventory_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Inventory Id",
+            "type": "string"
+          },
+          "leaf_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Leaf Ids"
+          },
+          "model_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Model Id",
+            "type": "string"
+          },
+          "target_context": {
+            "$ref": "#/components/schemas/TargetContext"
+          }
+        },
+        "required": [
+          "inventory_id",
+          "model_id",
+          "target_context"
+        ],
+        "title": "DossierAnalysisRequest",
+        "type": "object"
+      },
+      "DossierAnalysisRun": {
+        "additionalProperties": false,
+        "properties": {
+          "capability_boundary": {
+            "title": "Capability Boundary",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "execution_configuration_digest": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Execution Configuration Digest",
+            "type": "string"
+          },
+          "expert_validated": {
+            "const": false,
+            "default": false,
+            "title": "Expert Validated",
+            "type": "boolean"
+          },
+          "failures": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/DossierLeafFailure"
+            },
+            "title": "Failures",
+            "type": "array"
+          },
+          "input_profile_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Input Profile Id",
+            "type": "string"
+          },
+          "inventory_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Inventory Id",
+            "type": "string"
+          },
+          "operational_status": {
+            "const": "not_operational",
+            "default": "not_operational",
+            "title": "Operational Status",
+            "type": "string"
+          },
+          "requested_leaf_ids": {
+            "items": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+              "type": "string"
+            },
+            "title": "Requested Leaf Ids",
+            "type": "array"
+          },
+          "results": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/DossierLeafResult"
+            },
+            "title": "Results",
+            "type": "array"
+          },
+          "run_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Run Id",
+            "type": "string"
+          },
+          "selected_model": {
+            "$ref": "#/components/schemas/ModelProfile"
+          },
+          "state": {
+            "enum": [
+              "queued",
+              "running",
+              "completed",
+              "partial_failed",
+              "failed"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DossierAnalysisSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "target_context": {
+            "$ref": "#/components/schemas/TargetContext"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "state",
+          "inventory_id",
+          "input_profile_id",
+          "selected_model",
+          "target_context",
+          "execution_configuration_digest",
+          "requested_leaf_ids",
+          "created_at",
+          "updated_at",
+          "capability_boundary"
+        ],
+        "title": "DossierAnalysisRun",
+        "type": "object"
+      },
+      "DossierAnalysisSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "analyzed_count": {
+            "title": "Analyzed Count",
+            "type": "integer"
+          },
+          "applicant_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applicant Name"
+          },
+          "application_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Application Number"
+          },
+          "decision_counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Decision Counts",
+            "type": "object"
+          },
+          "failed_count": {
+            "title": "Failed Count",
+            "type": "integer"
+          },
+          "human_approval_count": {
+            "title": "Human Approval Count",
+            "type": "integer"
+          },
+          "model_configuration_digest": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Model Configuration Digest",
+            "type": "string"
+          },
+          "model_profile_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Model Profile Id",
+            "type": "string"
+          },
+          "package_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Package Sha256",
+            "type": "string"
+          },
+          "parser_warning_count": {
+            "title": "Parser Warning Count",
+            "type": "integer"
+          },
+          "severity_counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Severity Counts",
+            "type": "object"
+          },
+          "skipped_count": {
+            "title": "Skipped Count",
+            "type": "integer"
+          },
+          "submission_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Submission Type"
+          },
+          "total_supported_leaves": {
+            "title": "Total Supported Leaves",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "package_sha256",
+          "total_supported_leaves",
+          "analyzed_count",
+          "failed_count",
+          "skipped_count",
+          "decision_counts",
+          "severity_counts",
+          "human_approval_count",
+          "parser_warning_count",
+          "model_profile_id",
+          "model_configuration_digest"
+        ],
+        "title": "DossierAnalysisSummary",
+        "type": "object"
+      },
       "DossierEvidence": {
         "additionalProperties": false,
         "properties": {
@@ -618,6 +1363,69 @@
           "file_sha256"
         ],
         "title": "DossierEvidence",
+        "type": "object"
+      },
+      "DossierLeafFailure": {
+        "additionalProperties": false,
+        "properties": {
+          "cause": {
+            "title": "Cause",
+            "type": "string"
+          },
+          "leaf_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Leaf Id",
+            "type": "string"
+          },
+          "retryable": {
+            "default": false,
+            "title": "Retryable",
+            "type": "boolean"
+          },
+          "stage": {
+            "title": "Stage",
+            "type": "string"
+          }
+        },
+        "required": [
+          "leaf_id",
+          "stage",
+          "cause"
+        ],
+        "title": "DossierLeafFailure",
+        "type": "object"
+      },
+      "DossierLeafResult": {
+        "additionalProperties": false,
+        "properties": {
+          "analysis": {
+            "$ref": "#/components/schemas/AnalysisResult"
+          },
+          "analysis_ref": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Analysis Ref",
+            "type": "string"
+          },
+          "graph": {
+            "$ref": "#/components/schemas/GraphNeighborhood"
+          },
+          "leaf_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Leaf Id",
+            "type": "string"
+          },
+          "model": {
+            "$ref": "#/components/schemas/ModelExecutionRecord"
+          }
+        },
+        "required": [
+          "leaf_id",
+          "analysis_ref",
+          "analysis",
+          "graph",
+          "model"
+        ],
+        "title": "DossierLeafResult",
         "type": "object"
       },
       "EdgeType": {
@@ -1385,6 +2193,63 @@
         "title": "LifecycleOperation",
         "type": "string"
       },
+      "LifecycleReference": {
+        "additionalProperties": false,
+        "properties": {
+          "href": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Href"
+          },
+          "leaf_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Leaf Id",
+            "type": "string"
+          },
+          "modified_file": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Modified File"
+          },
+          "operation": {
+            "$ref": "#/components/schemas/LifecycleOperation"
+          },
+          "prior_reference_status": {
+            "enum": [
+              "resolved",
+              "unresolved",
+              "outside_scope"
+            ],
+            "title": "Prior Reference Status",
+            "type": "string"
+          },
+          "source_locator": {
+            "minLength": 1,
+            "title": "Source Locator",
+            "type": "string"
+          }
+        },
+        "required": [
+          "leaf_id",
+          "operation",
+          "prior_reference_status",
+          "source_locator"
+        ],
+        "title": "LifecycleReference",
+        "type": "object"
+      },
       "LlmMode": {
         "enum": [
           "fixture",
@@ -1943,6 +2808,283 @@
         "title": "MetricsReport",
         "type": "object"
       },
+      "ModelCatalog": {
+        "additionalProperties": false,
+        "properties": {
+          "default_model_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Default Model Id",
+            "type": "string"
+          },
+          "models": {
+            "items": {
+              "$ref": "#/components/schemas/ModelProfile"
+            },
+            "title": "Models",
+            "type": "array"
+          }
+        },
+        "required": [
+          "default_model_id",
+          "models"
+        ],
+        "title": "ModelCatalog",
+        "type": "object"
+      },
+      "ModelExecutionRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "adapter_type": {
+            "enum": [
+              "responses",
+              "chat_completions",
+              "fixture",
+              "model-free"
+            ],
+            "title": "Adapter Type",
+            "type": "string"
+          },
+          "attempt_count": {
+            "default": 1,
+            "maximum": 3.0,
+            "minimum": 0.0,
+            "title": "Attempt Count",
+            "type": "integer"
+          },
+          "configuration_digest": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Configuration Digest",
+            "type": "string"
+          },
+          "failure": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure"
+          },
+          "input_tokens": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Input Tokens"
+          },
+          "latency_ms": {
+            "minimum": 0.0,
+            "title": "Latency Ms",
+            "type": "number"
+          },
+          "model_profile_id": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+                "type": "string"
+              },
+              {
+                "const": "model-free",
+                "type": "string"
+              }
+            ],
+            "title": "Model Profile Id"
+          },
+          "output_tokens": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output Tokens"
+          },
+          "prompt_version": {
+            "title": "Prompt Version",
+            "type": "string"
+          },
+          "provider_reported_model_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Reported Model Name"
+          },
+          "reasoning_tokens": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reasoning Tokens"
+          },
+          "request_digest": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Request Digest"
+          },
+          "requested_model_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested Model Name"
+          },
+          "retry_causes": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Retry Causes",
+            "type": "array"
+          },
+          "status": {
+            "enum": [
+              "completed",
+              "failed",
+              "not_applicable"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "model_profile_id",
+          "adapter_type",
+          "configuration_digest",
+          "prompt_version",
+          "latency_ms",
+          "status"
+        ],
+        "title": "ModelExecutionRecord",
+        "type": "object"
+      },
+      "ModelProfile": {
+        "additionalProperties": false,
+        "properties": {
+          "adapter_type": {
+            "enum": [
+              "responses",
+              "chat_completions"
+            ],
+            "title": "Adapter Type",
+            "type": "string"
+          },
+          "availability": {
+            "enum": [
+              "available",
+              "coming_soon",
+              "misconfigured"
+            ],
+            "title": "Availability",
+            "type": "string"
+          },
+          "configuration_digest": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Configuration Digest",
+            "type": "string"
+          },
+          "configured_model_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Configured Model Name"
+          },
+          "disabled_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Disabled Reason"
+          },
+          "display_name": {
+            "title": "Display Name",
+            "type": "string"
+          },
+          "model_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Model Id",
+            "type": "string"
+          },
+          "network_required": {
+            "title": "Network Required",
+            "type": "boolean"
+          },
+          "reasoning_capability": {
+            "title": "Reasoning Capability",
+            "type": "boolean"
+          },
+          "structured_output_capability": {
+            "enum": [
+              "validated",
+              "unvalidated"
+            ],
+            "title": "Structured Output Capability",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subtitle"
+          }
+        },
+        "required": [
+          "model_id",
+          "display_name",
+          "availability",
+          "adapter_type",
+          "structured_output_capability",
+          "reasoning_capability",
+          "configuration_digest",
+          "network_required"
+        ],
+        "title": "ModelProfile",
+        "type": "object"
+      },
       "ModelRunRecord": {
         "additionalProperties": false,
         "properties": {
@@ -2059,6 +3201,96 @@
         "title": "OperationalStatus",
         "type": "string"
       },
+      "PackageFile": {
+        "additionalProperties": false,
+        "properties": {
+          "computed_declared_checksum": {
+            "anyOf": [
+              {
+                "pattern": "^(?:[a-f0-9]{32}|[a-f0-9]{64})$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Computed Declared Checksum"
+          },
+          "declared_checksum": {
+            "anyOf": [
+              {
+                "pattern": "^(?:[a-fA-F0-9]{32}|[a-f0-9]{64})$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Declared Checksum"
+          },
+          "declared_checksum_matches": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Declared Checksum Matches"
+          },
+          "declared_checksum_type": {
+            "anyOf": [
+              {
+                "enum": [
+                  "md5",
+                  "sha256"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Declared Checksum Type"
+          },
+          "member_type": {
+            "enum": [
+              "BACKBONE_XML",
+              "REGIONAL_XML",
+              "DOSSIER_DOCUMENT",
+              "STUDY_TAGGING_FILE",
+              "SUPPORT_FILE",
+              "UNSUPPORTED"
+            ],
+            "title": "Member Type",
+            "type": "string"
+          },
+          "path": {
+            "minLength": 1,
+            "title": "Path",
+            "type": "string"
+          },
+          "provenance_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Provenance Sha256",
+            "type": "string"
+          },
+          "relationship": {
+            "minLength": 1,
+            "title": "Relationship",
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "member_type",
+          "provenance_sha256",
+          "relationship"
+        ],
+        "title": "PackageFile",
+        "type": "object"
+      },
       "ParseWarning": {
         "additionalProperties": false,
         "properties": {
@@ -2122,6 +3354,18 @@
       "ParsedLeaf": {
         "additionalProperties": false,
         "properties": {
+          "computed_declared_checksum": {
+            "anyOf": [
+              {
+                "pattern": "^(?:[a-f0-9]{32}|[a-f0-9]{64})$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Computed Declared Checksum"
+          },
           "content_type": {
             "pattern": "^[a-z0-9][a-z0-9.+-]*/[a-z0-9][a-z0-9.+-]*$",
             "title": "Content Type",
@@ -2130,7 +3374,7 @@
           "declared_checksum": {
             "anyOf": [
               {
-                "pattern": "^[a-f0-9]{64}$",
+                "pattern": "^(?:[a-fA-F0-9]{32}|[a-f0-9]{64})$",
                 "type": "string"
               },
               {
@@ -2138,6 +3382,32 @@
               }
             ],
             "title": "Declared Checksum"
+          },
+          "declared_checksum_matches": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Declared Checksum Matches"
+          },
+          "declared_checksum_type": {
+            "anyOf": [
+              {
+                "enum": [
+                  "md5",
+                  "sha256"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Declared Checksum Type"
           },
           "extraction_status": {
             "default": "completed",
@@ -2157,6 +3427,15 @@
           "heading": {
             "pattern": "^\\d+(?:\\.[A-Za-z0-9]+)+$",
             "title": "Heading",
+            "type": "string"
+          },
+          "heading_status": {
+            "default": "recognized",
+            "enum": [
+              "recognized",
+              "unsupported"
+            ],
+            "title": "Heading Status",
             "type": "string"
           },
           "href": {
@@ -2197,6 +3476,28 @@
           },
           "operation": {
             "$ref": "#/components/schemas/LifecycleOperation"
+          },
+          "prior_reference_status": {
+            "default": "not_applicable",
+            "enum": [
+              "not_applicable",
+              "resolved",
+              "unresolved",
+              "outside_scope"
+            ],
+            "title": "Prior Reference Status",
+            "type": "string"
+          },
+          "raw_heading": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw Heading"
           },
           "source_locator": {
             "minLength": 1,
@@ -2615,6 +3916,44 @@
         "title": "PresentationRate",
         "type": "object"
       },
+      "ProfileCheck": {
+        "additionalProperties": false,
+        "properties": {
+          "detail": {
+            "minLength": 1,
+            "title": "Detail",
+            "type": "string"
+          },
+          "id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "passed",
+              "warning",
+              "unsupported",
+              "failed"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "status",
+          "detail"
+        ],
+        "title": "ProfileCheck",
+        "type": "object"
+      },
       "RateMetric": {
         "additionalProperties": false,
         "properties": {
@@ -2736,6 +4075,37 @@
           "rank"
         ],
         "title": "RetrievalHit",
+        "type": "object"
+      },
+      "RetrievalItem": {
+        "additionalProperties": false,
+        "properties": {
+          "alias": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Alias",
+            "type": "string"
+          },
+          "evidence_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "title": "Evidence Id",
+            "type": "string"
+          },
+          "rank": {
+            "title": "Rank",
+            "type": "integer"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          }
+        },
+        "required": [
+          "alias",
+          "evidence_id",
+          "score",
+          "rank"
+        ],
+        "title": "RetrievalItem",
         "type": "object"
       },
       "RetrievalMetrics": {
@@ -3780,6 +5150,85 @@
         ],
         "title": "VocabularyDiagnostic",
         "type": "object"
+      },
+      "XmlDeclarationRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "declared_doctype": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Declared Doctype"
+          },
+          "doctype_recognized": {
+            "title": "Doctype Recognized",
+            "type": "boolean"
+          },
+          "dtd_validation_performed": {
+            "default": false,
+            "title": "Dtd Validation Performed",
+            "type": "boolean"
+          },
+          "dtd_validation_result": {
+            "default": "not_performed",
+            "enum": [
+              "not_performed",
+              "passed",
+              "failed"
+            ],
+            "title": "Dtd Validation Result",
+            "type": "string"
+          },
+          "dtd_version_supported": {
+            "title": "Dtd Version Supported",
+            "type": "boolean"
+          },
+          "namespace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Namespace"
+          },
+          "path": {
+            "minLength": 1,
+            "title": "Path",
+            "type": "string"
+          },
+          "root_name": {
+            "minLength": 1,
+            "title": "Root Name",
+            "type": "string"
+          },
+          "xml_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Xml Version"
+          }
+        },
+        "required": [
+          "path",
+          "root_name",
+          "doctype_recognized",
+          "dtd_version_supported"
+        ],
+        "title": "XmlDeclarationRecord",
+        "type": "object"
       }
     }
   },
@@ -3965,6 +5414,48 @@
         ]
       }
     },
+    "/api/v1/applications/{inventory_id}": {
+      "get": {
+        "operationId": "get_application_api_v1_applications__inventory_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory_id",
+            "required": true,
+            "schema": {
+              "title": "Inventory Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationInventory"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Application",
+        "tags": [
+          "analysis"
+        ]
+      }
+    },
     "/api/v1/baselines/run": {
       "post": {
         "operationId": "run_baseline_api_v1_baselines_run_post",
@@ -4003,6 +5494,89 @@
         "summary": "Run Baseline",
         "tags": [
           "evaluation"
+        ]
+      }
+    },
+    "/api/v1/comparisons": {
+      "post": {
+        "operationId": "create_comparison_api_v1_comparisons_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ComparisonRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComparisonRun"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Comparison",
+        "tags": [
+          "product"
+        ]
+      }
+    },
+    "/api/v1/comparisons/{comparison_id}": {
+      "get": {
+        "operationId": "get_comparison_api_v1_comparisons__comparison_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "comparison_id",
+            "required": true,
+            "schema": {
+              "title": "Comparison Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComparisonRun"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Comparison",
+        "tags": [
+          "product"
         ]
       }
     },
@@ -4045,6 +5619,89 @@
         "summary": "Get Demo Presets",
         "tags": [
           "presentation"
+        ]
+      }
+    },
+    "/api/v1/dossier-analyses": {
+      "post": {
+        "operationId": "create_dossier_analysis_api_v1_dossier_analyses_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DossierAnalysisRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DossierAnalysisRun"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Dossier Analysis",
+        "tags": [
+          "product"
+        ]
+      }
+    },
+    "/api/v1/dossier-analyses/{run_id}": {
+      "get": {
+        "operationId": "get_dossier_analysis_api_v1_dossier_analyses__run_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DossierAnalysisRun"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Dossier Analysis",
+        "tags": [
+          "product"
         ]
       }
     },
@@ -4149,6 +5806,27 @@
         "summary": "Fixtures",
         "tags": [
           "analysis"
+        ]
+      }
+    },
+    "/api/v1/models": {
+      "get": {
+        "operationId": "list_models_api_v1_models_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelCatalog"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Models",
+        "tags": [
+          "configuration"
         ]
       }
     },

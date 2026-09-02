@@ -34,9 +34,25 @@ from app.domain.enums import (
 from app.domain.models import StandardsManifest
 from app.evaluation.benchmark import load_frozen_benchmark
 from app.evaluation.jobs import EvaluationBusyError, EvaluationManager
-from app.parsers.ectd322 import EctdParseError, FixtureCatalog, parse_zip
+from app.parsers.ectd322 import EctdParseError, FixtureCatalog
 from app.parsers.models import ApplicationInventory
+from app.parsers.profile322 import parse_uploaded_zip
 from app.presentation.repository import load_m4_snapshot
+from app.product.comparison import ComparisonManager
+from app.product.models import (
+    ComparisonRequest,
+    ComparisonRun,
+    DossierAnalysisRequest,
+    DossierAnalysisRun,
+    ModelCatalog,
+)
+from app.product.models_registry import ModelProfileRegistry
+from app.product.repository import (
+    ComparisonRunRepository,
+    DossierRunRepository,
+    InventoryRepository,
+)
+from app.product.services import DossierAnalysisManager
 from app.standards.operational import OperationalStatusRegistry
 from app.standards.registry import StandardsRegistry
 
@@ -63,8 +79,35 @@ def get_manifest() -> StandardsManifest:
 SettingsDependency = Annotated[Settings, Depends(get_settings)]
 ManifestDependency = Annotated[StandardsManifest, Depends(get_manifest)]
 
-_inventories: dict[str, ApplicationInventory] = {}
 _evaluation_manager = EvaluationManager()
+_product_settings = get_settings()
+_inventory_repository = InventoryRepository(
+    capacity=_product_settings.product_inventory_capacity,
+    ttl_seconds=_product_settings.product_inventory_ttl_seconds,
+)
+_dossier_runs: DossierRunRepository = DossierRunRepository(
+    capacity=_product_settings.product_job_capacity,
+    ttl_seconds=_product_settings.product_job_ttl_seconds,
+    prefix="dossier",
+)
+_comparison_runs: ComparisonRunRepository = ComparisonRunRepository(
+    capacity=_product_settings.product_job_capacity,
+    ttl_seconds=_product_settings.product_job_ttl_seconds,
+    prefix="comparison",
+)
+_model_registry = ModelProfileRegistry(_product_settings)
+_dossier_manager = DossierAnalysisManager(
+    inventories=_inventory_repository,
+    runs=_dossier_runs,
+    registry=_model_registry,
+    settings=_product_settings,
+)
+_comparison_manager = ComparisonManager(
+    inventories=_inventory_repository,
+    runs=_comparison_runs,
+    registry=_model_registry,
+    settings=_product_settings,
+)
 
 
 @lru_cache
@@ -203,14 +246,30 @@ async def parse_application(
             payload = await request.body()
             if not payload:
                 raise EctdParseError("provide a controlled fixture_id or ZIP upload")
-            inventory = parse_zip(payload)
+            inventory = parse_uploaded_zip(payload)
     except EctdParseError as error:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=str(error),
         ) from error
-    _inventories[inventory.id] = inventory
-    return inventory
+    return _inventory_repository.put(inventory).inventory
+
+
+@router.get(
+    "/api/v1/applications/{inventory_id}",
+    response_model=ApplicationInventory,
+    tags=["analysis"],
+)
+def get_application(inventory_id: str) -> ApplicationInventory:
+    try:
+        return _inventory_repository.get(inventory_id)
+    except KeyError as error:
+        raise HTTPException(status_code=404, detail="inventory not found or expired") from error
+
+
+@router.get("/api/v1/models", response_model=ModelCatalog, tags=["configuration"])
+def list_models() -> ModelCatalog:
+    return _model_registry.catalog()
 
 
 @router.post("/api/v1/analyses", response_model=AnalysisResponse, tags=["analysis"])
@@ -218,14 +277,81 @@ async def create_analysis(
     request: AnalysisRequest,
     service: AnalysisDependency,
 ) -> AnalysisResponse:
-    inventory = _inventories.get(request.inventory_id)
-    if inventory is None:
-        raise HTTPException(status_code=404, detail="parsed inventory not found")
+    try:
+        inventory = _inventory_repository.get(request.inventory_id)
+    except KeyError as error:
+        raise HTTPException(
+            status_code=404, detail="parsed inventory not found or expired"
+        ) from error
     try:
         result = await service.analyze_async(inventory, request.leaf_id, request.target_context)
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
     return AnalysisResponse(analysis=result)
+
+
+@router.post(
+    "/api/v1/dossier-analyses",
+    response_model=DossierAnalysisRun,
+    status_code=status.HTTP_202_ACCEPTED,
+    tags=["product"],
+)
+def create_dossier_analysis(
+    request: DossierAnalysisRequest,
+    background_tasks: BackgroundTasks,
+) -> DossierAnalysisRun:
+    try:
+        run = _dossier_manager.create(request)
+    except KeyError as error:
+        raise HTTPException(
+            status_code=404, detail="inventory or model profile not found"
+        ) from error
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+    background_tasks.add_task(_dossier_manager.execute, run.run_id)
+    return run
+
+
+@router.get(
+    "/api/v1/dossier-analyses/{run_id}", response_model=DossierAnalysisRun, tags=["product"]
+)
+def get_dossier_analysis(run_id: str) -> DossierAnalysisRun:
+    try:
+        return _dossier_runs.get(run_id)
+    except KeyError as error:
+        raise HTTPException(
+            status_code=404, detail="dossier analysis not found or expired"
+        ) from error
+
+
+@router.post(
+    "/api/v1/comparisons",
+    response_model=ComparisonRun,
+    status_code=status.HTTP_202_ACCEPTED,
+    tags=["product"],
+)
+def create_comparison(
+    request: ComparisonRequest,
+    background_tasks: BackgroundTasks,
+) -> ComparisonRun:
+    try:
+        run = _comparison_manager.create(request)
+    except KeyError as error:
+        raise HTTPException(
+            status_code=404, detail="inventory or model profile not found"
+        ) from error
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+    background_tasks.add_task(_comparison_manager.execute, run.comparison_id)
+    return run
+
+
+@router.get("/api/v1/comparisons/{comparison_id}", response_model=ComparisonRun, tags=["product"])
+def get_comparison(comparison_id: str) -> ComparisonRun:
+    try:
+        return _comparison_runs.get(comparison_id)
+    except KeyError as error:
+        raise HTTPException(status_code=404, detail="comparison not found or expired") from error
 
 
 @router.get("/api/v1/analyses/{analysis_id}", response_model=AnalysisResponse, tags=["analysis"])

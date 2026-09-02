@@ -87,6 +87,12 @@ export interface ParsedLeaf {
   text_span_count: number;
   hyperlink_count: number;
   extraction_status: "completed" | "failed" | "bounded";
+  raw_heading: string | null;
+  heading_status: "recognized" | "unsupported";
+  declared_checksum_type: "md5" | "sha256" | null;
+  declared_checksum: string | null;
+  computed_declared_checksum: string | null;
+  declared_checksum_matches: boolean | null;
 }
 
 export interface ApplicationInventory {
@@ -100,6 +106,132 @@ export interface ApplicationInventory {
   package_sha256: string;
   leaves: ParsedLeaf[];
   warnings: Array<{ code: string; message: string; locator: string }>;
+  input_profile_id: string;
+  input_profile_version: string;
+  detected_sequence_root: string;
+  layout: "authentic_sequence_layout" | "legacy_controlled_layout";
+  parsing_extent: "complete" | "bounded";
+  package_profile_status: "passed" | "warning" | "unsupported" | "failed";
+  profile_checks: Array<{ id: string; label: string; status: "passed" | "warning" | "unsupported" | "failed"; detail: string }>;
+  package_files: Array<{ path: string; member_type: string; provenance_sha256: string; relationship: string }>;
+  regional_xml_version: string | null;
+  regional_xml_sha256: string | null;
+  index_md5_declared: string | null;
+  index_md5_computed: string | null;
+  index_md5_matches: boolean | null;
+}
+
+export interface ModelProfile {
+  model_id: string;
+  display_name: string;
+  subtitle: string | null;
+  availability: "available" | "coming_soon" | "misconfigured";
+  disabled_reason: string | null;
+  adapter_type: "responses" | "chat_completions";
+  configured_model_name: string | null;
+  structured_output_capability: "validated" | "unvalidated";
+  reasoning_capability: boolean;
+  configuration_digest: string;
+  network_required: boolean;
+}
+
+export interface ModelCatalog { default_model_id: string; models: ModelProfile[] }
+
+export interface TargetContext {
+  authority: "FDA";
+  center: "CDER";
+  application_type: "NDA";
+  source_standard: "eCTD-3.2.2";
+  target_standard: "eCTD-4.0";
+  analysis_date: string;
+  reuse_operation: "reference-existing-content";
+  standards_snapshot_id: "fda-cder-demo-v1";
+  scenario_mode: ScenarioMode;
+  metadata_plan: MetadataPlan;
+}
+
+export interface ModelExecutionRecord {
+  model_profile_id: string;
+  requested_model_name: string | null;
+  provider_reported_model_name: string | null;
+  adapter_type: string;
+  configuration_digest: string;
+  prompt_version: string;
+  request_digest: string | null;
+  input_tokens: number | null;
+  output_tokens: number | null;
+  reasoning_tokens: number | null;
+  latency_ms: number;
+  status: string;
+  failure: string | null;
+}
+
+export interface DossierLeafResult {
+  leaf_id: string;
+  analysis_ref: string;
+  analysis: AnalysisResult;
+  graph: GraphNeighborhood;
+  model: ModelExecutionRecord;
+}
+
+export interface DossierAnalysisRun {
+  run_id: string;
+  state: "queued" | "running" | "completed" | "partial_failed" | "failed";
+  inventory_id: string;
+  input_profile_id: string;
+  selected_model: ModelProfile;
+  execution_configuration_digest: string;
+  requested_leaf_ids: string[];
+  summary: null | {
+    package_sha256: string;
+    application_number: string | null;
+    submission_type: string | null;
+    applicant_name: string | null;
+    total_supported_leaves: number;
+    analyzed_count: number;
+    failed_count: number;
+    skipped_count: number;
+    decision_counts: Record<string, number>;
+    severity_counts: Record<string, number>;
+    human_approval_count: number;
+    parser_warning_count: number;
+  };
+  results: DossierLeafResult[];
+  failures: Array<{ leaf_id: string; stage: string; cause: string; retryable: boolean }>;
+  operational_status: "not_operational";
+  expert_validated: false;
+  capability_boundary: string;
+}
+
+export interface ComparisonCell {
+  leaf_id: string;
+  system: "B0" | "B1" | "B2" | "RegBridge";
+  model: ModelExecutionRecord;
+  decision: string | null;
+  severity: string | null;
+  action: string | null;
+  human_review_required: boolean | null;
+  rationale: string | null;
+  evidence_ids: string[];
+  rule_ids: string[];
+  retrieval: Array<{ alias: string; evidence_id: string; score: number; rank: number }>;
+  graph: GraphNeighborhood | null;
+  trace: Array<Record<string, unknown>>;
+  status: "completed" | "invalid_output" | "failed";
+  failure: string | null;
+}
+
+export interface ComparisonRun {
+  comparison_id: string;
+  state: "queued" | "running" | "completed" | "partial_failed" | "failed";
+  inventory_id: string;
+  selected_model: ModelProfile;
+  requested_leaf_ids: string[];
+  results: ComparisonCell[];
+  failures: Array<{ leaf_id: string; stage: string; cause: string }>;
+  operational_status: "not_operational";
+  expert_validated: false;
+  benchmark_evaluation: false;
 }
 
 export interface RegulatoryEvidenceSpan {
