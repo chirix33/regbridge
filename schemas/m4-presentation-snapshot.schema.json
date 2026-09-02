@@ -578,6 +578,16 @@
       "title": "Metric Reports",
       "type": "array"
     },
+    "metrics_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Metrics Sha256",
+      "type": "string"
+    },
+    "predictions_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Predictions Sha256",
+      "type": "string"
+    },
     "repository_commit": {
       "title": "Repository Commit",
       "type": "string"
@@ -651,6 +661,8 @@
     "source_run_id",
     "source_run_directory",
     "source_run_file_sha256",
+    "predictions_sha256",
+    "metrics_sha256",
     "repository_commit",
     "benchmark_sha256",
     "frozen_prompt_digest",

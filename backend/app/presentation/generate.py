@@ -257,6 +257,13 @@ def build_snapshot() -> M4PresentationSnapshot:
     b2 = _read_json(SOURCE_RUN_DIR / "b2-held-out-rescore.json")
     records = _load_prediction_records()
     flags = _load_per_case_flags()
+    artifact_digests = manifest["artifact_digests"]
+    predictions_sha256 = artifact_digests["predictions_sha256"]
+    metrics_sha256 = artifact_digests["metrics_sha256"]
+    if predictions_sha256 != source_hashes["predictions.jsonl"]:
+        raise ValueError("manifest predictions digest does not match predictions.jsonl")
+    if metrics_sha256 != source_hashes["metrics.json"]:
+        raise ValueError("manifest metrics digest does not match metrics.json")
     references = {case["case_id"]: case["reference"] for case in bundle["cases"]}
     predictions_by_case = _build_case_predictions(records, flags, b2["predictions"], references)
 
@@ -320,6 +327,8 @@ def build_snapshot() -> M4PresentationSnapshot:
         source_run_id=SOURCE_RUN_ID,
         source_run_directory="results/live/m3-live-phase2-20260901T170811002109Z",
         source_run_file_sha256=source_hashes,
+        predictions_sha256=predictions_sha256,
+        metrics_sha256=metrics_sha256,
         repository_commit=_git_commit(),
         benchmark_sha256=bundle["benchmark_sha256"],
         frozen_prompt_digest=manifest["frozen_prompt_digest"],

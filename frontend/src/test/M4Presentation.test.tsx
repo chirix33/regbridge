@@ -30,6 +30,8 @@ const snapshot = {
   source_run_id: "m3-live-phase2-20260901T170811002109Z",
   source_run_directory: "results/live/m3-live-phase2-20260901T170811002109Z",
   source_run_file_sha256: { "manifest.json": "b".repeat(64) },
+  predictions_sha256: "7".repeat(64),
+  metrics_sha256: "8".repeat(64),
   repository_commit: "abc123",
   benchmark_sha256: "c".repeat(64),
   frozen_prompt_digest: "d".repeat(64),

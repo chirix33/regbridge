@@ -2978,6 +2978,7 @@
     "Live-mode outputs claim configuration and artifact reproducibility only.",
     "Clustered intervals are exploratory and make no independence or significance claim."
   ],
+  "metrics_sha256": "1640cf2053dfb21d8a7e20bb6c544b29ac71fad3fb6ccfd61435283b5cfd58ae",
   "metric_ranges": {
     "B0": {
       "abstention_accuracy": {
@@ -3706,6 +3707,7 @@
       }
     }
   ],
+  "predictions_sha256": "1c1c2e76408fd3a3c19c92e19b34642f9b4b1f9093fb82a9a54fd1dd5e1c0e22",
   "repository_commit": "04ce54f08f3190f05eac3946531f99e09e5c709c",
   "retrieval_summary": {
     "per_repetition": [
@@ -3735,7 +3737,7 @@
   },
   "run_type": "live_model_run",
   "schema_version": "m4.presentation.v1",
-  "snapshot_sha256": "824613fc4480ef9ea354eda60618567e45a37a691fac921e5d095a16b7cb27c0",
+  "snapshot_sha256": "521d1ad70dd57964e9cd9cbcac75f90b2642d3ea5642a9c4644bacbead73ba67",
   "snapshot_version": "m4-phase2-20260901T170811002109Z-v1",
   "source_run_directory": "results/live/m3-live-phase2-20260901T170811002109Z",
   "source_run_file_sha256": {

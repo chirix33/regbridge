@@ -6,6 +6,7 @@ $repositoryRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $venvPython = Join-Path $repositoryRoot ".venv\Scripts\python.exe"
 $verificationDatabase = Join-Path $repositoryRoot "results\.pytest-m4-verify-regbridge.sqlite3"
 $frontendTestResults = Join-Path $repositoryRoot "frontend\test-results"
+$priorLlmMode = $env:LLM_MODE
 
 if (-not (Test-Path -LiteralPath $venvPython)) {
     throw "Missing .venv. Run .\scripts\setup.ps1 first."
@@ -17,6 +18,7 @@ try {
         Remove-Item -LiteralPath $verificationDatabase -Force
     }
     $env:REG_BRIDGE_DATABASE_PATH = $verificationDatabase
+    $env:LLM_MODE = "fixture"
 
     & $venvPython -m ruff check backend
     if ($LASTEXITCODE -ne 0) { throw "Backend lint failed." }
@@ -64,6 +66,12 @@ finally {
         Remove-Item -LiteralPath $frontendTestResults -Recurse -Force
     }
     Remove-Item Env:\REG_BRIDGE_DATABASE_PATH -ErrorAction SilentlyContinue
+    if ($null -eq $priorLlmMode) {
+        Remove-Item Env:\LLM_MODE -ErrorAction SilentlyContinue
+    }
+    else {
+        $env:LLM_MODE = $priorLlmMode
+    }
     Pop-Location
 }
 

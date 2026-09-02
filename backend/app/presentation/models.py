@@ -87,6 +87,8 @@ class M4PresentationSnapshot(DomainModel):
     source_run_id: StableId
     source_run_directory: str
     source_run_file_sha256: dict[str, Sha256]
+    predictions_sha256: Sha256
+    metrics_sha256: Sha256
     repository_commit: str
     benchmark_sha256: Sha256
     frozen_prompt_digest: Sha256
@@ -137,4 +139,3 @@ class M4PresentationCasesResponse(DomainModel):
 
 class DemoPresetsResponse(DomainModel):
     presets: tuple[DemoPreset, ...]
-

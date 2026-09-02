@@ -292,6 +292,8 @@ export interface M4PresentationSnapshot {
   source_run_id: string;
   source_run_directory: string;
   source_run_file_sha256: Record<string, string>;
+  predictions_sha256: string;
+  metrics_sha256: string;
   repository_commit: string;
   benchmark_sha256: string;
   frozen_prompt_digest: string;
