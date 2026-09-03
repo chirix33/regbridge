@@ -22,6 +22,11 @@ it("makes upload analysis primary and keeps Qwen disabled without benchmark metr
   expect(screen.getByText(/expert_validated: false/i)).toBeVisible();
   expect(await screen.findByRole("option", { name: /Qwen 3.6 local/i })).toBeDisabled();
   expect(screen.queryByText(/macro-F1|unsafe-FNR|accuracy/i)).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Open navigation menu" })).toHaveAttribute("aria-expanded", "false");
+  fireEvent.click(screen.getByRole("button", { name: "Open navigation menu" }));
+  expect(screen.getByRole("button", { name: "Close navigation menu" })).toHaveAttribute("aria-expanded", "true");
+  fireEvent.click(screen.getByRole("button", { name: "Close navigation menu" }));
+  expect(screen.getByRole("button", { name: "Open navigation menu" })).toHaveAttribute("aria-expanded", "false");
   const input = screen.getByLabelText("Dossier ZIP");
   fireEvent.change(input, { target: { files: [new File(["zip"], "synthetic.zip", { type: "application/zip" })] } });
   fireEvent.click(screen.getByLabelText(/I confirm this target context/i));
