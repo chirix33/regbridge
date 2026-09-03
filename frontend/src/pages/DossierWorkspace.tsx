@@ -75,8 +75,66 @@ export function DossierWorkspace() {
         </form>
         <aside className="panel"><h2>Controlled scope</h2><p>RegBridge securely parses and validates a controlled FDA eCTD v3.2.2 package profile for supported structural, lifecycle, metadata, checksum, and document-evidence predicates. It does not perform complete FDA submission validation.</p><p>Raw ZIP bytes are discarded after parsing. Inventories are local, capacity bounded, expire, and do not survive a server restart.</p></aside>
       </section>
-      {inventory && <section className="panel profile-results"><h2>Controlled v3.2.2 profile checks</h2><p className="result-lead"><CheckCircle aria-hidden="true"/> Supported profile checks {inventory.package_profile_status}</p><dl className="context-list"><div><dt>Sequence root</dt><dd>{inventory.detected_sequence_root}</dd></div><div><dt>Profile</dt><dd>{inventory.input_profile_id}</dd></div><div><dt>Documents</dt><dd>{inventory.leaves.length}</dd></div><div><dt>Index MD5</dt><dd>{inventory.index_md5_matches ? "matched" : "not verified"}</dd></div></dl><ul>{inventory.profile_checks.map((check) => <li key={check.id}><strong>{check.label}: {check.status}</strong> — {check.detail}</li>)}</ul></section>}
-      {run && <section className="results-stack" aria-live="polite"><div className="panel"><p className="panel-kicker">Dossier analysis · {run.state}</p><h2>Package summary</h2>{run.summary ? <div className="summary-cards"><article><strong>{run.summary.analyzed_count}</strong><span>Analyzed</span></article><article><strong>{run.summary.human_approval_count}</strong><span>Human approval</span></article><article><strong>{run.summary.failed_count}</strong><span>Failed</span></article></div> : <p>Analysis is running…</p>}</div>{run.results.map((item) => <article className="panel leaf-result" key={item.leaf_id}><button className="leaf-heading" onClick={() => setOpenLeaf(openLeaf === item.leaf_id ? null : item.leaf_id)} aria-expanded={openLeaf === item.leaf_id}><span><Database aria-hidden="true"/><strong>{item.analysis.source_artifact.title}</strong></span><span>{item.analysis.decision}</span></button>{openLeaf === item.leaf_id && <div className="leaf-details"><p><strong>Severity:</strong> {item.analysis.severity} · <strong>Human approval:</strong> {item.analysis.human_approval_required ? "required" : "not required"}</p><p>{item.analysis.rationale}</p><h3>Repair or next action</h3><code>{item.analysis.repair.type}</code><p>{item.analysis.repair.description}</p><h3>Findings and evidence</h3>{item.analysis.findings.map((finding) => <blockquote key={finding.id}>{finding.rationale}<cite>{finding.evidence_ids.join(", ")}</cite></blockquote>)}<h3>Model record</h3><p>{item.model.model_profile_id} · {item.model.adapter_type} · {item.model.status} · {item.model.latency_ms.toFixed(1)} ms</p><h3>Chronological trace</h3><ol>{item.analysis.trace.map((step) => <li key={step.sequence}><strong>{step.component}</strong> — {step.summary}</li>)}</ol><GraphNeighborhood graph={item.graph}/></div>}</article>)}</section>}
+      {inventory && (
+        <section className="panel profile-results motion-enter">
+          <h2>Controlled v3.2.2 profile checks</h2>
+          <p className="result-lead"><CheckCircle aria-hidden="true"/> Supported profile checks {inventory.package_profile_status}</p>
+          <dl className="context-list">
+            <div><dt>Sequence root</dt><dd>{inventory.detected_sequence_root}</dd></div>
+            <div><dt>Profile</dt><dd>{inventory.input_profile_id}</dd></div>
+            <div><dt>Documents</dt><dd>{inventory.leaves.length}</dd></div>
+            <div><dt>Index MD5</dt><dd>{inventory.index_md5_matches ? "matched" : "not verified"}</dd></div>
+          </dl>
+          <ul>{inventory.profile_checks.map((check) => <li key={check.id}><strong>{check.label}: {check.status}</strong> — {check.detail}</li>)}</ul>
+        </section>
+      )}
+      {run && (
+        <section className="results-stack motion-enter" aria-live="polite">
+          <div className="panel">
+            <p className="panel-kicker">Dossier analysis · {run.state}</p>
+            <h2>Package summary</h2>
+            {run.summary ? (
+              <div className="summary-cards">
+                <article><strong>{run.summary.analyzed_count}</strong><span>Analyzed</span></article>
+                <article><strong>{run.summary.human_approval_count}</strong><span>Human approval</span></article>
+                <article><strong>{run.summary.failed_count}</strong><span>Failed</span></article>
+              </div>
+            ) : (
+              <p>Analysis is running…</p>
+            )}
+          </div>
+          {run.results.map((item) => (
+            <details
+              className="panel leaf-result"
+              key={item.leaf_id}
+              open={openLeaf === item.leaf_id}
+              onToggle={(event) => {
+                const isOpen = event.currentTarget.open;
+                setOpenLeaf((current) => (isOpen ? item.leaf_id : current === item.leaf_id ? null : current));
+              }}
+            >
+              <summary className="leaf-heading">
+                <span><Database aria-hidden="true"/><strong>{item.analysis.source_artifact.title}</strong></span>
+                <span>{item.analysis.decision}</span>
+              </summary>
+              <div className="leaf-details">
+                <p><strong>Severity:</strong> {item.analysis.severity} · <strong>Human approval:</strong> {item.analysis.human_approval_required ? "required" : "not required"}</p>
+                <p>{item.analysis.rationale}</p>
+                <h3>Repair or next action</h3>
+                <code>{item.analysis.repair.type}</code>
+                <p>{item.analysis.repair.description}</p>
+                <h3>Findings and evidence</h3>
+                {item.analysis.findings.map((finding) => <blockquote key={finding.id}>{finding.rationale}<cite>{finding.evidence_ids.join(", ")}</cite></blockquote>)}
+                <h3>Model record</h3>
+                <p>{item.model.model_profile_id} · {item.model.adapter_type} · {item.model.status} · {item.model.latency_ms.toFixed(1)} ms</p>
+                <h3>Chronological trace</h3>
+                <ol>{item.analysis.trace.map((step) => <li key={step.sequence}><strong>{step.component}</strong> — {step.summary}</li>)}</ol>
+                <GraphNeighborhood graph={item.graph}/>
+              </div>
+            </details>
+          ))}
+        </section>
+      )}
     </main>
   );
 }

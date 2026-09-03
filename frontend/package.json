@@ -14,11 +14,12 @@
     "capture:m4-1": "node e2e/m4-1-capture.cjs"
   },
   "dependencies": {
+    "@base-ui/react": "1.7.0",
     "@tanstack/react-query": "5.90.20",
     "iconoir-react": "7.11.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "react-router-dom": "7.13.1"
+    "react-router-dom": "7.18.3"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.11.0",
@@ -39,7 +40,7 @@
     "tailwindcss": "4.1.18",
     "typescript": "5.9.3",
     "typescript-eslint": "8.52.0",
-    "vite": "7.3.1",
-    "vitest": "4.0.18"
+    "vite": "7.3.6",
+    "vitest": "4.1.11"
   }
 }

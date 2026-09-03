@@ -206,7 +206,7 @@ export function HeadingCasePage() {
             </select>
           </label>
           {config.archetype === "legacy-metadata-tension" && (
-            <label>
+            <label className="conditional-control">
               Metadata intent
               <select value={metadataIntent} onChange={(event) => setMetadataIntent(event.target.value as MetadataIntent)}>
                 <option value="preserve-existing-lifecycle">Preserve existing lifecycle</option>
@@ -216,7 +216,7 @@ export function HeadingCasePage() {
             </label>
           )}
           {config.archetype === "legacy-metadata-tension" && metadataIntent === "normalize-metadata" && (
-            <label>
+            <label className="conditional-control">
               Manufacturer partitioning
               <select value={partitioning} onChange={(event) => setPartitioning(event.target.value as ManufacturerPartitioning)}>
                 <option value="unnecessary">Unnecessary - omit keyword</option>
@@ -226,7 +226,7 @@ export function HeadingCasePage() {
             </label>
           )}
           {metadataIntent === "normalize-metadata" && partitioning === "required" && (
-            <label>
+            <label className="conditional-control">
               Stable manufacturer value
               <input value={replacementValue} onChange={(event) => setReplacementValue(event.target.value)} />
             </label>
@@ -263,7 +263,7 @@ export function HeadingCasePage() {
         {error && <div className="inline-error" role="alert"><WarningTriangle aria-hidden="true" />{error}</div>}
 
         {inventory && selectedLeaf && (
-          <section className="inventory-strip" aria-label="Parsed legacy artifact">
+          <section className="inventory-strip motion-enter" aria-label="Parsed legacy artifact">
             <Database aria-hidden="true" />
             <div><span>Leaf</span><strong>{selectedLeaf.id}</strong></div>
             <div><span>Heading</span><strong>{selectedLeaf.heading}</strong></div>
@@ -275,7 +275,7 @@ export function HeadingCasePage() {
         )}
 
         {analysis && (
-          <div className="analysis-results" aria-live="polite" ref={resultsRef} tabIndex={-1}>
+          <div className="analysis-results motion-enter" aria-live="polite" ref={resultsRef} tabIndex={-1}>
             <section className={`decision-card severity-${analysis.severity}`}>
               <div>
                 <p className="panel-kicker">Decision · {analysis.severity}</p>

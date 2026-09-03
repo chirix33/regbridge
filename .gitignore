@@ -35,3 +35,10 @@ paper/tables/*
 .DS_Store
 Thumbs.db
 *.log
+
+
+# AI Agent directories
+.agents/
+.claude/
+.codex/
+.copilot/

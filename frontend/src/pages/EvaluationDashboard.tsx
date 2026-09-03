@@ -143,7 +143,7 @@ export function EvaluationDashboard() {
               </select>
             </label>
           </div>
-          <div className="table-scroll">
+          <div className="table-scroll motion-filter" key={systemFilter}>
             <table className="metrics-table">
               <thead>
                 <tr>
@@ -222,7 +222,7 @@ export function EvaluationDashboard() {
               </label>
             </div>
           </div>
-          <div className="case-trace-list">
+          <div className="case-trace-list motion-filter" key={`${familyFilter}-${caseFilter}`}>
             {cases.map((item) => <CaseTraceCard key={item.case_id} item={item} />)}
           </div>
         </section>
@@ -284,4 +284,3 @@ function CaseTraceCard({ item }: { item: PresentationCaseTrace }) {
     </article>
   );
 }
-
