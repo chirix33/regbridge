@@ -30,7 +30,7 @@ from app.main import app
 from app.parsers.ectd322 import EctdParseError, EctdParserLimits, EctdSecurityError
 from app.parsers.profile322 import parse_uploaded_zip
 from app.parsers.public322 import (
-    PROFILE_ID,
+    adjudicate_public_profile_zip,
     independent_validate_package,
     load_catalog,
     parse_public_profile_zip,
@@ -86,6 +86,13 @@ def _ending(members: dict[str, bytes], suffix: str) -> str:
     matches = [name for name in members if name == suffix or name.endswith("/" + suffix)]
     assert len(matches) == 1
     return matches[0]
+
+
+def _with_archive_ich_dtd(payload: bytes, dtd_payload: bytes) -> bytes:
+    members = _members(payload)
+    prefix = _ending(members, "index.xml").removesuffix("index.xml")
+    members[prefix + "util/dtd/ich-ectd-3-2.dtd"] = dtd_payload
+    return _zip(members)
 
 
 def _mutate(
@@ -144,6 +151,128 @@ def test_pinned_manifest_assets_exist_and_match_sha256() -> None:
         hashlib.sha256(item.path.read_bytes()).hexdigest() == item.sha256
         for item in catalog.values()
     )
+    ich = catalog["ich-ectd-dtd-v3-2"]
+    assert ich.official_md5 == "1d6f631cc6b6357f0f4fe378e5f79a27"
+    assert ich.byte_identity_required is True
+    assert ich.byte_identity_basis and "criterion 1130" in ich.byte_identity_basis
+
+
+def test_byte_identical_archive_dtd_is_recorded_and_accepted() -> None:
+    pinned = load_catalog()["ich-ectd-dtd-v3-2"].path.read_bytes()
+    payload = _with_archive_ich_dtd(PACKAGE.read_bytes(), pinned)
+    adjudication = adjudicate_public_profile_zip(payload)
+    comparison = adjudication.dtd_comparisons[0]
+    assert adjudication.status == "accepted"
+    assert comparison.archive_sha256 == comparison.pinned_sha256
+    assert comparison.raw_bytes_equal is True
+    assert comparison.normalized_text_equal is True
+    assert comparison.semantic_text_equal is True
+    assert comparison.difference_class == "byte_identical"
+    assert comparison.first_substantive_differences == ()
+    assert comparison.archive_copy_ignored is True
+    inventory = parse_public_profile_zip(payload)
+    assert "ARCHIVE_DTD_DIFFERS_FROM_PINNED_COPY" not in {
+        item.code for item in inventory.warnings
+    }
+
+
+def test_line_ending_only_archive_dtd_is_distinguished_and_byte_policy_applies() -> None:
+    pinned = load_catalog()["ich-ectd-dtd-v3-2"].path.read_bytes()
+    text = pinned.decode("utf-8-sig").replace("\r\n", "\n").replace("\r", "\n")
+    line_ending_copy = text.replace("\n", "\r\n").encode("utf-8")
+    if line_ending_copy == pinned:
+        line_ending_copy = text.encode("utf-8")
+    payload = _with_archive_ich_dtd(PACKAGE.read_bytes(), line_ending_copy)
+    adjudication = adjudicate_public_profile_zip(payload)
+    comparison = adjudication.dtd_comparisons[0]
+    assert adjudication.status == "rejected_nonconforming"
+    assert adjudication.byte_identity_required is True
+    assert comparison.archive_sha256 != comparison.pinned_sha256
+    assert comparison.normalized_text_equal is True
+    assert comparison.semantic_text_equal is True
+    assert comparison.difference_class == "non_substantive_text_only"
+    assert comparison.first_substantive_differences == ()
+    with pytest.raises(EctdParseError, match="criterion 1130"):
+        parse_public_profile_zip(payload)
+
+    accepted = parse_public_profile_zip(payload, enforce_official_byte_identity=False)
+    warning = next(
+        item
+        for item in accepted.warnings
+        if item.code == "ARCHIVE_DTD_DIFFERS_FROM_PINNED_COPY"
+    )
+    assert "archive copy was ignored" in warning.message
+
+
+def test_bom_and_trailing_whitespace_are_excluded_from_substantive_differences() -> None:
+    pinned = load_catalog()["ich-ectd-dtd-v3-2"].path.read_bytes()
+    text = pinned.decode("utf-8-sig").replace("\r\n", "\n").replace("\r", "\n")
+    packaging_copy = b"\xef\xbb\xbf" + "\n".join(
+        f"{line} \t" for line in text.split("\n")
+    ).encode("utf-8")
+    payload = _with_archive_ich_dtd(PACKAGE.read_bytes(), packaging_copy)
+    adjudication = adjudicate_public_profile_zip(payload)
+    comparison = adjudication.dtd_comparisons[0]
+    assert adjudication.status == "rejected_nonconforming"
+    assert comparison.raw_bytes_equal is False
+    assert comparison.normalized_text_equal is True
+    assert comparison.semantic_text_equal is True
+    assert comparison.difference_class == "non_substantive_text_only"
+    assert comparison.first_substantive_differences == ()
+
+
+def test_comment_only_archive_dtd_difference_is_not_called_substantive() -> None:
+    pinned = load_catalog()["ich-ectd-dtd-v3-2"].path.read_bytes()
+    payload = _with_archive_ich_dtd(
+        PACKAGE.read_bytes(), pinned + b"\n<!-- archive packaging note only -->\n"
+    )
+    adjudication = adjudicate_public_profile_zip(payload)
+    comparison = adjudication.dtd_comparisons[0]
+    assert adjudication.status == "rejected_nonconforming"
+    assert comparison.normalized_text_equal is False
+    assert comparison.semantic_text_equal is True
+    assert comparison.difference_class == "comment_only"
+    assert comparison.first_substantive_differences == ()
+    accepted = parse_public_profile_zip(payload, enforce_official_byte_identity=False)
+    assert "ARCHIVE_DTD_DIFFERS_FROM_PINNED_COPY" in {
+        item.code for item in accepted.warnings
+    }
+
+
+def test_substantively_modified_archive_dtd_reports_first_semantic_difference() -> None:
+    pinned = load_catalog()["ich-ectd-dtd-v3-2"].path.read_bytes()
+    payload = _with_archive_ich_dtd(
+        PACKAGE.read_bytes(), pinned + b"\n<!ELEMENT archive-only EMPTY>\n"
+    )
+    adjudication = adjudicate_public_profile_zip(payload)
+    comparison = adjudication.dtd_comparisons[0]
+    assert adjudication.status == "rejected_nonconforming"
+    assert comparison.difference_class == "substantive"
+    assert comparison.semantic_text_equal is False
+    assert comparison.first_substantive_differences
+    assert any(
+        difference.archive_text == "<!ELEMENT archive-only EMPTY>"
+        for difference in comparison.first_substantive_differences
+    )
+    accepted = parse_public_profile_zip(payload, enforce_official_byte_identity=False)
+    assert "ARCHIVE_DTD_DIFFERS_FROM_PINNED_COPY" in {
+        item.code for item in accepted.warnings
+    }
+
+
+def test_hostile_archive_dtd_is_hard_rejected_even_though_it_is_never_executed() -> None:
+    pinned = load_catalog()["ich-ectd-dtd-v3-2"].path.read_bytes()
+    payload = _with_archive_ich_dtd(
+        PACKAGE.read_bytes(),
+        pinned + b'\n<!ENTITY xxe SYSTEM "file:///etc/passwd">\n',
+    )
+    adjudication = adjudicate_public_profile_zip(payload)
+    comparison = adjudication.dtd_comparisons[0]
+    assert adjudication.status == "security_violation"
+    assert comparison.hostile is True
+    assert comparison.hostile_reasons == ("external entity declaration",)
+    with pytest.raises(EctdSecurityError, match="external entity declaration"):
+        parse_public_profile_zip(payload)
 
 
 def test_official_absolute_and_ich_relative_doctypes_never_call_python_network(
@@ -307,7 +436,7 @@ def test_security_boundaries_fail_closed() -> None:
     hostile = _members(PACKAGE.read_bytes())
     prefix = _ending(hostile, "index.xml").removesuffix("index.xml")
     hostile[prefix + "util/dtd/ich-ectd-3-2.dtd"] = b'<!ENTITY xxe SYSTEM "file:///etc/passwd">'
-    with pytest.raises(EctdSecurityError, match="archive-supplied DTD conflicts"):
+    with pytest.raises(EctdSecurityError, match="security violation.*external entity"):
         parse_public_profile_zip(_zip(hostile))
 
     escaped = _members(PACKAGE.read_bytes())
@@ -437,16 +566,38 @@ def test_two_parse_and_analysis_runs_are_digest_reproducible() -> None:
 def test_user_acceptance_zip_is_tested_against_profile_without_spelling_exceptions() -> None:
     if not ACCEPTANCE_PACKAGE.is_file():
         pytest.skip(f"acceptance package missing: {ACCEPTANCE_PACKAGE}")
-    try:
-        inventory = parse_uploaded_zip(ACCEPTANCE_PACKAGE.read_bytes())
-    except EctdParseError as error:
-        assert any(
-            marker in str(error)
-            for marker in (
-                "archive-supplied DTD conflicts",
-                "xmlns:xlink",
-                "Module 1 backbone relationship",
-            )
-        )
-    else:
-        assert inventory.input_profile_id == PROFILE_ID
+    payload = ACCEPTANCE_PACKAGE.read_bytes()
+    adjudication = adjudicate_public_profile_zip(payload)
+    assert adjudication.status == "rejected_nonconforming"
+    comparison = adjudication.dtd_comparisons[0]
+    assert comparison.archive_sha256 == (
+        "f28d7c22d0ebccff6176058926ed7b956744c20942929676bcc1345cf6104134"
+    )
+    assert comparison.pinned_sha256 == (
+        "c094aa2bded99564ade8ac78ae1540f95e518461b8eebe9a3063f67a165c2731"
+    )
+    assert comparison.archive_size == 149
+    assert comparison.pinned_size == 31_400
+    assert comparison.raw_bytes_equal is False
+    assert comparison.normalized_text_equal is False
+    assert comparison.semantic_text_equal is False
+    assert comparison.difference_class == "substantive"
+    assert comparison.hostile is False
+    assert comparison.archive_copy_ignored is True
+    assert comparison.first_substantive_differences[0].archive_text is None
+    assert comparison.first_substantive_differences[0].pinned_line == 56
+    first_pinned_text = comparison.first_substantive_differences[0].pinned_text
+    assert first_pinned_text is not None
+    assert first_pinned_text.startswith("<!ENTITY % att")
+    assert len(adjudication.xml_validations) == 2
+    assert all(not result.valid for result in adjudication.xml_validations)
+    assert all(
+        "namespace name for xlink does not match the DTD" in result.detail
+        for result in adjudication.xml_validations
+    )
+    with pytest.raises(EctdParseError) as captured:
+        parse_uploaded_zip(payload)
+    error = str(captured.value)
+    assert "index.xml:" in error
+    assert "m1/us/us-regional.xml:" in error
+    assert error.count("namespace name for xlink does not match the DTD") == 2

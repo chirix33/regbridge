@@ -29,6 +29,12 @@ assets:
     local_path: assets/ich-ectd-3-2.dtd
     sha256: c094aa2bded99564ade8ac78ae1540f95e518461b8eebe9a3063f67a165c2731
     official_md5: 1d6f631cc6b6357f0f4fe378e5f79a27
+    byte_identity_requirement:
+      required: true
+      basis: FDA eCTD Validation Criteria v4.6 criterion 1130, PDF page 9, requires the checksum of a required UTIL file to match the expected checksum.
+      source_asset_id: fda-ectd-validation-criteria-v4-6
+      locator: PDF page 9, validation criterion 1130
+      bindingness: validation
     intended_use: Offline DTD validation of index.xml through the exact local catalog.
     executable_validation_material: true
     dependencies: []

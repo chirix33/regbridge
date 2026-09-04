@@ -1031,6 +1031,25 @@ M3 benchmark, labels, families, prompts, evaluation configurations, Phase 1/Phas
 M4 presentation snapshot, numerical claims, M4.1 package bytes, migration decisions, and
 author-adjudicated rules unchanged.
 
+### M4.2.1 — Independent-package DTD adjudication
+
+M4.2.1 is governed by [docs/milestones/M4.2.1.md](docs/milestones/M4.2.1.md) and changes only
+package-envelope adjudication. An archive ICH DTD is never validation code. Its raw SHA-256,
+pinned SHA-256, UTF-8/LF-normalized comparison, semantic comparison, first bounded differences,
+hostile-construct result, and ignored status are recorded. `index.xml` and
+`m1/us/us-regional.xml` are independently validated against the pinned ICH and FDA DTDs.
+
+Any hostile archive DTD fails as `security_violation`. Any pinned-DTD XML validation failure
+fails as `rejected_nonconforming` with exact validation errors. If both XML files pass, a
+non-identical archive DTD may be ignored with warning
+`ARCHIVE_DTD_DIFFERS_FROM_PINNED_COPY` only when the applicable profile has no exact official
+byte-identity requirement. The FDA/CDER M4.2 profile records FDA validation criterion 1130 as
+the exact expected-checksum basis, so a non-identical required UTIL DTD remains a profile
+nonconformance while its textual difference class is still reported accurately.
+
+This adjudication neither creates nor changes a migration-policy fact, rule, finding, repair,
+decision, benchmark input, baseline prompt, evaluation artifact, or product workflow.
+
 ### M5 — Paper and submission support (September 15–18)
 
 Deliver:

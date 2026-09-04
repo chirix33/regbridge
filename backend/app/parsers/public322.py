@@ -7,6 +7,7 @@ filesystem fallback are prohibited.
 
 from __future__ import annotations
 
+import difflib
 import hashlib
 import re
 from collections import Counter
@@ -69,6 +70,9 @@ class CatalogAsset:
     path: Path
     sha256: str
     system_identifiers: tuple[str, ...]
+    official_md5: str | None = None
+    byte_identity_required: bool = False
+    byte_identity_basis: str | None = None
 
 
 @dataclass(frozen=True)
@@ -77,6 +81,45 @@ class IndependentValidationResult:
     dtd_asset_id: str
     valid: bool
     detail: str
+
+
+@dataclass(frozen=True)
+class DtdTextDifference:
+    archive_line: int | None
+    archive_text: str | None
+    pinned_line: int | None
+    pinned_text: str | None
+
+
+@dataclass(frozen=True)
+class ArchiveDtdComparison:
+    archive_path: str
+    pinned_asset_id: str
+    archive_sha256: str
+    pinned_sha256: str
+    archive_size: int
+    pinned_size: int
+    raw_bytes_equal: bool
+    normalized_text_equal: bool
+    semantic_text_equal: bool
+    difference_class: Literal[
+        "byte_identical", "non_substantive_text_only", "comment_only", "substantive"
+    ]
+    first_substantive_differences: tuple[DtdTextDifference, ...]
+    hostile: bool
+    hostile_reasons: tuple[str, ...]
+    archive_copy_ignored: bool = True
+
+
+@dataclass(frozen=True)
+class IndependentPackageAdjudication:
+    status: Literal["accepted", "rejected_nonconforming", "security_violation"]
+    dtd_comparisons: tuple[ArchiveDtdComparison, ...]
+    xml_validations: tuple[IndependentValidationResult, ...]
+    byte_identity_required: bool
+    byte_identity_basis: str | None
+    warning_codes: tuple[str, ...]
+    errors: tuple[str, ...]
 
 
 class _ExactLocalResolver(etree.Resolver):
@@ -103,6 +146,93 @@ def _compatibility_md5(payload: bytes) -> str:
         return hashlib.md5(payload).hexdigest()
 
 
+def _normalize_dtd_text(payload: bytes) -> str:
+    if b"\x00" in payload:
+        raise ValueError("NUL byte is not permitted in a bundled DTD")
+    text = payload.decode("utf-8-sig", "strict").replace("\r\n", "\n").replace("\r", "\n")
+    return "\n".join(line.rstrip() for line in text.split("\n"))
+
+
+def _without_xml_comments(text: str) -> str:
+    return re.sub(
+        r"<!--.*?-->",
+        lambda match: "\n" * match.group(0).count("\n"),
+        text,
+        flags=re.DOTALL,
+    )
+
+
+def _semantic_dtd_lines(text: str) -> tuple[tuple[int, str], ...]:
+    comment_free = _without_xml_comments(text)
+    declaration_free = re.sub(
+        r"<\?xml\s+[^?]*\?>",
+        lambda match: "\n" * match.group(0).count("\n"),
+        comment_free,
+        flags=re.IGNORECASE,
+    )
+    return tuple(
+        (number, line)
+        for number, line in enumerate(declaration_free.split("\n"), start=1)
+        if line.strip()
+    )
+
+
+def _first_dtd_differences(
+    archive: tuple[tuple[int, str], ...],
+    pinned: tuple[tuple[int, str], ...],
+    *,
+    limit: int = 5,
+) -> tuple[DtdTextDifference, ...]:
+    matcher = difflib.SequenceMatcher(
+        a=[line for _, line in archive],
+        b=[line for _, line in pinned],
+        autojunk=False,
+    )
+    differences: list[DtdTextDifference] = []
+    for tag, archive_start, archive_end, pinned_start, pinned_end in matcher.get_opcodes():
+        if tag == "equal":
+            continue
+        width = max(archive_end - archive_start, pinned_end - pinned_start)
+        for offset in range(width):
+            archive_item = (
+                archive[archive_start + offset]
+                if archive_start + offset < archive_end
+                else None
+            )
+            pinned_item = (
+                pinned[pinned_start + offset]
+                if pinned_start + offset < pinned_end
+                else None
+            )
+            differences.append(
+                DtdTextDifference(
+                    archive_line=archive_item[0] if archive_item else None,
+                    archive_text=archive_item[1][:500] if archive_item else None,
+                    pinned_line=pinned_item[0] if pinned_item else None,
+                    pinned_text=pinned_item[1][:500] if pinned_item else None,
+                )
+            )
+            if len(differences) == limit:
+                return tuple(differences)
+    return tuple(differences)
+
+
+def _hostile_dtd_reasons(normalized_text: str) -> tuple[str, ...]:
+    comment_free = _without_xml_comments(normalized_text)
+    reasons: list[str] = []
+    if re.search(
+        r"<!ENTITY\s+(?:%\s+)?[A-Za-z_:][\w:.-]*\s+(?:SYSTEM|PUBLIC)\b",
+        comment_free,
+        re.IGNORECASE,
+    ):
+        reasons.append("external entity declaration")
+    if re.search(r"<!DOCTYPE\b", comment_free, re.IGNORECASE):
+        reasons.append("nested DOCTYPE declaration")
+    if re.search(r"<!\[(?:INCLUDE|IGNORE)\[", comment_free, re.IGNORECASE):
+        reasons.append("conditional DTD section")
+    return tuple(reasons)
+
+
 def load_catalog() -> dict[str, CatalogAsset]:
     payload = yaml.safe_load(MANIFEST_PATH.read_text(encoding="utf-8"))
     if payload.get("profile_id") != PROFILE_ID or payload.get("profile_version") != PROFILE_VERSION:
@@ -124,6 +254,12 @@ def load_catalog() -> dict[str, CatalogAsset]:
         expected = str(record["sha256"])
         if not path.is_file() or _sha256(path) != expected:
             raise EctdParseError(f"pinned input-profile asset digest mismatch: {record['id']}")
+        official_md5 = str(record["official_md5"]) if record.get("official_md5") else None
+        if official_md5 and _compatibility_md5(path.read_bytes()) != official_md5:
+            raise EctdParseError(
+                f"pinned input-profile asset official MD5 mismatch: {record['id']}"
+            )
+        byte_identity = record.get("byte_identity_requirement") or {}
         assets[str(record["id"])] = CatalogAsset(
             asset_id=str(record["id"]),
             version=str(record["version"]),
@@ -132,11 +268,75 @@ def load_catalog() -> dict[str, CatalogAsset]:
             system_identifiers=tuple(
                 str(item) for item in record.get("approved_system_identifiers", [])
             ),
+            official_md5=official_md5,
+            byte_identity_required=bool(byte_identity.get("required", False)),
+            byte_identity_basis=str(byte_identity["basis"])
+            if byte_identity.get("basis")
+            else None,
         )
     for required in (INDEX_DTD_ASSET_ID, REGIONAL_DTD_ASSET_ID):
         if required not in assets:
             raise EctdParseError(f"required DTD asset is absent: {required}")
     return assets
+
+
+def compare_archive_dtd(
+    archive_dtd: Path, sequence_root: Path, pinned_asset: CatalogAsset
+) -> ArchiveDtdComparison:
+    """Compare an untrusted archive DTD without parsing or resolving through it."""
+    archive_payload = archive_dtd.read_bytes()
+    pinned_payload = pinned_asset.path.read_bytes()
+    archive_sha256 = hashlib.sha256(archive_payload).hexdigest()
+    raw_equal = archive_payload == pinned_payload
+    hostile_reasons: tuple[str, ...] = ()
+    try:
+        archive_text = _normalize_dtd_text(archive_payload)
+        pinned_text = _normalize_dtd_text(pinned_payload)
+        normalized_equal = archive_text == pinned_text
+        archive_semantic = _semantic_dtd_lines(archive_text)
+        pinned_semantic = _semantic_dtd_lines(pinned_text)
+        semantic_equal = tuple(line for _, line in archive_semantic) == tuple(
+            line for _, line in pinned_semantic
+        )
+        hostile_reasons = _hostile_dtd_reasons(archive_text)
+        differences = _first_dtd_differences(archive_semantic, pinned_semantic)
+    except UnicodeDecodeError:
+        archive_text = ""
+        normalized_equal = False
+        semantic_equal = False
+        differences = ()
+        hostile_reasons = ("bundled DTD is not valid UTF-8",)
+    except ValueError as error:
+        archive_text = ""
+        normalized_equal = False
+        semantic_equal = False
+        differences = ()
+        hostile_reasons = (str(error),)
+    if raw_equal:
+        difference_class: Literal[
+            "byte_identical", "non_substantive_text_only", "comment_only", "substantive"
+        ] = "byte_identical"
+    elif normalized_equal:
+        difference_class = "non_substantive_text_only"
+    elif semantic_equal:
+        difference_class = "comment_only"
+    else:
+        difference_class = "substantive"
+    return ArchiveDtdComparison(
+        archive_path=archive_dtd.relative_to(sequence_root).as_posix(),
+        pinned_asset_id=pinned_asset.asset_id,
+        archive_sha256=archive_sha256,
+        pinned_sha256=pinned_asset.sha256,
+        archive_size=len(archive_payload),
+        pinned_size=len(pinned_payload),
+        raw_bytes_equal=raw_equal,
+        normalized_text_equal=normalized_equal,
+        semantic_text_equal=semantic_equal,
+        difference_class=difference_class,
+        first_substantive_differences=differences,
+        hostile=bool(hostile_reasons),
+        hostile_reasons=hostile_reasons,
+    )
 
 
 def _doctype(payload: bytes, relative: str) -> tuple[str, str]:
@@ -258,8 +458,11 @@ def independent_validate_xml(
         with asset.path.open("rb") as stream:
             dtd = etree.DTD(stream)
         valid = dtd.validate(root)
-        detail = "passed" if valid else str(dtd.error_log.filter_from_errors()[0])
-    except (etree.XMLSyntaxError, etree.DTDParseError, IndexError) as error:
+        validation_errors = tuple(str(item) for item in dtd.error_log.filter_from_errors())
+        detail = "passed" if valid else " | ".join(validation_errors)
+        if not valid and not detail:
+            detail = "pinned DTD validation failed without a detailed libxml error"
+    except (etree.XMLSyntaxError, etree.DTDParseError) as error:
         valid = False
         detail = f"{type(error).__name__}: {error}"
     return IndependentValidationResult(relative, dtd_asset_id, valid, detail)
@@ -284,6 +487,114 @@ def _sequence_root(extraction_root: Path) -> tuple[Path, str]:
             "sequence root must be archive root, 0000/, or one application/0000 wrapper"
         )
     return root, relative
+
+
+def adjudicate_public_profile_directory(
+    directory: Path,
+    *,
+    enforce_official_byte_identity: bool | None = None,
+) -> IndependentPackageAdjudication:
+    """Adjudicate archive DTD data and validate both XML files only with pinned DTDs."""
+    catalog = load_catalog()
+    sequence_root, _ = _sequence_root(directory.resolve())
+    index_path = sequence_root / "index.xml"
+    regional_path = sequence_root / "m1" / "us" / "us-regional.xml"
+    if not regional_path.is_file():
+        return IndependentPackageAdjudication(
+            status="rejected_nonconforming",
+            dtd_comparisons=(),
+            xml_validations=(),
+            byte_identity_required=catalog[INDEX_DTD_ASSET_ID].byte_identity_required,
+            byte_identity_basis=catalog[INDEX_DTD_ASSET_ID].byte_identity_basis,
+            warning_codes=(),
+            errors=("supported profile requires m1/us/us-regional.xml",),
+        )
+    validations = (
+        independent_validate_xml(index_path, "index.xml", INDEX_DTD_ASSET_ID),
+        independent_validate_xml(
+            regional_path,
+            "m1/us/us-regional.xml",
+            REGIONAL_DTD_ASSET_ID,
+        ),
+    )
+    pinned_ich = catalog[INDEX_DTD_ASSET_ID]
+    archive_dtds = sorted(
+        path
+        for path in sequence_root.rglob("*")
+        if path.is_file() and path.name.casefold() == pinned_ich.path.name.casefold()
+    )
+    comparisons = tuple(
+        compare_archive_dtd(path, sequence_root, pinned_ich) for path in archive_dtds
+    )
+    required = (
+        pinned_ich.byte_identity_required
+        if enforce_official_byte_identity is None
+        else enforce_official_byte_identity
+    )
+    hostile_errors = tuple(
+        f"{item.archive_path}: {reason}"
+        for item in comparisons
+        for reason in item.hostile_reasons
+    )
+    if hostile_errors:
+        return IndependentPackageAdjudication(
+            status="security_violation",
+            dtd_comparisons=comparisons,
+            xml_validations=validations,
+            byte_identity_required=required,
+            byte_identity_basis=pinned_ich.byte_identity_basis if required else None,
+            warning_codes=(),
+            errors=hostile_errors,
+        )
+    validation_errors = tuple(
+        f"{item.path}: {item.detail}" for item in validations if not item.valid
+    )
+    if validation_errors:
+        return IndependentPackageAdjudication(
+            status="rejected_nonconforming",
+            dtd_comparisons=comparisons,
+            xml_validations=validations,
+            byte_identity_required=required,
+            byte_identity_basis=pinned_ich.byte_identity_basis if required else None,
+            warning_codes=(),
+            errors=validation_errors,
+        )
+    differing = tuple(item for item in comparisons if not item.raw_bytes_equal)
+    if differing and required:
+        basis = pinned_ich.byte_identity_basis or "exact official byte-identity requirement"
+        return IndependentPackageAdjudication(
+            status="rejected_nonconforming",
+            dtd_comparisons=comparisons,
+            xml_validations=validations,
+            byte_identity_required=True,
+            byte_identity_basis=basis,
+            warning_codes=(),
+            errors=(f"archive ICH DTD checksum differs from the pinned official copy; {basis}",),
+        )
+    warning_codes = (
+        ("ARCHIVE_DTD_DIFFERS_FROM_PINNED_COPY",) if differing else ()
+    )
+    return IndependentPackageAdjudication(
+        status="accepted",
+        dtd_comparisons=comparisons,
+        xml_validations=validations,
+        byte_identity_required=required,
+        byte_identity_basis=pinned_ich.byte_identity_basis if required else None,
+        warning_codes=warning_codes,
+        errors=(),
+    )
+
+
+def adjudicate_public_profile_zip(
+    payload: bytes,
+    *,
+    enforce_official_byte_identity: bool | None = None,
+) -> IndependentPackageAdjudication:
+    with extracted_archive(payload) as directory:
+        return adjudicate_public_profile_directory(
+            directory,
+            enforce_official_byte_identity=enforce_official_byte_identity,
+        )
 
 
 def _local_name(tag: object) -> str:
@@ -463,7 +774,11 @@ def _regional_field(root: etree._Element, name: str) -> etree._Element | None:
     return next((item for item in root.iter() if _local_name(item.tag).casefold() == name), None)
 
 
-def parse_public_profile_directory(directory: Path) -> ApplicationInventory:
+def parse_public_profile_directory(
+    directory: Path,
+    *,
+    enforce_official_byte_identity: bool | None = None,
+) -> ApplicationInventory:
     catalog = load_catalog()
     extraction_root = directory.resolve()
     sequence_root, sequence_relative = _sequence_root(extraction_root)
@@ -474,11 +789,33 @@ def parse_public_profile_directory(directory: Path) -> ApplicationInventory:
     pinned_dtd_by_name = {
         asset.path.name.casefold(): asset for asset in catalog.values() if asset.system_identifiers
     }
+    archive_ich_dtds: list[Path] = []
     for archive_dtd in sequence_root.rglob("*.dtd"):
         pinned = pinned_dtd_by_name.get(archive_dtd.name.casefold())
-        if pinned is not None and _sha256(archive_dtd) != pinned.sha256:
+        if pinned is None:
+            continue
+        if pinned.asset_id == INDEX_DTD_ASSET_ID:
+            archive_ich_dtds.append(archive_dtd)
+        elif _sha256(archive_dtd) != pinned.sha256:
             raise EctdSecurityError(
                 f"archive-supplied DTD conflicts with pinned catalog asset: {archive_dtd.name}"
+            )
+
+    adjudication: IndependentPackageAdjudication | None = None
+    if archive_ich_dtds:
+        adjudication = adjudicate_public_profile_directory(
+            directory,
+            enforce_official_byte_identity=enforce_official_byte_identity,
+        )
+        if adjudication.status == "security_violation":
+            raise EctdSecurityError(
+                "archive-supplied ICH DTD security violation: "
+                + "; ".join(adjudication.errors)
+            )
+        if adjudication.status == "rejected_nonconforming":
+            raise EctdParseError(
+                "independent package adjudication rejected_nonconforming: "
+                + "; ".join(adjudication.errors)
             )
 
     index_root, index_record, inferred_index = _validated_xml(
@@ -503,6 +840,21 @@ def parse_public_profile_directory(directory: Path) -> ApplicationInventory:
     )
 
     warnings: list[ParseWarning] = []
+    if adjudication is not None:
+        for comparison in adjudication.dtd_comparisons:
+            if comparison.raw_bytes_equal:
+                continue
+            warnings.append(
+                ParseWarning(
+                    code="ARCHIVE_DTD_DIFFERS_FROM_PINNED_COPY",
+                    message=(
+                        f"Archive DTD {comparison.archive_sha256} differs from pinned "
+                        f"{comparison.pinned_sha256} ({comparison.difference_class}); the "
+                        "archive copy was ignored and the pinned local DTD was used."
+                    ),
+                    locator=comparison.archive_path,
+                )
+            )
     if inferred_index:
         warnings.append(
             ParseWarning(
@@ -841,9 +1193,16 @@ def parse_public_profile_directory(directory: Path) -> ApplicationInventory:
     )
 
 
-def parse_public_profile_zip(payload: bytes) -> ApplicationInventory:
+def parse_public_profile_zip(
+    payload: bytes,
+    *,
+    enforce_official_byte_identity: bool | None = None,
+) -> ApplicationInventory:
     with extracted_archive(payload) as directory:
-        return parse_public_profile_directory(directory)
+        return parse_public_profile_directory(
+            directory,
+            enforce_official_byte_identity=enforce_official_byte_identity,
+        )
 
 
 def independent_validate_package(payload: bytes) -> tuple[IndependentValidationResult, ...]:

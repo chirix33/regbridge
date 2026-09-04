@@ -4,6 +4,7 @@ import asyncio
 import hashlib
 import json
 import tempfile
+from dataclasses import asdict
 from datetime import date
 from pathlib import Path
 from typing import Any, cast
@@ -25,6 +26,7 @@ from app.domain.models import MetadataPlan, TargetContext
 from app.parsers.ectd322 import EctdParseError
 from app.parsers.profile322 import parse_uploaded_zip
 from app.parsers.public322 import (
+    adjudicate_public_profile_zip,
     independent_validate_package,
     load_catalog,
     parse_public_profile_zip,
@@ -33,11 +35,21 @@ from app.product.models_registry import ProductFixtureModel
 from app.product.services import CaptureRepository, canonical_digest
 
 PROTECTED_MANIFEST = REPOSITORY_ROOT / "data" / "product" / "m4-2" / "protected-artifacts.json"
+M4_2_1_PROTECTED_MANIFEST = (
+    REPOSITORY_ROOT / "data" / "product" / "m4-2-1" / "protected-artifacts.json"
+)
 PACKAGE = (
     REPOSITORY_ROOT / "data" / "demo-dossiers" / "m4-2" / "regbridge-m4-2-public-standards.zip"
 )
 GENERATION_MANIFEST = PACKAGE.parent / "generation-manifest.json"
 ACCEPTANCE_PACKAGE = REPOSITORY_ROOT / "meridianvelacytenda217999seq0000ectd322spec.zip"
+ADJUDICATION_RECORD = (
+    REPOSITORY_ROOT
+    / "data"
+    / "product"
+    / "m4-2-1"
+    / "independent-package-adjudication.json"
+)
 
 
 def _tree_digest(relative: str) -> tuple[int, str]:
@@ -62,6 +74,12 @@ def verify_protected() -> dict[str, dict[str, object]]:
         digest = hashlib.sha256((REPOSITORY_ROOT / relative).read_bytes()).hexdigest()
         if digest != expected_digest:
             raise RuntimeError(f"protected artifact file changed: {relative}")
+        result[relative] = {"file_count": 1, "pre_sha256": digest, "post_sha256": digest}
+    additive = json.loads(M4_2_1_PROTECTED_MANIFEST.read_text(encoding="utf-8"))
+    for relative, expected_digest in additive["files"].items():
+        digest = hashlib.sha256((REPOSITORY_ROOT / relative).read_bytes()).hexdigest()
+        if digest != expected_digest:
+            raise RuntimeError(f"M4.2.1 protected artifact file changed: {relative}")
         result[relative] = {"file_count": 1, "pre_sha256": digest, "post_sha256": digest}
     return result
 
@@ -98,21 +116,58 @@ def verify_acceptance_package() -> dict[str, object]:
     if not ACCEPTANCE_PACKAGE.is_file():
         return {"status": "missing", "path": str(ACCEPTANCE_PACKAGE)}
     payload = ACCEPTANCE_PACKAGE.read_bytes()
+    adjudication = adjudicate_public_profile_zip(payload)
+    record = json.loads(ADJUDICATION_RECORD.read_text(encoding="utf-8"))
+    comparison = adjudication.dtd_comparisons[0]
+    if record["package"]["sha256"] != hashlib.sha256(payload).hexdigest():
+        raise RuntimeError("M4.2.1 adjudication record package digest mismatch")
+    if record["archive_dtd"]["sha256"] != comparison.archive_sha256:
+        raise RuntimeError("M4.2.1 adjudication record archive DTD digest mismatch")
+    if record["pinned_dtd"]["sha256"] != comparison.pinned_sha256:
+        raise RuntimeError("M4.2.1 adjudication record pinned DTD digest mismatch")
+    if record["comparison"]["difference_class"] != comparison.difference_class:
+        raise RuntimeError("M4.2.1 adjudication record difference classification mismatch")
+    if record["status"] != adjudication.status:
+        raise RuntimeError("M4.2.1 adjudication record status mismatch")
+    for expected in record["independent_xml_validation"]:
+        observed = next(
+            item for item in adjudication.xml_validations if item.path == expected["path"]
+        )
+        if observed.valid != expected["valid"] or not all(
+            message in observed.detail for message in expected["errors"]
+        ):
+            raise RuntimeError(
+                f"M4.2.1 adjudication record XML result mismatch: {expected['path']}"
+            )
     try:
         inventory = parse_uploaded_zip(payload)
     except EctdParseError as error:
+        if adjudication.status == "accepted":
+            raise RuntimeError(
+                "acceptance package passed independent adjudication but failed the profile parser"
+            ) from error
         return {
-            "status": "rejected_nonconforming",
+            "status": adjudication.status,
             "path": str(ACCEPTANCE_PACKAGE),
             "archive_sha256": hashlib.sha256(payload).hexdigest(),
             "profile_error": str(error),
+            "adjudication": asdict(adjudication),
+            "adjudication_record_sha256": hashlib.sha256(
+                ADJUDICATION_RECORD.read_bytes()
+            ).hexdigest(),
         }
+    if adjudication.status != "accepted":
+        raise RuntimeError("profile parser accepted a package rejected by independent adjudication")
     return {
         "status": "accepted",
         "path": str(ACCEPTANCE_PACKAGE),
         "archive_sha256": hashlib.sha256(payload).hexdigest(),
         "profile_id": inventory.input_profile_id,
         "warnings": [item.code for item in inventory.warnings],
+        "adjudication": asdict(adjudication),
+        "adjudication_record_sha256": hashlib.sha256(
+            ADJUDICATION_RECORD.read_bytes()
+        ).hexdigest(),
     }
 
 

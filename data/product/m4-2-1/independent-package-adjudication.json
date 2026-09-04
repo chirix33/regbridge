@@ -1,0 +1,100 @@
+{
+  "schema_version": "m4.2.1.independent-package-adjudication.v1",
+  "adjudicated_at": "2026-09-04T00:00:00Z",
+  "package": {
+    "path": "meridianvelacytenda217999seq0000ectd322spec.zip",
+    "sha256": "ce88d218e993cd3a11f561455b97de607f18ef513292ba0b6aed4d39405f2857"
+  },
+  "profile_id": "fda-cder-ectd-322-public-standards-profile-v1",
+  "profile_version": "1.0.0",
+  "archive_dtd": {
+    "path": "util/dtd/ich-ectd-3-2.dtd",
+    "sha256": "f28d7c22d0ebccff6176058926ed7b956744c20942929676bcc1345cf6104134",
+    "size_bytes": 149,
+    "md5": "0eed637ac1ef52f9faeef8f848acfe02",
+    "hostile": false,
+    "ignored": true
+  },
+  "pinned_dtd": {
+    "asset_id": "ich-ectd-dtd-v3-2",
+    "sha256": "c094aa2bded99564ade8ac78ae1540f95e518461b8eebe9a3063f67a165c2731",
+    "size_bytes": 31400,
+    "official_md5": "1d6f631cc6b6357f0f4fe378e5f79a27"
+  },
+  "comparison": {
+    "utf8_decoding": "strict",
+    "normalized_line_endings": "LF",
+    "leading_bom_ignored": true,
+    "trailing_line_whitespace_ignored": true,
+    "raw_bytes_equal": false,
+    "normalized_text_equal": false,
+    "semantic_text_equal": false,
+    "difference_class": "substantive",
+    "summary": "The archive file is a non-normative comment stub and contains no DTD declarations.",
+    "first_substantive_differences": [
+      {
+        "archive_line": null,
+        "archive_text": null,
+        "pinned_line": 56,
+        "pinned_text": "<!ENTITY % att \" ID       ID     #IMPLIED"
+      },
+      {
+        "archive_line": null,
+        "archive_text": null,
+        "pinned_line": 57,
+        "pinned_text": "   xml:lang CDATA  #IMPLIED\">"
+      },
+      {
+        "archive_line": null,
+        "archive_text": null,
+        "pinned_line": 61,
+        "pinned_text": "<!ELEMENT ectd:ectd (m1-administrative-information-and-prescribing-information?, m2-common-technical-document-summaries?, m3-quality?, m4-nonclinical-study-reports?, m5-clinical-study-reports?)>"
+      },
+      {
+        "archive_line": null,
+        "archive_text": null,
+        "pinned_line": 62,
+        "pinned_text": "<!ATTLIST ectd:ectd"
+      },
+      {
+        "archive_line": null,
+        "archive_text": null,
+        "pinned_line": 63,
+        "pinned_text": "\txmlns:ectd CDATA #FIXED \"http://www.ich.org/ectd\""
+      }
+    ]
+  },
+  "official_byte_identity_requirement": {
+    "required": true,
+    "source_asset_id": "fda-ectd-validation-criteria-v4-6",
+    "locator": "PDF page 9, validation criterion 1130",
+    "basis": "A required UTIL-file checksum must match the expected checksum; an altered DTD or stylesheet is the stated problem.",
+    "expert_validated": false
+  },
+  "independent_xml_validation": [
+    {
+      "path": "index.xml",
+      "pinned_asset_id": "ich-ectd-dtd-v3-2",
+      "valid": false,
+      "errors": [
+        "Element ectd namespace name for xlink does not match the DTD",
+        "Value for attribute xmlns:xlink of ectd is different from default \"http://www.w3c.org/1999/xlink\"",
+        "Value for attribute xmlns:xlink of ectd must be \"http://www.w3c.org/1999/xlink\""
+      ]
+    },
+    {
+      "path": "m1/us/us-regional.xml",
+      "pinned_asset_id": "fda-us-regional-dtd-v3-3",
+      "valid": false,
+      "errors": [
+        "Element fda-regional namespace name for xlink does not match the DTD",
+        "Value for attribute xmlns:xlink of fda-regional is different from default \"http://www.w3c.org/1999/xlink\"",
+        "Value for attribute xmlns:xlink of fda-regional must be \"http://www.w3c.org/1999/xlink\""
+      ]
+    }
+  ],
+  "status": "rejected_nonconforming",
+  "status_basis": "Both XML backbones fail independent validation against the pinned official DTDs. The package is not rejected merely because the archive DTD digest differs.",
+  "migration_policy_changed": false,
+  "frozen_artifact_changed": false
+}
