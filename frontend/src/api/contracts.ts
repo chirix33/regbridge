@@ -93,6 +93,9 @@ export interface ParsedLeaf {
   declared_checksum: string | null;
   computed_declared_checksum: string | null;
   declared_checksum_matches: boolean | null;
+  policy_coverage_status: "EVALUATED_WITH_APPROVED_POLICY" | "NO_MIGRATION_CHANGE_DETECTED" | "OUTSIDE_ENCODED_POLICY_COVERAGE" | "INSUFFICIENT_APPLICATION_HISTORY" | "DOCUMENT_INSPECTION_INCOMPLETE";
+  policy_coverage_basis: string;
+  covered_policy_ids: string[];
 }
 
 export interface ApplicationInventory {
@@ -101,6 +104,9 @@ export interface ApplicationInventory {
   source_standard: string;
   application_number: string | null;
   submission_type: string | null;
+  application_type_code: string | null;
+  submission_id: string | null;
+  sequence_number: string | null;
   applicant_name: string | null;
   has_stf: boolean;
   package_sha256: string;
@@ -113,7 +119,9 @@ export interface ApplicationInventory {
   parsing_extent: "complete" | "bounded";
   package_profile_status: "passed" | "warning" | "unsupported" | "failed";
   profile_checks: Array<{ id: string; label: string; status: "passed" | "warning" | "unsupported" | "failed"; detail: string }>;
+  xml_declarations: Array<{ path: string; root_name: string; namespace: string | null; declared_doctype: string | null; doctype_recognized: boolean; dtd_version_supported: boolean; dtd_validation_performed: boolean; dtd_validation_result: "not_performed" | "passed" | "failed"; dtd_asset_id: string | null; effective_dtd_version: string | null; version_source: "declared" | "inferred_from_catalog" | "unsupported" }>;
   package_files: Array<{ path: string; member_type: string; provenance_sha256: string; relationship: string }>;
+  policy_coverage_counts: Record<string, number>;
   regional_xml_version: string | null;
   regional_xml_sha256: string | null;
   index_md5_declared: string | null;
@@ -195,6 +203,7 @@ export interface DossierAnalysisRun {
     severity_counts: Record<string, number>;
     human_approval_count: number;
     parser_warning_count: number;
+    policy_coverage_counts: Record<string, number>;
   };
   results: DossierLeafResult[];
   failures: Array<{ leaf_id: string; stage: string; cause: string; retryable: boolean }>;

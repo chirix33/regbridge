@@ -305,6 +305,15 @@
           "title": "Content Type",
           "type": "string"
         },
+        "covered_policy_ids": {
+          "default": [],
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "type": "string"
+          },
+          "title": "Covered Policy Ids",
+          "type": "array"
+        },
         "declared_checksum": {
           "anyOf": [
             {
@@ -422,6 +431,23 @@
         },
         "operation": {
           "$ref": "#/$defs/LifecycleOperation"
+        },
+        "policy_coverage_basis": {
+          "default": "Legacy controlled fixture policy coverage.",
+          "title": "Policy Coverage Basis",
+          "type": "string"
+        },
+        "policy_coverage_status": {
+          "default": "EVALUATED_WITH_APPROVED_POLICY",
+          "enum": [
+            "EVALUATED_WITH_APPROVED_POLICY",
+            "NO_MIGRATION_CHANGE_DETECTED",
+            "OUTSIDE_ENCODED_POLICY_COVERAGE",
+            "INSUFFICIENT_APPLICATION_HISTORY",
+            "DOCUMENT_INSPECTION_INCOMPLETE"
+          ],
+          "title": "Policy Coverage Status",
+          "type": "string"
         },
         "prior_reference_status": {
           "default": "not_applicable",
@@ -583,6 +609,19 @@
           "title": "Doctype Recognized",
           "type": "boolean"
         },
+        "dtd_asset_id": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Dtd Asset Id"
+        },
         "dtd_validation_performed": {
           "default": false,
           "title": "Dtd Validation Performed",
@@ -601,6 +640,18 @@
         "dtd_version_supported": {
           "title": "Dtd Version Supported",
           "type": "boolean"
+        },
+        "effective_dtd_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Effective Dtd Version"
         },
         "namespace": {
           "anyOf": [
@@ -622,6 +673,16 @@
         "root_name": {
           "minLength": 1,
           "title": "Root Name",
+          "type": "string"
+        },
+        "version_source": {
+          "default": "unsupported",
+          "enum": [
+            "declared",
+            "inferred_from_catalog",
+            "unsupported"
+          ],
+          "title": "Version Source",
           "type": "string"
         },
         "xml_version": {
@@ -672,6 +733,18 @@
       ],
       "default": null,
       "title": "Application Number"
+    },
+    "application_type_code": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Application Type Code"
     },
     "detected_sequence_root": {
       "default": ".",
@@ -807,6 +880,22 @@
       "title": "Parsing Extent",
       "type": "string"
     },
+    "policy_coverage_counts": {
+      "additionalProperties": {
+        "type": "integer"
+      },
+      "propertyNames": {
+        "enum": [
+          "EVALUATED_WITH_APPROVED_POLICY",
+          "NO_MIGRATION_CHANGE_DETECTED",
+          "OUTSIDE_ENCODED_POLICY_COVERAGE",
+          "INSUFFICIENT_APPLICATION_HISTORY",
+          "DOCUMENT_INSPECTION_INCOMPLETE"
+        ]
+      },
+      "title": "Policy Coverage Counts",
+      "type": "object"
+    },
     "profile_checks": {
       "default": [],
       "items": {
@@ -840,8 +929,32 @@
       "default": null,
       "title": "Regional Xml Version"
     },
+    "sequence_number": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Sequence Number"
+    },
     "source_standard": {
       "$ref": "#/$defs/StandardVersion"
+    },
+    "submission_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Submission Id"
     },
     "submission_type": {
       "anyOf": [

@@ -15,6 +15,7 @@ from app.llm.responses import (
     RetryableLiveModelError,
 )
 from app.parsers.profile322 import CAPABILITY_BOUNDARY
+from app.parsers.public322 import PROFILE_ID as PUBLIC_PROFILE_ID
 from app.product.models import (
     DossierAnalysisRequest,
     DossierAnalysisRun,
@@ -147,7 +148,13 @@ class DossierAnalysisManager:
             requested_leaf_ids=leaf_ids,
             created_at=now,
             updated_at=now,
-            capability_boundary=CAPABILITY_BOUNDARY,
+            capability_boundary=(
+                "RegBridge accepts and validates the bounded FDA/CDER eCTD v3.2.2 public-"
+                "standards input profile against pinned local ICH/FDA DTDs. This is not full "
+                "FDA validation or submission-readiness assessment."
+                if inventory.input_profile_id == PUBLIC_PROFILE_ID
+                else CAPABILITY_BOUNDARY
+            ),
         )
         self.runs.put(run_id, run)
         return run
@@ -237,6 +244,9 @@ class DossierAnalysisManager:
             severity_counts=severities,
             human_approval_count=sum(item.analysis.human_approval_required for item in results),
             parser_warning_count=len(inventory.warnings),
+            policy_coverage_counts={
+                str(key): value for key, value in inventory.policy_coverage_counts.items()
+            },
             model_profile_id=run.selected_model.model_id,
             model_configuration_digest=run.selected_model.configuration_digest,
         )

@@ -170,14 +170,17 @@ and extracted PDF evidence. `/baselines` runs B0, B1, model-free B2, and RegBrid
 package-derived inputs without reference labels or performance metrics. `/evaluation` remains the
 immutable held-out Phase 2 presentation.
 
-The exact capability boundary is: “RegBridge securely parses and validates a controlled FDA eCTD
-v3.2.2 package profile for supported structural, lifecycle, metadata, checksum, and
-document-evidence predicates. It does not perform complete FDA submission validation.”
+The current M4.2 capability boundary is: “RegBridge accepts and validates a bounded FDA/CDER
+eCTD v3.2.2 public-standards input profile against pinned local ICH/FDA DTDs. This is input-profile
+compatibility, not complete FDA validation or submission-readiness assessment.”
 
 Generate the public synthetic package with
 `.\.venv\Scripts\python.exe scripts\generate_m4_1_dossier.py`; its manifest and stable hash are in
-`data/demo-dossiers/m4-1/`. Run `.\scripts\m4-1-verify.ps1` twice for the additive milestone gate.
-See `docs/DEMO_M4_1.md` for the operator workflow. Uploaded inventories are opaque, bounded,
+`data/demo-dossiers/m4-1/`. M4.2 adds the pinned-public-standards package at
+`data/demo-dossiers/m4-2/regbridge-m4-2-public-standards.zip`; use this package for the current
+Analyzer and Baselines demo. Run `.\scripts\m4-2-verify.ps1` twice for the additive M4.2 gate.
+This validates only the declared bounded input profile, not a complete FDA submission.
+See `docs/DEMO_M4_2.md` for the current operator workflow. Uploaded inventories are opaque, bounded,
 expiring, memory-local records; ZIP bytes are discarded and records do not survive restart.
 
 New product endpoints:

@@ -1,0 +1,78 @@
+schema_version: regbridge.input-profile-manifest.v1
+profile_id: fda-cder-ectd-322-public-standards-profile-v1
+profile_version: 1.0.0
+authority: FDA
+center: CDER
+retrieved_at: 2026-09-03T00:00:00Z
+expert_validated: false
+runtime_network_access: prohibited
+complete_fda_validation: false
+assets:
+  - id: ich-ectd-backbone-specification-v3-2-2
+    title: Electronic Common Technical Document Specification V3.2.2
+    organization: ICH
+    authority: ICH
+    version: 3.2.2
+    retrieved_at: 2026-09-03T00:00:00Z
+    official_url: https://admin.ich.org/sites/default/files/inline-files/eCTD_Specification_v3_2_2_0.pdf
+    local_path: assets/ectd-spec-v3-2-2.pdf
+    sha256: d8273833eac401ff3c094d782863b078110e33a7f358438d3f7a0dad277fc2b0
+    intended_use: Define the accepted Modules 2 through 5 backbone envelope and lifecycle syntax.
+    executable_validation_material: false
+  - id: ich-ectd-dtd-v3-2
+    title: ICH eCTD DTD
+    organization: ICH
+    authority: ICH
+    version: "3.2"
+    retrieved_at: 2026-09-03T00:00:00Z
+    official_url: https://admin.ich.org/sites/default/files/inline-files/ich-ectd-3-2_dtd_0.zip
+    local_path: assets/ich-ectd-3-2.dtd
+    sha256: c094aa2bded99564ade8ac78ae1540f95e518461b8eebe9a3063f67a165c2731
+    official_md5: 1d6f631cc6b6357f0f4fe378e5f79a27
+    intended_use: Offline DTD validation of index.xml through the exact local catalog.
+    executable_validation_material: true
+    dependencies: []
+    approved_system_identifiers:
+      - util/dtd/ich-ectd-3-2.dtd
+      - ich-ectd-3-2.dtd
+  - id: fda-module-1-specification-v2-6
+    title: The eCTD Backbone Files Specification for Module 1
+    organization: FDA
+    authority: FDA
+    version: "2.6"
+    retrieved_at: 2026-09-03T00:00:00Z
+    official_url: https://www.fda.gov/media/159382/download?attachment=
+    local_path: assets/fda-module-1-spec-v2-6.pdf
+    sha256: 1adcbc40ad55adc63b3ae0c6ab6428721ccf6c8f3f64a4a1be58b1ee276b87f2
+    intended_use: Define the FDA Module 1 envelope, metadata locations, and regional relationship.
+    executable_validation_material: false
+  - id: fda-us-regional-dtd-v3-3
+    title: US Regional DTD
+    organization: FDA
+    authority: FDA
+    version: "3.3"
+    retrieved_at: 2026-09-03T00:00:00Z
+    official_url: https://www.accessdata.fda.gov/static/eCTD/us-regional-v3-3.dtd
+    local_path: assets/us-regional-v3-3.dtd
+    sha256: d45139785dd6aa7eb3a60a23854ec2ea7d5d17c7c87b9ca12ab268baafc1dbec
+    official_md5: bea39be6d3a1716262a30a87657bce2d
+    intended_use: Offline DTD validation of m1/us/us-regional.xml through the exact local catalog.
+    executable_validation_material: true
+    dependencies: []
+    approved_system_identifiers:
+      - http://www.accessdata.fda.gov/static/eCTD/us-regional-v3-3.dtd
+      - https://www.accessdata.fda.gov/static/eCTD/us-regional-v3-3.dtd
+      - ../../util/dtd/us-regional-v3-3.dtd
+      - util/dtd/us-regional-v3-3.dtd
+      - us-regional-v3-3.dtd
+  - id: fda-ectd-validation-criteria-v4-6
+    title: Specifications for eCTD Validation Criteria
+    organization: FDA
+    authority: FDA
+    version: "4.6"
+    retrieved_at: 2026-09-03T00:00:00Z
+    official_url: https://www.fda.gov/media/87056/download?attachment=
+    local_path: assets/fda-ectd-validation-criteria-v4-6.pdf
+    sha256: e5cc369a03840164ef97371d92504124ba013517f69e54487c7dfe9e5f3c46b6
+    intended_use: Define only supported-profile failures and parser warnings; not a complete criteria implementation.
+    executable_validation_material: false

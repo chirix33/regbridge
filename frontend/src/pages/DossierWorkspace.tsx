@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { CheckCircle, Database, Upload, WarningTriangle } from "iconoir-react";
 
-import { createDossierAnalysis, getDossierAnalysis, getModels, parseUpload } from "../api/client";
+import { createDossierAnalysis, getDossierAnalysis, getModels, getProductDemoPackage, parseUpload } from "../api/client";
 import type { ApplicationInventory, DossierAnalysisRun, MetadataIntent, TargetContext } from "../api/contracts";
 import { GraphNeighborhood } from "../components/GraphNeighborhood";
 
@@ -61,6 +61,8 @@ export function DossierWorkspace() {
       <section className="workspace-grid">
         <form className="panel upload-panel" onSubmit={(event) => { event.preventDefault(); void submit(); }}>
           <h2><Upload aria-hidden="true"/> Upload and analyze</h2>
+          <button type="button" onClick={() => { void getProductDemoPackage().then(setFile).catch((cause: Error) => setError(cause.message)); }}>Load M4.2 demo preset</button>
+          {file && <p className="field-note">Selected: {file.name}</p>}
           <label>Dossier ZIP<input aria-label="Dossier ZIP" type="file" accept=".zip,application/zip" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /></label>
           <label>Available LLM<select value={modelId} onChange={(event) => setModelId(event.target.value)}>{models.data?.models.map((profile) => <option key={profile.model_id} value={profile.model_id} disabled={profile.availability !== "available"}>{profile.display_name}{profile.availability !== "available" ? " — disabled" : ""}</option>)}</select></label>
           {models.data?.models.filter((item) => item.availability !== "available").map((item) => <p className="field-note" key={item.model_id}>{item.display_name}: {item.disabled_reason}</p>)}
@@ -73,7 +75,7 @@ export function DossierWorkspace() {
           <button className="primary-button" disabled={!file || !confirmed || busy || selectedProfile?.availability !== "available"}>{busy ? "Parsing…" : "Parse and analyze"}</button>
           {error && <p role="alert" className="error-copy">{error}</p>}
         </form>
-        <aside className="panel"><h2>Controlled scope</h2><p>RegBridge securely parses and validates a controlled FDA eCTD v3.2.2 package profile for supported structural, lifecycle, metadata, checksum, and document-evidence predicates. It does not perform complete FDA submission validation.</p><p>Raw ZIP bytes are discarded after parsing. Inventories are local, capacity bounded, expire, and do not survive a server restart.</p></aside>
+        <aside className="panel"><h2>Controlled scope</h2><p>RegBridge accepts a bounded FDA/CDER eCTD v3.2.2 public-standards profile and validates its two XML backbones against pinned local DTDs. It does not perform complete FDA validation or assess submission readiness.</p><p>Demo preset: <code>data/demo-dossiers/m4-2/regbridge-m4-2-public-standards.zip</code>. Raw ZIP bytes are discarded after parsing.</p></aside>
       </section>
       {inventory && (
         <section className="panel profile-results motion-enter">
@@ -81,11 +83,18 @@ export function DossierWorkspace() {
           <p className="result-lead"><CheckCircle aria-hidden="true"/> Supported profile checks {inventory.package_profile_status}</p>
           <dl className="context-list">
             <div><dt>Sequence root</dt><dd>{inventory.detected_sequence_root}</dd></div>
-            <div><dt>Profile</dt><dd>{inventory.input_profile_id}</dd></div>
+            <div><dt>Profile</dt><dd>{inventory.input_profile_id} · {inventory.input_profile_version}</dd></div>
             <div><dt>Documents</dt><dd>{inventory.leaves.length}</dd></div>
             <div><dt>Index MD5</dt><dd>{inventory.index_md5_matches ? "matched" : "not verified"}</dd></div>
+            <div><dt>Warnings</dt><dd>{inventory.warnings.length}</dd></div>
+            <div><dt>Policy coverage</dt><dd>{Object.entries(inventory.policy_coverage_counts).map(([name, count]) => `${name}: ${count}`).join(" · ") || "none"}</dd></div>
           </dl>
+          <p><strong>DTD identities:</strong> {inventory.xml_declarations.map((item) => `${item.dtd_asset_id ?? "unidentified"} ${item.effective_dtd_version ?? "unknown"} (${item.dtd_validation_result})`).join(" · ")}</p>
           <ul>{inventory.profile_checks.map((check) => <li key={check.id}><strong>{check.label}: {check.status}</strong> — {check.detail}</li>)}</ul>
+          {inventory.warnings.length > 0 && <ul>{inventory.warnings.map((warning) => <li key={`${warning.code}-${warning.locator}`}><strong>{warning.code}</strong> — {warning.message}</li>)}</ul>}
+          <h3>Document policy coverage</h3>
+          <ul>{inventory.leaves.map((leaf) => <li key={leaf.id}><strong>{leaf.title}: {leaf.policy_coverage_status}</strong> — {leaf.policy_coverage_basis}</li>)}</ul>
+          {inventory.package_files.some((item) => item.member_type === "UNSUPPORTED") && <p><strong>Unsupported members:</strong> {inventory.package_files.filter((item) => item.member_type === "UNSUPPORTED").map((item) => item.path).join(", ")}. No reuse decision is assigned to these members.</p>}
         </section>
       )}
       {run && (
