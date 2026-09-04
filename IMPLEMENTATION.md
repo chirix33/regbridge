@@ -773,7 +773,9 @@ Use React, TypeScript, Vite, Tailwind CSS, Iconoir, React Router, and TanStack Q
 The parser must:
 
 - reject absolute paths, parent traversal, symlink escape, and duplicate ambiguous archive members;
-- disable XML DTDs and external entities;
+- recognize only approved DOCTYPE declarations through an exact identifier-to-pinned-local-file
+  catalog while disabling network retrieval, untrusted filesystem resolution, entity expansion,
+  internal subsets, archive-supplied DTD execution, and every external resource not in the catalog;
 - enforce compressed and expanded size limits, member-count limits, and timeouts;
 - allowlist expected file types for the MVP;
 - calculate checksums while streaming where feasible;
@@ -990,6 +992,63 @@ frontend lint/type/test/build, OpenAPI drift, security and accessibility coverag
 package/hash reproduction, a network-free real-ZIP journey, and before/after hashes for protected
 M3/M4 artifacts. FDA/CDER-only scope, prospective framing, `not_operational`, and
 `expert_validated: false` remain visible throughout.
+
+### M4.2 — Public-Standards eCTD v3.2.2 Input Compatibility
+
+M4.2 is additive to M4.1 and is governed in detail by
+[docs/milestones/M4.2.md](docs/milestones/M4.2.md). Its supported input profile is exactly:
+
+- FDA/CDER;
+- eCTD v3.2.2 backbone specification with ICH eCTD DTD v3.2;
+- FDA Module 1 specification v2.6 with US regional DTD v3.3;
+- exactly one selected sequence at archive root, `0000/`, or beneath one application wrapper;
+- bounded PDFs as the only semantic-analysis document type.
+
+The profile validates recognized backbone and regional XML offline through an exact local DTD
+catalog. It accepts approved official absolute HTTP/HTTPS identifiers and approved standard
+relative identifiers, but never dereferences them. Internal subsets, entity declarations,
+unknown identifiers, conflicting root/namespace/DTD combinations, and any noncatalog external
+resource fail closed. Archive DTDs are never validation inputs.
+
+Package inventory separates backbone XML, regional XML, STF, support files, analyzable dossier
+documents, and unsupported members. A backbone leaf that points to `m1/us/us-regional.xml` is a
+regional relationship, not a dossier document. Prior-sequence `modified-file` values are parsed
+as lifecycle references; absent application history yields `INSUFFICIENT_APPLICATION_HISTORY`
+instead of archive-path rejection. Declared MD5 compatibility checksums remain separate from
+SHA-256 provenance.
+
+Every dossier document exposes exactly one coverage status:
+`EVALUATED_WITH_APPROVED_POLICY`, `NO_MIGRATION_CHANGE_DETECTED`,
+`OUTSIDE_ENCODED_POLICY_COVERAGE`, `INSUFFICIENT_APPLICATION_HISTORY`, or
+`DOCUMENT_INSPECTION_INCOMPLETE`. The clean-negative status is available only for an explicitly
+encoded clean-negative policy condition. Analyzer and B0/B1/B2/RegBridge comparison consume the
+same package-derived inventory and coverage record. Out-of-coverage documents are displayed but
+never converted to unconditional legacy-reuse decisions.
+
+This is input-profile compatibility, not complete FDA validation, submission-readiness
+assessment, production v3.2.2-to-v4.0 conversion, or eCTD v4.0 generation. It leaves the frozen
+M3 benchmark, labels, families, prompts, evaluation configurations, Phase 1/Phase 2 artifacts,
+M4 presentation snapshot, numerical claims, M4.1 package bytes, migration decisions, and
+author-adjudicated rules unchanged.
+
+### M4.2.1 — Independent-package DTD adjudication
+
+M4.2.1 is governed by [docs/milestones/M4.2.1.md](docs/milestones/M4.2.1.md) and changes only
+package-envelope adjudication. An archive ICH DTD is never validation code. Its raw SHA-256,
+pinned SHA-256, UTF-8/LF-normalized comparison, semantic comparison, first bounded differences,
+hostile-construct result, and ignored status are recorded. `index.xml` and
+`m1/us/us-regional.xml` are independently validated against the pinned ICH and FDA DTDs.
+
+Any hostile archive DTD fails as `security_violation`. Any pinned-DTD XML validation failure
+fails as `rejected_nonconforming` with exact validation errors. If both XML files pass, a
+non-identical archive DTD may be ignored with warning
+`ARCHIVE_DTD_DIFFERS_FROM_PINNED_COPY` only when the applicable profile has no exact official
+byte-identity requirement. The FDA/CDER M4.2 profile records FDA validation criterion 1130 as
+the exact expected-checksum basis, so a non-identical required UTIL DTD remains a profile
+nonconformance while its textual difference class is still reported accurately.
+
+This adjudication neither creates nor changes a migration-policy fact, rule, finding, repair,
+decision, benchmark input, baseline prompt, evaluation artifact, or product workflow.
 
 ### M5 — Paper and submission support (September 15–18)
 

@@ -133,6 +133,12 @@ class AnalysisService:
         triggered: list[str] = []
         heading_rule = applicable_heading_rule(leaf, target, self.heading_rules)
         unresolved_reason: str | None = None
+        if leaf.policy_coverage_status == "OUTSIDE_ENCODED_POLICY_COVERAGE":
+            unresolved_reason = leaf.policy_coverage_basis
+        elif leaf.policy_coverage_status == "INSUFFICIENT_APPLICATION_HISTORY":
+            unresolved_reason = leaf.policy_coverage_basis
+        elif leaf.policy_coverage_status == "DOCUMENT_INSPECTION_INCOMPLETE":
+            unresolved_reason = leaf.policy_coverage_basis
         deterministic_decision: Decision | None = None
         deterministic_repair: RepairAction | None = None
         deterministic_severity = Severity.INFORMATIONAL
@@ -417,7 +423,8 @@ class AnalysisService:
                 component="ectd-322-parser",
                 summary=(
                     f"Parsed {leaf.id} beneath {leaf.heading}; extracted {leaf.text_span_count} "
-                    f"text spans and {leaf.hyperlink_count} hyperlinks."
+                    f"text spans and {leaf.hyperlink_count} hyperlinks; policy coverage "
+                    f"{leaf.policy_coverage_status}."
                 ),
                 occurred_at=occurred_at,
             ),

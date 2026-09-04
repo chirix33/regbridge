@@ -5,6 +5,14 @@ from pydantic import Field, model_validator
 from app.domain.enums import LifecycleOperation, StandardVersion
 from app.domain.models import DomainModel, Sha256, StableId
 
+PolicyCoverageStatus = Literal[
+    "EVALUATED_WITH_APPROVED_POLICY",
+    "NO_MIGRATION_CHANGE_DETECTED",
+    "OUTSIDE_ENCODED_POLICY_COVERAGE",
+    "INSUFFICIENT_APPLICATION_HISTORY",
+    "DOCUMENT_INSPECTION_INCOMPLETE",
+]
+
 
 class ParseWarning(DomainModel):
     code: StableId
@@ -63,6 +71,9 @@ class ParsedLeaf(DomainModel):
     text_span_count: int = Field(default=0, ge=0)
     hyperlink_count: int = Field(default=0, ge=0)
     extraction_status: Literal["completed", "failed", "bounded"] = "completed"
+    policy_coverage_status: PolicyCoverageStatus = "EVALUATED_WITH_APPROVED_POLICY"
+    policy_coverage_basis: str = "Legacy controlled fixture policy coverage."
+    covered_policy_ids: tuple[StableId, ...] = ()
     text_spans: tuple[ParsedTextSpan, ...] = Field(default=(), exclude=True)
     hyperlinks: tuple[ParsedHyperlink, ...] = Field(default=(), exclude=True)
 
@@ -132,6 +143,9 @@ class XmlDeclarationRecord(DomainModel):
     dtd_version_supported: bool
     dtd_validation_performed: bool = False
     dtd_validation_result: Literal["not_performed", "passed", "failed"] = "not_performed"
+    dtd_asset_id: StableId | None = None
+    effective_dtd_version: str | None = None
+    version_source: Literal["declared", "inferred_from_catalog", "unsupported"] = "unsupported"
 
 
 class LifecycleReference(DomainModel):
@@ -149,6 +163,9 @@ class ApplicationInventory(DomainModel):
     source_standard: StandardVersion
     application_number: str | None = None
     submission_type: str | None = None
+    application_type_code: str | None = None
+    submission_id: str | None = None
+    sequence_number: str | None = None
     applicant_name: str | None = None
     has_stf: bool
     package_sha256: Sha256
@@ -166,6 +183,7 @@ class ApplicationInventory(DomainModel):
     xml_declarations: tuple[XmlDeclarationRecord, ...] = ()
     package_files: tuple[PackageFile, ...] = ()
     lifecycle_references: tuple[LifecycleReference, ...] = ()
+    policy_coverage_counts: dict[PolicyCoverageStatus, int] = Field(default_factory=dict)
     regional_xml_version: str | None = None
     regional_xml_sha256: Sha256 | None = None
     index_md5_declared: str | None = Field(default=None, pattern=r"^[a-fA-F0-9]{32}$")

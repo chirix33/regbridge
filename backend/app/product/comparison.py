@@ -83,6 +83,9 @@ def package_material(
                 ],
                 "dossier_evidence": evidence,
                 "extraction_status": leaf.extraction_status,
+                "policy_coverage_status": leaf.policy_coverage_status,
+                "policy_coverage_basis": leaf.policy_coverage_basis,
+                "covered_policy_ids": list(leaf.covered_policy_ids),
             },
             "target_context": target.model_dump(mode="json"),
             "operational_availability": "not_operational",
@@ -108,6 +111,21 @@ def _fixture_direct(material: dict[str, Any], standards_ids: set[str]) -> Direct
             human_review_required=True,
             rationale="Forward compatibility is not operational.",
             confidence=1,
+        )
+    if selected["policy_coverage_status"] in {
+        "OUTSIDE_ENCODED_POLICY_COVERAGE",
+        "INSUFFICIENT_APPLICATION_HISTORY",
+        "DOCUMENT_INSPECTION_INCOMPLETE",
+    }:
+        return DirectDecisionOutput(
+            decision=Decision.HUMAN_REGULATORY_REVIEW,
+            severity=Severity.UNRESOLVED,
+            action="AUTHOR_REVIEW_HEADING_MAPPING"
+            if selected["policy_coverage_status"] == "OUTSIDE_ENCODED_POLICY_COVERAGE"
+            else "HUMAN_VERIFY_STALE_CONTENT",
+            human_review_required=True,
+            rationale=str(selected["policy_coverage_basis"]),
+            confidence=0,
         )
     if selected["heading"] in {"3.2.S.1.1", "3.2.S.1.2", "3.2.S.1.3"}:
         enough = {"ev-ctoc-3211-3213-removed", "ev-tcg-new-context-and-reuse"} <= standards_ids

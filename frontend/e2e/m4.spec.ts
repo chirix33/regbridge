@@ -20,18 +20,22 @@ test("M4 guided journey and dashboard are accessible", async ({ page }) => {
   expect(results.violations).toEqual([]);
 });
 
-test("M4.1 uploads the real composite ZIP and compares package-derived inputs", async ({ page }) => {
+test("M4.2 uploads the public-standards ZIP and compares package-derived inputs", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: /Inspect reuse risk from the package itself/i })).toBeVisible();
   await expect(page.getByText(/expert_validated: false/i)).toBeVisible();
   await expect(page.getByRole("option", { name: /Qwen 3.6 local/i })).toHaveAttribute("disabled", "");
-  await page.getByLabel("Dossier ZIP").setInputFiles("../data/demo-dossiers/m4-1/regbridge-m4-1-composite.zip");
+  await page.getByLabel("Dossier ZIP").setInputFiles("../data/demo-dossiers/m4-2/regbridge-m4-2-public-standards.zip");
   await page.getByLabel(/I confirm this target context/i).check();
   await page.getByRole("button", { name: "Parse and analyze" }).click();
   await expect(page.getByRole("heading", { name: "Controlled v3.2.2 profile checks" })).toBeVisible();
-  await expect(page.getByText("REUSE_WITH_NEW_CONTEXT")).toBeVisible();
-  await expect(page.getByText("REUSE_AS_LEGACY_REFERENCE")).toBeVisible();
-  await expect(page.getByText("HUMAN_REGULATORY_REVIEW")).toBeVisible();
+  await expect(page.getByText(/fda-cder-ectd-322-public-standards-profile-v1/)).toBeVisible();
+  await expect(page.getByText(/ich-ectd-dtd-v3-2 3.2.2 \(passed\)/)).toBeVisible();
+  await expect(page.getByText(/fda-us-regional-dtd-v3-3 3.3 \(passed\)/)).toBeVisible();
+  await expect(page.getByText(/index-dtd-version-inferred/)).toBeVisible();
+  await expect(page.getByText("REUSE_WITH_NEW_CONTEXT", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("REUSE_AS_LEGACY_REFERENCE", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("HUMAN_REGULATORY_REVIEW", { exact: true }).first()).toBeVisible();
   await expect(page.getByText(/macro-F1|unsafe-FNR|accuracy/i)).toHaveCount(0);
 
   await page.getByRole("link", { name: "Baselines" }).click();

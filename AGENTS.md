@@ -166,7 +166,7 @@ Never silently replace a standards snapshot. Add a new version and make applicab
 - Pin dependencies and provide single-command local setup, test, lint, evaluation, and demo-start workflows.
 - Use UTC timestamps and stable random seeds in benchmark runs.
 - Log identifiers and decisions, not full confidential document text. Redact secrets from errors.
-- Protect uploads against path traversal, XML external-entity expansion, decompression bombs, unexpected MIME types, and unbounded file size.
+- Protect uploads against path traversal, XML external-entity expansion, decompression bombs, unexpected MIME types, and unbounded file size. Recognize only approved DOCTYPE declarations through an exact pinned local catalog while disabling network retrieval, untrusted filesystem resolution, entity expansion, and archive-supplied DTD execution.
 - Store secrets only in environment variables. Commit an `.env.example`, never an `.env` containing credentials.
 - Preserve accessibility: keyboard operation, visible focus, semantic labels, adequate contrast, and text alternatives for graph-only information.
 - Use Iconoir for interface icons. Do not substitute emoji or improvised SVG icons for product controls.
@@ -216,3 +216,32 @@ The implementation is complete only when all of the following hold:
 - the repository contains enough result and provenance exports to support the two-page demonstration paper and five-minute video without manually reconstructing claims.
 
 Passing a happy-path demo alone is not completion. The system must also show a clean negative, an abstention, and a baseline failure that can be explained from recorded evidence.
+
+## 12. M4.2 public-standards input compatibility
+
+M4.2 is additive compatibility work governed by [docs/milestones/M4.2.md](docs/milestones/M4.2.md).
+It accepts a bounded synthetic FDA/CDER eCTD v3.2.2 single-sequence package whose envelope is
+validated offline against pinned public ICH/FDA technical artifacts. It does not expand the
+migration-policy graph, alter the M3 benchmark or M4 presentation artifacts, generate eCTD v4.0,
+or claim complete FDA validation or submission readiness.
+
+Approved DOCTYPE declarations are data, not executable trust grants. The parser may recognize
+their identifiers, but it must map them exactly to repository-pinned local DTDs and prohibit all
+network retrieval, untrusted filesystem lookup, entity expansion, internal subsets, and use of
+archive-supplied DTDs as validation code. A structurally accepted dossier document receives an
+explicit policy-coverage status; successful parsing alone never implies safe legacy reuse.
+
+## 13. M4.2.1 independent-package DTD adjudication
+
+M4.2.1 is governed by [docs/milestones/M4.2.1.md](docs/milestones/M4.2.1.md). Treat an
+archive-supplied DTD as untrusted comparison data only. Record its digest and normalized
+difference from the pinned copy, inspect it for hostile constructs, ignore it during parsing,
+and independently validate both XML backbones against the pinned local DTDs.
+
+An XML validation failure retains `rejected_nonconforming` with exact errors. A safe differing
+DTD may produce `ARCHIVE_DTD_DIFFERS_FROM_PINNED_COPY` only when both XML files pass and no exact
+official source requires byte identity. For this FDA/CDER profile, validation criterion 1130 is
+the exact expected-checksum basis, so any non-identical required UTIL DTD remains a profile
+nonconformance even when the difference is only textual. Distinguish byte-identical,
+newline/BOM/trailing-whitespace-only, comment-only, substantive, and hostile variants without
+changing migration policy or product decisions.

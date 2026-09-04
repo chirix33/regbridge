@@ -86,6 +86,7 @@ class DossierAnalysisSummary(DomainModel):
     severity_counts: dict[str, int]
     human_approval_count: int
     parser_warning_count: int
+    policy_coverage_counts: dict[str, int]
     model_profile_id: StableId
     model_configuration_digest: Sha256
 

@@ -1,7 +1,16 @@
 from functools import lru_cache
 from typing import Annotated
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request, status
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    HTTPException,
+    Query,
+    Request,
+    Response,
+    status,
+)
 
 from app import __version__
 from app.analyzer.service import AnalysisService
@@ -23,7 +32,7 @@ from app.api.contracts import (
     StandardsSnapshotResponse,
 )
 from app.baselines.runner import BaselineRunner
-from app.config import Settings, get_settings
+from app.config import REPOSITORY_ROOT, Settings, get_settings
 from app.domain.enums import (
     ApplicationType,
     Authority,
@@ -70,6 +79,13 @@ DISCLAIMER = (
 )
 
 router = APIRouter()
+M4_2_DEMO_PACKAGE = (
+    REPOSITORY_ROOT
+    / "data"
+    / "demo-dossiers"
+    / "m4-2"
+    / "regbridge-m4-2-public-standards.zip"
+)
 
 
 def get_manifest() -> StandardsManifest:
@@ -169,6 +185,7 @@ def scope(
             "m4-presentation-snapshot",
             "m4-evaluation-dashboard",
             "m4-guided-demo",
+            "m4-2-public-standards-input-profile",
         ),
         planned_archetypes=(
             "unavailable-heading",
@@ -270,6 +287,25 @@ def get_application(inventory_id: str) -> ApplicationInventory:
 @router.get("/api/v1/models", response_model=ModelCatalog, tags=["configuration"])
 def list_models() -> ModelCatalog:
     return _model_registry.catalog()
+
+
+@router.get("/api/v1/product/demo-package", tags=["product"])
+def get_product_demo_package() -> Response:
+    """Return only the committed public-synthetic M4.2 preset bytes."""
+    if not M4_2_DEMO_PACKAGE.is_file():
+        raise HTTPException(status_code=503, detail="M4.2 demo package is unavailable")
+    return Response(
+        content=M4_2_DEMO_PACKAGE.read_bytes(),
+        media_type="application/zip",
+        headers={
+            "Content-Disposition": (
+                'attachment; filename="regbridge-m4-2-public-standards.zip"'
+            ),
+            "X-RegBridge-Input-Profile": (
+                "fda-cder-ectd-322-public-standards-profile-v1; version=1.0.0"
+            ),
+        },
+    )
 
 
 @router.post("/api/v1/analyses", response_model=AnalysisResponse, tags=["analysis"])

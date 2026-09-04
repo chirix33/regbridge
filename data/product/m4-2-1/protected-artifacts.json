@@ -1,0 +1,10 @@
+{
+  "schema_version": "m4.2.1.protected-artifacts.v1",
+  "captured_before_implementation": true,
+  "files": {
+    "data/demo-dossiers/m4-2/regbridge-m4-2-public-standards.zip": "4d236d51694b1c15d37ad92b9d0074b97a15075cde86cb96c393b9f87ce3e6e4",
+    "data/demo-dossiers/m4-2/generation-manifest.json": "8ce430b796f7485f50f37406884f0c471e1a1990d9190e0d0fd3e5d2286c1dad",
+    "data/product/m4-2/protected-artifacts.json": "74390d48698a25e27063572f5641dbb64193d802bb52f420ed59c0626d6fe843",
+    "docs/milestones/M4.2.md": "881f369e64e616e12579fafb0346b0dad2365a9b3bbed398f1f787b8604b7da6"
+  }
+}

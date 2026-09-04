@@ -81,6 +81,20 @@ export async function parseUpload(file: File): Promise<ApplicationInventory> {
   return responseJson<ApplicationInventory>(response);
 }
 
+export async function getProductDemoPackage(): Promise<File> {
+  const response = await fetch(`${apiOrigin}/api/v1/product/demo-package`, {
+    headers: { Accept: "application/zip" },
+  });
+  if (!response.ok) {
+    throw new Error(`RegBridge demo package request failed with status ${response.status}`);
+  }
+  return new File(
+    [await response.blob()],
+    "regbridge-m4-2-public-standards.zip",
+    { type: "application/zip" },
+  );
+}
+
 export async function createDossierAnalysis(
   inventoryId: string,
   modelId: string,

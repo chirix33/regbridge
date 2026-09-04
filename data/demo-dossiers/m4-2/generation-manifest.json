@@ -1,0 +1,36 @@
+{
+  "archive": "regbridge-m4-2-public-standards.zip",
+  "archive_sha256": "4d236d51694b1c15d37ad92b9d0074b97a15075cde86cb96c393b9f87ce3e6e4",
+  "contains_personal_or_sponsor_confidential_data": false,
+  "expected_decisions_embedded": false,
+  "expert_validated": false,
+  "generator": "scripts/generate_m4_2_dossier.py",
+  "independent_dtd_validation": [
+    {
+      "detail": "passed",
+      "dtd_asset_id": "ich-ectd-dtd-v3-2",
+      "path": "index.xml",
+      "valid": true
+    },
+    {
+      "detail": "passed",
+      "dtd_asset_id": "fda-us-regional-dtd-v3-3",
+      "path": "m1/us/us-regional.xml",
+      "valid": true
+    }
+  ],
+  "inventory_sha256": "91cee37243b2612f20f48b487744a86c1a2905075f6f8615eb520990e98c93b1",
+  "operational_status": "not_operational",
+  "package_id": "regbridge-m4-2-public-standards-synthetic-v1",
+  "policy_coverage_counts": {
+    "EVALUATED_WITH_APPROVED_POLICY": 3
+  },
+  "profile_id": "fda-cder-ectd-322-public-standards-profile-v1",
+  "profile_version": "1.0.0",
+  "public_synthetic_data": true,
+  "schema_version": "m4.2.public-standards-generation.v1",
+  "sequence_root": "synthetic-application/0000",
+  "warning_codes": [
+    "index-dtd-version-inferred"
+  ]
+}

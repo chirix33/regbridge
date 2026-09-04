@@ -522,13 +522,21 @@ def parse_profile_zip(payload: bytes) -> ApplicationInventory:
 
 
 def parse_uploaded_zip(payload: bytes) -> ApplicationInventory:
-    """Parse authentic profile uploads, retaining one explicit legacy regression layout."""
+    """Route public-standard uploads while retaining the explicit M4.1 regression profile."""
     with extracted_archive(payload) as directory:
         index_candidates = [
             path
             for path in directory.rglob("*")
             if path.is_file() and path.name.casefold() == "index.xml"
         ]
+        public_standard = False
+        if len(index_candidates) == 1:
+            index_prefix = index_candidates[0].read_bytes()[:8192]
+            public_standard = b"http://www.ich.org/ectd" in index_prefix
+        if public_standard:
+            from app.parsers.public322 import parse_public_profile_directory
+
+            return parse_public_profile_directory(directory)
         legacy = (directory / "index.xml").is_file() and (directory / "us-regional.xml").is_file()
         if legacy and len(index_candidates) == 1:
             try:
