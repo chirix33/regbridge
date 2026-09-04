@@ -8,6 +8,10 @@ Start the local application in fixture mode:
 
 Open `http://127.0.0.1:5173`.
 
+Every page carries the same primary navigation (Scope / Demonstration / Evaluation), and each
+demonstration page carries a Case A / Case B / Case C switcher directly under its heading, so the
+shot list below can be walked without returning to Scope between cases.
+
 ## Shot list
 
 - 0:00-0:30: open Scope, state the narrow problem, show FDA/CDER scope, `not_operational`, and

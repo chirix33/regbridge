@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Database, Filter, NavArrowLeft, WarningTriangle } from "iconoir-react";
+import { ArrowLeft, Database, Filter, WarningTriangle } from "iconoir-react";
 
 import { getM3Presentation } from "../api/client";
 import type { PresentationCaseTrace, PresentationMetricReport } from "../api/contracts";
@@ -67,6 +67,8 @@ export function EvaluationDashboard() {
     );
   }
 
+  const isNarrowed = familyFilter !== "all" || caseFilter !== "all";
+
   return (
     <div className="app-shell dashboard-shell">
       <header className="site-header">
@@ -75,20 +77,22 @@ export function EvaluationDashboard() {
           <span>RegBridge</span>
         </Link>
         <nav className="top-nav" aria-label="Primary navigation">
+          <Link to="/">Scope</Link>
           <Link to="/demo/case-a">Demonstration</Link>
           <Link aria-current="page" to="/evaluation">Evaluation</Link>
         </nav>
+        <span className="operational-chip">held-out test</span>
       </header>
 
       <main id="main-content">
         <section className="dashboard-hero">
           <Link className="back-link" to="/">
-            <NavArrowLeft aria-hidden="true" /> Scope
+            <ArrowLeft aria-hidden="true" /> Research scope
           </Link>
           <p className="panel-kicker">M4 comparison dashboard</p>
           <h1>Held-out Phase 2 evaluation, displayed from an immutable snapshot.</h1>
           <p>{snapshot.disclosure}</p>
-          <div className="digest-row" aria-label="Snapshot provenance">
+          <div className="digest-row" role="group" aria-label="Snapshot provenance">
             <span>Snapshot {snapshot.snapshot_version}</span>
             <span>Run {snapshot.source_run_id}</span>
             <span>Digest {snapshot.snapshot_sha256.slice(0, 16)}...</span>
@@ -113,12 +117,12 @@ export function EvaluationDashboard() {
               significance claim.
             </p>
           </article>
-          <article className="metric-panel">
+          <article className="metric-panel metric-figure">
             <p className="panel-kicker">Cost</p>
             <h2>${Number(snapshot.cost_summary.total_cost_usd).toFixed(3)}</h2>
             <p>Total recorded Phase 2 live-model cost. B2 made no model calls.</p>
           </article>
-          <article className="metric-panel">
+          <article className="metric-panel metric-figure">
             <p className="panel-kicker">Completion audit</p>
             <h2>{String(snapshot.completion_audit.completed_outcomes)}/{String(snapshot.completion_audit.scheduled_outcomes)}</h2>
             <p>{String(snapshot.completion_audit.state)} · {String(snapshot.completion_audit.stop_reason)}</p>
@@ -143,7 +147,7 @@ export function EvaluationDashboard() {
               </select>
             </label>
           </div>
-          <div className="table-scroll">
+          <div className="table-scroll" role="region" aria-label="Decision metrics table" tabIndex={0}>
             <table className="metrics-table">
               <thead>
                 <tr>
@@ -162,7 +166,10 @@ export function EvaluationDashboard() {
               </thead>
               <tbody>
                 {reports.map((report) => (
-                  <tr key={`${report.system}-${report.repetition_index ?? "b2"}`}>
+                  <tr
+                    key={`${report.system}-${report.repetition_index ?? "b2"}`}
+                    className={report.system === "RegBridge" ? "row-highlight" : undefined}
+                  >
                     <td>{report.system}</td>
                     <td>{repetitionLabel(report.repetition_index)}</td>
                     <td>{report.result_status}</td>
@@ -183,8 +190,10 @@ export function EvaluationDashboard() {
 
         {snapshot.retrieval_summary && (
           <section className="result-section" aria-labelledby="retrieval-title">
-            <p className="panel-kicker">Measured retrieval only</p>
-            <h2 id="retrieval-title">B1 BM25 retrieval metrics</h2>
+            <div className="result-heading">
+              <p className="panel-kicker">Measured retrieval only</p>
+              <h2 id="retrieval-title">B1 BM25 retrieval metrics</h2>
+            </div>
             <div className="retrieval-grid">
               {snapshot.retrieval_summary.per_repetition.map((item) => (
                 <article key={item.repetition_index}>
@@ -223,23 +232,37 @@ export function EvaluationDashboard() {
             </div>
           </div>
           <div className="case-trace-list">
-            {cases.map((item) => <CaseTraceCard key={item.case_id} item={item} />)}
+            {cases.map((item) => (
+              <CaseTraceCard key={item.case_id} item={item} defaultOpen={isNarrowed} />
+            ))}
+            {!cases.length && (
+              <p className="empty-note">
+                No held-out case matches the selected family and case filters.
+              </p>
+            )}
           </div>
         </section>
 
         <section className="result-section" aria-labelledby="graph-contract-title">
-          <p className="panel-kicker">Graph explanation contract</p>
-          <h2 id="graph-contract-title">Displayed as built</h2>
+          <div className="result-heading">
+            <p className="panel-kicker">Graph explanation contract</p>
+            <h2 id="graph-contract-title">Displayed as built</h2>
+          </div>
           <p>{snapshot.graph_contract_disclosure}</p>
           <p className="digest">Prompt digest {snapshot.frozen_prompt_digest}</p>
           <p className="digest">Configuration digest {snapshot.frozen_configuration_digest}</p>
         </section>
       </main>
+
+      <footer>
+        <span>RegBridge · decision support, not regulatory advice</span>
+        <span>Results are displayed from a frozen snapshot and are never recomputed in the browser.</span>
+      </footer>
     </div>
   );
 }
 
-function CaseTraceCard({ item }: { item: PresentationCaseTrace }) {
+function CaseTraceCard({ item, defaultOpen }: { item: PresentationCaseTrace; defaultOpen: boolean }) {
   return (
     <article className="case-trace-card">
       <div className="case-trace-heading">
@@ -251,37 +274,49 @@ function CaseTraceCard({ item }: { item: PresentationCaseTrace }) {
           {item.varied_predictions ? "varied across repetitions" : "stable display trace"}
         </span>
       </div>
-      <div className="table-scroll">
-        <table className="metrics-table compact">
-          <thead>
-            <tr>
-              <th>System</th>
-              <th>Rep</th>
-              <th>Predicted decision</th>
-              <th>Action</th>
-              <th>Unsafe miss</th>
-              <th>Review bypass</th>
-              <th>Outside class</th>
-              <th>Evidence IDs</th>
-            </tr>
-          </thead>
-          <tbody>
-            {item.predictions.map((prediction) => (
-              <tr key={`${prediction.system}-${prediction.repetition_index ?? "b2"}`}>
-                <td>{prediction.system}</td>
-                <td>{repetitionLabel(prediction.repetition_index)}</td>
-                <td>{prediction.decision.replaceAll("_", " ")}</td>
-                <td>{prediction.action}</td>
-                <td>{prediction.unsafe_false_negative ? "yes" : "no"}</td>
-                <td>{prediction.review_bypass ? "yes" : "no"}</td>
-                <td>{prediction.outside_represented_class ? "yes" : "no"}</td>
-                <td>{prediction.evidence_ids.join(", ") || "none"}</td>
+      <details className="case-trace-toggle" open={defaultOpen}>
+        <summary>
+          {item.predictions.length} system prediction{item.predictions.length === 1 ? "" : "s"}
+        </summary>
+        <div
+          className="table-scroll"
+          role="region"
+          aria-label={`${item.case_id} system predictions`}
+          tabIndex={0}
+        >
+          <table className="metrics-table compact">
+            <thead>
+              <tr>
+                <th>System</th>
+                <th>Rep</th>
+                <th>Predicted decision</th>
+                <th>Action</th>
+                <th>Unsafe miss</th>
+                <th>Review bypass</th>
+                <th>Outside class</th>
+                <th>Evidence IDs</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {item.predictions.map((prediction) => (
+                <tr
+                  key={`${prediction.system}-${prediction.repetition_index ?? "b2"}`}
+                  className={prediction.system === "RegBridge" ? "row-highlight" : undefined}
+                >
+                  <td>{prediction.system}</td>
+                  <td>{repetitionLabel(prediction.repetition_index)}</td>
+                  <td>{prediction.decision.replaceAll("_", " ")}</td>
+                  <td>{prediction.action}</td>
+                  <td>{prediction.unsafe_false_negative ? "yes" : "no"}</td>
+                  <td>{prediction.review_bypass ? "yes" : "no"}</td>
+                  <td>{prediction.outside_represented_class ? "yes" : "no"}</td>
+                  <td>{prediction.evidence_ids.join(", ") || "none"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </details>
     </article>
   );
 }
-

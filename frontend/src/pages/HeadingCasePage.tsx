@@ -6,6 +6,7 @@ import {
   CheckCircle,
   Database,
   Flask,
+  InfoCircle,
   Restart,
   WarningTriangle,
 } from "iconoir-react";
@@ -54,6 +55,12 @@ const routeConfig = {
     demoRoute: "/demo/case-c",
   },
 } as const;
+
+const caseTabs = [
+  { key: "case-a", route: "/demo/case-a", milestone: "Case A", label: "Heading placement" },
+  { key: "case-b", route: "/demo/case-b", milestone: "Case B", label: "Metadata tension" },
+  { key: "case-c", route: "/demo/case-c", milestone: "Case C", label: "Stale content" },
+] as const;
 
 export function HeadingCasePage() {
   const location = useLocation();
@@ -186,14 +193,27 @@ export function HeadingCasePage() {
       <main id="main-content">
         <section className="case-hero">
           <Link className="back-link" to="/"><ArrowLeft aria-hidden="true" /> Research scope</Link>
-          <div className="eyebrow"><Flask aria-hidden="true" /> {config.eyebrow}</div>
+          <div className="eyebrow"><Flask aria-hidden="true" width={18} height={18} /> {config.eyebrow}</div>
           <h1>{config.title}</h1>
           <p>{config.subtitle}</p>
+          <nav className="case-tabs" aria-label="Demonstration cases">
+            {caseTabs.map((tab) => (
+              <Link
+                key={tab.key}
+                to={tab.route}
+                aria-current={tab.key === caseKey ? "page" : undefined}
+              >
+                <span>{tab.milestone}</span>
+                <strong>{tab.label}</strong>
+              </Link>
+            ))}
+          </nav>
         </section>
+
         <Disclaimer text={disclosure} />
 
         <section className="case-controls" aria-labelledby="case-controls-title">
-          <div>
+          <div className="control-intro">
             <p className="panel-kicker">Controlled input</p>
             <h2 id="case-controls-title">{config.control}</h2>
           </div>
@@ -252,15 +272,28 @@ export function HeadingCasePage() {
               Current operational
             </label>
           </fieldset>
-          <button className="secondary-button" type="button" onClick={resetDemo} disabled={!fixtures.length}>
-            <Restart aria-hidden="true" /> Reset demo
-          </button>
-          <button ref={runButtonRef} className="primary-button" type="button" onClick={() => void runAnalysis()} disabled={busy || !fixtures.length}>
-            {busy ? "Analyzing…" : "Parse and analyze"}<ArrowRight aria-hidden="true" />
-          </button>
+          <div className="control-actions">
+            <button className="secondary-button" type="button" onClick={resetDemo} disabled={!fixtures.length}>
+              <Restart aria-hidden="true" /> Reset demo
+            </button>
+            <button ref={runButtonRef} className="primary-button" type="button" onClick={() => void runAnalysis()} disabled={busy || !fixtures.length}>
+              {busy ? "Analyzing…" : "Parse and analyze"}<ArrowRight aria-hidden="true" />
+            </button>
+          </div>
         </section>
 
         {error && <div className="inline-error" role="alert"><WarningTriangle aria-hidden="true" />{error}</div>}
+
+        {!analysis && !error && (
+          <p className="run-hint">
+            <InfoCircle aria-hidden="true" />
+            <span>
+              {busy
+                ? "Parsing the legacy package and evaluating the scoped rules…"
+                : "Pick a controlled variant, then run Parse and analyze. The decision, its evidence spans, the typed graph neighborhood, and the machine-readable trace appear below."}
+            </span>
+          </p>
+        )}
 
         {inventory && selectedLeaf && (
           <section className="inventory-strip" aria-label="Parsed legacy artifact">
@@ -298,8 +331,10 @@ export function HeadingCasePage() {
             </section>
 
             <section className="result-section" aria-labelledby="findings-title">
-              <p className="panel-kicker">Observed, deterministic, and semantic</p>
-              <h2 id="findings-title">Triggered findings</h2>
+              <div className="result-heading">
+                <p className="panel-kicker">Observed, deterministic, and semantic</p>
+                <h2 id="findings-title">Triggered findings</h2>
+              </div>
               <div className="finding-list">
                 {analysis.findings.map((finding) => (
                   <article key={finding.id}>
@@ -308,7 +343,7 @@ export function HeadingCasePage() {
                     <span>{finding.verification_basis} · {finding.severity}</span>
                   </article>
                 ))}
-                {!analysis.findings.length && <p>No material finding was returned.</p>}
+                {!analysis.findings.length && <p className="empty-note">No material finding was returned.</p>}
               </div>
             </section>
 
@@ -329,7 +364,7 @@ export function HeadingCasePage() {
                     )}
                   </details>
                 ))}
-                {!analysis.evidence.length && <p>FDA forward compatibility is currently unavailable in current operational mode.</p>}
+                {!analysis.evidence.length && <p className="empty-note">FDA forward compatibility is currently unavailable in current operational mode.</p>}
               </div>
             </section>
 
@@ -360,8 +395,10 @@ export function HeadingCasePage() {
             </section>
 
             <section className="result-section" aria-labelledby="trace-title">
-              <p className="panel-kicker">Machine-readable trace</p>
-              <h2 id="trace-title">Chronological analysis trace</h2>
+              <div className="result-heading">
+                <p className="panel-kicker">Machine-readable trace</p>
+                <h2 id="trace-title">Chronological analysis trace</h2>
+              </div>
               <ol className="trace-list">
                 {analysis.trace.map((step) => (
                   <li key={step.sequence}><span>{step.sequence}</span><div><strong>{step.component}</strong><p>{step.summary}</p></div></li>
@@ -371,6 +408,11 @@ export function HeadingCasePage() {
           </div>
         )}
       </main>
+
+      <footer>
+        <span>RegBridge · decision support, not regulatory advice</span>
+        <span>Author-adjudicated demonstration · expert_validated: false</span>
+      </footer>
     </div>
   );
 }

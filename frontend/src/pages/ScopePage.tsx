@@ -6,6 +6,7 @@ import {
   CheckCircle,
   Database,
   Flask,
+  NavArrowRight,
   OpenNewWindow,
   WarningTriangle,
 } from "iconoir-react";
@@ -13,11 +14,31 @@ import {
 import { getScope, getStandardsSnapshot } from "../api/client";
 import { Disclaimer } from "../components/Disclaimer";
 
-const archetypeLabels: Record<string, string> = {
-  "unavailable-heading": "Unavailable target heading",
-  "legacy-metadata-tension": "Legacy metadata tension",
-  "stale-content-or-hyperlink": "Stale content or hyperlink",
+interface ArchetypeCard {
+  label: string;
+  note: string;
+  route: string;
+}
+
+const archetypeCards: Record<string, ArchetypeCard> = {
+  "unavailable-heading": {
+    label: "Unavailable target heading",
+    note: "A legacy leaf cannot keep its lower-level placement in the selected v4.0 context.",
+    route: "/demo/case-a",
+  },
+  "legacy-metadata-tension": {
+    label: "Legacy metadata tension",
+    note: "A referenceable leaf carries a target-inappropriate manufacturer keyword value.",
+    route: "/demo/case-b",
+  },
+  "stale-content-or-hyperlink": {
+    label: "Stale content or hyperlink",
+    note: "A structurally reusable PDF still quotes an obsolete applicant, heading, or link.",
+    route: "/demo/case-c",
+  },
 };
+
+const milestoneByIndex = ["M1 implemented", "M2 implemented", "M2 implemented"];
 
 export function ScopePage() {
   const scope = useQuery({ queryKey: ["scope"], queryFn: getScope });
@@ -54,6 +75,13 @@ export function ScopePage() {
           </span>
           <span>RegBridge</span>
         </a>
+        <nav className="top-nav" aria-label="Primary navigation">
+          <Link aria-current="page" to="/">
+            Scope
+          </Link>
+          <Link to="/demo/case-a">Demonstration</Link>
+          <Link to="/evaluation">Evaluation</Link>
+        </nav>
         <div className="status-chip">
           <span className="status-dot" aria-hidden="true" />
           {scopeData.model_mode === "fixture" ? "Offline fixture mode" : `${scopeData.model_mode} mode`}
@@ -70,7 +98,7 @@ export function ScopePage() {
             Technical referenceability is only the start. <em>Evidence decides reuse.</em>
           </h1>
           <p className="hero-copy">{scopeData.research_question}</p>
-          <div className="scope-line" aria-label="Current analysis scope">
+          <div className="scope-line" role="group" aria-label="Current analysis scope">
             <span>{scopeData.source_standards.join(", ")}</span>
             <ArrowRight aria-hidden="true" />
             <span>{scopeData.target_standards.join(", ")}</span>
@@ -106,16 +134,31 @@ export function ScopePage() {
               <CheckCircle aria-hidden="true" />
             </div>
             <ol className="archetype-list">
-              {scopeData.planned_archetypes.map((archetype, index) => (
-                <li key={archetype}>
-                  <span className="step-number">0{index + 1}</span>
-                  <div>
-                    <strong>{archetypeLabels[archetype] ?? archetype}</strong>
-                    <span>{index === 0 ? "M1 implemented" : "M2 implemented"}</span>
-                  </div>
-                </li>
-              ))}
+              {scopeData.planned_archetypes.map((archetype, index) => {
+                const card = archetypeCards[archetype];
+                return (
+                  <li key={archetype}>
+                    <Link to={card?.route ?? "/demo/case-a"}>
+                      <span className="step-number" aria-hidden="true">
+                        0{index + 1}
+                      </span>
+                      <div>
+                        <strong>{card?.label ?? archetype}</strong>
+                        <span className="archetype-note">{card?.note}</span>
+                        <span className="archetype-note">
+                          {milestoneByIndex[index] ?? "M2 implemented"}
+                        </span>
+                      </div>
+                      <NavArrowRight className="archetype-go" aria-hidden="true" />
+                    </Link>
+                  </li>
+                );
+              })}
             </ol>
+            <p className="panel-footnote">
+              Every archetype runs through the same parser, rule engine, evidence binder, and
+              decision synthesizer. Nothing in the demonstration path is hard-coded per case.
+            </p>
           </article>
 
           <article className="panel source-panel">
@@ -145,7 +188,7 @@ export function ScopePage() {
                 ))}
               </div>
             ) : (
-              <p>No source-verified source is registered.</p>
+              <p className="empty-note">No source-verified source is registered.</p>
             )}
           </article>
         </section>
@@ -161,10 +204,10 @@ export function ScopePage() {
               persistent traces. FDA forward compatibility remains not operational.
             </p>
             <div className="workspace-links">
-              <Link to="/demo/case-a">Heading case</Link>
-              <Link to="/demo/case-b">Metadata case</Link>
-              <Link to="/demo/case-c">Semantic PDF case</Link>
-              <Link to="/evaluation">Evaluation dashboard</Link>
+              <Link to="/demo/case-a">Heading case <NavArrowRight aria-hidden="true" width={15} height={15} /></Link>
+              <Link to="/demo/case-b">Metadata case <NavArrowRight aria-hidden="true" width={15} height={15} /></Link>
+              <Link to="/demo/case-c">Semantic PDF case <NavArrowRight aria-hidden="true" width={15} height={15} /></Link>
+              <Link to="/evaluation">Evaluation dashboard <NavArrowRight aria-hidden="true" width={15} height={15} /></Link>
             </div>
           </div>
         </section>
