@@ -32,7 +32,12 @@ export function GraphNeighborhood({ graph }: { graph: GraphData }) {
           {graph.text_alternative.map((item) => <li key={item}>{item}</li>)}
         </ul>
       </details>
-      <div className="table-scroll graph-edge-table">
+      <div
+        className="table-scroll graph-edge-table"
+        role="region"
+        aria-label="Graph edge relationships"
+        tabIndex={0}
+      >
         <table className="metrics-table compact" aria-label="Graph edge table">
           <thead>
             <tr>

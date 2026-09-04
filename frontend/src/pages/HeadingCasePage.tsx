@@ -170,22 +170,9 @@ export function HeadingCasePage() {
 
   return (
     <div className="app-shell case-shell">
-      <header className="site-header">
-        <Link className="brand" to="/">
-          <span className="brand-mark" aria-hidden="true">R</span>
-          <span>RegBridge</span>
-        </Link>
-        <nav className="top-nav" aria-label="Primary navigation">
-          <Link to="/">Scope</Link>
-          <Link aria-current="page" to={config.demoRoute}>Demonstration</Link>
-          <Link to="/evaluation">Evaluation</Link>
-        </nav>
-        <span className="operational-chip">not_operational</span>
-      </header>
-
       <main id="main-content">
         <section className="case-hero">
-          <Link className="back-link" to="/"><ArrowLeft aria-hidden="true" /> Research scope</Link>
+          <div className="page-context"><Link className="back-link" to="/about"><ArrowLeft aria-hidden="true" /> Research scope</Link><span className="operational-chip">not_operational</span></div>
           <div className="eyebrow"><Flask aria-hidden="true" /> {config.eyebrow}</div>
           <h1>{config.title}</h1>
           <p>{config.subtitle}</p>

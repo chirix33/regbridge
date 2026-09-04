@@ -73,7 +73,7 @@ export function DossierWorkspace() {
           <button className="primary-button" disabled={!file || !confirmed || busy || selectedProfile?.availability !== "available"}>{busy ? "Parsing…" : "Parse and analyze"}</button>
           {error && <p role="alert" className="error-copy">{error}</p>}
         </form>
-        <aside className="panel"><h2>Controlled scope</h2><p>RegBridge securely parses and validates a controlled FDA eCTD v3.2.2 package profile for supported structural, lifecycle, metadata, checksum, and document-evidence predicates. It does not perform complete FDA submission validation.</p><p>Raw ZIP bytes are discarded after parsing. Inventories are local, capacity bounded, expire, and do not survive a server restart.</p></aside>
+        <section className="panel scope-panel" aria-labelledby="controlled-scope"><h2 id="controlled-scope">Controlled scope</h2><p>RegBridge securely parses and validates a controlled FDA eCTD v3.2.2 package profile for supported structural, lifecycle, metadata, checksum, and document-evidence predicates. It does not perform complete FDA submission validation.</p><p>Raw ZIP bytes are discarded after parsing. Inventories are local, capacity bounded, expire, and do not survive a server restart.</p></section>
       </section>
       {inventory && (
         <section className="panel profile-results motion-enter">
