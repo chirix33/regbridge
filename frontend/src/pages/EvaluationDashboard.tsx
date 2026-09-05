@@ -67,23 +67,16 @@ export function EvaluationDashboard() {
     );
   }
 
+  // When a filter narrows the list, the operator asked for those cases: show
+  // their predictions without a second click.
+  const isNarrowed = familyFilter !== "all" || caseFilter !== "all";
+
   return (
     <div className="app-shell dashboard-shell">
-      <header className="site-header">
-        <Link className="brand" to="/">
-          <span className="brand-mark" aria-hidden="true">R</span>
-          <span>RegBridge</span>
-        </Link>
-        <nav className="top-nav" aria-label="Primary navigation">
-          <Link to="/demo/case-a">Demonstration</Link>
-          <Link aria-current="page" to="/evaluation">Evaluation</Link>
-        </nav>
-      </header>
-
       <main id="main-content">
         <section className="dashboard-hero">
-          <Link className="back-link" to="/">
-            <NavArrowLeft aria-hidden="true" /> Scope
+          <Link className="back-link" to="/about">
+            <NavArrowLeft aria-hidden="true" /> Research scope
           </Link>
           <p className="panel-kicker">M4 comparison dashboard</p>
           <h1>Held-out Phase 2 evaluation, displayed from an immutable snapshot.</h1>
@@ -143,7 +136,7 @@ export function EvaluationDashboard() {
               </select>
             </label>
           </div>
-          <div className="table-scroll motion-filter" key={systemFilter}>
+          <div className="table-scroll motion-filter" role="region" aria-label="Decision metrics table" tabIndex={0} key={systemFilter}>
             <table className="metrics-table">
               <thead>
                 <tr>
@@ -223,7 +216,7 @@ export function EvaluationDashboard() {
             </div>
           </div>
           <div className="case-trace-list motion-filter" key={`${familyFilter}-${caseFilter}`}>
-            {cases.map((item) => <CaseTraceCard key={item.case_id} item={item} />)}
+            {cases.map((item) => <CaseTraceCard key={item.case_id} item={item} defaultOpen={isNarrowed} />)}
           </div>
         </section>
 
@@ -239,7 +232,7 @@ export function EvaluationDashboard() {
   );
 }
 
-function CaseTraceCard({ item }: { item: PresentationCaseTrace }) {
+function CaseTraceCard({ item, defaultOpen }: { item: PresentationCaseTrace; defaultOpen: boolean }) {
   return (
     <article className="case-trace-card">
       <div className="case-trace-heading">
@@ -251,7 +244,16 @@ function CaseTraceCard({ item }: { item: PresentationCaseTrace }) {
           {item.varied_predictions ? "varied across repetitions" : "stable display trace"}
         </span>
       </div>
-      <div className="table-scroll">
+      <details className="case-trace-toggle" open={defaultOpen}>
+        <summary>
+          {item.predictions.length} system prediction{item.predictions.length === 1 ? "" : "s"}
+        </summary>
+        <div
+          className="table-scroll"
+          role="region"
+          aria-label={`${item.case_id} system predictions`}
+          tabIndex={0}
+        >
         <table className="metrics-table compact">
           <thead>
             <tr>
@@ -280,7 +282,8 @@ function CaseTraceCard({ item }: { item: PresentationCaseTrace }) {
             ))}
           </tbody>
         </table>
-      </div>
+        </div>
+      </details>
     </article>
   );
 }

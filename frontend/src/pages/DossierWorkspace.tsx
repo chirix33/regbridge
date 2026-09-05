@@ -75,7 +75,7 @@ export function DossierWorkspace() {
           <button className="primary-button" disabled={!file || !confirmed || busy || selectedProfile?.availability !== "available"}>{busy ? "Parsing…" : "Parse and analyze"}</button>
           {error && <p role="alert" className="error-copy">{error}</p>}
         </form>
-        <aside className="panel"><h2>Controlled scope</h2><p>RegBridge accepts a bounded FDA/CDER eCTD v3.2.2 public-standards profile and validates its two XML backbones against pinned local DTDs. It does not perform complete FDA validation or assess submission readiness.</p><p>Demo preset: <code>data/demo-dossiers/m4-2/regbridge-m4-2-public-standards.zip</code>. Raw ZIP bytes are discarded after parsing.</p></aside>
+        <section className="panel scope-panel" aria-labelledby="controlled-scope"><h2 id="controlled-scope">Controlled scope</h2><p>RegBridge accepts a bounded FDA/CDER eCTD v3.2.2 public-standards profile and validates its two XML backbones against pinned local DTDs. It does not perform complete FDA validation or assess submission readiness.</p><p>Demo preset: <code>data/demo-dossiers/m4-2/regbridge-m4-2-public-standards.zip</code>. Raw ZIP bytes are discarded after parsing.</p></section>
       </section>
       {inventory && (
         <section className="panel profile-results motion-enter">
