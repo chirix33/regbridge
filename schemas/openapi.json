@@ -49,6 +49,12 @@
           "decision": {
             "$ref": "#/components/schemas/Decision"
           },
+          "decision_basis": {
+            "default": "deterministic_policy",
+            "pattern": "^(deterministic_hard_rule|deterministic_policy|semantic_finding|abstention_gate|operational_guard)$",
+            "title": "Decision Basis",
+            "type": "string"
+          },
           "evidence": {
             "items": {
               "anyOf": [
@@ -103,7 +109,15 @@
             "type": "string"
           },
           "repair": {
-            "$ref": "#/components/schemas/RepairAction"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RepairAction"
+              },
+              {
+                "$ref": "#/components/schemas/RuntimeRepairAction"
+              }
+            ],
+            "title": "Repair"
           },
           "scenario_disclosure": {
             "minLength": 1,
@@ -671,6 +685,10 @@
                   "VERIFY_HYPERLINK_RELEVANCE",
                   "WAIT_FOR_OPERATIONAL_AVAILABILITY"
                 ],
+                "type": "string"
+              },
+              {
+                "const": "COMPLETE_DOCUMENT_INSPECTION",
                 "type": "string"
               },
               {
@@ -1302,6 +1320,10 @@
             "title": "Human Approval Count",
             "type": "integer"
           },
+          "model_abstention_count": {
+            "title": "Model Abstention Count",
+            "type": "integer"
+          },
           "model_configuration_digest": {
             "pattern": "^[a-f0-9]{64}$",
             "title": "Model Configuration Digest",
@@ -1319,6 +1341,10 @@
           },
           "parser_warning_count": {
             "title": "Parser Warning Count",
+            "type": "integer"
+          },
+          "pipeline_failure_count": {
+            "title": "Pipeline Failure Count",
             "type": "integer"
           },
           "policy_coverage_counts": {
@@ -1360,6 +1386,8 @@
           "total_supported_leaves",
           "analyzed_count",
           "failed_count",
+          "pipeline_failure_count",
+          "model_abstention_count",
           "skipped_count",
           "decision_counts",
           "severity_counts",
@@ -1427,6 +1455,18 @@
         "properties": {
           "cause": {
             "title": "Cause",
+            "type": "string"
+          },
+          "failure_category": {
+            "default": "analysis_failure",
+            "enum": [
+              "transport_or_provider_failure",
+              "invalid_structured_output",
+              "graph_failure",
+              "persistence_failure",
+              "analysis_failure"
+            ],
+            "title": "Failure Category",
             "type": "string"
           },
           "leaf_id": {
@@ -1497,7 +1537,9 @@
           "HAS_KEYWORD",
           "CITES",
           "ABOUT",
-          "OBSERVES"
+          "OBSERVES",
+          "QUALIFIES_DECISION",
+          "LEAVES_UNRESOLVED"
         ],
         "title": "EdgeType",
         "type": "string"
@@ -2913,6 +2955,15 @@
             "title": "Configuration Digest",
             "type": "string"
           },
+          "execution_mode": {
+            "enum": [
+              "live",
+              "fixture",
+              "disabled"
+            ],
+            "title": "Execution Mode",
+            "type": "string"
+          },
           "failure": {
             "anyOf": [
               {
@@ -2981,6 +3032,17 @@
             ],
             "title": "Provider Reported Model Name"
           },
+          "reason_category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason Category"
+          },
           "reasoning_tokens": {
             "anyOf": [
               {
@@ -3027,16 +3089,31 @@
           "status": {
             "enum": [
               "completed",
+              "abstained",
               "failed",
               "not_applicable"
             ],
             "title": "Status",
             "type": "string"
+          },
+          "status_detail": {
+            "anyOf": [
+              {
+                "maxLength": 240,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status Detail"
           }
         },
         "required": [
           "model_profile_id",
           "adapter_type",
+          "execution_mode",
           "configuration_digest",
           "prompt_version",
           "latency_ms",
@@ -3048,6 +3125,22 @@
       "ModelProfile": {
         "additionalProperties": false,
         "properties": {
+          "actual_adapter_type": {
+            "anyOf": [
+              {
+                "enum": [
+                  "responses",
+                  "chat_completions",
+                  "fixture"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actual Adapter Type"
+          },
           "adapter_type": {
             "enum": [
               "responses",
@@ -3060,7 +3153,8 @@
             "enum": [
               "available",
               "coming_soon",
-              "misconfigured"
+              "misconfigured",
+              "disabled"
             ],
             "title": "Availability",
             "type": "string"
@@ -3094,6 +3188,15 @@
           },
           "display_name": {
             "title": "Display Name",
+            "type": "string"
+          },
+          "execution_mode": {
+            "enum": [
+              "live",
+              "fixture",
+              "disabled"
+            ],
+            "title": "Execution Mode",
             "type": "string"
           },
           "model_id": {
@@ -3134,6 +3237,7 @@
           "display_name",
           "availability",
           "adapter_type",
+          "execution_mode",
           "structured_output_capability",
           "reasoning_capability",
           "configuration_digest",
@@ -3195,6 +3299,18 @@
             "title": "Prompt Template Version",
             "type": "string"
           },
+          "reason_category": {
+            "anyOf": [
+              {
+                "pattern": "^(insufficient_bounded_evidence|semantic_model_disabled|document_inspection_incomplete|transport_failure|provider_api_failure|invalid_structured_output|pipeline_failure)$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason Category"
+          },
           "request_digest": {
             "anyOf": [
               {
@@ -3211,6 +3327,19 @@
             "pattern": "^(completed|abstained|failed|not_applicable)$",
             "title": "Status",
             "type": "string"
+          },
+          "status_detail": {
+            "anyOf": [
+              {
+                "maxLength": 240,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status Detail"
           },
           "validation_error": {
             "anyOf": [
@@ -3246,7 +3375,8 @@
           "decision",
           "keyword",
           "dossier_evidence",
-          "model_finding"
+          "model_finding",
+          "analysis_limitation"
         ],
         "title": "NodeType",
         "type": "string"
@@ -4453,6 +4583,56 @@
         ],
         "title": "ReviewStatus",
         "type": "string"
+      },
+      "RuntimeRepairAction": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "minLength": 1,
+            "title": "Description",
+            "type": "string"
+          },
+          "evidence_ids": {
+            "default": [],
+            "items": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "enum": [
+                  "AUTHOR_REVIEW_HEADING_MAPPING",
+                  "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT",
+                  "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD",
+                  "DECLARE_MANUFACTURER_PARTITIONING",
+                  "DECLARE_METADATA_MIGRATION_INTENT",
+                  "HUMAN_VERIFY_STALE_CONTENT",
+                  "NO_MATERIAL_REPAIR",
+                  "PRESERVE_EXACT_CONTEXT_GROUP_KEYWORDS",
+                  "SELECT_SUPPORTED_REUSE_OPERATION",
+                  "VERIFY_HYPERLINK_RELEVANCE",
+                  "WAIT_FOR_OPERATIONAL_AVAILABILITY"
+                ],
+                "type": "string"
+              },
+              {
+                "const": "COMPLETE_DOCUMENT_INSPECTION",
+                "type": "string"
+              }
+            ],
+            "title": "Type"
+          }
+        },
+        "required": [
+          "type",
+          "description"
+        ],
+        "title": "RuntimeRepairAction",
+        "type": "object"
       },
       "ScenarioMode": {
         "enum": [

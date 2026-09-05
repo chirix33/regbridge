@@ -133,9 +133,11 @@ export interface ModelProfile {
   model_id: string;
   display_name: string;
   subtitle: string | null;
-  availability: "available" | "coming_soon" | "misconfigured";
+  availability: "available" | "coming_soon" | "misconfigured" | "disabled";
   disabled_reason: string | null;
   adapter_type: "responses" | "chat_completions";
+  execution_mode: "live" | "fixture" | "disabled";
+  actual_adapter_type: "responses" | "chat_completions" | "fixture" | null;
   configured_model_name: string | null;
   structured_output_capability: "validated" | "unvalidated";
   reasoning_capability: boolean;
@@ -163,6 +165,7 @@ export interface ModelExecutionRecord {
   requested_model_name: string | null;
   provider_reported_model_name: string | null;
   adapter_type: string;
+  execution_mode: "live" | "fixture" | "disabled";
   configuration_digest: string;
   prompt_version: string;
   request_digest: string | null;
@@ -170,7 +173,11 @@ export interface ModelExecutionRecord {
   output_tokens: number | null;
   reasoning_tokens: number | null;
   latency_ms: number;
-  status: string;
+  attempt_count: number;
+  retry_causes: string[];
+  status: "completed" | "abstained" | "failed" | "not_applicable";
+  reason_category: string | null;
+  status_detail: string | null;
   failure: string | null;
 }
 
@@ -198,6 +205,8 @@ export interface DossierAnalysisRun {
     total_supported_leaves: number;
     analyzed_count: number;
     failed_count: number;
+    pipeline_failure_count: number;
+    model_abstention_count: number;
     skipped_count: number;
     decision_counts: Record<string, number>;
     severity_counts: Record<string, number>;
@@ -206,7 +215,7 @@ export interface DossierAnalysisRun {
     policy_coverage_counts: Record<string, number>;
   };
   results: DossierLeafResult[];
-  failures: Array<{ leaf_id: string; stage: string; cause: string; retryable: boolean }>;
+  failures: Array<{ leaf_id: string; stage: string; cause: string; failure_category: string; retryable: boolean }>;
   operational_status: "not_operational";
   expert_validated: false;
   capability_boundary: string;
@@ -301,6 +310,7 @@ export interface AnalysisResult {
   confidence: number;
   unresolved_uncertainty: string[];
   human_approval_required: boolean;
+  decision_basis: "deterministic_hard_rule" | "deterministic_policy" | "semantic_finding" | "abstention_gate" | "operational_guard";
   trace: Array<{
     sequence: number;
     kind: string;
@@ -317,6 +327,8 @@ export interface AnalysisResult {
     output_tokens: number | null;
     latency_ms: number;
     validation_error: string | null;
+    reason_category: string | null;
+    status_detail: string | null;
   };
 }
 
@@ -328,6 +340,7 @@ export interface GraphNeighborhood {
     label: string;
     version: string | null;
     review_status: string | null;
+    properties: Record<string, unknown>;
   }>;
   edges: Array<{
     id: string;

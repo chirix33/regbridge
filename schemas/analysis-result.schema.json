@@ -355,6 +355,19 @@
           "title": "Prompt Template Version",
           "type": "string"
         },
+        "reason_category": {
+          "anyOf": [
+            {
+              "pattern": "^(insufficient_bounded_evidence|semantic_model_disabled|document_inspection_incomplete|transport_failure|provider_api_failure|invalid_structured_output|pipeline_failure)$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason Category"
+        },
         "request_digest": {
           "anyOf": [
             {
@@ -372,6 +385,20 @@
           "pattern": "^(completed|abstained|failed|not_applicable)$",
           "title": "Status",
           "type": "string"
+        },
+        "status_detail": {
+          "anyOf": [
+            {
+              "maxLength": 240,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Status Detail"
         },
         "validation_error": {
           "anyOf": [
@@ -576,6 +603,56 @@
       ],
       "title": "ReviewStatus",
       "type": "string"
+    },
+    "RuntimeRepairAction": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "default": [],
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "type": {
+          "anyOf": [
+            {
+              "enum": [
+                "AUTHOR_REVIEW_HEADING_MAPPING",
+                "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT",
+                "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_OLD",
+                "DECLARE_MANUFACTURER_PARTITIONING",
+                "DECLARE_METADATA_MIGRATION_INTENT",
+                "HUMAN_VERIFY_STALE_CONTENT",
+                "NO_MATERIAL_REPAIR",
+                "PRESERVE_EXACT_CONTEXT_GROUP_KEYWORDS",
+                "SELECT_SUPPORTED_REUSE_OPERATION",
+                "VERIFY_HYPERLINK_RELEVANCE",
+                "WAIT_FOR_OPERATIONAL_AVAILABILITY"
+              ],
+              "type": "string"
+            },
+            {
+              "const": "COMPLETE_DOCUMENT_INSPECTION",
+              "type": "string"
+            }
+          ],
+          "title": "Type"
+        }
+      },
+      "required": [
+        "type",
+        "description"
+      ],
+      "title": "RuntimeRepairAction",
+      "type": "object"
     },
     "ScenarioMode": {
       "enum": [
@@ -860,6 +937,12 @@
     "decision": {
       "$ref": "#/$defs/Decision"
     },
+    "decision_basis": {
+      "default": "deterministic_policy",
+      "pattern": "^(deterministic_hard_rule|deterministic_policy|semantic_finding|abstention_gate|operational_guard)$",
+      "title": "Decision Basis",
+      "type": "string"
+    },
     "evidence": {
       "items": {
         "anyOf": [
@@ -904,8 +987,10 @@
         "model_name": "contract-default",
         "output_tokens": null,
         "prompt_template_version": "1.0.0",
+        "reason_category": null,
         "request_digest": null,
         "status": "not_applicable",
+        "status_detail": null,
         "validation_error": null
       }
     },
@@ -918,7 +1003,15 @@
       "type": "string"
     },
     "repair": {
-      "$ref": "#/$defs/RepairAction"
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RepairAction"
+        },
+        {
+          "$ref": "#/$defs/RuntimeRepairAction"
+        }
+      ],
+      "title": "Repair"
     },
     "scenario_disclosure": {
       "minLength": 1,

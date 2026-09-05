@@ -4,7 +4,7 @@ import hashlib
 import json
 import time
 from collections.abc import Callable
-from typing import TypeVar, cast
+from typing import Literal, TypeVar, cast
 
 import tiktoken
 from pydantic import BaseModel
@@ -87,17 +87,32 @@ class ModelProfileRegistry:
         self.settings = settings
 
     def _gpt_profile(self) -> ModelProfile:
-        live_valid = bool(
+        live_config_complete = bool(
             self.settings.llm_base_url and self.settings.llm_api_key and self.settings.llm_model
         )
-        fixture_valid = self.settings.llm_mode == LlmMode.FIXTURE
-        availability: ModelAvailability = (
-            "available" if live_valid or fixture_valid else "misconfigured"
-        )
-        configured = self.settings.llm_model or "gpt-5.5"
+        if self.settings.llm_mode == LlmMode.LIVE:
+            availability: ModelAvailability = (
+                "available" if live_config_complete else "misconfigured"
+            )
+            actual_adapter: Literal["responses", "fixture"] | None = (
+                "responses" if live_config_complete else None
+            )
+            configured = self.settings.llm_model
+            display_name = "GPT-5.5"
+        elif self.settings.llm_mode == LlmMode.FIXTURE:
+            availability = "available"
+            actual_adapter = "fixture"
+            configured = "internal-package-derived-fixture"
+            display_name = "Deterministic fixture — GPT-5.5 contract"
+        else:
+            availability = "disabled"
+            actual_adapter = None
+            configured = None
+            display_name = "GPT-5.5 — disabled"
         configuration = {
             "profile": "gpt-5.5",
-            "adapter": "responses",
+            "declared_live_adapter": "responses",
+            "actual_adapter": actual_adapter,
             "model": configured,
             "reasoning_effort": self.settings.product_reasoning_effort,
             "max_output_tokens": self.settings.product_max_output_tokens,
@@ -108,12 +123,20 @@ class ModelProfileRegistry:
         }
         return ModelProfile(
             model_id="gpt-5.5",
-            display_name="GPT-5.5",
+            display_name=display_name,
             availability=availability,
-            disabled_reason=None
-            if availability == "available"
-            else "Server-side GPT-5.5 configuration is incomplete.",
+            disabled_reason=(
+                None
+                if availability == "available"
+                else (
+                    "Model execution is disabled by LLM_MODE."
+                    if availability == "disabled"
+                    else "Server-side GPT-5.5 configuration is incomplete."
+                )
+            ),
             adapter_type="responses",
+            execution_mode=self.settings.llm_mode.value,
+            actual_adapter_type=actual_adapter,
             configured_model_name=configured,
             structured_output_capability="validated",
             reasoning_capability=True,
@@ -138,6 +161,8 @@ class ModelProfileRegistry:
                 "Endpoint and structured-output behavior have not been separately validated."
             ),
             adapter_type="chat_completions",
+            execution_mode="disabled",
+            actual_adapter_type=None,
             configured_model_name=self.settings.qwen_model,
             structured_output_capability="unvalidated",
             reasoning_capability=True,
@@ -165,6 +190,10 @@ class ModelProfileRegistry:
             raise ValueError("model profile adapter has not been activated")
         if self.settings.llm_mode == LlmMode.FIXTURE:
             return ProductFixtureModel()
+        if self.settings.llm_mode == LlmMode.DISABLED:
+            raise ValueError("model execution is disabled")
+        if self.settings.llm_mode != LlmMode.LIVE:
+            raise ValueError("unsupported model execution mode")
         return ResponsesStructuredModel(
             base_url=cast(str, self.settings.llm_base_url),
             api_key=cast(

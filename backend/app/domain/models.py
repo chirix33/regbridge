@@ -23,7 +23,7 @@ from app.domain.enums import (
     TraceStepKind,
     VerificationBasis,
 )
-from app.domain.vocabulary import ActionCode
+from app.domain.vocabulary import ActionCode, RuntimeActionCode
 
 StableId = Annotated[str, Field(pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]*$")]
 Sha256 = Annotated[str, Field(pattern=r"^[a-f0-9]{64}$")]
@@ -233,6 +233,12 @@ class RepairAction(DomainModel):
     evidence_ids: tuple[StableId, ...] = ()
 
 
+class RuntimeRepairAction(DomainModel):
+    type: RuntimeActionCode
+    description: str = Field(min_length=1)
+    evidence_ids: tuple[StableId, ...] = ()
+
+
 class Finding(DomainModel):
     id: StableId
     rule_id: StableId | None = None
@@ -263,6 +269,17 @@ class ModelRunRecord(DomainModel):
     output_tokens: int | None = Field(default=None, ge=0)
     latency_ms: float = Field(ge=0)
     validation_error: str | None = Field(default=None, max_length=500)
+    reason_category: Annotated[
+        str | None,
+        Field(
+            pattern=(
+                r"^(insufficient_bounded_evidence|semantic_model_disabled|"
+                r"document_inspection_incomplete|transport_failure|provider_api_failure|"
+                r"invalid_structured_output|pipeline_failure)$"
+            )
+        ),
+    ] = None
+    status_detail: str | None = Field(default=None, min_length=1, max_length=240)
 
 
 class AnalysisResult(DomainModel):
@@ -278,10 +295,19 @@ class AnalysisResult(DomainModel):
     findings: tuple[Finding, ...]
     evidence: tuple[EvidenceSpan | DossierEvidence, ...]
     rationale: str = Field(min_length=1)
-    repair: RepairAction
+    repair: RepairAction | RuntimeRepairAction
     confidence: float = Field(ge=0.0, le=1.0)
     unresolved_uncertainty: tuple[str, ...]
     human_approval_required: bool
+    decision_basis: Annotated[
+        str,
+        Field(
+            pattern=(
+                r"^(deterministic_hard_rule|deterministic_policy|semantic_finding|"
+                r"abstention_gate|operational_guard)$"
+            )
+        ),
+    ] = "deterministic_policy"
     trace: tuple[TraceStep, ...] = Field(min_length=1)
     model_run: ModelRunRecord = ModelRunRecord(
         mode="disabled",

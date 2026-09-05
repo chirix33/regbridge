@@ -189,9 +189,10 @@ async def _direct_output(
         output = _fixture_direct(material, standards_ids)
         return output, ModelExecutionRecord(
             model_profile_id="gpt-5.5",
-            requested_model_name="gpt-5.5",
+            requested_model_name="internal-package-derived-fixture",
             provider_reported_model_name="internal-package-derived-fixture",
             adapter_type="fixture",
+            execution_mode="fixture",
             configuration_digest=hashlib.sha256(b"m4.1-internal-direct-fixture-v1").hexdigest(),
             prompt_version="1.0.0",
             request_digest=hashlib.sha256(serialized.encode()).hexdigest(),
@@ -211,6 +212,7 @@ async def _direct_output(
         requested_model_name=attempt.model_requested,
         provider_reported_model_name=attempt.model_reported,
         adapter_type="responses",
+        execution_mode="live",
         configuration_digest=hashlib.sha256(
             json.dumps(
                 {
@@ -400,7 +402,11 @@ class ComparisonManager:
                             model=ModelExecutionRecord(
                                 model_profile_id=run.selected_model.model_id,
                                 requested_model_name=run.selected_model.configured_model_name,
-                                adapter_type=run.selected_model.adapter_type,
+                                adapter_type=(
+                                    run.selected_model.actual_adapter_type
+                                    or run.selected_model.adapter_type
+                                ),
+                                execution_mode=run.selected_model.execution_mode,
                                 configuration_digest=run.selected_model.configuration_digest,
                                 prompt_version="1.0.0",
                                 latency_ms=0,
@@ -454,6 +460,7 @@ class ComparisonManager:
                         record = ModelExecutionRecord(
                             model_profile_id="model-free",
                             adapter_type="model-free",
+                            execution_mode="disabled",
                             configuration_digest=canonical_digest(
                                 {"system": "B2", "rules": "production", "semantic": "omitted"}
                             ),

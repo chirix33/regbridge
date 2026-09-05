@@ -1050,6 +1050,30 @@ nonconformance while its textual difference class is still reported accurately.
 This adjudication neither creates nor changes a migration-policy fact, rule, finding, repair,
 decision, benchmark input, baseline prompt, evaluation artifact, or product workflow.
 
+### M4.2.2 — Semantic Status, Synthesis Precedence, and Decision-Trace Correction
+
+M4.2.2 is governed by [docs/milestones/M4.2.2.md](docs/milestones/M4.2.2.md). It corrects the
+interactive product's execution-status projection, semantic abstention synthesis, and active
+explanation graph without changing any author-adjudicated migration rule, official evidence
+span, benchmark result, Phase 1/Phase 2 output, protected presentation artifact, or historical
+M4.2 package/result digest.
+
+The product contract carries `completed`, `abstained`, `failed`, and `not_applicable` without
+collapsing a structured abstention into failure. Model profile availability, construction, and
+result disclosure derive from the configured `fixture`, `live`, or `disabled` execution mode.
+Only complete live configuration may expose the Responses adapter as available; fixture mode
+identifies the internal deterministic fixture; disabled mode cannot construct a live adapter.
+Actual failures terminate the leaf and populate `run.failures`; they never synthesize a
+regulatory decision.
+
+For an exact hard `3.2.S.1.1`, `3.2.S.1.2`, or `3.2.S.1.3` mapping, incomplete semantic
+inspection qualifies but does not replace `REUSE_WITH_NEW_CONTEXT` or its mandatory structural
+repair. For metadata-preservation and semantic-only eligibility, an abstention yields bounded
+human review with `COMPLETE_DOCUMENT_INSPECTION`, not a fabricated stale-content finding. Graph
+schema v3 adds a non-regulatory analysis-limitation node and decision-qualification/unresolved
+edges; the product explanation neighborhood contains only the active heading mapping and every
+material rule, finding, limitation, decision, and repair used by synthesis.
+
 ### M5 — Paper and submission support (September 15–18)
 
 Deliver:

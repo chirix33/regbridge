@@ -1,0 +1,119 @@
+{
+  "schema_version": "m4.2.2.semantic-status-diagnostic.v1",
+  "package_id": "regbridge-m4-2-public-standards-synthetic-v1",
+  "diagnostic_method": "accepted package plus deterministic valid structured-abstention model double",
+  "live_provider_call_performed": false,
+  "server": {
+    "llm_mode": "live",
+    "live_configuration_complete": true
+  },
+  "selected_model": {
+    "profile_id": "gpt-5.5",
+    "configured_model_name": "gpt-5.5",
+    "actual_adapter": "responses",
+    "execution_mode": "live",
+    "network_required": true
+  },
+  "before_summary": {
+    "analyzed_count": 3,
+    "human_approval_count": 3,
+    "failed_count": 0,
+    "model_abstention_count": 3,
+    "run_failures": []
+  },
+  "before_documents": [
+    {
+      "title": "Synthetic molecular structure",
+      "analysis_model_run_status": "abstained",
+      "analysis_model_run_validation_error": null,
+      "product_model_status": "failed",
+      "product_model_failure": null,
+      "semantic_inspection_trace": "Semantic inspection abstained; 0 validated findings.",
+      "decision": "HUMAN_REGULATORY_REVIEW",
+      "repair": "HUMAN_VERIFY_STALE_CONTENT"
+    },
+    {
+      "title": "Synthetic lifecycle metadata context",
+      "analysis_model_run_status": "abstained",
+      "analysis_model_run_validation_error": null,
+      "product_model_status": "failed",
+      "product_model_failure": null,
+      "semantic_inspection_trace": "Semantic inspection abstained; 0 validated findings.",
+      "decision": "HUMAN_REGULATORY_REVIEW",
+      "repair": "HUMAN_VERIFY_STALE_CONTENT"
+    },
+    {
+      "title": "Synthetic applicant responsibility statement",
+      "analysis_model_run_status": "abstained",
+      "analysis_model_run_validation_error": null,
+      "product_model_status": "failed",
+      "product_model_failure": null,
+      "semantic_inspection_trace": "Semantic inspection abstained; 0 validated findings.",
+      "decision": "HUMAN_REGULATORY_REVIEW",
+      "repair": "HUMAN_VERIFY_STALE_CONTENT"
+    }
+  ],
+  "classification": "valid_structured_model_abstention_with_product_status_projection_and_synthesis_precedence_defects",
+  "provider_or_transport_failure_observed": false,
+  "invalid_structured_output_observed": false,
+  "configuration_mode_inconsistency_observed": false,
+  "cause": [
+    "ModelExecutionRecord mapped every analyzer status except completed and not_applicable to failed.",
+    "Generic unresolved synthesis replaced the hard Case A result when semantic inspection abstained.",
+    "The incomplete-inspection path reused HUMAN_VERIFY_STALE_CONTENT without a supported stale-content finding."
+  ],
+  "after_clean_fixture": [
+    {
+      "title": "Synthetic molecular structure",
+      "model_status": "completed",
+      "decision": "REUSE_WITH_NEW_CONTEXT",
+      "repair": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT",
+      "decision_basis": "deterministic_hard_rule"
+    },
+    {
+      "title": "Synthetic lifecycle metadata context",
+      "model_status": "completed",
+      "decision": "REUSE_AS_LEGACY_REFERENCE",
+      "repair": "PRESERVE_EXACT_CONTEXT_GROUP_KEYWORDS",
+      "decision_basis": "deterministic_policy"
+    },
+    {
+      "title": "Synthetic applicant responsibility statement",
+      "model_status": "completed",
+      "decision": "HUMAN_REGULATORY_REVIEW",
+      "repair": "HUMAN_VERIFY_STALE_CONTENT",
+      "decision_basis": "semantic_finding"
+    }
+  ],
+  "after_valid_abstention": [
+    {
+      "title": "Synthetic molecular structure",
+      "model_status": "abstained",
+      "decision": "REUSE_WITH_NEW_CONTEXT",
+      "repair": "CREATE_NEW_CONTEXT_GROUP_AND_SUSPEND_LEGACY_CONTENT",
+      "decision_basis": "deterministic_hard_rule",
+      "limitation_edge": "QUALIFIES_DECISION"
+    },
+    {
+      "title": "Synthetic lifecycle metadata context",
+      "model_status": "abstained",
+      "decision": "HUMAN_REGULATORY_REVIEW",
+      "repair": "COMPLETE_DOCUMENT_INSPECTION",
+      "decision_basis": "abstention_gate",
+      "limitation_edge": "LEAVES_UNRESOLVED"
+    },
+    {
+      "title": "Synthetic applicant responsibility statement",
+      "model_status": "abstained",
+      "decision": "HUMAN_REGULATORY_REVIEW",
+      "repair": "COMPLETE_DOCUMENT_INSPECTION",
+      "decision_basis": "abstention_gate",
+      "limitation_edge": "LEAVES_UNRESOLVED"
+    }
+  ],
+  "m4_2_2_runtime_digests": {
+    "clean_fixture_result_sha256": "20cca46988cd5edeaee4c0fed0b115839c03c75582d9db921361df969da71e0a",
+    "valid_abstention_result_sha256": "551b2bf5d108a5644f4ab67eb99308e43a2b1972be65816944e3576c15c582d4"
+  },
+  "redaction": "Credentials, provider payloads, response identifiers, and sensitive errors are omitted."
+}

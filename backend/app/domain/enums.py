@@ -118,6 +118,7 @@ class NodeType(StrEnum):
     KEYWORD = "keyword"
     DOSSIER_EVIDENCE = "dossier_evidence"
     MODEL_FINDING = "model_finding"
+    ANALYSIS_LIMITATION = "analysis_limitation"
 
 
 class EdgeType(StrEnum):
@@ -132,6 +133,8 @@ class EdgeType(StrEnum):
     CITES = "CITES"
     ABOUT = "ABOUT"
     OBSERVES = "OBSERVES"
+    QUALIFIES_DECISION = "QUALIFIES_DECISION"
+    LEAVES_UNRESOLVED = "LEAVES_UNRESOLVED"
 
 
 class ExtractionMethod(StrEnum):

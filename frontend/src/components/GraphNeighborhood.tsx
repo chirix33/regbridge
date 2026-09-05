@@ -1,6 +1,6 @@
 import type { GraphNeighborhood as GraphData } from "../api/contracts";
 
-const nodeOrder = ["artifact", "heading", "keyword", "dossier_evidence", "standard_version", "rule", "model_finding", "evidence", "repair", "decision"];
+const nodeOrder = ["artifact", "heading", "keyword", "dossier_evidence", "standard_version", "rule", "model_finding", "analysis_limitation", "evidence", "repair", "decision"];
 
 export function GraphNeighborhood({ graph }: { graph: GraphData }) {
   const grouped = nodeOrder
@@ -20,7 +20,7 @@ export function GraphNeighborhood({ graph }: { graph: GraphData }) {
             {group.nodes.map((node) => (
               <article className={`graph-node node-${node.type}`} key={node.id}>
                 <strong>{node.label}</strong>
-                <span>{node.review_status ?? "parsed source fact"}</span>
+                <span>{node.type === "analysis_limitation" ? "non-regulatory execution status" : node.review_status ?? "parsed source fact"}</span>
               </article>
             ))}
           </div>

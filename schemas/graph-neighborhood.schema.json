@@ -12,7 +12,9 @@
         "HAS_KEYWORD",
         "CITES",
         "ABOUT",
-        "OBSERVES"
+        "OBSERVES",
+        "QUALIFIES_DECISION",
+        "LEAVES_UNRESOLVED"
       ],
       "title": "EdgeType",
       "type": "string"
@@ -174,7 +176,8 @@
         "decision",
         "keyword",
         "dossier_evidence",
-        "model_finding"
+        "model_finding",
+        "analysis_limitation"
       ],
       "title": "NodeType",
       "type": "string"

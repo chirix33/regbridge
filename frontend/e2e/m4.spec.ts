@@ -33,9 +33,19 @@ test("M4.2 uploads the public-standards ZIP and compares package-derived inputs"
   await expect(page.getByText(/ich-ectd-dtd-v3-2 3.2.2 \(passed\)/)).toBeVisible();
   await expect(page.getByText(/fda-us-regional-dtd-v3-3 3.3 \(passed\)/)).toBeVisible();
   await expect(page.getByText(/index-dtd-version-inferred/)).toBeVisible();
+  await expect(page.getByText(/Execution: fixture · actual adapter fixture · network-free/)).toBeVisible();
   await expect(page.getByText("REUSE_WITH_NEW_CONTEXT", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("REUSE_AS_LEGACY_REFERENCE", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("HUMAN_REGULATORY_REVIEW", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("Model abstentions")).toBeVisible();
+  await expect(page.getByText("Pipeline failures")).toBeVisible();
+  const caseA = page.locator("details.leaf-result").filter({ hasText: "Synthetic molecular structure" });
+  await caseA.locator(":scope > summary").click();
+  await expect(caseA.getByText("Actual adapter")).toBeVisible();
+  await expect(caseA.getByText("fixture", { exact: true }).first()).toBeVisible();
+  await expect(caseA.getByText("3.2.S.1.2", { exact: true }).first()).toBeVisible();
+  await expect(caseA.getByText("3.2.S.1.1", { exact: true })).toHaveCount(0);
+  await expect(caseA.getByText("3.2.S.1.3", { exact: true })).toHaveCount(0);
   await expect(page.getByText(/macro-F1|unsafe-FNR|accuracy/i)).toHaveCount(0);
 
   await page.getByRole("link", { name: "Baselines" }).click();

@@ -64,7 +64,7 @@ def execution_digest(
 ) -> str:
     return canonical_digest(
         {
-            "pipeline": f"m4.1-{kind}-v1",
+            "pipeline": f"m4.2.2-{kind}-v1",
             "profile_configuration": profile.configuration_digest,
             "target": target.model_dump(mode="json"),
             "leaf_ids": sorted(leaf_ids),
@@ -82,6 +82,8 @@ def _execution_record(
     model: object,
     retry_causes: tuple[str, ...] = (),
 ) -> ModelExecutionRecord:
+    if result.model_run.mode != profile.execution_mode:
+        raise ValueError("model result execution mode differs from the selected profile")
     attempt = None
     if isinstance(model, ResponsesStructuredModel) and model.last_attempts:
         attempt = model.last_attempts[-1]
@@ -97,6 +99,7 @@ def _execution_record(
         if attempt
         else result.model_run.model_name,
         adapter_type=adapter,
+        execution_mode=cast(Literal["live", "fixture", "disabled"], result.model_run.mode),
         configuration_digest=profile.configuration_digest,
         prompt_version=result.model_run.prompt_template_version,
         request_digest=result.model_run.request_digest,
@@ -106,10 +109,15 @@ def _execution_record(
         latency_ms=result.model_run.latency_ms,
         attempt_count=1 + len(retry_causes),
         retry_causes=retry_causes,
-        status="completed"
-        if result.model_run.status in {"completed", "not_applicable"}
-        else "failed",
-        failure=result.model_run.validation_error,
+        status=cast(
+            Literal["completed", "abstained", "failed", "not_applicable"],
+            result.model_run.status,
+        ),
+        reason_category=result.model_run.reason_category,
+        status_detail=result.model_run.status_detail,
+        failure=(
+            result.model_run.validation_error if result.model_run.status == "failed" else None
+        ),
     )
 
 
@@ -176,6 +184,11 @@ class DossierAnalysisManager:
                 )
                 try:
                     result = await service.analyze_async(inventory, leaf_id, run.target_context)
+                    if result.model_run.status == "failed":
+                        raise AnalysisPipelineError(
+                            "semantic_processing",
+                            RuntimeError("analysis returned a failed model execution"),
+                        )
                     if capture.neighborhood is None:
                         raise AnalysisPipelineError(
                             "persistence", RuntimeError("graph was not committed")
@@ -202,6 +215,7 @@ class DossierAnalysisManager:
                             leaf_id=leaf_id,
                             stage="transport",
                             cause=f"RetryableLiveModelError:{cause}",
+                            failure_category="transport_or_provider_failure",
                             retryable=False,
                         )
                     )
@@ -218,6 +232,20 @@ class DossierAnalysisManager:
                             leaf_id=leaf_id,
                             stage=stage,
                             cause=type(error).__name__,
+                            failure_category=(
+                                "invalid_structured_output"
+                                if isinstance(error, LiveModelInvalidOutput)
+                                or stage in {"semantic_processing", "semantic_validation"}
+                                else (
+                                    "graph_failure"
+                                    if stage == "graph"
+                                    else (
+                                        "persistence_failure"
+                                        if stage == "persistence"
+                                        else "analysis_failure"
+                                    )
+                                )
+                            ),
                             retryable=False,
                         )
                     )
@@ -239,6 +267,8 @@ class DossierAnalysisManager:
             total_supported_leaves=len(inventory.leaves),
             analyzed_count=len(results),
             failed_count=len(failures),
+            pipeline_failure_count=len(failures),
+            model_abstention_count=sum(item.model.status == "abstained" for item in results),
             skipped_count=len(inventory.leaves) - len(run.requested_leaf_ids),
             decision_counts=decisions,
             severity_counts=severities,

@@ -65,6 +65,7 @@ export function DossierWorkspace() {
           {file && <p className="field-note">Selected: {file.name}</p>}
           <label>Dossier ZIP<input aria-label="Dossier ZIP" type="file" accept=".zip,application/zip" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /></label>
           <label>Available LLM<select value={modelId} onChange={(event) => setModelId(event.target.value)}>{models.data?.models.map((profile) => <option key={profile.model_id} value={profile.model_id} disabled={profile.availability !== "available"}>{profile.display_name}{profile.availability !== "available" ? " — disabled" : ""}</option>)}</select></label>
+          {selectedProfile && <p className="field-note"><strong>Execution:</strong> {selectedProfile.execution_mode} · actual adapter {selectedProfile.actual_adapter_type ?? "none"} · {selectedProfile.network_required ? "network required" : "network-free"}</p>}
           {models.data?.models.filter((item) => item.availability !== "available").map((item) => <p className="field-note" key={item.model_id}>{item.display_name}: {item.disabled_reason}</p>)}
           <fieldset><legend>Target context</legend><dl className="context-list"><div><dt>Authority / center</dt><dd>FDA / CDER</dd></div><div><dt>Application</dt><dd>NDA</dd></div><div><dt>Transition</dt><dd>eCTD v3.2.2 → eCTD v4.0</dd></div><div><dt>Standards snapshot</dt><dd>fda-cder-demo-v1</dd></div><div><dt>Operation</dt><dd>identifier-based reuse</dd></div></dl>
             <label>Scenario<select value={scenario} onChange={(event) => setScenario(event.target.value as TargetContext["scenario_mode"])}><option value="prospective_forward_compatibility">Prospective forward compatibility</option><option value="current_operational">Current operational</option></select></label>
@@ -104,9 +105,10 @@ export function DossierWorkspace() {
             <h2>Package summary</h2>
             {run.summary ? (
               <div className="summary-cards">
-                <article><strong>{run.summary.analyzed_count}</strong><span>Analyzed</span></article>
-                <article><strong>{run.summary.human_approval_count}</strong><span>Human approval</span></article>
-                <article><strong>{run.summary.failed_count}</strong><span>Failed</span></article>
+                <article><strong>{run.summary.analyzed_count}</strong><span>Successfully analyzed</span></article>
+                <article><strong>{run.summary.human_approval_count}</strong><span>Human approval required</span></article>
+                <article><strong>{run.summary.model_abstention_count}</strong><span>Model abstentions</span></article>
+                <article><strong>{run.summary.pipeline_failure_count}</strong><span>Pipeline failures</span></article>
               </div>
             ) : (
               <p>Analysis is running…</p>
@@ -135,13 +137,25 @@ export function DossierWorkspace() {
                 <h3>Findings and evidence</h3>
                 {item.analysis.findings.map((finding) => <blockquote key={finding.id}>{finding.rationale}<cite>{finding.evidence_ids.join(", ")}</cite></blockquote>)}
                 <h3>Model record</h3>
-                <p>{item.model.model_profile_id} · {item.model.adapter_type} · {item.model.status} · {item.model.latency_ms.toFixed(1)} ms</p>
+                <dl className="context-list">
+                  <div><dt>Model profile</dt><dd>{item.model.model_profile_id}</dd></div>
+                  <div><dt>Actual adapter</dt><dd>{item.model.adapter_type}</dd></div>
+                  <div><dt>Execution mode</dt><dd>{item.model.execution_mode}</dd></div>
+                  <div><dt>Status</dt><dd>{item.model.status}</dd></div>
+                  <div><dt>Attempts</dt><dd>{item.model.attempt_count}</dd></div>
+                  <div><dt>Decision basis</dt><dd>{item.analysis.decision_basis.replaceAll("_", " ")}</dd></div>
+                </dl>
+                {item.model.status_detail && <p><strong>Model status detail:</strong> {item.model.status_detail}</p>}
+                {item.model.reason_category && <p><strong>Reason category:</strong> {item.model.reason_category}</p>}
+                {item.model.failure && <p><strong>Failure category:</strong> {item.model.failure}</p>}
+                {item.model.status === "abstained" && <p>Analysis completed with deterministic synthesis; semantic inspection did not produce a finding.</p>}
                 <h3>Chronological trace</h3>
                 <ol>{item.analysis.trace.map((step) => <li key={step.sequence}><strong>{step.component}</strong> — {step.summary}</li>)}</ol>
                 <GraphNeighborhood graph={item.graph}/>
               </div>
             </details>
           ))}
+          {run.failures.map((failure) => <section className="panel" key={failure.leaf_id}><h2>Pipeline failure</h2><p><strong>{failure.leaf_id}</strong> · {failure.failure_category} · stage {failure.stage}</p><p>No regulatory decision was published for this document.</p></section>)}
         </section>
       )}
     </main>

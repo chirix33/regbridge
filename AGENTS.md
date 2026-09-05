@@ -245,3 +245,20 @@ the exact expected-checksum basis, so any non-identical required UTIL DTD remain
 nonconformance even when the difference is only textual. Distinguish byte-identical,
 newline/BOM/trailing-whitespace-only, comment-only, substantive, and hostile variants without
 changing migration policy or product decisions.
+
+## 14. M4.2.2 semantic status and synthesis correction
+
+M4.2.2 is governed by [docs/milestones/M4.2.2.md](docs/milestones/M4.2.2.md). Preserve
+`completed`, `abstained`, `failed`, and `not_applicable` as distinct model-execution statuses
+through the analyzer, product API, schema, graph, and interface. A valid structured abstention
+is a completed provider interaction with incomplete semantic inspection; it is not a transport,
+provider, schema, persistence, or pipeline failure.
+
+Infrastructure or contract failures never become regulatory decisions. The dossier runner must
+publish only completed analysis results and must record terminal leaf failures separately. An
+exact hard Case A mapping remains in force when semantic inspection abstains: the limitation
+qualifies the structural decision and preserves its mandatory repair. For Cases B and C, an
+abstention may leave the semantic eligibility gate unresolved, but it must request completion of
+document inspection rather than claim that stale content was detected. Explanation graphs must
+show only the active decision path and represent an abstention as a non-regulatory analysis
+limitation, never as a model finding.

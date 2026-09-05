@@ -1,10 +1,14 @@
 import asyncio
 import hashlib
+from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import cast
 
+import tiktoken
+
 from app.analyzer.prompts import SEMANTIC_INSPECTION_PROMPT_VERSION, SEMANTIC_INSPECTION_TASK
+from app.analyzer.repairs import complete_document_inspection_action
 from app.analyzer.repository import AnalysisRepository
 from app.config import Settings, get_settings
 from app.domain.enums import (
@@ -24,6 +28,7 @@ from app.domain.models import (
     Finding,
     ModelRunRecord,
     RepairAction,
+    RuntimeRepairAction,
     SourceArtifact,
     TargetContext,
     TraceStep,
@@ -31,10 +36,10 @@ from app.domain.models import (
 from app.domain.vocabulary import ActionCode
 from app.graph.builder import build_neighborhood
 from app.graph.models import GraphNeighborhood
-from app.llm import DisabledModel, FixtureModel, OpenAICompatibleModel
+from app.llm import DisabledModel, FixtureModel
 from app.llm.models import ModelRequest, SemanticRiskOutput
 from app.llm.protocol import StructuredModel
-from app.llm.responses import LiveModelInvalidOutput
+from app.llm.responses import LiveModelInvalidOutput, ResponsesStructuredModel
 from app.parsers.models import ApplicationInventory, ParsedLeaf
 from app.rules.engine import applicable_heading_rule
 from app.rules.models import MetadataRule
@@ -64,15 +69,28 @@ def _configured_model(settings: Settings) -> StructuredModel:
     if settings.llm_mode.value == "disabled":
         return DisabledModel()
     if settings.llm_mode.value == "live":
-        return OpenAICompatibleModel(
+        return ResponsesStructuredModel(
             base_url=cast(str, settings.llm_base_url),
             api_key=cast(
                 str, settings.llm_api_key.get_secret_value() if settings.llm_api_key else None
             ),
             model=cast(str, settings.llm_model),
             timeout_seconds=settings.llm_timeout_seconds,
+            reasoning_effort=settings.product_reasoning_effort,
+            max_output_tokens=settings.product_max_output_tokens,
+            count_final_tokens=_token_counter(cast(str, settings.llm_model)),
+            final_answer_token_limit=settings.product_final_answer_token_limit,
+            input_character_limit=settings.product_input_character_limit,
         )
     return FixtureModel()
+
+
+def _token_counter(model_name: str) -> Callable[[str], int]:
+    try:
+        encoding = tiktoken.encoding_for_model(model_name)
+    except KeyError:
+        encoding = tiktoken.get_encoding("o200k_base")
+    return lambda text: len(encoding.encode(text))
 
 
 class AnalysisService:
@@ -133,12 +151,16 @@ class AnalysisService:
         triggered: list[str] = []
         heading_rule = applicable_heading_rule(leaf, target, self.heading_rules)
         unresolved_reason: str | None = None
+        unresolved_source: str | None = None
         if leaf.policy_coverage_status == "OUTSIDE_ENCODED_POLICY_COVERAGE":
             unresolved_reason = leaf.policy_coverage_basis
+            unresolved_source = "deterministic_policy"
         elif leaf.policy_coverage_status == "INSUFFICIENT_APPLICATION_HISTORY":
             unresolved_reason = leaf.policy_coverage_basis
+            unresolved_source = "deterministic_policy"
         elif leaf.policy_coverage_status == "DOCUMENT_INSPECTION_INCOMPLETE":
             unresolved_reason = leaf.policy_coverage_basis
+            unresolved_source = "deterministic_policy"
         deterministic_decision: Decision | None = None
         deterministic_repair: RepairAction | None = None
         deterministic_severity = Severity.INFORMATIONAL
@@ -174,12 +196,14 @@ class AnalysisService:
                 "No generic nearest-parent inference is permitted; no source-supported mapping "
                 f"is encoded for {leaf.heading}."
             )
+            unresolved_source = "deterministic_policy"
 
         if target.reuse_operation == ReuseOperation.CREATE_NEW_TARGET_ARTIFACT:
             unresolved_reason = (
                 "The approved identifier-reuse rules do not cover creation of a new target "
                 "artifact."
             )
+            unresolved_source = "deterministic_policy"
             regulatory_ids.update(("ev-ctoc-321-remains", "ev-ctoc-3211-3213-removed"))
             findings.append(
                 Finding(
@@ -213,6 +237,7 @@ class AnalysisService:
             plan = target.metadata_plan
             if plan is None or plan.intent == MetadataMigrationIntent.UNSPECIFIED:
                 unresolved_reason = "Metadata migration intent is not declared."
+                unresolved_source = "deterministic_policy"
             elif plan.intent == MetadataMigrationIntent.PRESERVE_EXISTING_LIFECYCLE:
                 preserve = self.metadata_by_predicate["preserve-existing-lifecycle"]
                 self._append_rule_finding(
@@ -233,6 +258,7 @@ class AnalysisService:
             elif plan.intent == MetadataMigrationIntent.NORMALIZE_METADATA:
                 if plan.manufacturer_partitioning == ManufacturerPartitioning.UNKNOWN:
                     unresolved_reason = "Manufacturer partitioning need is not declared."
+                    unresolved_source = "deterministic_policy"
                 else:
                     normalize = self.metadata_by_predicate["normalize-manufacturer-metadata"]
                     self._append_rule_finding(
@@ -259,6 +285,17 @@ class AnalysisService:
         model_output, model_run = await self._semantic_inspection(
             inventory, target, dossier_evidence
         )
+        if model_output.abstained:
+            reason_category, status_detail = self._abstention_disclosure(
+                model_output.abstain_reason
+            )
+            model_run = model_run.model_copy(
+                update={
+                    "status": "abstained",
+                    "reason_category": reason_category,
+                    "status_detail": status_detail,
+                }
+            )
         supplied_ids = {item.id for item in dossier_evidence}
         semantic_risk = False
         unsupported = {
@@ -268,20 +305,9 @@ class AnalysisService:
             if evidence_id not in supplied_ids
         }
         if unsupported:
-            model_output = SemanticRiskOutput(
-                fixture_version="1.0.0",
-                abstained=True,
-                abstain_reason=(
-                    f"model cited unsupported evidence: {', '.join(sorted(unsupported))}"
-                ),
-                findings=(),
-                confidence=0,
-            )
-            model_run = model_run.model_copy(
-                update={
-                    "status": "failed",
-                    "validation_error": "model cited evidence outside its request packet",
-                }
+            raise AnalysisPipelineError(
+                "semantic_validation",
+                ValueError("model cited evidence outside its request packet"),
             )
         for semantic in model_output.findings:
             findings.append(
@@ -305,8 +331,14 @@ class AnalysisService:
         semantic_required = inventory.fixture_id is None or inventory.fixture_id.startswith(
             "case-c-"
         )
-        incomplete = semantic_required and (
+        inspection_incomplete = semantic_required and (
             leaf.extraction_status != "completed" or model_output.abstained
+        )
+        hard_structural_decision = bool(
+            heading_rule
+            and heading_rule.enforcement_mode == EnforcementMode.HARD
+            and deterministic_decision is not None
+            and deterministic_repair is not None
         )
         if leaf.hyperlinks and not hyperlinks_verified:
             unresolved_reason = (
@@ -323,17 +355,29 @@ class AnalysisService:
                 "Document reuse eligibility is unresolved because hyperlink relevance has not "
                 "been author-verified for this controlled fixture.",
             )
-        elif incomplete and unresolved_reason is None:
+            unresolved_source = "deterministic_policy"
+        elif inspection_incomplete and unresolved_reason is None:
             unresolved_reason = (
-                model_output.abstain_reason or "Required semantic inspection is incomplete."
+                model_run.status_detail or "Required semantic inspection is incomplete."
             )
+            unresolved_source = "abstention_gate"
         elif semantic_risk and unresolved_reason is None:
             unresolved_reason = (
                 "Supported stale or ambiguous dossier evidence requires human review."
             )
+            unresolved_source = "semantic_finding"
 
         uncertainty: tuple[str, ...]
-        if unresolved_reason:
+        repair: RepairAction | RuntimeRepairAction
+        if hard_structural_decision:
+            decision = cast(Decision, deterministic_decision)
+            severity = deterministic_severity
+            repair = cast(RepairAction, deterministic_repair)
+            uncertainty = (unresolved_reason,) if unresolved_reason else ()
+            confidence = 0.0 if unresolved_reason else min(1.0, model_output.confidence)
+            human_required = True
+            decision_basis = "deterministic_hard_rule"
+        elif unresolved_reason:
             decision = Decision.HUMAN_REGULATORY_REVIEW
             severity = Severity.UNRESOLVED
             if leaf.hyperlinks and not hyperlinks_verified:
@@ -382,7 +426,9 @@ class AnalysisService:
                     evidence_ids=("ev-m4-manufacturer-general-values",),
                 )
                 regulatory_ids.add("ev-m4-manufacturer-general-values")
-            elif semantic_risk or incomplete:
+            elif unresolved_source == "abstention_gate":
+                repair = complete_document_inspection_action()
+            elif semantic_risk:
                 repair = RepairAction(
                     type="HUMAN_VERIFY_STALE_CONTENT",
                     description=(
@@ -399,6 +445,11 @@ class AnalysisService:
             uncertainty = (unresolved_reason,)
             confidence = 0.0
             human_required = True
+            decision_basis = (
+                unresolved_source
+                if unresolved_source in {"semantic_finding", "abstention_gate"}
+                else "deterministic_policy"
+            )
         else:
             decision = deterministic_decision or Decision.REUSE_AS_LEGACY_REFERENCE
             severity = deterministic_severity
@@ -412,6 +463,7 @@ class AnalysisService:
             uncertainty = ()
             confidence = min(1.0, model_output.confidence)
             human_required = decision != Decision.REUSE_AS_LEGACY_REFERENCE
+            decision_basis = "deterministic_policy"
 
         all_evidence = (
             tuple(self.evidence[item] for item in sorted(regulatory_ids)) + dossier_evidence
@@ -444,7 +496,8 @@ class AnalysisService:
                 component="semantic-inspection",
                 summary=(
                     f"Semantic inspection {model_run.status}; {len(model_output.findings)} "
-                    "validated findings."
+                    f"validated findings; reason category "
+                    f"{model_run.reason_category or 'none'}."
                 ),
                 evidence_ids=tuple(
                     sorted(
@@ -461,7 +514,10 @@ class AnalysisService:
                 sequence=4,
                 kind=TraceStepKind.SYNTHESIS,
                 component="decision-synthesizer",
-                summary=f"Applied precedence and produced {decision.value}.",
+                summary=(
+                    f"Applied {decision_basis.replace('_', ' ')} precedence and produced "
+                    f"{decision.value}."
+                ),
                 occurred_at=occurred_at,
             ),
         )
@@ -476,11 +532,18 @@ class AnalysisService:
             triggered_rule_ids=tuple(triggered),
             findings=tuple(findings),
             evidence=all_evidence,
-            rationale=self._rationale(decision, manufacturer_all, unresolved_reason),
+            rationale=self._rationale(
+                decision,
+                manufacturer_all,
+                unresolved_reason,
+                decision_basis,
+                model_run.status == "abstained",
+            ),
             repair=repair,
             confidence=confidence,
             unresolved_uncertainty=uncertainty,
             human_approval_required=human_required,
+            decision_basis=decision_basis,
             trace=trace,
             model_run=model_run,
         )
@@ -588,30 +651,26 @@ class AnalysisService:
             completion = await self.model.complete(request, SemanticRiskOutput)
             return completion.output, completion.run
         except LiveModelInvalidOutput:
-            # Declared live evaluation retries and records invalid_output outside synthesis.
+            # Retry policy and terminal publication are owned by the product/evaluation runner.
             raise
         except Exception as error:
-            if self.settings.llm_mode.value == "live":
-                raise AnalysisPipelineError("semantic_processing", error) from error
-            digest = hashlib.sha256(request.model_dump_json().encode()).hexdigest()
+            raise AnalysisPipelineError("semantic_processing", error) from error
+
+    @staticmethod
+    def _abstention_disclosure(reason: str | None) -> tuple[str, str]:
+        normalized = " ".join((reason or "").split()).casefold()
+        if "disabled" in normalized or "omitted" in normalized:
+            return "semantic_model_disabled", "Semantic inspection was deliberately disabled."
+        if "extract" in normalized or "document" in normalized:
             return (
-                SemanticRiskOutput(
-                    fixture_version="1.0.0",
-                    abstained=True,
-                    abstain_reason="semantic inspection failed validation or transport",
-                    findings=(),
-                    confidence=0,
-                ),
-                ModelRunRecord(
-                    mode=self.settings.llm_mode.value,
-                    status="failed",
-                    prompt_template_version=PROMPT_VERSION,
-                    model_name=self.settings.llm_model,
-                    request_digest=digest,
-                    latency_ms=0,
-                    validation_error=type(error).__name__,
-                ),
+                "document_inspection_incomplete",
+                "Document extraction or bounded semantic inspection was incomplete.",
             )
+        return (
+            "insufficient_bounded_evidence",
+            "The model abstained because the bounded evidence did not support a semantic "
+            "conclusion.",
+        )
 
     @staticmethod
     def _append_rule_finding(
@@ -658,10 +717,25 @@ class AnalysisService:
 
     @staticmethod
     def _rationale(
-        decision: Decision, manufacturer_all: bool, unresolved_reason: str | None
+        decision: Decision,
+        manufacturer_all: bool,
+        unresolved_reason: str | None,
+        decision_basis: str,
+        model_abstained: bool,
     ) -> str:
+        if decision_basis == "deterministic_hard_rule" and unresolved_reason:
+            return (
+                "The author-adjudicated hard structural mapping and its required context-group "
+                "action remain in force. Semantic inspection is incomplete, so the document is "
+                f"not semantically cleared: {unresolved_reason}"
+            )
+        if model_abstained and unresolved_reason:
+            return (
+                "Semantic inspection is incomplete and produced no substantive finding. "
+                f"RegBridge therefore requires bounded human review: {unresolved_reason}"
+            )
         if unresolved_reason:
-            return f"RegBridge abstained from a permissive reuse conclusion: {unresolved_reason}"
+            return f"RegBridge requires human review: {unresolved_reason}"
         if decision == Decision.REUSE_WITH_NEW_CONTEXT and manufacturer_all:
             return (
                 "Explicit normalization intent changes the context-group keyword. Create a new "
@@ -708,6 +782,7 @@ class AnalysisService:
             confidence=0,
             unresolved_uncertainty=("Operational forward compatibility is unavailable.",),
             human_approval_required=True,
+            decision_basis="operational_guard",
             trace=(
                 TraceStep(
                     sequence=1,

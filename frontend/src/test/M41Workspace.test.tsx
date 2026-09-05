@@ -6,8 +6,8 @@ import App from "../App";
 const models = {
   default_model_id: "gpt-5.5",
   models: [
-    { model_id: "gpt-5.5", display_name: "GPT-5.5", subtitle: null, availability: "available", disabled_reason: null, adapter_type: "responses", configured_model_name: "gpt-5.5", structured_output_capability: "validated", reasoning_capability: true, configuration_digest: "a".repeat(64), network_required: false },
-    { model_id: "qwen3.6-local", display_name: "Qwen 3.6 local — coming soon", subtitle: "27B Dense / 35B-A3B", availability: "coming_soon", disabled_reason: "Not validated.", adapter_type: "chat_completions", configured_model_name: null, structured_output_capability: "unvalidated", reasoning_capability: true, configuration_digest: "b".repeat(64), network_required: true },
+    { model_id: "gpt-5.5", display_name: "Deterministic fixture — GPT-5.5 contract", subtitle: null, availability: "available", disabled_reason: null, adapter_type: "responses", execution_mode: "fixture", actual_adapter_type: "fixture", configured_model_name: "internal-package-derived-fixture", structured_output_capability: "validated", reasoning_capability: true, configuration_digest: "a".repeat(64), network_required: false },
+    { model_id: "qwen3.6-local", display_name: "Qwen 3.6 local — coming soon", subtitle: "27B Dense / 35B-A3B", availability: "coming_soon", disabled_reason: "Not validated.", adapter_type: "chat_completions", execution_mode: "disabled", actual_adapter_type: null, configured_model_name: null, structured_output_capability: "unvalidated", reasoning_capability: true, configuration_digest: "b".repeat(64), network_required: true },
   ],
 };
 
