@@ -630,6 +630,43 @@ summary:focus-visible,
   gap: var(--space-5);
 }
 
+/* Single-column stacks declared as `display: grid` without an explicit track
+   fall back to an implicit `auto` column, which sizes to its widest child
+   rather than to the container. A wide child — a graph board, a metrics table,
+   a long identifier — then stretches the track past the panel and the overflow
+   is clipped out of sight. Pin every one of them to the container width; the
+   wide children scroll inside their own containers instead. */
+.archetype-list,
+.boundary-banner div,
+.context-list div,
+.finding-list,
+.leaf-details,
+.leaf-details blockquote,
+.profile-results ul,
+.retrieval-grid,
+.retrieval-grid article,
+.source-stack,
+.summary-cards article,
+.upload-panel,
+.upload-panel fieldset,
+.upload-panel label,
+.upload-panel fieldset label:not(.confirm-row) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.leaf-details > *,
+.summary-cards article > *,
+.retrieval-grid article > * {
+  min-width: 0;
+}
+
+/* Action and evidence identifiers are single unbreakable tokens. */
+.leaf-details code,
+.leaf-details cite,
+.profile-results li {
+  overflow-wrap: anywhere;
+}
+
 .finding-list,
 .retrieval-grid,
 .evidence-grid,
