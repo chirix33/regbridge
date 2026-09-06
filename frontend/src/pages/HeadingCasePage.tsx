@@ -23,6 +23,7 @@ import type {
 } from "../api/contracts";
 import { Disclaimer } from "../components/Disclaimer";
 import { GraphNeighborhood } from "../components/GraphNeighborhood";
+import { ThinkingStatus } from "../components/ThinkingStatus";
 
 const disclosure =
   "Prospective FDA/CDER forward-compatibility research scenario. FDA forward compatibility " +
@@ -243,7 +244,7 @@ export function HeadingCasePage() {
             <Restart aria-hidden="true" /> Reset demo
           </button>
           <button ref={runButtonRef} className="primary-button" type="button" onClick={() => void runAnalysis()} disabled={busy || !fixtures.length}>
-            {busy ? "Analyzing…" : "Parse and analyze"}<ArrowRight aria-hidden="true" />
+            {busy ? <ThinkingStatus label="Analyzing..." state="solving" dark /> : "Parse and analyze"}<ArrowRight aria-hidden="true" />
           </button>
         </section>
 

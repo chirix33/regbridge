@@ -19,7 +19,8 @@
     "iconoir-react": "7.11.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "react-router-dom": "7.18.3"
+    "react-router-dom": "7.18.3",
+    "thinking-orbs": "^0.3.1"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.11.0",

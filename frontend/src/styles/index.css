@@ -415,6 +415,24 @@ summary:focus-visible,
   gap: var(--space-2);
 }
 
+.thinking-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: inherit;
+  font-weight: 750;
+}
+
+.thinking-status-large {
+  margin-block-start: var(--space-4);
+  gap: var(--space-4);
+  color: var(--color-accent-text);
+}
+
+.thinking-status-large span:last-child {
+  color: var(--color-text-secondary);
+}
+
 .status-dot {
   width: 0.625rem;
   height: 0.625rem;

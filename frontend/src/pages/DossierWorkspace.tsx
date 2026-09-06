@@ -5,6 +5,7 @@ import { CheckCircle, Database, Upload, WarningTriangle } from "iconoir-react";
 import { createDossierAnalysis, getDossierAnalysis, getModels, getProductDemoPackage, parseUpload } from "../api/client";
 import type { ApplicationInventory, DossierAnalysisRun, MetadataIntent, TargetContext } from "../api/contracts";
 import { GraphNeighborhood } from "../components/GraphNeighborhood";
+import { ThinkingStatus } from "../components/ThinkingStatus";
 
 function target(intent: MetadataIntent, scenario: TargetContext["scenario_mode"]): TargetContext {
   return {
@@ -73,7 +74,9 @@ export function DossierWorkspace() {
             <p className="field-note">Manufacturer partitioning: unknown (visible advisory input)</p>
           </fieldset>
           <label className="confirm-row"><input type="checkbox" checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)}/> I confirm this target context and that the upload is synthetic or de-identified.</label>
-          <button className="primary-button" disabled={!file || !confirmed || busy || selectedProfile?.availability !== "available"}>{busy ? "Parsing…" : "Parse and analyze"}</button>
+          <button className="primary-button" disabled={!file || !confirmed || busy || selectedProfile?.availability !== "available"}>
+            {busy ? <ThinkingStatus label="Parsing..." state="shaping" dark /> : "Parse and analyze"}
+          </button>
           {error && <p role="alert" className="error-copy">{error}</p>}
         </form>
         <section className="panel scope-panel" aria-labelledby="controlled-scope"><h2 id="controlled-scope">Controlled scope</h2><p>RegBridge accepts a bounded FDA/CDER eCTD v3.2.2 public-standards profile and validates its two XML backbones against pinned local DTDs. It does not perform complete FDA validation or assess submission readiness.</p><p>Demo preset: <code>data/demo-dossiers/m4-2/regbridge-m4-2-public-standards.zip</code>. Raw ZIP bytes are discarded after parsing.</p></section>
@@ -111,7 +114,7 @@ export function DossierWorkspace() {
                 <article><strong>{run.summary.pipeline_failure_count}</strong><span>Pipeline failures</span></article>
               </div>
             ) : (
-              <p>Analysis is running…</p>
+              <ThinkingStatus label="Analysis is running..." state="solving" size={64} />
             )}
           </div>
           {run.results.map((item) => (
