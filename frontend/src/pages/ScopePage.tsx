@@ -47,20 +47,14 @@ export function ScopePage() {
 
   return (
     <div className="app-shell">
-      <header className="site-header">
-        <a className="brand" href="#main-content" aria-label="RegBridge home">
-          <span className="brand-mark" aria-hidden="true">
-            R
-          </span>
-          <span>RegBridge</span>
-        </a>
-        <div className="status-chip">
-          <span className="status-dot" aria-hidden="true" />
-          {scopeData.model_mode === "fixture" ? "Offline fixture mode" : `${scopeData.model_mode} mode`}
-        </div>
-      </header>
 
       <main id="main-content">
+        <div className="page-context">
+          <div className="status-chip">
+            <span className="status-dot" aria-hidden="true" />
+            {scopeData.model_mode === "fixture" ? "Offline fixture mode" : `${scopeData.model_mode} mode`}
+          </div>
+        </div>
         <section className="hero" aria-labelledby="hero-title">
           <div className="eyebrow">
             <Flask aria-hidden="true" width={18} height={18} />

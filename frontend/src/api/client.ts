@@ -10,6 +10,10 @@ import type {
   ScenarioMode,
   ScopeResponse,
   StandardsSnapshotResponse,
+  ModelCatalog,
+  TargetContext,
+  DossierAnalysisRun,
+  ComparisonRun,
 } from "./contracts";
 
 const apiOrigin = import.meta.env.VITE_API_BASE_URL ?? "";
@@ -62,6 +66,69 @@ export async function parseFixture(fixtureId: string): Promise<ApplicationInvent
     { method: "POST", headers: { Accept: "application/json" } },
   );
   return responseJson<ApplicationInventory>(response);
+}
+
+export function getModels(): Promise<ModelCatalog> {
+  return getJson<ModelCatalog>("/api/v1/models");
+}
+
+export async function parseUpload(file: File): Promise<ApplicationInventory> {
+  const response = await fetch(`${apiOrigin}/api/v1/applications/parse`, {
+    method: "POST",
+    headers: { Accept: "application/json", "Content-Type": "application/zip" },
+    body: file,
+  });
+  return responseJson<ApplicationInventory>(response);
+}
+
+export async function getProductDemoPackage(): Promise<File> {
+  const response = await fetch(`${apiOrigin}/api/v1/product/demo-package`, {
+    headers: { Accept: "application/zip" },
+  });
+  if (!response.ok) {
+    throw new Error(`RegBridge demo package request failed with status ${response.status}`);
+  }
+  return new File(
+    [await response.blob()],
+    "regbridge-m4-2-public-standards.zip",
+    { type: "application/zip" },
+  );
+}
+
+export async function createDossierAnalysis(
+  inventoryId: string,
+  modelId: string,
+  targetContext: TargetContext,
+  leafIds?: string[],
+): Promise<DossierAnalysisRun> {
+  const response = await fetch(`${apiOrigin}/api/v1/dossier-analyses`, {
+    method: "POST",
+    headers: { Accept: "application/json", "Content-Type": "application/json" },
+    body: JSON.stringify({ inventory_id: inventoryId, model_id: modelId, target_context: targetContext, leaf_ids: leafIds ?? null }),
+  });
+  return responseJson<DossierAnalysisRun>(response);
+}
+
+export function getDossierAnalysis(runId: string): Promise<DossierAnalysisRun> {
+  return getJson<DossierAnalysisRun>(`/api/v1/dossier-analyses/${encodeURIComponent(runId)}`);
+}
+
+export async function createComparison(
+  inventoryId: string,
+  modelId: string,
+  targetContext: TargetContext,
+  leafIds?: string[],
+): Promise<ComparisonRun> {
+  const response = await fetch(`${apiOrigin}/api/v1/comparisons`, {
+    method: "POST",
+    headers: { Accept: "application/json", "Content-Type": "application/json" },
+    body: JSON.stringify({ inventory_id: inventoryId, model_id: modelId, target_context: targetContext, leaf_ids: leafIds ?? null }),
+  });
+  return responseJson<ComparisonRun>(response);
+}
+
+export function getComparison(comparisonId: string): Promise<ComparisonRun> {
+  return getJson<ComparisonRun>(`/api/v1/comparisons/${encodeURIComponent(comparisonId)}`);
 }
 
 export async function createAnalysis(

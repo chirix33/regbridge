@@ -105,45 +105,36 @@ def build_neighborhood(result: AnalysisResult) -> GraphNeighborhood:
                 review_status=ReviewStatus.SOURCE_VERIFIED,
             )
         )
-        for source_heading, target_heading in APPROVED_M1_MAPPING.items():
-            source_id = f"heading-322-{source_heading.replace('.', '').lower()}"
-            add(
-                GraphNode(
-                    id=source_id,
-                    type=NodeType.HEADING,
-                    label=source_heading,
-                    version="3.2.2",
+        source_heading = result.source_artifact.source_heading
+        target_heading = APPROVED_M1_MAPPING[source_heading]
+        edges.extend(
+            (
+                GraphEdge(
+                    id=f"edge-{source_heading.replace('.', '')}-removed-v40",
+                    source=heading_id,
+                    target=target_version_id,
+                    type=EdgeType.REMOVED_IN,
+                    label="removed in",
+                    evidence_ids=("ev-ctoc-3211-3213-removed",),
                     review_status=ReviewStatus.SOURCE_VERIFIED,
-                )
-            )
-            edges.extend(
-                (
-                    GraphEdge(
-                        id=f"edge-{source_heading.replace('.', '')}-removed-v40",
-                        source=source_id,
-                        target=target_version_id,
-                        type=EdgeType.REMOVED_IN,
-                        label="removed in",
-                        evidence_ids=("ev-ctoc-3211-3213-removed",),
-                        review_status=ReviewStatus.SOURCE_VERIFIED,
+                ),
+                GraphEdge(
+                    id=f"edge-{source_heading.replace('.', '')}-maps-321",
+                    source=heading_id,
+                    target=target_heading_id,
+                    type=EdgeType.MAPS_TO,
+                    label=f"explicitly maps to {target_heading}",
+                    evidence_ids=(
+                        "ev-ctoc-321-remains",
+                        "ev-ctoc-3211-3213-removed",
+                        "ev-tcg-replacement-context-same",
+                        "ev-tcg-new-context-and-reuse",
                     ),
-                    GraphEdge(
-                        id=f"edge-{source_heading.replace('.', '')}-maps-321",
-                        source=source_id,
-                        target=target_heading_id,
-                        type=EdgeType.MAPS_TO,
-                        label=f"explicitly maps to {target_heading}",
-                        evidence_ids=(
-                            "ev-ctoc-321-remains",
-                            "ev-ctoc-3211-3213-removed",
-                            "ev-tcg-replacement-context-same",
-                            "ev-tcg-new-context-and-reuse",
-                        ),
-                        review_status=ReviewStatus.AUTHOR_ADJUDICATED_FOR_DEMO,
-                        enforcement_mode=EnforcementMode.HARD,
-                    ),
-                )
+                    review_status=ReviewStatus.AUTHOR_ADJUDICATED_FOR_DEMO,
+                    enforcement_mode=EnforcementMode.HARD,
+                ),
             )
+        )
     observed_keyword_by_evidence: dict[str, str] = {}
     for evidence in result.evidence:
         if isinstance(evidence, DossierEvidence):
@@ -296,21 +287,65 @@ def build_neighborhood(result: AnalysisResult) -> GraphNeighborhood:
                         enforcement_mode=EnforcementMode.DISABLED,
                     )
                 )
-        edges.extend(
-            (
-                GraphEdge(
-                    id=f"edge-{finding.id}-decision",
-                    source=finding_node_id,
-                    target=decision_id,
-                    type=EdgeType.TRIGGERS_DECISION,
-                    label="visible in synthesized decision",
+        decision_edge_type = (
+            EdgeType.QUALIFIES_DECISION
+            if is_model and result.decision_basis == "deterministic_hard_rule"
+            else EdgeType.TRIGGERS_DECISION
+        )
+        edges.append(
+            GraphEdge(
+                id=f"edge-{finding.id}-decision",
+                source=finding_node_id,
+                target=decision_id,
+                type=decision_edge_type,
+                label=(
+                    "qualifies hard structural decision"
+                    if decision_edge_type == EdgeType.QUALIFIES_DECISION
+                    else "contributes to synthesized decision"
                 ),
+            )
+        )
+        if not (is_model and result.decision_basis == "deterministic_hard_rule"):
+            edges.append(
                 GraphEdge(
                     id=f"edge-{finding.id}-repair",
                     source=finding_node_id,
                     target=repair_id,
                     type=EdgeType.REQUIRES_REPAIR,
                     label="informs next action",
+                )
+            )
+    if result.model_run.status == "abstained":
+        limitation_id = "limitation-semantic-inspection"
+        add(
+            GraphNode(
+                id=limitation_id,
+                type=NodeType.ANALYSIS_LIMITATION,
+                label="Semantic inspection abstained",
+                properties={
+                    "component": "semantic-inspection",
+                    "status": "abstained",
+                    "reason_category": result.model_run.reason_category,
+                    "prompt_version": result.model_run.prompt_template_version,
+                    "request_digest": result.model_run.request_digest,
+                },
+            )
+        )
+        qualifies_hard_rule = result.decision_basis == "deterministic_hard_rule"
+        edges.append(
+            GraphEdge(
+                id="edge-semantic-limitation-decision",
+                source=limitation_id,
+                target=decision_id,
+                type=(
+                    EdgeType.QUALIFIES_DECISION
+                    if qualifies_hard_rule
+                    else EdgeType.LEAVES_UNRESOLVED
+                ),
+                label=(
+                    "qualifies hard structural decision"
+                    if qualifies_hard_rule
+                    else "leaves semantic eligibility unresolved"
                 ),
             )
         )

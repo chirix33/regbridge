@@ -1,13 +1,13 @@
 """Fresh rule-only rescore from the isolated development bundle; no model or catalog lookup."""
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, cast
 
 from app.analyzer.service import AnalysisService
 from app.baselines.runner import OmittedSemanticModel, _DiscardRepository
 from app.config import REPOSITORY_ROOT, Settings
 from app.domain.enums import Decision, LlmMode
-from app.domain.vocabulary import action_vocabulary_disclosure, output_vocabulary
+from app.domain.vocabulary import ActionCode, action_vocabulary_disclosure, output_vocabulary
 from app.evaluation.live_configuration import configuration_material, content_digest
 from app.evaluation.metrics import MetricsScope, score_system
 from app.evaluation.models import CaseInput, MetricsReport, SystemPrediction
@@ -98,7 +98,7 @@ async def _predict(
     result = await service.analyze_async(inventory, leaf.id, case_input.target_context)
     return SystemPrediction(
         system="B2", case_id=case_input.case_id, decision=result.decision,
-        severity=result.severity, action=result.repair.type,
+        severity=result.severity, action=cast(ActionCode, result.repair.type),
         human_review_required=result.human_approval_required,
         unconditional_reuse=(
             result.decision == Decision.REUSE_AS_LEGACY_REFERENCE

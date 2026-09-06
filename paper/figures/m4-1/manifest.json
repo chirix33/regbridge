@@ -1,0 +1,57 @@
+{
+  "schema_version": "m4.1.screenshot-manifest.v1",
+  "capture_command": ".\\scripts\\m4-1-capture.ps1",
+  "captured_at": "2026-09-02T00:00:00Z",
+  "fixture_mode": true,
+  "archive": "data/demo-dossiers/m4-1/regbridge-m4-1-composite.zip",
+  "archive_sha256": "81d77881a1ab90bcbcbad38b836f4a829852b75e68906c0b23171aa85609e597",
+  "input_profile_id": "fda-ectd-322-regbridge-demo-profile-v1",
+  "operational_status": "not_operational",
+  "expert_validated": false,
+  "entries": [
+    {
+      "id": "analyzer-profile-and-summary",
+      "file": "analyzer-profile-and-summary.png",
+      "route": "/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "purpose": "Authenticity-hardened profile checks and dossier-level three-document summary",
+      "image_sha256": "7d0cef7cb530d697e47ab7b22b798293c64af6a1e17f2935c933a642190fd951"
+    },
+    {
+      "id": "case-a-complete-trace",
+      "file": "case-a-complete-trace.png",
+      "route": "/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "purpose": "Uploaded Case A decision, repair, evidence, graph, and trace",
+      "image_sha256": "e6f2e2425f48b1388145e332d28ac0c984a43da094166cc287ee4ebb103eca6a"
+    },
+    {
+      "id": "case-c-semantic-review",
+      "file": "case-c-semantic-review.png",
+      "route": "/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "purpose": "Uploaded Case C regional-metadata versus PDF semantic review trace",
+      "image_sha256": "e8febf29338d99bf40dcdd3925e732641d591897810af40108b39200694db7a5"
+    },
+    {
+      "id": "package-derived-system-comparison",
+      "file": "package-derived-system-comparison.png",
+      "route": "/baselines",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "purpose": "Label-free package-derived B0, B1, B2, and RegBridge comparison",
+      "image_sha256": "451b48451bcf9b77b23018daa44e92422c7eea5a4613c98ca7e89eb83ea4a1f8"
+    }
+  ]
+}

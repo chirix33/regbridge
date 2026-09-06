@@ -6,6 +6,7 @@ from app.domain.enums import EdgeType, EnforcementMode, NodeType, ReviewStatus, 
 from app.domain.models import DomainModel, StableId
 
 GRAPH_SCHEMA_VERSION = "2.0.0"
+PRODUCT_GRAPH_SCHEMA_VERSION = "3.0.0"
 
 EDGE_DOMAINS: dict[EdgeType, tuple[frozenset[NodeType], frozenset[NodeType]]] = {
     EdgeType.LOCATED_UNDER: (frozenset({NodeType.ARTIFACT}), frozenset({NodeType.HEADING})),
@@ -19,6 +20,14 @@ EDGE_DOMAINS: dict[EdgeType, tuple[frozenset[NodeType], frozenset[NodeType]]] = 
     ),
     EdgeType.TRIGGERS_DECISION: (
         frozenset({NodeType.RULE, NodeType.MODEL_FINDING}),
+        frozenset({NodeType.DECISION}),
+    ),
+    EdgeType.QUALIFIES_DECISION: (
+        frozenset({NodeType.RULE, NodeType.MODEL_FINDING, NodeType.ANALYSIS_LIMITATION}),
+        frozenset({NodeType.DECISION}),
+    ),
+    EdgeType.LEAVES_UNRESOLVED: (
+        frozenset({NodeType.ANALYSIS_LIMITATION}),
         frozenset({NodeType.DECISION}),
     ),
     EdgeType.HAS_KEYWORD: (frozenset({NodeType.ARTIFACT}), frozenset({NodeType.KEYWORD})),
@@ -144,4 +153,22 @@ class GraphNeighborhood(DomainModel):
                 or edge.expert_validated
             ):
                 raise ValueError("model-originated graph edges must remain disabled candidates")
+        allowed_limitation_properties = {
+            "component",
+            "status",
+            "reason_category",
+            "prompt_version",
+            "request_digest",
+        }
+        for node in self.nodes:
+            if node.type != NodeType.ANALYSIS_LIMITATION:
+                continue
+            if node.review_status is not None or node.expert_validated:
+                raise ValueError("analysis limitations are non-regulatory execution status")
+            if set(node.properties) - allowed_limitation_properties:
+                raise ValueError("analysis limitation contains unbounded properties")
+            if node.properties.get("component") != "semantic-inspection":
+                raise ValueError("analysis limitation must identify semantic inspection")
+            if node.properties.get("status") != "abstained":
+                raise ValueError("analysis limitation must represent a valid abstention")
         return self

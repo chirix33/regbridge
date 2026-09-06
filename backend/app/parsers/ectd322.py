@@ -371,6 +371,7 @@ def parse_directory(
                 )
             )
         declared_checksum = _attribute(element, "checksum")
+        checksum_matches = declared_checksum == checksum if declared_checksum else None
         leaves.append(
             ParsedLeaf(
                 id=leaf_id,
@@ -381,7 +382,10 @@ def parse_directory(
                 modified_leaf_id=_attribute(element, "modified-file"),
                 content_type=content_type,
                 file_sha256=checksum,
+                declared_checksum_type="sha256" if declared_checksum else None,
                 declared_checksum=declared_checksum,
+                computed_declared_checksum=checksum if declared_checksum else None,
+                declared_checksum_matches=checksum_matches,
                 source_locator=f"index.xml / {heading} / leaf[{leaf_id}]",
                 keywords=keywords,
                 text_span_count=len(text_spans),

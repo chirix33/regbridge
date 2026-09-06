@@ -84,7 +84,7 @@ def test_hard_rule_rejects_author_interpretation() -> None:
         HeadingRule.model_validate(payload)
 
 
-def test_graph_is_deterministic_and_contains_typed_explicit_mapping() -> None:
+def test_graph_is_deterministic_and_contains_only_active_explicit_mapping() -> None:
     inventory = FixtureCatalog().parse("case-a-removed-3211")
     service = AnalysisService()
     first = service.analyze(inventory, inventory.leaves[0].id, target())
@@ -93,7 +93,8 @@ def test_graph_is_deterministic_and_contains_typed_explicit_mapping() -> None:
     graph_two = service.graph(second.id)
     assert graph_one == graph_two
     mappings = [edge for edge in graph_one.edges if edge.type.value == "MAPS_TO"]
-    assert len(mappings) == 3
+    assert len(mappings) == 1
+    assert mappings[0].source == "heading-322-32s11"
     assert all(
         edge.review_status is not None and edge.review_status.value == "author_adjudicated_for_demo"
         for edge in mappings

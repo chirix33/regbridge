@@ -19,6 +19,9 @@ results/*
 !results/validation/
 !results/validation/**
 paper/figures/*
+!paper/figures/m4-1/
+!paper/figures/m4-1/*.png
+!paper/figures/m4-1/manifest.json
 !paper/figures/.gitkeep
 paper/tables/*
 !paper/tables/.gitkeep
@@ -32,3 +35,10 @@ paper/tables/*
 .DS_Store
 Thumbs.db
 *.log
+
+
+# AI Agent directories
+.agents/
+.claude/
+.codex/
+.copilot/

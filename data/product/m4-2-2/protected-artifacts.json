@@ -1,0 +1,24 @@
+{
+  "schema_version": "m4.2.2.protected-artifacts.v1",
+  "captured_before_implementation": true,
+  "trees": {
+    "data/benchmark": {"file_count": 10, "sha256": "9590c82dcc5106fa6217212760a8f3f40caf4f75e1dbf4096906776214152718"},
+    "data/evaluation": {"file_count": 3, "sha256": "817a04846cda6f912235a2460965b749ce974fdb6e6a70c2ff9cf32d5360ca79"},
+    "results/validation": {"file_count": 18, "sha256": "7cf1c2f7e0c474b88e61e0ceae304ae8ab0e73ffcd2a17004adc76de9a929a2d"},
+    "results/live": {"file_count": 68, "sha256": "b6e845894e5f0b220a5fc64468c6ec7bd78ea8c425604a132f6d763dfcca1d92"},
+    "paper/tables": {"file_count": 37, "sha256": "5ced3f8cba468232ab645c41b1a2e2e791dc8c285eac6e30bde6b142adf0e417"},
+    "data/presentation/m4": {"file_count": 2, "sha256": "f3fdced35c50617658fbbddc5036e6ebb878907d3e07aacf37a8479e52c2a065"},
+    "paper/figures/m4": {"file_count": 5, "sha256": "09a053bb3c73a6b46ace47467dc27aa2db4e714f7bb0aa33325248f421c16cd7"},
+    "data/rules": {"file_count": 2, "sha256": "0fb935b70eb9624befe87f766dcf0f4c1357c47bed32f39efa8160dddac17ae9"},
+    "data/standards": {"file_count": 7, "sha256": "b4c9709614eb21633ab7a59ce988a1b823a94a7a3978ef21c4705ebb2f6d21d4"}
+  },
+  "files": {
+    "data/demo-dossiers/m4-2/regbridge-m4-2-public-standards.zip": "4d236d51694b1c15d37ad92b9d0074b97a15075cde86cb96c393b9f87ce3e6e4",
+    "data/demo-dossiers/m4-2/generation-manifest.json": "8ce430b796f7485f50f37406884f0c471e1a1990d9190e0d0fd3e5d2286c1dad",
+    "data/product/m4-2/protected-artifacts.json": "74390d48698a25e27063572f5641dbb64193d802bb52f420ed59c0626d6fe843",
+    "data/product/m4-2-1/protected-artifacts.json": "f4e32881bff80ff9bd4446f816f7b13e4280432a593ff8245c1bc09e6dab88c1",
+    "data/product/m4-2-1/independent-package-adjudication.json": "81657b91b8213b1a97e677e3e630fef88298f77a8069e4864d8c6f8f216b77e6",
+    "docs/milestones/M4.2.md": "881f369e64e616e12579fafb0346b0dad2365a9b3bbed398f1f787b8604b7da6",
+    "docs/milestones/M4.2.1.md": "ca11e05ab61d0d53fb9667cff0dfd2ad7431597f1e3e0b7ca7ec30e64aadd6b2"
+  }
+}

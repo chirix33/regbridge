@@ -23,7 +23,7 @@ export default defineConfig({
   webServer: [
     {
       command:
-        "powershell -NoProfile -ExecutionPolicy Bypass -Command \"Set-Location ..\\backend; ..\\.venv\\Scripts\\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000\"",
+        "powershell -NoProfile -ExecutionPolicy Bypass -Command \"$env:LLM_MODE='fixture'; Remove-Item Env:LLM_API_KEY -ErrorAction SilentlyContinue; Remove-Item Env:LLM_BASE_URL -ErrorAction SilentlyContinue; Remove-Item Env:LLM_MODEL -ErrorAction SilentlyContinue; Set-Location ..\\backend; ..\\.venv\\Scripts\\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000\"",
       url: "http://127.0.0.1:8000/health",
       reuseExistingServer: true,
       timeout: 60_000,

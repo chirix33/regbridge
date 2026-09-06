@@ -773,7 +773,9 @@ Use React, TypeScript, Vite, Tailwind CSS, Iconoir, React Router, and TanStack Q
 The parser must:
 
 - reject absolute paths, parent traversal, symlink escape, and duplicate ambiguous archive members;
-- disable XML DTDs and external entities;
+- recognize only approved DOCTYPE declarations through an exact identifier-to-pinned-local-file
+  catalog while disabling network retrieval, untrusted filesystem resolution, entity expansion,
+  internal subsets, archive-supplied DTD execution, and every external resource not in the catalog;
 - enforce compressed and expanded size limits, member-count limits, and timeouts;
 - allowlist expected file types for the MVP;
 - calculate checksums while streaming where feasible;
@@ -925,6 +927,152 @@ Deliver:
 - final tests, security checks, and reproducibility instructions.
 
 Exit criteria: a fresh local setup can run the scripted demo twice with identical fixture-mode results.
+
+### M4.1 — End-to-End Dossier Workspace and Interactive System Comparison
+
+M4.1 is additive product-demonstration work over immutable M3 and M4 research artifacts. It
+does not modify or reinterpret the frozen benchmark, splits, labels, prompts, rules, Phase 1 or
+Phase 2 outputs, M4 presentation snapshot, paper validation tables, or their claims. The detailed
+governance and acceptance record is [docs/milestones/M4.1.md](docs/milestones/M4.1.md).
+
+The primary workflow is:
+
+```text
+Upload controlled synthetic eCTD v3.2.2 dossier
+→ parse package
+→ analyze every supported leaf
+→ display dossier summary
+→ inspect document decisions, evidence, graph, repair, and trace
+```
+
+The separate `/baselines` product workspace runs B0, B1, B2, and RegBridge on identical
+package-derived, label-free inputs. It reports agreement, decisions, native traces, failures,
+latency, and usage, but never benchmark accuracy, unsafe-FNR, reference labels, winners, or
+superiority for an arbitrary upload. The primary Analyzer workspace contains no baseline,
+benchmark, or system-comparison output. `/evaluation` continues to display only the immutable M4
+presentation snapshot derived from the frozen Phase 2 run.
+
+M4.1 supports one authenticity-hardened controlled input profile,
+`fda-ectd-322-regbridge-demo-profile-v1`. Its exact capability boundary is:
+
+> RegBridge securely parses and validates a controlled FDA eCTD v3.2.2 package profile for supported structural, lifecycle, metadata, checksum, and document-evidence predicates. It does not perform complete FDA submission validation.
+
+The parser discovers exactly one sequence root; recognizes only allowlisted DOCTYPE declarations
+without resolving external resources or expanding entities; distinguishes package/backbone files
+from analyzable dossier documents; parses regional metadata from the supported Module 1 path;
+verifies legacy MD5 declarations independently from SHA-256 research provenance; and reports
+scoped checks as `passed`, `warning`, `unsupported`, or `failed`. It does not claim complete DTD
+conformance, FDA validation-criteria coverage, submission readiness, or FDA acceptance.
+
+Uploaded ZIP bytes are discarded after bounded parsing. Parsed inventories live in a capacity-
+and TTL-bounded local repository under opaque IDs and expire on server restart. Dossier and
+comparison runs have configuration-scoped identities so results from different model profiles
+cannot overwrite each other. Browser requests select only an allowlisted model profile: public
+`gpt-5.5` uses the tested Responses adapter without a temperature parameter when configured;
+`qwen3.6-local` is a disabled `coming_soon` profile until separately validated. Fixture/stub
+profiles remain internal and network-free.
+
+All systems use the complete six-decision and eleven-action vocabulary with the approved neutral
+definitions. B0 and B1 receive equivalent bounded package facts and standards evidence without
+benchmark identifiers, expected outcomes, reference labels, trigger conditions, expected
+evidence, or RegBridge output. B2 uses deterministic parser/graph/rule capability with semantic
+assistance omitted and makes no provider call. RegBridge uses the full hybrid path. Interactive
+product runs are not benchmark evaluations and are not the future local-model paper experiment.
+
+The audience-facing composite ZIP uses an authentic application/sequence wrapper, `index.xml`,
+`index-md5.txt`, `m1/us/us-regional.xml`, and three deterministic synthetic PDFs. Its three signals
+come only from uploaded XML/PDF content: removed heading `3.2.S.1.2`, `manufacturer="all"` plus
+visible preservation intent, and stale applicant prose compared with parsed regional metadata.
+No expected decision, fixture identifier, benchmark identifier, or adjudication rationale appears
+in model-facing material. Metamorphic tests change each source signal and require the production
+result to change through the same upload/parser/analyzer path.
+
+M4.1 completion requires the additive verification command to pass twice, including backend and
+frontend lint/type/test/build, OpenAPI drift, security and accessibility coverage, deterministic
+package/hash reproduction, a network-free real-ZIP journey, and before/after hashes for protected
+M3/M4 artifacts. FDA/CDER-only scope, prospective framing, `not_operational`, and
+`expert_validated: false` remain visible throughout.
+
+### M4.2 — Public-Standards eCTD v3.2.2 Input Compatibility
+
+M4.2 is additive to M4.1 and is governed in detail by
+[docs/milestones/M4.2.md](docs/milestones/M4.2.md). Its supported input profile is exactly:
+
+- FDA/CDER;
+- eCTD v3.2.2 backbone specification with ICH eCTD DTD v3.2;
+- FDA Module 1 specification v2.6 with US regional DTD v3.3;
+- exactly one selected sequence at archive root, `0000/`, or beneath one application wrapper;
+- bounded PDFs as the only semantic-analysis document type.
+
+The profile validates recognized backbone and regional XML offline through an exact local DTD
+catalog. It accepts approved official absolute HTTP/HTTPS identifiers and approved standard
+relative identifiers, but never dereferences them. Internal subsets, entity declarations,
+unknown identifiers, conflicting root/namespace/DTD combinations, and any noncatalog external
+resource fail closed. Archive DTDs are never validation inputs.
+
+Package inventory separates backbone XML, regional XML, STF, support files, analyzable dossier
+documents, and unsupported members. A backbone leaf that points to `m1/us/us-regional.xml` is a
+regional relationship, not a dossier document. Prior-sequence `modified-file` values are parsed
+as lifecycle references; absent application history yields `INSUFFICIENT_APPLICATION_HISTORY`
+instead of archive-path rejection. Declared MD5 compatibility checksums remain separate from
+SHA-256 provenance.
+
+Every dossier document exposes exactly one coverage status:
+`EVALUATED_WITH_APPROVED_POLICY`, `NO_MIGRATION_CHANGE_DETECTED`,
+`OUTSIDE_ENCODED_POLICY_COVERAGE`, `INSUFFICIENT_APPLICATION_HISTORY`, or
+`DOCUMENT_INSPECTION_INCOMPLETE`. The clean-negative status is available only for an explicitly
+encoded clean-negative policy condition. Analyzer and B0/B1/B2/RegBridge comparison consume the
+same package-derived inventory and coverage record. Out-of-coverage documents are displayed but
+never converted to unconditional legacy-reuse decisions.
+
+This is input-profile compatibility, not complete FDA validation, submission-readiness
+assessment, production v3.2.2-to-v4.0 conversion, or eCTD v4.0 generation. It leaves the frozen
+M3 benchmark, labels, families, prompts, evaluation configurations, Phase 1/Phase 2 artifacts,
+M4 presentation snapshot, numerical claims, M4.1 package bytes, migration decisions, and
+author-adjudicated rules unchanged.
+
+### M4.2.1 — Independent-package DTD adjudication
+
+M4.2.1 is governed by [docs/milestones/M4.2.1.md](docs/milestones/M4.2.1.md) and changes only
+package-envelope adjudication. An archive ICH DTD is never validation code. Its raw SHA-256,
+pinned SHA-256, UTF-8/LF-normalized comparison, semantic comparison, first bounded differences,
+hostile-construct result, and ignored status are recorded. `index.xml` and
+`m1/us/us-regional.xml` are independently validated against the pinned ICH and FDA DTDs.
+
+Any hostile archive DTD fails as `security_violation`. Any pinned-DTD XML validation failure
+fails as `rejected_nonconforming` with exact validation errors. If both XML files pass, a
+non-identical archive DTD may be ignored with warning
+`ARCHIVE_DTD_DIFFERS_FROM_PINNED_COPY` only when the applicable profile has no exact official
+byte-identity requirement. The FDA/CDER M4.2 profile records FDA validation criterion 1130 as
+the exact expected-checksum basis, so a non-identical required UTIL DTD remains a profile
+nonconformance while its textual difference class is still reported accurately.
+
+This adjudication neither creates nor changes a migration-policy fact, rule, finding, repair,
+decision, benchmark input, baseline prompt, evaluation artifact, or product workflow.
+
+### M4.2.2 — Semantic Status, Synthesis Precedence, and Decision-Trace Correction
+
+M4.2.2 is governed by [docs/milestones/M4.2.2.md](docs/milestones/M4.2.2.md). It corrects the
+interactive product's execution-status projection, semantic abstention synthesis, and active
+explanation graph without changing any author-adjudicated migration rule, official evidence
+span, benchmark result, Phase 1/Phase 2 output, protected presentation artifact, or historical
+M4.2 package/result digest.
+
+The product contract carries `completed`, `abstained`, `failed`, and `not_applicable` without
+collapsing a structured abstention into failure. Model profile availability, construction, and
+result disclosure derive from the configured `fixture`, `live`, or `disabled` execution mode.
+Only complete live configuration may expose the Responses adapter as available; fixture mode
+identifies the internal deterministic fixture; disabled mode cannot construct a live adapter.
+Actual failures terminate the leaf and populate `run.failures`; they never synthesize a
+regulatory decision.
+
+For an exact hard `3.2.S.1.1`, `3.2.S.1.2`, or `3.2.S.1.3` mapping, incomplete semantic
+inspection qualifies but does not replace `REUSE_WITH_NEW_CONTEXT` or its mandatory structural
+repair. For metadata-preservation and semantic-only eligibility, an abstention yields bounded
+human review with `COMPLETE_DOCUMENT_INSPECTION`, not a fabricated stale-content finding. Graph
+schema v3 adds a non-regulatory analysis-limitation node and decision-qualification/unresolved
+edges; the product explanation neighborhood contains only the active heading mapping and every
+material rule, finding, limitation, decision, and repair used by synthesis.
 
 ### M5 — Paper and submission support (September 15–18)
 

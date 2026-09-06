@@ -1,4 +1,4 @@
-.PHONY: setup lint typecheck test build check dev schemas evaluate evaluate-live-phase1 evaluate-live-phase2-prepare m4-verify
+.PHONY: setup lint typecheck test build check dev schemas evaluate evaluate-live-phase1 evaluate-live-phase2-prepare m4-verify m4-1-verify m4-2-verify m4-2-2-verify
 
 PYTHON ?= python3
 VENV_PYTHON := .venv/bin/python
@@ -49,3 +49,23 @@ m4-verify:
 	npm --prefix frontend run test
 	npm --prefix frontend run build
 	npm --prefix frontend run test:e2e
+
+m4-1-verify:
+	$(VENV_PYTHON) -m app.product.verify
+	$(VENV_PYTHON) scripts/generate_m4_1_dossier.py --check
+	$(MAKE) check
+	npm --prefix frontend run test:e2e
+	$(VENV_PYTHON) -m app.product.verify
+
+m4-2-verify:
+	$(VENV_PYTHON) -m app.product.verify_m42
+
+m4-2-2-verify:
+	$(VENV_PYTHON) -m app.product.verify_m422
+	$(MAKE) check
+	npm --prefix frontend run test:e2e
+	$(VENV_PYTHON) -m app.product.verify_m422
+	$(VENV_PYTHON) scripts/generate_m4_2_dossier.py --check
+	$(MAKE) check
+	npm --prefix frontend run test:e2e
+	$(VENV_PYTHON) -m app.product.verify_m42

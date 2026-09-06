@@ -17,6 +17,7 @@ ActionCode = Literal[
     "VERIFY_HYPERLINK_RELEVANCE",
     "WAIT_FOR_OPERATIONAL_AVAILABILITY",
 ]
+RuntimeActionCode = ActionCode | Literal["COMPLETE_DOCUMENT_INSPECTION"]
 ACTION_CODES: tuple[str, ...] = get_args(ActionCode)
 ACTION_VOCABULARY_VERSION = "2.1.0"
 
@@ -51,6 +52,11 @@ ACTION_DEFINITIONS: dict[str, str] = {
     "WAIT_FOR_OPERATIONAL_AVAILABILITY":
         "Defer operational submission activity pending availability of the submission pathway.",
 }
+
+COMPLETE_DOCUMENT_INSPECTION_DEFINITION = (
+    "Complete the bounded semantic inspection before deciding whether the document content is "
+    "eligible for legacy reference reuse."
+)
 
 
 class OutputVocabulary(TypedDict):

@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, TypeVar
+from typing import Any, TypeVar, cast
 
 from pydantic import BaseModel
 
@@ -15,6 +15,7 @@ from app.baselines.retrieval import BM25Retriever
 from app.config import Settings
 from app.domain.enums import Decision, LlmMode
 from app.domain.models import ModelRunRecord
+from app.domain.vocabulary import ActionCode
 from app.evaluation.models import (
     BenchmarkCase,
     CaseInput,
@@ -157,7 +158,7 @@ class BaselineRunner:
             case_id=case_input.case_id,
             decision=result.decision,
             severity=result.severity,
-            action=result.repair.type,
+            action=cast(ActionCode, result.repair.type),
             human_review_required=result.human_approval_required,
             unconditional_reuse=(
                 result.decision == Decision.REUSE_AS_LEGACY_REFERENCE
