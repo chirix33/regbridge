@@ -1589,6 +1589,56 @@ footer {
   background: var(--color-accent-solid);
 }
 
+.product-nav-links a,
+.top-nav a {
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.step-workspace { max-width: 72rem; }
+.flow-navigation { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-4); }
+.flow-back-actions { display: flex; flex-wrap: wrap; gap: var(--space-6); }
+.back-link { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; border: 0; background: transparent; color: var(--color-accent-text); text-decoration: none; cursor: pointer; padding-inline: 0; }
+.back-link svg { width: 1.2rem; height: 1.2rem; }
+.flow-steps { display: flex; flex-wrap: wrap; gap: var(--space-5); padding: 0; margin: 0; list-style: none; font-size: var(--text-caption); color: var(--color-text-muted); }
+.flow-steps li { display: flex; align-items: center; gap: var(--space-2); }
+.flow-steps li > span { display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border: 1px solid var(--color-border-default); border-radius: 50%; }
+.flow-steps [aria-current="step"] { color: var(--color-accent-text); font-weight: 700; }
+.flow-steps [aria-current="step"] > span { background: var(--color-accent-solid); color: var(--color-text-on-accent); border-color: transparent; }
+.flow-heading { max-width: 44rem; margin: var(--space-10) auto var(--space-8); text-align: center; }
+.flow-heading h1 { font-size: clamp(2rem, 4vw, 3rem); margin-block-end: var(--space-3); scroll-margin-block-start: 2rem; }
+.flow-heading h1:focus { outline: none; }
+.selected-dossier { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-3); }
+.selected-dossier p { margin: 0; overflow-wrap: anywhere; }
+.flow-form .selected-dossier button { width: auto; padding-inline: var(--space-4); }
+.flow-form { max-width: 42rem; margin-inline: auto; }
+.flow-form .panel { box-shadow: none; border-radius: 16px; padding: clamp(1.25rem, 4vw, 2.5rem); }
+.flow-form fieldset { border: 0; background: transparent; border-block-start: 1px solid var(--color-border-subtle); border-radius: 0; padding: var(--space-6) 0 0; margin-block: var(--space-4); }
+.flow-form legend { padding-inline-end: var(--space-3); font-weight: 650; }
+.flow-form .confirm-row small { display: block; color: var(--color-text-secondary); font-weight: 400; }
+.flow-form > .field-note { margin-block-start: var(--space-5); text-align: center; }
+.flow-form .primary-button { width: 100%; }
+.flow-loading { min-height: 48vh; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: var(--space-6); text-align: center; max-width: 36rem; margin-inline: auto; }
+.flow-loading .thinking-status { display: flex; flex-direction: column; gap: var(--space-6); font-size: var(--text-title); }
+.flow-loading > p { max-width: 42ch; }
+.flow-error { border: 1px solid var(--color-danger-border); background: var(--color-danger-bg); border-radius: var(--radius-control); padding: var(--space-5); }
+.flow-error p { color: var(--color-danger-text); }
+.flow-boundary { display: flex; align-items: flex-start; gap: var(--space-3); max-width: 44rem; margin: var(--space-10) auto 0; }
+.flow-boundary svg { flex: 0 0 1.25rem; height: 1.25rem; color: var(--color-warning-text); }
+.flow-boundary p { font-size: var(--text-caption); }
+.step-workspace details > summary { cursor: pointer; min-height: 44px; align-content: center; }
+.step-workspace .profile-results { margin-block-end: var(--space-5); }
+.step-workspace .metrics-table td:nth-child(2) { white-space: normal; min-width: 13rem; }
+.step-workspace .panel-kicker { text-transform: none; letter-spacing: normal; }
+.step-workspace pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+@media (max-width: 36rem) {
+  .flow-navigation { align-items: flex-start; flex-direction: column; }
+  .flow-steps { gap: var(--space-2); font-size: 0.75rem; }
+  .flow-steps li { gap: var(--space-1); }
+  .flow-heading { margin-block-start: var(--space-6); }
+}
+
 @media (min-width: 72rem) {
   :root {
     --text-display: 3.5rem;

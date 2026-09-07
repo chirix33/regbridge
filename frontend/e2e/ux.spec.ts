@@ -1,0 +1,47 @@
+import { AxeBuilder } from "@axe-core/playwright";
+import { expect, test } from "@playwright/test";
+
+test("step screens stay readable, focused, and accessible", async ({ page }, testInfo) => {
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Analyze a dossier" })).toBeVisible();
+  await expect(page.locator(".product-nav-links a").first()).toHaveCSS("text-transform", "none");
+  await page.screenshot({ path: testInfo.outputPath("setup.png"), fullPage: true });
+  expect((await new AxeBuilder({ page: page as never }).analyze()).violations).toEqual([]);
+  await page.getByRole("button", { name: "Try a sample dossier" }).click();
+  await expect(page.getByText(/Selected: regbridge/)).toBeVisible();
+  await page.getByRole("button", { name: "Continue to options" }).click();
+  await expect(page.getByRole("option", { name: /Deterministic fixture/ })).toBeEnabled();
+  await page.screenshot({ path: testInfo.outputPath("options.png"), fullPage: true });
+  await page.getByLabel(/I confirm/).check();
+  let release!: () => void;
+  const gate = new Promise<void>((resolve) => { release = resolve; });
+  await page.route("**/api/v1/dossier-analyses", async (route) => {
+    await gate;
+    await route.continue();
+  });
+  await page.getByRole("button", { name: "Parse and analyze" }).click();
+  await expect(page.getByRole("status")).toContainText("Checking your package");
+  await expect(page.getByLabel("Dossier ZIP")).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Back to home" })).toBeVisible();
+  await page.screenshot({ path: testInfo.outputPath("loading.png"), fullPage: true });
+  expect((await new AxeBuilder({ page: page as never }).analyze()).violations).toEqual([]);
+  release();
+  await expect(page.getByRole("heading", { name: "Your dossier results" })).toBeFocused();
+  await expect(page.getByText("Reuse with a new context", { exact: true })).toBeVisible();
+  await page.locator("details.leaf-result > summary").first().click();
+  await expect(page.getByText("Create a new context group and suspend the legacy content", { exact: true })).toBeVisible();
+  expect((await new AxeBuilder({ page: page as never }).analyze()).violations).toEqual([]);
+  await page.screenshot({ path: testInfo.outputPath("results.png"), fullPage: true });
+  expect(await page.evaluate("document.documentElement.scrollWidth <= innerWidth")).toBe(true);
+  await page.getByRole("button", { name: "Edit setup" }).click();
+  await expect(page.getByRole("heading", { name: "Analyze a dossier" })).toBeFocused();
+  await expect(page.getByText(/Selected: regbridge/)).toBeVisible();
+  await page.goto("/baselines");
+  await page.getByRole("button", { name: "Run comparison" }).click();
+  await expect(page.getByRole("heading", { name: "Your comparison results" })).toBeFocused();
+  expect((await new AxeBuilder({ page: page as never }).analyze()).violations).toEqual([]);
+  await page.screenshot({ path: testInfo.outputPath("comparison.png"), fullPage: true });
+  expect(await page.evaluate("document.documentElement.scrollWidth <= innerWidth")).toBe(true);
+  await page.getByRole("link", { name: "Back to home" }).click();
+  await expect(page.getByRole("heading", { name: "Analyze a dossier" })).toBeVisible();
+});

@@ -760,6 +760,21 @@ Use React, TypeScript, Vite, Tailwind CSS, Iconoir, React Router, and TanStack Q
 
 ### Interaction principles
 
+The dossier and interactive baseline workspaces use an upload, options, processing, and results
+flow. Dossier setup separates file selection from options; comparisons read the document list
+before selection and can reuse a previously parsed inventory. Processing displays the existing
+thinking-orb loader with honest stage text; it does
+not display the form or partial results. Each transition focuses the screen heading. A home
+arrow remains visible, and completed runs offer editing of the retained setup. Polling failures
+offer a status retry without creating another run. Navigation labels use sentence case.
+
+Present decisions, coverage, and errors in plain language while retaining exact API codes and
+native traces in technical disclosures. Distinguish incomplete document inspection from a
+failed run. Research scope, unavailable FDA forward compatibility, and absence of expert
+validation are stated in plain language; the API retains the canonical governance fields.
+Comparison uploads require reading the new document list before starting a comparison, and
+the selected allowlisted model must be the model submitted to the service.
+
 - Optimize the five-minute demonstration path; avoid a generic admin dashboard.
 - Reveal the evidence behind every decision in at most one interaction.
 - Distinguish observed facts, deterministic rule results, model inferences, and human-review needs visually and textually.

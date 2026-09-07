@@ -22,25 +22,28 @@ test("M4 guided journey and dashboard are accessible", async ({ page }) => {
 
 test("M4.2 uploads the public-standards ZIP and compares package-derived inputs", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: /Inspect reuse risk from the package itself/i })).toBeVisible();
-  await expect(page.getByText(/expert_validated: false/i)).toBeVisible();
-  await expect(page.getByRole("option", { name: /Qwen 3.6 local/i })).toHaveAttribute("disabled", "");
+  await expect(page.getByRole("heading", { name: "Analyze a dossier" })).toBeVisible();
+  await expect(page.getByText(/Not validated by a regulatory expert/i)).toBeVisible();
   await page.getByLabel("Dossier ZIP").setInputFiles("../data/demo-dossiers/m4-2/regbridge-m4-2-public-standards.zip");
+  await page.getByRole("button", { name: "Continue to options" }).click();
+  await expect(page.getByRole("option", { name: /Qwen 3.6 local/i })).toHaveAttribute("disabled", "");
   await page.getByLabel(/I confirm this target context/i).check();
   await page.getByRole("button", { name: "Parse and analyze" }).click();
-  await expect(page.getByRole("heading", { name: "Controlled v3.2.2 profile checks" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Your dossier results" })).toBeFocused();
+  await expect(page.getByRole("button", { name: "Parse and analyze" })).toHaveCount(0);
+  await page.getByText("Package checks and document coverage", { exact: true }).click();
   await expect(page.getByText(/fda-cder-ectd-322-public-standards-profile-v1/)).toBeVisible();
   await expect(page.getByText(/ich-ectd-dtd-v3-2 3.2.2 \(passed\)/)).toBeVisible();
   await expect(page.getByText(/fda-us-regional-dtd-v3-3 3.3 \(passed\)/)).toBeVisible();
-  await expect(page.getByText(/index-dtd-version-inferred/)).toBeVisible();
-  await expect(page.getByText(/Execution: fixture · actual adapter fixture · network-free/)).toBeVisible();
-  await expect(page.getByText("REUSE_WITH_NEW_CONTEXT", { exact: true }).first()).toBeVisible();
-  await expect(page.getByText("REUSE_AS_LEGACY_REFERENCE", { exact: true }).first()).toBeVisible();
-  await expect(page.getByText("HUMAN_REGULATORY_REVIEW", { exact: true }).first()).toBeVisible();
-  await expect(page.getByText("Model abstentions")).toBeVisible();
-  await expect(page.getByText("Pipeline failures")).toBeVisible();
+  await expect(page.getByText(/Index-dtd-version-inferred/)).toBeVisible();
+  await expect(page.getByText("Reuse with a new context", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("Reuse as a legacy reference", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("Regulatory review needed", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("Inspections needing more evidence")).toBeVisible();
+  await expect(page.getByText("Documents that could not be analyzed")).toBeVisible();
   const caseA = page.locator("details.leaf-result").filter({ hasText: "Synthetic molecular structure" });
   await caseA.locator(":scope > summary").click();
+  await caseA.getByText("Technical analysis record", { exact: true }).click();
   await expect(caseA.getByText("Actual adapter")).toBeVisible();
   await expect(caseA.getByText("fixture", { exact: true }).first()).toBeVisible();
   await expect(caseA.getByText("3.2.S.1.2", { exact: true }).first()).toBeVisible();
@@ -49,10 +52,10 @@ test("M4.2 uploads the public-standards ZIP and compares package-derived inputs"
   await expect(page.getByText(/macro-F1|unsafe-FNR|accuracy/i)).toHaveCount(0);
 
   await page.getByRole("link", { name: "Baselines" }).click();
-  await expect(page.getByText(/Reusing 3-document inventory/i)).toBeVisible();
-  await page.getByRole("button", { name: /Run four systems/i }).click();
-  await expect(page.getByRole("heading", { name: /Comparison completed/i })).toBeVisible();
-  await expect(page.getByText("B2 · No LLM").first()).toBeVisible();
+  await expect(page.getByText(/3 documents are available/i)).toBeVisible();
+  await page.getByRole("button", { name: "Run comparison" }).click();
+  await expect(page.getByRole("heading", { name: "Your comparison results" })).toBeFocused();
+  await expect(page.getByText("B2 · Rules only", { exact: true }).first()).toBeVisible();
   await expect(page.getByText(/winner|superiority/i)).toHaveCount(0);
 
   const results = await new AxeBuilder({ page: page as never }).analyze();

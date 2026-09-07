@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { CheckCircle, Database, Upload, WarningTriangle } from "iconoir-react";
+import { Database, Upload } from "iconoir-react";
 
 import { createDossierAnalysis, getDossierAnalysis, getModels, getProductDemoPackage, parseUpload } from "../api/client";
 import type { ApplicationInventory, DossierAnalysisRun, MetadataIntent, TargetContext } from "../api/contracts";
 import { GraphNeighborhood } from "../components/GraphNeighborhood";
-import { ThinkingStatus } from "../components/ThinkingStatus";
+import { FlowLoading, WorkspaceFlow } from "../components/WorkspaceFlow";
+import { errorMessage, readable } from "../api/wording";
 
 function target(intent: MetadataIntent, scenario: TargetContext["scenario_mode"]): TargetContext {
   return {
@@ -29,13 +30,18 @@ export function DossierWorkspace() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [openLeaf, setOpenLeaf] = useState<string | null>(null);
+  const [presetBusy, setPresetBusy] = useState(false);
+  const [optionsOpen, setOptionsOpen] = useState(false);
   const terminal = run && ["completed", "partial_failed", "failed"].includes(run.state);
 
   useEffect(() => {
-    if (!run || terminal) return;
-    const timer = window.setInterval(() => getDossierAnalysis(run.run_id).then(setRun).catch((cause: Error) => setError(cause.message)), 700);
-    return () => window.clearInterval(timer);
-  }, [run, terminal]);
+    if (!run || terminal || error) return;
+    let active = true;
+    const timer = window.setTimeout(() => {
+      void getDossierAnalysis(run.run_id).then((next) => { if (active) setRun(next); }).catch((cause: unknown) => { if (active) setError(errorMessage(cause)); });
+    }, 700);
+    return () => { active = false; window.clearTimeout(timer); };
+  }, [run, terminal, error]);
 
   const selectedProfile = useMemo(
     () => models.data?.models?.find((item) => item.model_id === modelId),
@@ -43,78 +49,88 @@ export function DossierWorkspace() {
   );
 
   async function submit() {
-    if (!file || !confirmed || selectedProfile?.availability !== "available") return;
-    setBusy(true); setError(null); setRun(null);
+    if (!file || !confirmed || busy || selectedProfile?.availability !== "available") return;
+    setBusy(true); setError(null); setRun(null); setInventory(null); setOpenLeaf(null);
     try {
       const parsed = await parseUpload(file);
       setInventory(parsed);
       sessionStorage.setItem("regbridge.inventory", JSON.stringify(parsed));
       const created = await createDossierAnalysis(parsed.id, modelId, target(intent, scenario));
       setRun(created);
-    } catch (cause) { setError(cause instanceof Error ? cause.message : "Analysis failed"); }
+    } catch (cause) { setError(errorMessage(cause)); }
     finally { setBusy(false); }
   }
 
+  const processing = busy || Boolean(run && !terminal);
+  const step = processing ? "loading" : terminal ? "results" : optionsOpen ? "options" : "setup";
   return (
-    <main className="product-workspace" id="main-content">
-      <section className="workspace-hero"><p className="eyebrow">End-to-end dossier workspace</p><h1>Inspect reuse risk from the package itself.</h1><p>Upload a public, synthetic, or deliberately de-identified controlled dossier. XML, regional metadata, lifecycle fields, checksums, and PDF evidence drive the result.</p></section>
-      <section className="boundary-banner" aria-label="Research boundary"><WarningTriangle aria-hidden="true"/><div><strong>FDA/CDER prospective research prototype · not_operational</strong><span>expert_validated: false · no FDA acceptance, compliance, readiness, or regulatory-advice claim</span></div></section>
-      <section className="workspace-grid">
-        <form className="panel upload-panel" onSubmit={(event) => { event.preventDefault(); void submit(); }}>
-          <h2><Upload aria-hidden="true"/> Upload and analyze</h2>
-          <button type="button" onClick={() => { void getProductDemoPackage().then(setFile).catch((cause: Error) => setError(cause.message)); }}>Load M4.2 demo preset</button>
+    <WorkspaceFlow step={step} title={processing ? "Reviewing your dossier" : terminal ? "Your dossier results" : "Analyze a dossier"}
+      description={processing ? undefined : terminal ? "Review each document's decision and what to do next." : "Upload your dossier, choose how to reuse its content, and review the risks."}
+      onBack={terminal ? () => { setRun(null); setInventory(null); setError(null); } : undefined}>
+      {processing ? <FlowLoading label={busy ? "Checking your package" : "Analyzing your documents"} detail={busy ? "Reading the ZIP and checking its structure." : "Checking placement, metadata, and document content. Results will appear here when the run finishes."} error={error} onRetry={() => setError(null)}/> : !terminal && <section className="flow-form">
+        <form className="panel upload-panel" onSubmit={(event) => { event.preventDefault(); if (optionsOpen) void submit(); else if (file) setOptionsOpen(true); }}>
+          {!optionsOpen ? <>
+          <h2><Upload aria-hidden="true"/> Choose your dossier</h2>
+          <p>Use a public, synthetic, or de-identified FDA/CDER eCTD v3.2.2 ZIP containing one sequence.</p>
+          <button type="button" disabled={presetBusy} onClick={() => { setPresetBusy(true); setError(null); void getProductDemoPackage().then(setFile).catch((cause: unknown) => setError(errorMessage(cause))).finally(() => setPresetBusy(false)); }}>{presetBusy ? "Loading sample..." : "Try a sample dossier"}</button>
           {file && <p className="field-note">Selected: {file.name}</p>}
           <label>Dossier ZIP<input aria-label="Dossier ZIP" type="file" accept=".zip,application/zip" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /></label>
-          <label>Available LLM<select value={modelId} onChange={(event) => setModelId(event.target.value)}>{models.data?.models.map((profile) => <option key={profile.model_id} value={profile.model_id} disabled={profile.availability !== "available"}>{profile.display_name}{profile.availability !== "available" ? " — disabled" : ""}</option>)}</select></label>
-          {selectedProfile && <p className="field-note"><strong>Execution:</strong> {selectedProfile.execution_mode} · actual adapter {selectedProfile.actual_adapter_type ?? "none"} · {selectedProfile.network_required ? "network required" : "network-free"}</p>}
-          {models.data?.models.filter((item) => item.availability !== "available").map((item) => <p className="field-note" key={item.model_id}>{item.display_name}: {item.disabled_reason}</p>)}
-          <fieldset><legend>Target context</legend><dl className="context-list"><div><dt>Authority / center</dt><dd>FDA / CDER</dd></div><div><dt>Application</dt><dd>NDA</dd></div><div><dt>Transition</dt><dd>eCTD v3.2.2 → eCTD v4.0</dd></div><div><dt>Standards snapshot</dt><dd>fda-cder-demo-v1</dd></div><div><dt>Operation</dt><dd>identifier-based reuse</dd></div></dl>
+          <button className="primary-button" disabled={!file || presetBusy}>Continue to options</button>
+          </> : <>
+          <div className="selected-dossier"><p>Selected: {file?.name}</p><button type="button" onClick={() => setOptionsOpen(false)}>Change dossier</button></div>
+          <label>Analysis model<select value={modelId} onChange={(event) => setModelId(event.target.value)}>{models.data?.models.map((profile) => <option key={profile.model_id} value={profile.model_id} disabled={profile.availability !== "available"}>{profile.display_name}{profile.availability !== "available" ? " (unavailable)" : ""}</option>)}</select></label>
+          {models.isPending && <p role="status">Loading available models...</p>}
+          {models.isError && <div role="alert"><p>We couldn't load the analysis models. Check that the local service is running.</p><button type="button" onClick={() => void models.refetch()}>Reload models</button></div>}
+          {selectedProfile && <p className="field-note">{selectedProfile.execution_mode === "fixture" ? "Offline demonstration: uses repeatable sample responses, without a live AI call." : selectedProfile.network_required ? "Online analysis: document evidence is sent to the configured model provider." : "Analysis runs locally without a network connection."}</p>}
+          <fieldset><legend>Choose your options</legend><p className="field-note">FDA / CDER · NDA · eCTD v3.2.2 to v4.0 · Reuse existing content by reference</p>
             <label>Scenario<select value={scenario} onChange={(event) => setScenario(event.target.value as TargetContext["scenario_mode"])}><option value="prospective_forward_compatibility">Prospective forward compatibility</option><option value="current_operational">Current operational</option></select></label>
-            <label>Metadata migration intent<select value={intent} onChange={(event) => setIntent(event.target.value as MetadataIntent)}><option value="preserve-existing-lifecycle">Preserve existing lifecycle</option><option value="normalize-metadata">Normalize metadata</option><option value="unspecified">Unspecified</option></select></label>
-            <p className="field-note">Manufacturer partitioning: unknown (visible advisory input)</p>
+            {scenario === "current_operational" && <p className="field-note">FDA forward compatibility is currently unavailable. This mode reports that limitation without running prospective compatibility rules or AI inspection.</p>}
+            <label>How should metadata be handled?<select value={intent} onChange={(event) => setIntent(event.target.value as MetadataIntent)}><option value="preserve-existing-lifecycle">Keep the existing lifecycle</option><option value="normalize-metadata">Standardize metadata for the new context</option><option value="unspecified">I'm not sure yet</option></select></label>
+            <p className="field-note">Manufacturer grouping is unknown. The analysis will retain any related uncertainty.</p>
           </fieldset>
           <label className="confirm-row"><input type="checkbox" checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)}/> I confirm this target context and that the upload is synthetic or de-identified.</label>
           <button className="primary-button" disabled={!file || !confirmed || busy || selectedProfile?.availability !== "available"}>
-            {busy ? <ThinkingStatus label="Parsing..." state="shaping" dark /> : "Parse and analyze"}
+            Parse and analyze
           </button>
+          </>}
           {error && <p role="alert" className="error-copy">{error}</p>}
         </form>
-        <section className="panel scope-panel" aria-labelledby="controlled-scope"><h2 id="controlled-scope">Controlled scope</h2><p>RegBridge accepts a bounded FDA/CDER eCTD v3.2.2 public-standards profile and validates its two XML backbones against pinned local DTDs. It does not perform complete FDA validation or assess submission readiness.</p><p>Demo preset: <code>data/demo-dossiers/m4-2/regbridge-m4-2-public-standards.zip</code>. Raw ZIP bytes are discarded after parsing.</p></section>
-      </section>
-      {inventory && (
-        <section className="panel profile-results motion-enter">
-          <h2>Controlled v3.2.2 profile checks</h2>
-          <p className="result-lead"><CheckCircle aria-hidden="true"/> Supported profile checks {inventory.package_profile_status}</p>
+        <p className="field-note">The uploaded ZIP is discarded after parsing. Only supported package checks and document risks are assessed.</p>
+      </section>}
+      {inventory && terminal && (
+        <details className="panel profile-results motion-enter">
+          <summary>Package checks and document coverage</summary>
+          <p className="result-lead">Package checks: {readable(inventory.package_profile_status)}</p>
           <dl className="context-list">
             <div><dt>Sequence root</dt><dd>{inventory.detected_sequence_root}</dd></div>
             <div><dt>Profile</dt><dd>{inventory.input_profile_id} · {inventory.input_profile_version}</dd></div>
             <div><dt>Documents</dt><dd>{inventory.leaves.length}</dd></div>
             <div><dt>Index MD5</dt><dd>{inventory.index_md5_matches ? "matched" : "not verified"}</dd></div>
             <div><dt>Warnings</dt><dd>{inventory.warnings.length}</dd></div>
-            <div><dt>Policy coverage</dt><dd>{Object.entries(inventory.policy_coverage_counts).map(([name, count]) => `${name}: ${count}`).join(" · ") || "none"}</dd></div>
+            <div><dt>Policy coverage</dt><dd>{Object.entries(inventory.policy_coverage_counts).map(([name, count]) => `${readable(name)}: ${count}`).join(" · ") || "none"}</dd></div>
           </dl>
           <p><strong>DTD identities:</strong> {inventory.xml_declarations.map((item) => `${item.dtd_asset_id ?? "unidentified"} ${item.effective_dtd_version ?? "unknown"} (${item.dtd_validation_result})`).join(" · ")}</p>
           <ul>{inventory.profile_checks.map((check) => <li key={check.id}><strong>{check.label}: {check.status}</strong> — {check.detail}</li>)}</ul>
-          {inventory.warnings.length > 0 && <ul>{inventory.warnings.map((warning) => <li key={`${warning.code}-${warning.locator}`}><strong>{warning.code}</strong> — {warning.message}</li>)}</ul>}
+          {inventory.warnings.length > 0 && <ul>{inventory.warnings.map((warning) => <li key={`${warning.code}-${warning.locator}`}><strong>{readable(warning.code)}</strong> — {warning.message}</li>)}</ul>}
           <h3>Document policy coverage</h3>
-          <ul>{inventory.leaves.map((leaf) => <li key={leaf.id}><strong>{leaf.title}: {leaf.policy_coverage_status}</strong> — {leaf.policy_coverage_basis}</li>)}</ul>
+          <ul>{inventory.leaves.map((leaf) => <li key={leaf.id}><strong>{leaf.title}: {readable(leaf.policy_coverage_status)}</strong> — {leaf.policy_coverage_basis}</li>)}</ul>
           {inventory.package_files.some((item) => item.member_type === "UNSUPPORTED") && <p><strong>Unsupported members:</strong> {inventory.package_files.filter((item) => item.member_type === "UNSUPPORTED").map((item) => item.path).join(", ")}. No reuse decision is assigned to these members.</p>}
-        </section>
+        </details>
       )}
-      {run && (
+      {run && terminal && (
         <section className="results-stack motion-enter" aria-live="polite">
           <div className="panel">
-            <p className="panel-kicker">Dossier analysis · {run.state}</p>
+            <p className="panel-kicker">Dossier analysis · {readable(run.state)}</p>
             <h2>Package summary</h2>
             {run.summary ? (
               <div className="summary-cards">
                 <article><strong>{run.summary.analyzed_count}</strong><span>Successfully analyzed</span></article>
                 <article><strong>{run.summary.human_approval_count}</strong><span>Human approval required</span></article>
-                <article><strong>{run.summary.model_abstention_count}</strong><span>Model abstentions</span></article>
-                <article><strong>{run.summary.pipeline_failure_count}</strong><span>Pipeline failures</span></article>
+                <article><strong>{run.summary.model_abstention_count}</strong><span>Inspections needing more evidence</span></article>
+                <article><strong>{run.summary.pipeline_failure_count}</strong><span>Documents that could not be analyzed</span></article>
               </div>
             ) : (
-              <ThinkingStatus label="Analysis is running..." state="solving" size={64} />
+              <p>The run has finished. Review the available results and any failures below.</p>
             )}
           </div>
           {run.results.map((item) => (
@@ -129,17 +145,23 @@ export function DossierWorkspace() {
             >
               <summary className="leaf-heading">
                 <span><Database aria-hidden="true"/><strong>{item.analysis.source_artifact.title}</strong></span>
-                <span>{item.analysis.decision}</span>
+                <span>{readable(item.analysis.decision)}</span>
               </summary>
               <div className="leaf-details">
                 <p><strong>Severity:</strong> {item.analysis.severity} · <strong>Human approval:</strong> {item.analysis.human_approval_required ? "required" : "not required"}</p>
                 <p>{item.analysis.rationale}</p>
                 <h3>Repair or next action</h3>
-                <code>{item.analysis.repair.type}</code>
+                <strong>{readable(item.analysis.repair.type)}</strong>
                 <p>{item.analysis.repair.description}</p>
                 <h3>Findings and evidence</h3>
                 {item.analysis.findings.map((finding) => <blockquote key={finding.id}>{finding.rationale}<cite>{finding.evidence_ids.join(", ")}</cite></blockquote>)}
-                <h3>Model record</h3>
+                {item.analysis.evidence?.map((evidence) => <blockquote key={evidence.id}><p>{evidence.text}</p><cite>{evidence.locator} · {"source_id" in evidence ? evidence.source_id : "Uploaded document"}</cite></blockquote>)}
+                <h3>Document inspection</h3>
+                <p>{readable(item.model.status)}</p>
+                {item.model.status === "abstained" && <p>The model could not reach a conclusion from the available evidence. This does not mean stale content was found. Any required structural changes still apply.</p>}
+                {item.analysis.unresolved_uncertainty?.length > 0 && <ul>{item.analysis.unresolved_uncertainty.map((reason) => <li key={reason}>{reason}</li>)}</ul>}
+                {typeof item.analysis.confidence === "number" && <p>Reported confidence: {Math.round(item.analysis.confidence * 100)}%. This is not a probability of FDA acceptance.</p>}
+                <details><summary>Technical analysis record</summary>
                 <dl className="context-list">
                   <div><dt>Model profile</dt><dd>{item.model.model_profile_id}</dd></div>
                   <div><dt>Actual adapter</dt><dd>{item.model.adapter_type}</dd></div>
@@ -151,16 +173,17 @@ export function DossierWorkspace() {
                 {item.model.status_detail && <p><strong>Model status detail:</strong> {item.model.status_detail}</p>}
                 {item.model.reason_category && <p><strong>Reason category:</strong> {item.model.reason_category}</p>}
                 {item.model.failure && <p><strong>Failure category:</strong> {item.model.failure}</p>}
-                {item.model.status === "abstained" && <p>Analysis completed with deterministic synthesis; semantic inspection did not produce a finding.</p>}
+                <p>Decision code: <code>{item.analysis.decision}</code> · Action code: <code>{item.analysis.repair.type}</code></p>
                 <h3>Chronological trace</h3>
                 <ol>{item.analysis.trace.map((step) => <li key={step.sequence}><strong>{step.component}</strong> — {step.summary}</li>)}</ol>
+                </details>
                 <GraphNeighborhood graph={item.graph}/>
               </div>
             </details>
           ))}
-          {run.failures.map((failure) => <section className="panel" key={failure.leaf_id}><h2>Pipeline failure</h2><p><strong>{failure.leaf_id}</strong> · {failure.failure_category} · stage {failure.stage}</p><p>No regulatory decision was published for this document.</p></section>)}
+          {run.failures.map((failure) => <section className="panel" key={failure.leaf_id}><h2>Document could not be analyzed</h2><p><strong>{inventory?.leaves.find((leaf) => leaf.id === failure.leaf_id)?.title ?? "Document"}</strong></p><p>The analysis could not finish, so no reuse decision was issued. Return to setup to try again. If this continues, share the technical details with the person running the service.</p><details><summary>Technical error details</summary><p>{failure.leaf_id} · {failure.failure_category} · {failure.stage}</p></details></section>)}
         </section>
       )}
-    </main>
+    </WorkspaceFlow>
   );
 }
