@@ -22,16 +22,25 @@ async function getJson<T>(path: string): Promise<T> {
   const response = await fetch(`${apiOrigin}${path}`, {
     headers: { Accept: "application/json" },
   });
-  if (!response.ok) {
-    throw new Error(`RegBridge API request failed with status ${response.status}`);
-  }
-  return (await response.json()) as T;
+  return responseJson<T>(response);
 }
 
 async function responseJson<T>(response: Response): Promise<T> {
   if (!response.ok) {
-    const detail = (await response.json().catch(() => null)) as { detail?: string } | null;
-    throw new Error(detail?.detail ?? `RegBridge API request failed with status ${response.status}`);
+    const payload = (await response.json().catch(() => null)) as { detail?: unknown } | null;
+    const messages: Record<number, string> = {
+      404: "This dossier or result is no longer available. Upload the dossier again to start a new run.",
+      413: "This ZIP is too large. Choose a smaller dossier package and try again.",
+      415: "This file type isn't supported. Choose an eCTD dossier saved as a ZIP file.",
+      422: "We couldn't validate this package or its options. Check the dossier and try again.",
+      429: "RegBridge is handling too many requests. Wait a moment, then try again.",
+      503: "The analysis service is unavailable. Check the model configuration or try again later.",
+    };
+    const message = messages[response.status] ?? (response.status >= 500
+      ? "Something went wrong in the service. Please try again."
+      : "We couldn't complete this request. Check your file and options, then try again.");
+    const detail = typeof payload?.detail === "string" ? payload.detail : null;
+    throw new Error(detail && response.status < 500 ? `${message} Details: ${detail}` : message);
   }
   return (await response.json()) as T;
 }
@@ -86,7 +95,7 @@ export async function getProductDemoPackage(): Promise<File> {
     headers: { Accept: "application/zip" },
   });
   if (!response.ok) {
-    throw new Error(`RegBridge demo package request failed with status ${response.status}`);
+    await responseJson<never>(response);
   }
   return new File(
     [await response.blob()],

@@ -13,6 +13,7 @@ frontend/node_modules/
 frontend/dist/
 frontend/coverage/
 frontend/.vite/
+frontend/test-results/
 
 results/*
 !results/.gitkeep
@@ -42,3 +43,7 @@ Thumbs.db
 .claude/
 .codex/
 .copilot/
+
+
+# Custom directories
+eCTD-demo/ 

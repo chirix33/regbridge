@@ -160,23 +160,25 @@ it("shows abstention as completed analysis and separates pipeline failures", asy
   }));
   render(<App />);
 
+  fireEvent.change(screen.getByLabelText("Dossier ZIP"), { target: { files: [new File(["zip"], "synthetic.zip", { type: "application/zip" })] } });
+  fireEvent.click(screen.getByRole("button", { name: "Continue to options" }));
+
   expect(
     await screen.findByText(
       (_content, element) =>
         element?.tagName === "P" &&
         element.textContent?.includes(
-          "Execution: fixture · actual adapter fixture · network-free",
+          "Offline demonstration: uses repeatable sample responses",
         ) === true,
     ),
   ).toBeVisible();
-  fireEvent.change(screen.getByLabelText("Dossier ZIP"), { target: { files: [new File(["zip"], "synthetic.zip", { type: "application/zip" })] } });
   fireEvent.click(screen.getByLabelText(/I confirm this target context/i));
   fireEvent.click(screen.getByRole("button", { name: "Parse and analyze" }));
 
-  const abstentions = await screen.findByText("Model abstentions");
-  expect(abstentions.closest("article")).toHaveTextContent("1Model abstentions");
-  const failures = screen.getByText("Pipeline failures");
-  expect(failures.closest("article")).toHaveTextContent("1Pipeline failures");
+  const abstentions = await screen.findByText("Inspections needing more evidence");
+  expect(abstentions.closest("article")).toHaveTextContent("1Inspections needing more evidence");
+  const failures = screen.getByText("Documents that could not be analyzed");
+  expect(failures.closest("article")).toHaveTextContent("1Documents that could not be analyzed");
   const analyzed = screen.getByText("Successfully analyzed");
   expect(analyzed.closest("article")).toHaveTextContent("2Successfully analyzed");
 
@@ -187,10 +189,12 @@ it("shows abstention as completed analysis and separates pipeline failures", asy
   fireEvent.click(resultTitle as HTMLElement);
   const details = (resultTitle as HTMLElement).closest("details");
   expect(details).not.toBeNull();
-  expect(within(details as HTMLElement).getByText("abstained")).toBeVisible();
+  expect(within(details as HTMLElement).getByText("Inspection incomplete")).toBeVisible();
   expect(within(details as HTMLElement).queryByText("failed")).not.toBeInTheDocument();
-  expect(within(details as HTMLElement).getByText(/Analysis completed with deterministic synthesis/)).toBeVisible();
+  expect(within(details as HTMLElement).getByText(/This does not mean stale content was found/)).toBeVisible();
   expect(within(details as HTMLElement).getByText("analysis limitation")).toBeVisible();
-  expect(screen.getByRole("heading", { name: "Pipeline failure" })).toBeVisible();
-  expect(screen.getByText(/No regulatory decision was published/)).toBeVisible();
+  expect(screen.getByRole("heading", { name: "Document could not be analyzed" })).toBeVisible();
+  expect(screen.getByText(/no reuse decision was issued/)).toBeVisible();
+  expect(screen.queryByRole("button", { name: "Parse and analyze" })).not.toBeInTheDocument();
+  expect(screen.getByRole("heading", { name: "Your dossier results" })).toHaveFocus();
 });

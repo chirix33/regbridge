@@ -17,12 +17,11 @@ it("makes upload analysis primary and keeps Qwen disabled without benchmark metr
   window.history.pushState({}, "", "/");
   vi.stubGlobal("fetch", vi.fn(() => Promise.resolve(new Response(JSON.stringify(models), { status: 200, headers: { "Content-Type": "application/json" } }))));
   render(<App />);
-  expect(await screen.findByRole("heading", { name: /Inspect reuse risk from the package itself/i })).toBeVisible();
-  expect(screen.getByText(/not_operational/i)).toBeVisible();
-  expect(screen.getByText(/expert_validated: false/i)).toBeVisible();
-  expect(await screen.findByRole("option", { name: /Qwen 3.6 local/i })).toBeDisabled();
+  expect(await screen.findByRole("heading", { name: "Analyze a dossier" })).toBeVisible();
+  expect(screen.getByText(/Forward compatibility is currently unavailable/i)).toBeVisible();
+  expect(screen.getByText(/Not validated by a regulatory expert/i)).toBeVisible();
   expect(screen.queryByText(/macro-F1|unsafe-FNR|accuracy/i)).not.toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "Load M4.2 demo preset" })).toBeVisible();
+  expect(screen.getByRole("button", { name: "Try a sample dossier" })).toBeVisible();
   expect(screen.getByRole("button", { name: "Open navigation menu" })).toHaveAttribute("aria-expanded", "false");
   fireEvent.click(screen.getByRole("button", { name: "Open navigation menu" }));
   expect(screen.getByRole("button", { name: "Close navigation menu" })).toHaveAttribute("aria-expanded", "true");
@@ -30,6 +29,8 @@ it("makes upload analysis primary and keeps Qwen disabled without benchmark metr
   expect(screen.getByRole("button", { name: "Open navigation menu" })).toHaveAttribute("aria-expanded", "false");
   const input = screen.getByLabelText("Dossier ZIP");
   fireEvent.change(input, { target: { files: [new File(["zip"], "synthetic.zip", { type: "application/zip" })] } });
+  fireEvent.click(screen.getByRole("button", { name: "Continue to options" }));
+  expect(await screen.findByRole("option", { name: /Qwen 3.6 local/i })).toBeDisabled();
   fireEvent.click(screen.getByLabelText(/I confirm this target context/i));
   expect(screen.getByRole("button", { name: "Parse and analyze" })).toBeEnabled();
 });
