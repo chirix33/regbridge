@@ -49,3 +49,5 @@ Thumbs.db
 
 # Custom directories
 eCTD-demo/ 
+.vercel
+.env*
