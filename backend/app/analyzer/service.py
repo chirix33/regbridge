@@ -2,14 +2,13 @@ import asyncio
 import hashlib
 from collections.abc import Callable
 from datetime import UTC, datetime
-from pathlib import Path
 from typing import cast
 
 import tiktoken
 
 from app.analyzer.prompts import SEMANTIC_INSPECTION_PROMPT_VERSION, SEMANTIC_INSPECTION_TASK
 from app.analyzer.repairs import complete_document_inspection_action
-from app.analyzer.repository import AnalysisRepository
+from app.analyzer.repository import AnalysisStore
 from app.config import Settings, get_settings
 from app.domain.enums import (
     Decision,
@@ -98,7 +97,7 @@ class AnalysisService:
         self,
         *,
         model: StructuredModel | None = None,
-        repository: AnalysisRepository | None = None,
+        repository: AnalysisStore | None = None,
         settings: Settings | None = None,
     ) -> None:
         self.settings = settings or get_settings()
@@ -109,9 +108,12 @@ class AnalysisService:
         self.operational = OperationalStatusRegistry().load()
         self.snapshot_id = StandardsRegistry().load().snapshot_id
         self.model = model or _configured_model(self.settings)
-        self.repository = repository or AnalysisRepository(
-            Path(self.settings.reg_bridge_database_path)
-        )
+        if repository is not None:
+            self.repository = repository
+        else:
+            from app.persistence.factory import create_analysis_repository
+
+            self.repository = create_analysis_repository(self.settings)
 
     def analyze(
         self,

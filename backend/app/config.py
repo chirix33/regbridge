@@ -1,7 +1,8 @@
+import os
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import Field, SecretStr, field_validator, model_validator
+from pydantic import AliasChoices, Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from app.domain.enums import LlmMode
@@ -15,16 +16,22 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",
         case_sensitive=False,
+        populate_by_name=True,
     )
 
     reg_bridge_env: str = "development"
     reg_bridge_host: str = "127.0.0.1"
     reg_bridge_port: int = Field(default=8000, ge=1, le=65535)
     reg_bridge_database_path: Path = REPOSITORY_ROOT / "results" / "regbridge.sqlite3"
+    reg_bridge_database_url: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("REG_BRIDGE_DATABASE_URL", "DATABASE_URL"),
+    )
     reg_bridge_cors_origins: list[str] = [
         "http://127.0.0.1:5173",
         "http://localhost:5173",
     ]
+    reg_bridge_cors_origin_regex: str | None = None
 
     llm_mode: LlmMode = LlmMode.FIXTURE
     llm_base_url: str | None = None
@@ -52,6 +59,19 @@ class Settings(BaseSettings):
         # configurations usable while exposing only the canonical enum through the API.
         return "live" if value == "llm" else value
 
+    @field_validator("reg_bridge_database_url", mode="before")
+    @classmethod
+    def empty_database_url_to_none(cls, value: object) -> object:
+        if value == "":
+            return None
+        return value
+
+    @model_validator(mode="after")
+    def apply_vercel_cors_preview_regex(self) -> "Settings":
+        if self.reg_bridge_cors_origin_regex is None and os.environ.get("VERCEL"):
+            self.reg_bridge_cors_origin_regex = r"https://.*\.vercel\.app"
+        return self
+
     @model_validator(mode="after")
     def validate_live_model_configuration(self) -> "Settings":
         if self.llm_mode == LlmMode.LIVE:
@@ -67,6 +87,16 @@ class Settings(BaseSettings):
             if missing:
                 raise ValueError(f"live model mode requires: {', '.join(missing)}")
         return self
+
+    @property
+    def uses_postgres(self) -> bool:
+        return bool(self.reg_bridge_database_url)
+
+    @property
+    def resolved_database_url(self) -> str:
+        if self.reg_bridge_database_url is None:
+            raise RuntimeError("Postgres URL is not configured")
+        return self.reg_bridge_database_url
 
 
 @lru_cache
