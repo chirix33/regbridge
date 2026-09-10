@@ -225,6 +225,6 @@ class ComparisonRun(DomainModel):
 class InventoryEnvelope(DomainModel):
     inventory_id: StableId
     expires_at: AwareDatetime
-    restart_persistence: Literal["none"] = "none"
+    restart_persistence: Literal["none", "database"] = "none"
     raw_zip_retained: Literal[False] = False
     inventory: ApplicationInventory

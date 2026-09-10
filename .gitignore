@@ -37,6 +37,8 @@ paper/tables/*
 Thumbs.db
 *.log
 
+# Vercel local link metadata
+.vercel/
 
 # AI Agent directories
 .agents/
@@ -47,3 +49,5 @@ Thumbs.db
 
 # Custom directories
 eCTD-demo/ 
+.vercel
+.env*

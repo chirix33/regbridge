@@ -20,6 +20,8 @@ packaging==26.3
 pathspec==1.1.1
 pillow==12.3.0
 pluggy==1.6.0
+psycopg==3.2.13
+psycopg-binary==3.2.13
 pydantic==2.13.4
 pydantic-settings==2.10.1
 pydantic_core==2.46.4

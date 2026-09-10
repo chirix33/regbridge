@@ -87,7 +87,10 @@ flowchart TD
 
 - Use a modular monolith for the MVP. Do not introduce microservices.
 - Use in-process typed domain objects and a `networkx.MultiDiGraph`-compatible graph abstraction.
-- Persist canonical records in SQLite plus JSON artifacts. The graph can be rebuilt deterministically; it is not the sole persistence layer.
+- Persist canonical records in SQLite locally, or in Postgres (Neon) when
+  `DATABASE_URL` / `REG_BRIDGE_DATABASE_URL` is set. JSON artifacts remain the
+  evaluation export format. The graph can be rebuilt deterministically; it is
+  not the sole persistence layer.
 - Use Pydantic models for service boundaries and JSON Schema exports for fixtures, rules, and model outputs.
 - Keep standards ingestion, dossier parsing, graph construction, rule execution, model assistance, decision synthesis, baselines, and evaluation in separate modules.
 - The React client consumes versioned JSON APIs. It must not contain regulatory decision logic.
@@ -1133,11 +1136,11 @@ A release candidate requires:
 
 The following are deliberately deferred until the core vertical slices work:
 
-- graph database migration beyond SQLite/NetworkX;
+- graph database migration beyond SQLite/NetworkX or Postgres result storage;
 - support for additional FDA centers or non-FDA regulators;
 - embedding-provider selection beyond the reproducible lexical B1 baseline;
 - automated regulatory-source refresh;
-- production authentication, multi-tenancy, and cloud deployment;
+- production authentication and multi-tenancy;
 - automatic v4.0 package generation or document rewriting;
 - external regulatory-expert validation or an expert user study.
 

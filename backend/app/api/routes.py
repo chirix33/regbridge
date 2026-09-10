@@ -46,6 +46,7 @@ from app.evaluation.jobs import EvaluationBusyError, EvaluationManager
 from app.parsers.ectd322 import EctdParseError, FixtureCatalog
 from app.parsers.models import ApplicationInventory
 from app.parsers.profile322 import parse_uploaded_zip
+from app.persistence.factory import create_product_stores
 from app.presentation.repository import load_m4_snapshot
 from app.product.comparison import ComparisonManager
 from app.product.models import (
@@ -56,11 +57,6 @@ from app.product.models import (
     ModelCatalog,
 )
 from app.product.models_registry import ModelProfileRegistry
-from app.product.repository import (
-    ComparisonRunRepository,
-    DossierRunRepository,
-    InventoryRepository,
-)
 from app.product.services import DossierAnalysisManager
 from app.standards.operational import OperationalStatusRegistry
 from app.standards.registry import StandardsRegistry
@@ -80,11 +76,7 @@ DISCLAIMER = (
 
 router = APIRouter()
 M4_2_DEMO_PACKAGE = (
-    REPOSITORY_ROOT
-    / "data"
-    / "demo-dossiers"
-    / "m4-2"
-    / "regbridge-m4-2-public-standards.zip"
+    REPOSITORY_ROOT / "data" / "demo-dossiers" / "m4-2" / "regbridge-m4-2-public-standards.zip"
 )
 
 
@@ -97,20 +89,10 @@ ManifestDependency = Annotated[StandardsManifest, Depends(get_manifest)]
 
 _evaluation_manager = EvaluationManager()
 _product_settings = get_settings()
-_inventory_repository = InventoryRepository(
-    capacity=_product_settings.product_inventory_capacity,
-    ttl_seconds=_product_settings.product_inventory_ttl_seconds,
-)
-_dossier_runs: DossierRunRepository = DossierRunRepository(
-    capacity=_product_settings.product_job_capacity,
-    ttl_seconds=_product_settings.product_job_ttl_seconds,
-    prefix="dossier",
-)
-_comparison_runs: ComparisonRunRepository = ComparisonRunRepository(
-    capacity=_product_settings.product_job_capacity,
-    ttl_seconds=_product_settings.product_job_ttl_seconds,
-    prefix="comparison",
-)
+_product_stores = create_product_stores(_product_settings)
+_inventory_repository = _product_stores.inventories
+_dossier_runs = _product_stores.dossier_runs
+_comparison_runs = _product_stores.comparison_runs
 _model_registry = ModelProfileRegistry(_product_settings)
 _dossier_manager = DossierAnalysisManager(
     inventories=_inventory_repository,
@@ -298,9 +280,7 @@ def get_product_demo_package() -> Response:
         content=M4_2_DEMO_PACKAGE.read_bytes(),
         media_type="application/zip",
         headers={
-            "Content-Disposition": (
-                'attachment; filename="regbridge-m4-2-public-standards.zip"'
-            ),
+            "Content-Disposition": ('attachment; filename="regbridge-m4-2-public-standards.zip"'),
             "X-RegBridge-Input-Profile": (
                 "fda-cder-ectd-322-public-standards-profile-v1; version=1.0.0"
             ),
