@@ -43,3 +43,7 @@ Thumbs.db
 .claude/
 .codex/
 .copilot/
+
+
+# Custom directories
+eCTD-demo/ 

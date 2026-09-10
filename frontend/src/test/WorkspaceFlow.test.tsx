@@ -26,7 +26,7 @@ it("replaces setup with the loader and restores editable inputs after a rejected
   expect(screen.getByRole("status")).toHaveTextContent("Checking your package");
   expect(screen.queryByLabelText("Dossier ZIP")).not.toBeInTheDocument();
   expect(screen.queryByText("Package summary")).not.toBeInTheDocument();
-  expect(screen.getByRole("link", { name: "Back to home" })).toBeVisible();
+  expect(screen.queryByRole("link", { name: "Back to home" })).not.toBeInTheDocument();
   act(() => resolveUpload(json({ detail: "Missing index.xml" }, 422)));
   expect(await screen.findByRole("alert")).toHaveTextContent("Check the dossier");
   expect(screen.getByRole("alert")).toHaveTextContent("Missing index.xml");

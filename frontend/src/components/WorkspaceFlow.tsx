@@ -1,6 +1,6 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { ArrowLeft, WarningTriangle } from "iconoir-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { ThinkingStatus } from "./ThinkingStatus";
 
 export function WorkspaceFlow({ step, title, description, onBack, children }: {
@@ -11,6 +11,8 @@ export function WorkspaceFlow({ step, title, description, onBack, children }: {
   children: ReactNode;
 }) {
   const heading = useRef<HTMLHeadingElement>(null);
+  const location = useLocation();
+  const showHomeLink = location.pathname !== "/";
   useEffect(() => {
     heading.current?.focus({ preventScroll: true });
     heading.current?.scrollIntoView?.({ block: "start", behavior: "instant" });
@@ -18,7 +20,7 @@ export function WorkspaceFlow({ step, title, description, onBack, children }: {
 
   return <main className={`product-workspace step-workspace step-${step}`} id="main-content">
     <div className="flow-navigation">
-      <div className="flow-back-actions"><Link className="back-link" to="/" reloadDocument><ArrowLeft aria-hidden="true"/> Back to home</Link>{onBack && <button className="back-link" onClick={onBack}>Edit setup</button>}</div>
+      <div className="flow-back-actions">{showHomeLink && <Link className="back-link" to="/" reloadDocument><ArrowLeft aria-hidden="true"/> Back to home</Link>}{onBack && <button className="back-link" onClick={onBack}>Edit setup</button>}</div>
       <ol className="flow-steps" aria-label="Progress">
         {(["setup", "options", "loading", "results"] as const).map((item, index) => <li key={item} aria-current={step === item ? "step" : undefined}><span>{index + 1}</span>{["Upload", "Options", "Processing", "Results"][index]}</li>)}
       </ol>
