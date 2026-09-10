@@ -187,8 +187,10 @@ invocations can share them. Authentication remains out of scope.
 
 Optional public demo hosting uses two Vercel projects from this repository:
 
-1. **API** (`regbridge-api`) — repository root, FastAPI via `main.py`, Neon `DATABASE_URL`.
-2. **UI** (`regbridge-web`) — `frontend/`, Vite static build, `VITE_API_BASE_URL` pointing at the API.
+1. **API** (`regbridge-api`) — repository root, FastAPI via `main.py` and `vercel.json`, Neon `DATABASE_URL`. Framework preset: FastAPI. Root Directory: `.`.
+2. **UI** (`regbridge-web`) — `frontend/` with `frontend/vercel.json`, Vite static build, `VITE_API_BASE_URL` pointing at the API. Framework preset: Vite. Root Directory: `frontend`.
+
+Do not deploy the UI from the repository root. The root `vercel.json` is the FastAPI API config. Applying it to `frontend/` produces `No FastAPI entrypoint found` because that package has no `main.py`. Git-connected deploys need those project settings before the first Git push; CLI UI deploys must use `-A frontend/vercel.json`.
 
 Local development is unchanged: leave `DATABASE_URL` unset and use `REG_BRIDGE_DATABASE_PATH`.
 The frontend still proxies `/api` and `/health` through Vite when `VITE_API_BASE_URL` is empty.
