@@ -31,7 +31,7 @@ presentation layer:
 - bounded PDF text and hyperlink extraction with author-verified fixture-link governance;
 - strict offline fixtures, a disabled-model abstention, and an opt-in OpenAI-compatible structured
   adapter with redacted run metadata;
-- deterministic decision precedence and SQLite result/graph trace persistence;
+- deterministic decision precedence and SQLite (local) or Neon/Postgres (Vercel) result/graph trace persistence;
 - an atomically frozen 30-case benchmark with author-adjudicated labels, immutable input hashes,
   12 held-out cases, and six non-overlapping held-out fixture families;
 - B0 long-context contract fixtures, dependency-free BM25 B1, genuine rule-only B2, and the full
@@ -182,6 +182,18 @@ Analyzer and Baselines demo. Run `.\scripts\m4-2-verify.ps1` twice for the addit
 This validates only the declared bounded input profile, not a complete FDA submission.
 See `docs/DEMO_M4_2.md` for the current operator workflow. Uploaded inventories are opaque, bounded,
 expiring, memory-local records; ZIP bytes are discarded and records do not survive restart.
+On Vercel, the same records are stored in Neon/Postgres for the configured TTL so serverless
+invocations can share them. Authentication remains out of scope.
+
+Optional public demo hosting uses two Vercel projects from this repository:
+
+1. **API** (`regbridge-api`) — repository root, FastAPI via `main.py` and `vercel.json`, Neon `DATABASE_URL`. Framework preset: FastAPI. Root Directory: `.`.
+2. **UI** (`regbridge-web`) — `frontend/` with `frontend/vercel.json`, Vite static build, `VITE_API_BASE_URL` pointing at the API. Framework preset: Vite. Root Directory: `frontend`.
+
+Do not deploy the UI from the repository root. The root `vercel.json` is the FastAPI API config. Applying it to `frontend/` produces `No FastAPI entrypoint found` because that package has no `main.py`. Git-connected deploys need those project settings before the first Git push; CLI UI deploys must use `-A frontend/vercel.json`.
+
+Local development is unchanged: leave `DATABASE_URL` unset and use `REG_BRIDGE_DATABASE_PATH`.
+The frontend still proxies `/api` and `/health` through Vite when `VITE_API_BASE_URL` is empty.
 
 New product endpoints:
 
@@ -190,7 +202,7 @@ New product endpoints:
 - `POST/GET /api/v1/dossier-analyses[/{run_id}]`
 - `POST/GET /api/v1/comparisons[/{comparison_id}]`
 
-The server binds only to `127.0.0.1`. Authentication and public deployment are out of scope.
+The local server still binds to `127.0.0.1`. Production authentication and multi-tenancy remain out of scope.
 
 ## Repository map
 

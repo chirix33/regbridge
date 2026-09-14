@@ -1,0 +1,24 @@
+frontend
+frontend/**
+backend/tests
+backend/tests/**
+paper
+paper/**
+results
+results/**
+docs
+docs/**
+scripts
+scripts/**
+.venv
+.git
+**/*.md
+!README.md
+**/__pycache__
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/.vite
+**/node_modules
+ChatGPT-eCTD Reuse Risk Research Work-20260908-1204.md
+eCTD-demo

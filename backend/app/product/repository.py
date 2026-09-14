@@ -7,7 +7,7 @@ import time
 from collections import OrderedDict
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import TypeVar
+from typing import Protocol, TypeVar
 
 from app.parsers.models import ApplicationInventory
 from app.product.models import ComparisonRun, DossierAnalysisRun, InventoryEnvelope
@@ -19,6 +19,18 @@ T = TypeVar("T")
 def validate_opaque_id(value: str, prefix: str) -> None:
     if not _OPAQUE_ID.fullmatch(value) or not value.startswith(prefix + "-"):
         raise KeyError("malformed or unknown opaque identifier")
+
+
+class InventoryStore(Protocol):
+    def put(self, inventory: ApplicationInventory) -> InventoryEnvelope: ...
+
+    def get(self, identifier: str) -> ApplicationInventory: ...
+
+
+class JobStore(Protocol[T]):
+    def put(self, identifier: str, value: T) -> None: ...
+
+    def get(self, identifier: str) -> T: ...
 
 
 @dataclass

@@ -1,8 +1,17 @@
 import sqlite3
 from pathlib import Path
+from typing import Protocol
 
 from app.domain.models import AnalysisResult
 from app.graph.models import GraphNeighborhood
+
+
+class AnalysisStore(Protocol):
+    def save(self, result: AnalysisResult, graph: GraphNeighborhood) -> None: ...
+
+    def get(self, analysis_id: str) -> AnalysisResult: ...
+
+    def graph(self, analysis_id: str) -> GraphNeighborhood: ...
 
 
 class AnalysisRepository:

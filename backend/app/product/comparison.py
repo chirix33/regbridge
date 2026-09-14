@@ -34,7 +34,7 @@ from app.product.models import (
     RetrievalItem,
 )
 from app.product.models_registry import ModelProfileRegistry, ProductFixtureModel
-from app.product.repository import ComparisonRunRepository, InventoryRepository
+from app.product.repository import InventoryStore, JobStore
 from app.product.services import (
     CaptureRepository,
     canonical_digest,
@@ -258,8 +258,8 @@ class ComparisonManager:
     def __init__(
         self,
         *,
-        inventories: InventoryRepository,
-        runs: ComparisonRunRepository,
+        inventories: InventoryStore,
+        runs: JobStore[ComparisonRun],
         registry: ModelProfileRegistry,
         settings: Settings,
     ) -> None:

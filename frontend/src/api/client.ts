@@ -16,7 +16,7 @@ import type {
   ComparisonRun,
 } from "./contracts";
 
-const apiOrigin = import.meta.env.VITE_API_BASE_URL ?? "";
+const apiOrigin = (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/$/, "");
 
 async function getJson<T>(path: string): Promise<T> {
   const response = await fetch(`${apiOrigin}${path}`, {

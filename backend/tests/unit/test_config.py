@@ -43,3 +43,11 @@ def test_secret_is_not_exposed_by_representation() -> None:
     )
 
     assert "private-key" not in repr(settings)
+
+
+def test_database_url_alias_selects_postgres(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("DATABASE_URL", "postgresql://user:pass@localhost/regbridge")
+    monkeypatch.setitem(Settings.model_config, "env_file", None)
+    settings = Settings()
+    assert settings.uses_postgres is True
+    assert settings.resolved_database_url.startswith("postgresql://")

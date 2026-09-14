@@ -26,7 +26,7 @@ from app.product.models import (
     ModelProfile,
 )
 from app.product.models_registry import ModelProfileRegistry
-from app.product.repository import DossierRunRepository, InventoryRepository
+from app.product.repository import InventoryStore, JobStore
 
 
 def canonical_digest(value: object) -> str:
@@ -125,8 +125,8 @@ class DossierAnalysisManager:
     def __init__(
         self,
         *,
-        inventories: InventoryRepository,
-        runs: DossierRunRepository,
+        inventories: InventoryStore,
+        runs: JobStore[DossierAnalysisRun],
         registry: ModelProfileRegistry,
         settings: Settings,
     ) -> None:
