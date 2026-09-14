@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -13,6 +14,7 @@ from app.config import Settings
 from app.domain.enums import LlmMode
 from app.domain.models import TargetContext
 from app.parsers.ectd322 import FixtureCatalog
+from app.parsers.models import ApplicationInventory
 from app.persistence.factory import create_analysis_repository, create_product_stores
 from app.persistence.postgres import (
     PostgresAnalysisRepository,
@@ -233,6 +235,51 @@ def test_postgres_inventory_and_jobs_round_trip() -> None:
     restored = jobs.get(run.run_id)
     assert restored.run_id == run.run_id
     assert restored.state == "queued"
+
+
+def test_postgres_inventory_round_trip_keeps_document_evidence(tmp_path: Path) -> None:
+    # On Vercel the upload and the analysis are separate invocations, so the analysis reads
+    # the inventory back from Postgres. ParsedLeaf.text_spans and hyperlinks are excluded from
+    # model_dump_json; dropping them here silently starves the semantic inspection and the
+    # hyperlink gate, and Case C degrades to an abstention.
+    inventory = FixtureCatalog().parse("case-c-relevant-link")
+    leaf = inventory.leaves[0]
+    assert leaf.text_spans and leaf.hyperlinks
+    memory = MemoryPostgres()
+    inventories = PostgresInventoryRepository(
+        "postgresql://unused",
+        capacity=4,
+        ttl_seconds=3600,
+        connect=memory.connect,
+    )
+    envelope = inventories.put(inventory)
+    loaded = inventories.get(envelope.inventory_id)
+    assert loaded.leaves[0].text_spans == leaf.text_spans
+    assert loaded.leaves[0].hyperlinks == leaf.hyperlinks
+
+    original = AnalysisService(repository=AnalysisRepository(tmp_path / "a.sqlite3")).analyze(
+        inventory, leaf.id, _target()
+    )
+    restored = AnalysisService(repository=AnalysisRepository(tmp_path / "b.sqlite3")).analyze(
+        loaded, leaf.id, _target()
+    )
+    assert restored.decision == original.decision
+    assert restored.decision_basis == original.decision_basis
+    assert {item.id for item in restored.evidence} == {item.id for item in original.evidence}
+
+
+def test_inventory_default_serialization_still_excludes_document_evidence() -> None:
+    inventory = FixtureCatalog().parse("case-c-relevant-link")
+    public = inventory.model_dump(mode="json")["leaves"][0]
+    assert "text_spans" not in public and "hyperlinks" not in public
+
+    durable = json.loads(inventory.dump_json_with_document_evidence())["leaves"][0]
+    assert len(durable["text_spans"]) == len(inventory.leaves[0].text_spans)
+    assert len(durable["hyperlinks"]) == len(inventory.leaves[0].hyperlinks)
+    assert (
+        ApplicationInventory.model_validate_json(inventory.dump_json_with_document_evidence())
+        == inventory
+    )
 
 
 def test_postgres_inventory_hides_expired_rows() -> None:

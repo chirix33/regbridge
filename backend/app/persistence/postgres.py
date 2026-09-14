@@ -138,13 +138,15 @@ class PostgresInventoryRepository:
         identifier = f"inv-{secrets.token_hex(16)}"
         expires = datetime.now(UTC) + timedelta(seconds=self.ttl_seconds)
         stored = inventory.model_copy(update={"id": identifier})
+        # The analysis request reads this row back on a different invocation, so the payload
+        # must carry the per-leaf text spans and hyperlinks that model_dump_json excludes.
         with self._schema.connect() as connection:
             connection.execute(
                 """
                 INSERT INTO inventories(id, payload_json, expires_at)
                 VALUES (%s, %s, %s)
                 """,
-                (identifier, stored.model_dump_json(), expires),
+                (identifier, stored.dump_json_with_document_evidence(), expires),
             )
             self._enforce_capacity(connection)
             connection.commit()

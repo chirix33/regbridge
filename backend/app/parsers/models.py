@@ -1,3 +1,4 @@
+import json
 from typing import Literal
 
 from pydantic import Field, model_validator
@@ -74,6 +75,9 @@ class ParsedLeaf(DomainModel):
     policy_coverage_status: PolicyCoverageStatus = "EVALUATED_WITH_APPROVED_POLICY"
     policy_coverage_basis: str = "Legacy controlled fixture policy coverage."
     covered_policy_ids: tuple[StableId, ...] = ()
+    # Excluded from ordinary serialization so API envelopes and manifest digests never carry
+    # extracted PDF text. Any store that must rebuild the analysis input from a serialized
+    # inventory has to use ApplicationInventory.dump_json_with_document_evidence instead.
     text_spans: tuple[ParsedTextSpan, ...] = Field(default=(), exclude=True)
     hyperlinks: tuple[ParsedHyperlink, ...] = Field(default=(), exclude=True)
 
@@ -196,6 +200,22 @@ class ApplicationInventory(DomainModel):
         if len(leaf_ids) != len(set(leaf_ids)):
             raise ValueError("leaf identifiers must be unique")
         return self
+
+    def dump_json_with_document_evidence(self) -> str:
+        """Serialize for durable storage between the upload and analysis requests.
+
+        ``ParsedLeaf.text_spans`` and ``ParsedLeaf.hyperlinks`` are excluded from
+        ``model_dump_json`` so API responses and manifest digests never carry extracted PDF
+        text. The semantic inspection and the hyperlink-relevance gate read those fields, so a
+        store that serializes an inventory must use this method or every later analysis runs
+        against a document with no readable content. ``model_validate_json`` accepts the
+        result unchanged because both fields remain declared model fields.
+        """
+        payload = self.model_dump(mode="json")
+        for leaf, serialized in zip(self.leaves, payload["leaves"], strict=True):
+            serialized["text_spans"] = [span.model_dump(mode="json") for span in leaf.text_spans]
+            serialized["hyperlinks"] = [link.model_dump(mode="json") for link in leaf.hyperlinks]
+        return json.dumps(payload)
 
 
 class FixtureSummary(DomainModel):
