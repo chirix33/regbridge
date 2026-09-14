@@ -1,5 +1,6 @@
-frontend
-frontend/**
+# Do not list frontend/ here. This file applies to every Vercel project that deploys from
+# this repository, including regbridge-web (Root Directory: frontend). The API function
+# already excludes frontend/** through functions.main.py.excludeFiles in vercel.json.
 backend/tests
 backend/tests/**
 paper
