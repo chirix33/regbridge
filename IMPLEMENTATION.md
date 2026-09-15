@@ -776,7 +776,8 @@ native traces in technical disclosures. Distinguish incomplete document inspecti
 failed run. Research scope, unavailable FDA forward compatibility, and absence of expert
 validation are stated in plain language; the API retains the canonical governance fields.
 Comparison uploads require reading the new document list before starting a comparison, and
-the selected allowlisted model must be the model submitted to the service.
+the server-owned active configuration is disclosed before execution. Product requests cannot
+select a model (M4.3).
 
 - Optimize the five-minute demonstration path; avoid a generic admin dashboard.
 - Reveal the evidence behind every decision in at most one interaction.
@@ -985,10 +986,10 @@ conformance, FDA validation-criteria coverage, submission readiness, or FDA acce
 Uploaded ZIP bytes are discarded after bounded parsing. Parsed inventories live in a capacity-
 and TTL-bounded local repository under opaque IDs and expire on server restart. Dossier and
 comparison runs have configuration-scoped identities so results from different model profiles
-cannot overwrite each other. Browser requests select only an allowlisted model profile: public
-`gpt-5.5` uses the tested Responses adapter without a temperature parameter when configured;
-`qwen3.6-local` is a disabled `coming_soon` profile until separately validated. Fixture/stub
-profiles remain internal and network-free.
+cannot overwrite each other. M4.3 supersedes browser model selection with the server-owned
+`PRODUCT_MODEL_PROFILE`. The `gpt-5.5` live profile uses the Responses adapter without a
+temperature parameter. Qwen remains deferred. Explicit fixture mode is network-free and
+disclosed as an offline demonstration.
 
 All systems use the complete six-decision and eleven-action vocabulary with the approved neutral
 definitions. B0 and B1 receive equivalent bounded package facts and standards evidence without
@@ -1091,6 +1092,40 @@ human review with `COMPLETE_DOCUMENT_INSPECTION`, not a fabricated stale-content
 schema v3 adds a non-regulatory analysis-limitation node and decision-qualification/unresolved
 edges; the product explanation neighborhood contains only the active heading mapping and every
 material rule, finding, limitation, decision, and repair used by synthesis.
+
+### M4.3 — Action-oriented review and server-owned product configuration
+
+M4.3 is additive product work governed by [docs/milestones/M4.3.md](docs/milestones/M4.3.md).
+It deterministically organizes recorded decisions, document-level repairs, findings, coverage,
+inspection status, and approval requirements. It adds no model rewrite calls and changes no
+analyzer conclusion, migration policy, evidence governance, frozen benchmark, prompt, evaluation
+model contract, experimental result, or presentation snapshot.
+
+Analyzer defaults to Needs attention with an All documents view. The action overview groups
+only matching recommendations and qualifications; individual documents retain identity,
+findings, the overall recommendation, conditions, and citations. Unique documents and review
+items are counted separately. Supporting evidence and technical reasoning are separate
+disclosures. Graph, accessible text, edge table, model record, trace, and digests remain available.
+
+Analyzer and Baselines share presentation primitives and explicit target-context setup. Missing
+saved metadata intent is `unspecified`, never silently preservation. B0/B1 retain native
+explanations and actual citations; RegBridge/B2 retain available findings, repair descriptions,
+evidence, and uncertainty. B2's omitted inspection is not abstention or semantic clearance.
+
+The product request schemas reject `model_id` via `extra="forbid"`. The read-only
+`GET /api/v1/config/product` response discloses availability, execution mode, evidence
+transmission, and a safe configuration identity. `PRODUCT_MODEL_PROFILE=gpt-5.5` selects the
+active profile; `LLM_MODE=fixture` remains the offline default. Live mode requires the validated
+GPT-5.5 profile with `LLM_MODEL=gpt-5.5`. `PRODUCT_EVIDENCE_DESTINATION` distinguishes external
+provider transmission from a configured local service. Endpoint identity, adapter, timeout,
+retry policy, execution mode, and limits participate in the credential-free fingerprint.
+Configuration is captured at run creation for all calls and retries. Restart the backend after
+configuration changes. Historical records retain their original attribution; there is no fallback.
+
+Exit criteria: meaningful network-free configuration and presentation tests, production ZIP
+journeys, desktop/narrow-screen and accessibility review, full repository checks, historical
+milestone checks with incompatibilities explicitly recorded, and a protected-artifact audit.
+No deployment or merge is part of M4.3.
 
 ### M5 — Paper and submission support (September 15–18)
 

@@ -9,6 +9,7 @@ from app.domain.models import AnalysisResult, DomainModel, Sha256, StableId, Tar
 from app.domain.vocabulary import RuntimeActionCode
 from app.graph.models import GraphNeighborhood
 from app.parsers.models import ApplicationInventory
+from app.product.explanation import ProductExplanation
 
 ModelAvailability = Literal["available", "coming_soon", "misconfigured", "disabled"]
 ProductRunState = Literal["queued", "running", "completed", "partial_failed", "failed"]
@@ -49,11 +50,23 @@ class ModelCatalog(DomainModel):
     models: tuple[ModelProfile, ...]
 
 
+class ActiveProductConfiguration(DomainModel):
+    contract_version: Literal["1.0.0"] = "1.0.0"
+    profile_id: str
+    availability: ModelAvailability
+    execution_mode: Literal["live", "fixture", "disabled"]
+    evidence_transmission: Literal[
+        "not_transmitted", "external_provider", "local_service", "unavailable"
+    ]
+    configuration_digest: Sha256 | None = None
+    detail: str
+
+
 class ModelExecutionRecord(DomainModel):
     model_profile_id: StableId | Literal["model-free"]
     requested_model_name: str | None = None
     provider_reported_model_name: str | None = None
-    adapter_type: Literal["responses", "chat_completions", "fixture", "model-free"]
+    adapter_type: Literal["responses", "chat_completions", "fixture", "model-free", "not-executed"]
     execution_mode: Literal["live", "fixture", "disabled"]
     configuration_digest: Sha256
     prompt_version: str
@@ -84,7 +97,6 @@ class ModelExecutionRecord(DomainModel):
 
 class DossierAnalysisRequest(DomainModel):
     inventory_id: StableId
-    model_id: StableId
     target_context: TargetContext
     leaf_ids: tuple[StableId, ...] | None = None
 
@@ -101,6 +113,7 @@ class DossierLeafFailure(DomainModel):
         "analysis_failure",
     ] = "analysis_failure"
     retryable: bool = False
+    model: ModelExecutionRecord | None = None
 
 
 class DossierLeafResult(DomainModel):
@@ -109,6 +122,7 @@ class DossierLeafResult(DomainModel):
     analysis: AnalysisResult
     graph: GraphNeighborhood
     model: ModelExecutionRecord
+    explanation: ProductExplanation | None = None
 
 
 class DossierAnalysisSummary(DomainModel):
@@ -168,7 +182,6 @@ class DossierAnalysisRun(DomainModel):
 
 class ComparisonRequest(DomainModel):
     inventory_id: StableId
-    model_id: StableId
     target_context: TargetContext
     leaf_ids: tuple[StableId, ...] | None = None
 
@@ -199,6 +212,7 @@ class ComparisonCell(DomainModel):
     trace: tuple[dict[str, Any], ...] = ()
     status: Literal["completed", "invalid_output", "failed"]
     failure: str | None = None
+    explanation: ProductExplanation | None = None
 
 
 class ComparisonRun(DomainModel):

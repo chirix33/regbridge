@@ -26,7 +26,9 @@ test("M4.2 uploads the public-standards ZIP and compares package-derived inputs"
   await expect(page.getByText(/Not validated by a regulatory expert/i)).toBeVisible();
   await page.getByLabel("Dossier ZIP").setInputFiles("../data/demo-dossiers/m4-2/regbridge-m4-2-public-standards.zip");
   await page.getByRole("button", { name: "Continue to options" }).click();
-  await expect(page.getByRole("option", { name: /Qwen 3.6 local/i })).toHaveAttribute("disabled", "");
+  await expect(page.getByLabel("Analysis model")).toHaveCount(0);
+  await expect(page.getByText("Offline demonstration", { exact: true })).toBeVisible();
+  await page.getByLabel("How should metadata be handled?").selectOption("preserve-existing-lifecycle");
   await page.getByLabel(/I confirm this target context/i).check();
   await page.getByRole("button", { name: "Parse and analyze" }).click();
   await expect(page.getByRole("heading", { name: "Your dossier results" })).toBeFocused();
@@ -36,16 +38,15 @@ test("M4.2 uploads the public-standards ZIP and compares package-derived inputs"
   await expect(page.getByText(/ich-ectd-dtd-v3-2 3.2.2 \(passed\)/)).toBeVisible();
   await expect(page.getByText(/fda-us-regional-dtd-v3-3 3.3 \(passed\)/)).toBeVisible();
   await expect(page.getByText(/Index-dtd-version-inferred/)).toBeVisible();
-  await expect(page.getByText("Reuse with a new context", { exact: true }).first()).toBeVisible();
-  await expect(page.getByText("Reuse as a legacy reference", { exact: true }).first()).toBeVisible();
-  await expect(page.getByText("Regulatory review needed", { exact: true }).first()).toBeVisible();
-  await expect(page.getByText("Inspections needing more evidence")).toBeVisible();
-  await expect(page.getByText("Documents that could not be analyzed")).toBeVisible();
-  const caseA = page.locator("details.leaf-result").filter({ hasText: "Synthetic molecular structure" });
-  await caseA.locator(":scope > summary").click();
-  await caseA.getByText("Technical analysis record", { exact: true }).click();
-  await expect(caseA.getByText("Actual adapter")).toBeVisible();
-  await expect(caseA.getByText("fixture", { exact: true }).first()).toBeVisible();
+  await expect(page.getByRole("button", { name: "Needs attention" })).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "Context and metadata" }).click();
+  const caseA = page.locator(".document-review").filter({ hasText: "Synthetic molecular structure" });
+  await expect(caseA.getByText(/Proposed document recommendation: Reuse with a new context/)).toBeVisible();
+  await expect(caseA.locator(".document-filename")).toContainText(".pdf");
+  await caseA.getByText("View supporting evidence", { exact: true }).click();
+  await expect(caseA.getByRole("link", { name: "Official source" }).first()).toBeVisible();
+  await caseA.getByText("How RegBridge reached this result", { exact: true }).click();
+  await expect(caseA.getByRole("table", { name: "Graph edge table" })).toBeVisible();
   await expect(caseA.getByText("3.2.S.1.2", { exact: true }).first()).toBeVisible();
   await expect(caseA.getByText("3.2.S.1.1", { exact: true })).toHaveCount(0);
   await expect(caseA.getByText("3.2.S.1.3", { exact: true })).toHaveCount(0);
@@ -53,6 +54,7 @@ test("M4.2 uploads the public-standards ZIP and compares package-derived inputs"
 
   await page.getByRole("link", { name: "Baselines" }).click();
   await expect(page.getByText(/3 documents are available/i)).toBeVisible();
+  await expect(page.getByLabel("How should metadata be handled?")).toHaveValue("preserve-existing-lifecycle");
   await page.getByRole("button", { name: "Run comparison" }).click();
   await expect(page.getByRole("heading", { name: "Your comparison results" })).toBeFocused();
   await expect(page.getByText("B2 · Rules only", { exact: true }).first()).toBeVisible();

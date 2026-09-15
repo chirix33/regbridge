@@ -11,7 +11,7 @@ export default defineConfig({
     { name: "mobile", testMatch: /ux\.spec\.ts/, use: { ...devices["Desktop Chrome"], viewport: { width: 390, height: 844 } } },
   ],
   webServer: [
-    { command: "..\\.venv\\Scripts\\python.exe -m uvicorn app.main:app --app-dir ../backend --host 127.0.0.1 --port 8011", url: "http://127.0.0.1:8011/health", env: { LLM_MODE: "fixture", REG_BRIDGE_DATABASE_PATH: "../results/ux-verification.sqlite3", REG_BRIDGE_CORS_ORIGINS: '["http://127.0.0.1:5174"]' }, timeout: 60_000 },
+    { command: "..\\.venv\\Scripts\\python.exe -m uvicorn app.main:app --app-dir ../backend --host 127.0.0.1 --port 8011", url: "http://127.0.0.1:8011/health", env: { LLM_MODE: "fixture", PRODUCT_MODEL_PROFILE: "gpt-5.5", REG_BRIDGE_DATABASE_URL: "", DATABASE_URL: "", REG_BRIDGE_DATABASE_PATH: "../results/ux-verification.sqlite3", REG_BRIDGE_CORS_ORIGINS: '["http://127.0.0.1:5174"]' }, timeout: 60_000 },
     { command: "npm run dev -- --host 127.0.0.1 --port 5174 --strictPort", url: "http://127.0.0.1:5174", env: { VITE_API_BASE_URL: "http://127.0.0.1:8011" }, timeout: 60_000 },
   ],
 });

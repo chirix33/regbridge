@@ -73,7 +73,6 @@ def _manager_for_one_leaf(
     run = manager.create(
         DossierAnalysisRequest(
             inventory_id=envelope.inventory_id,
-            model_id="gpt-5.5",
             target_context=_target(),
             leaf_ids=(leaf_id,),
         )
@@ -379,7 +378,6 @@ def test_public_product_api_uses_real_zip_and_exposes_no_secrets() -> None:
 
     request = {
         "inventory_id": parsed["id"],
-        "model_id": "gpt-5.5",
         "target_context": _target().model_dump(mode="json"),
     }
     dossier = client.post("/api/v1/dossier-analyses", json=request)

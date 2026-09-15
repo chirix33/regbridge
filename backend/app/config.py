@@ -39,6 +39,8 @@ class Settings(BaseSettings):
     llm_model: str | None = None
     llm_timeout_seconds: float = Field(default=60.0, gt=0, le=300)
     product_inventory_capacity: int = Field(default=12, ge=1, le=100)
+    product_model_profile: str = "gpt-5.5"
+    product_evidence_destination: str = "external_provider"
     product_inventory_ttl_seconds: int = Field(default=3600, ge=60, le=86400)
     product_job_capacity: int = Field(default=24, ge=1, le=200)
     product_job_ttl_seconds: int = Field(default=7200, ge=60, le=86400)

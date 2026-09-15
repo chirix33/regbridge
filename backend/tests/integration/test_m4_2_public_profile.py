@@ -504,14 +504,14 @@ def test_analyzer_and_all_comparison_systems_use_same_inventory_without_label_le
     target = _target().model_dump(mode="json")
     dossier = client.post(
         "/api/v1/dossier-analyses",
-        json={"inventory_id": inventory["id"], "model_id": "gpt-5.5", "target_context": target},
+        json={"inventory_id": inventory["id"], "target_context": target},
     )
     assert dossier.status_code == 202, dossier.text
     dossier_run = client.get(f"/api/v1/dossier-analyses/{dossier.json()['run_id']}").json()
     assert dossier_run["state"] == "completed"
     comparison = client.post(
         "/api/v1/comparisons",
-        json={"inventory_id": inventory["id"], "model_id": "gpt-5.5", "target_context": target},
+        json={"inventory_id": inventory["id"], "target_context": target},
     )
     assert comparison.status_code == 202, comparison.text
     run = client.get(f"/api/v1/comparisons/{comparison.json()['comparison_id']}").json()

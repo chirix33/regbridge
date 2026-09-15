@@ -10,7 +10,7 @@ test("step screens stay readable, focused, and accessible", async ({ page }, tes
   await page.getByRole("button", { name: "Try a sample dossier" }).click();
   await expect(page.getByText(/Selected: regbridge/)).toBeVisible();
   await page.getByRole("button", { name: "Continue to options" }).click();
-  await expect(page.getByRole("option", { name: /Deterministic fixture/ })).toBeEnabled();
+  await expect(page.getByText("Offline demonstration", { exact: true })).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("options.png"), fullPage: true });
   await page.getByLabel(/I confirm/).check();
   let release!: () => void;
@@ -27,9 +27,8 @@ test("step screens stay readable, focused, and accessible", async ({ page }, tes
   expect((await new AxeBuilder({ page: page as never }).analyze()).violations).toEqual([]);
   release();
   await expect(page.getByRole("heading", { name: "Your dossier results" })).toBeFocused();
-  await expect(page.getByText("Reuse with a new context", { exact: true })).toBeVisible();
-  await page.locator("details.leaf-result > summary").first().click();
-  await expect(page.getByText("Create a new context group and suspend the legacy content", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Context and metadata" }).first().click();
+  await expect(page.getByText(/Proposed document recommendation: Reuse with a new context/)).toBeVisible();
   expect((await new AxeBuilder({ page: page as never }).analyze()).violations).toEqual([]);
   await page.screenshot({ path: testInfo.outputPath("results.png"), fullPage: true });
   expect(await page.evaluate("document.documentElement.scrollWidth <= innerWidth")).toBe(true);

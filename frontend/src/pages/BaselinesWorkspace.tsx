@@ -1,16 +1,20 @@
+import { defaultTarget, savedTarget } from "../api/targetSetup";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Upload } from "iconoir-react";
-import { createComparison, getComparison, getModels, getProductDemoPackage, parseUpload } from "../api/client";
-import type { ApplicationInventory, ComparisonCell, ComparisonRun, TargetContext } from "../api/contracts";
+import { createComparison, getComparison, getActiveProductConfiguration, getProductDemoPackage, parseUpload } from "../api/client";
+import type { ApplicationInventory, ComparisonCell, ComparisonRun } from "../api/contracts";
 import { errorMessage, readable } from "../api/wording";
 import { FlowLoading, WorkspaceFlow } from "../components/WorkspaceFlow";
 
-function target(): TargetContext { return { authority: "FDA", center: "CDER", application_type: "NDA", source_standard: "eCTD-3.2.2", target_standard: "eCTD-4.0", analysis_date: new Date().toISOString().slice(0, 10), reuse_operation: "reference-existing-content", standards_snapshot_id: "fda-cder-demo-v1", scenario_mode: "prospective_forward_compatibility", metadata_plan: { intent: "preserve-existing-lifecycle", manufacturer_partitioning: "unknown", replacement_manufacturer_value: null } }; }
+import { ConfigurationDisclosure, ProductSetup } from "../components/ProductSetup";
+import { DocumentReview } from "../components/ReviewWorkspace";
+import { comparisonDocument } from "../api/presentation";
+
 const systemNames: Record<string, string> = { B0: "B0 · Document agent", B1: "B1 · Retrieval agent", B2: "B2 · Rules only", RegBridge: "RegBridge" };
 
 export function BaselinesWorkspace() {
-  const models = useQuery({ queryKey: ["models"], queryFn: getModels });
+  const models = useQuery({ queryKey: ["product-config"], queryFn: getActiveProductConfiguration });
   const [inventory, setInventory] = useState<ApplicationInventory | null>(() => {
     try {
       const saved = JSON.parse(sessionStorage.getItem("regbridge.inventory") ?? "null") as ApplicationInventory | null;
@@ -19,7 +23,7 @@ export function BaselinesWorkspace() {
   });
   const [file, setFile] = useState<File | null>(null);
   const [selected, setSelected] = useState<string[]>(inventory?.leaves.map((leaf) => leaf.id) ?? []);
-  const [modelId, setModelId] = useState("gpt-5.5");
+  const [context, setContext] = useState(() => savedTarget(inventory?.id));
   const [run, setRun] = useState<ComparisonRun | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<"upload" | "compare" | null>(null);
@@ -27,7 +31,7 @@ export function BaselinesWorkspace() {
   const [choosingFile, setChoosingFile] = useState(!inventory);
   const terminal = run && ["completed", "partial_failed", "failed"].includes(run.state);
   const processing = Boolean(busy || (run && !terminal));
-  const profile = models.data?.models.find((item) => item.model_id === modelId);
+  const profile = models.data;
   useEffect(() => {
     if (!run || terminal || error) return;
     let active = true;
@@ -45,7 +49,7 @@ export function BaselinesWorkspace() {
     setBusy("upload"); setError(null);
     try {
       const parsed = await parseUpload(file);
-      setInventory(parsed); setSelected(parsed.leaves.map((leaf) => leaf.id)); setFile(null); setChoosingFile(false);
+      setInventory(parsed); setContext(defaultTarget()); setSelected(parsed.leaves.map((leaf) => leaf.id)); setFile(null); setChoosingFile(false);
       sessionStorage.setItem("regbridge.inventory", JSON.stringify(parsed));
     } catch (cause) { setError(errorMessage(cause)); }
     finally { setBusy(null); }
@@ -53,7 +57,7 @@ export function BaselinesWorkspace() {
   async function compare() {
     if (!inventory || !selected.length || busy || profile?.availability !== "available" || file) return;
     setBusy("compare"); setError(null); setRun(null);
-    try { setRun(await createComparison(inventory.id, modelId, target(), selected)); }
+    try { setRun(await createComparison(inventory.id, context, selected)); }
     catch (cause) { setError(errorMessage(cause)); }
     finally { setBusy(null); }
   }
@@ -78,11 +82,11 @@ export function BaselinesWorkspace() {
           {inventory.leaves.map((leaf) => <label className="confirm-row" key={leaf.id}><input type="checkbox" checked={selected.includes(leaf.id)} onChange={() => setSelected((current) => current.includes(leaf.id) ? current.filter((id) => id !== leaf.id) : [...current, leaf.id])}/><span>{leaf.title}<small>{readable(leaf.policy_coverage_status)}</small></span></label>)}
           {!selected.length && <p className="field-note">Select at least one document to continue.</p>}
         </fieldset>}
-        <label>Analysis model<select value={modelId} onChange={(event) => setModelId(event.target.value)}>{models.data?.models.map((item) => <option value={item.model_id} key={item.model_id} disabled={item.availability !== "available"}>{item.display_name}</option>)}</select></label>
-        {models.isPending && <p role="status">Loading available models...</p>}
-        {models.isError && <div role="alert"><p>We couldn't load the analysis models. Check that the local service is running.</p><button onClick={() => void models.refetch()}>Reload models</button></div>}
-        {profile && <p className="field-note">{profile.execution_mode === "fixture" ? "Offline demonstration using repeatable sample responses." : profile.network_required ? "Document evidence is sent to the configured model provider." : "Analysis runs locally."} The selected model is shared by B0, B1, and RegBridge. B2 checks rules without AI.</p>}
-        <details><summary>What will be compared?</summary><p>B0 reads documents directly. B1 retrieves relevant evidence. B2 checks encoded rules. RegBridge combines rules, a regulatory graph, and document inspection.</p><p>All four use the same FDA/CDER NDA context, prospective eCTD v4.0 scenario, and intent to keep the existing lifecycle. B0 and B1 receive the same complete set of repair actions.</p></details>
+        {models.isPending && <p role="status">Loading analysis configuration...</p>}
+        {models.isError && <div role="alert"><p>Analysis configuration is unavailable.</p><button onClick={() => void models.refetch()}>Reload configuration</button></div>}
+        {profile && <ConfigurationDisclosure config={profile}/>}
+        <ProductSetup value={context} onChange={setContext}/>
+        <details><summary>What will be compared?</summary><p>B0 reads documents directly. B1 retrieves relevant evidence. B2 checks encoded rules without semantic inspection. RegBridge combines rules, a regulatory graph, and document inspection. B0, B1, and RegBridge use the same server configuration and selected target context.</p></details>
         <button className="primary-button" onClick={() => void compare()} disabled={!inventory || !selected.length || Boolean(file) || profile?.availability !== "available"}>Run comparison</button>
         </>}
         {error && <p role="alert" className="error-copy">{error}</p>}
@@ -98,18 +102,10 @@ export function BaselinesWorkspace() {
           <th>{systemNames[cell.system] ?? cell.system}</th><td>{cell.status !== "completed" ? "No decision issued" : readable(cell.decision)}</td><td>{readable(cell.severity)}</td><td>{readable(cell.action)}</td><td>{cell.human_review_required == null ? "Not assessed" : cell.human_review_required ? "Required" : "Not required"}</td><td>{cell.evidence_ids.length}</td><td>{readable(cell.status)}</td><td>{(cell.model.latency_ms / 1000).toFixed(1)} s</td>
         </tr>)}</tbody></table></div>
         {cells.map((cell) => <details key={`${cell.system}-details`}><summary>{systemNames[cell.system] ?? cell.system}: explanation and evidence</summary>
-          <p>{cell.rationale || "This system did not return a completed explanation."}</p>
-          {cell.status !== "completed" && <p>The system could not complete this document. No regulatory decision was issued. Return to setup to try again.</p>}
-          <p><strong>Evidence:</strong> {cell.evidence_ids.join(", ") || "None cited"}</p><p><strong>Rules:</strong> {cell.rule_ids.join(", ") || "None triggered"}</p>
-          <details><summary>Technical record</summary><p>Decision: {cell.decision ?? "none"} · Action: {cell.action ?? "none"} · Status: {cell.status}</p>
-            {cell.model.status_detail && <p>{cell.model.status_detail}</p>}{cell.failure && <p>{cell.failure}</p>}{cell.model.failure && <p>{cell.model.failure}</p>}
-            <ol>{cell.trace.map((entry, index) => <li key={index}><pre>{JSON.stringify(entry, null, 2)}</pre></li>)}</ol>
-            {cell.system === "B1" && <ol>{cell.retrieval.map((hit) => <li key={hit.alias}>{hit.alias}: {hit.evidence_id} ({hit.score.toFixed(3)})</li>)}</ol>}
-            {cell.graph && <p>Graph: {cell.graph.nodes.length} nodes / {cell.graph.edges.length} edges. Full graph records are available in the result API.</p>}
-          </details>
+          {inventory?.leaves.find(l => l.id === cell.leaf_id) && <DocumentReview document={comparisonDocument(inventory.leaves.find(l => l.id === cell.leaf_id)!, cell)}/>}
         </details>)}
       </article>)}
-      {run.failures.map((failure, index) => <section className="panel" key={`${failure.leaf_id}-${index}`}><h2>Comparison could not finish</h2><p>{inventory?.leaves.find((leaf) => leaf.id === failure.leaf_id)?.title ?? "Document"}</p><p>No decision was issued for this failed step. Return to setup to try again.</p><details><summary>Technical error details</summary><p>{failure.stage}: {failure.cause}</p></details></section>)}
+      {run.failures.map((failure, index) => <section className="panel" key={`${failure.leaf_id}-${index}`}><h2>Comparison could not finish</h2><p>{inventory?.leaves.find((leaf) => leaf.id === failure.leaf_id)?.title ?? "Document"}</p><p>{inventory?.leaves.find((leaf) => leaf.id === failure.leaf_id)?.href}</p><p>No decision was issued for this failed step. Return to setup to try again.</p><details><summary>Technical error details</summary><pre>{JSON.stringify(failure, null, 2)}</pre></details></section>)}
     </section>}
   </WorkspaceFlow>;
 }

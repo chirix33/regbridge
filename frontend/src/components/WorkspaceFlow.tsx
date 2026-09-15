@@ -12,7 +12,7 @@ export function WorkspaceFlow({ step, title, description, onBack, children }: {
 }) {
   const heading = useRef<HTMLHeadingElement>(null);
   const location = useLocation();
-  const showHomeLink = location.pathname !== "/";
+  const showHomeLink = location.pathname !== "/" || step !== "setup";
   useEffect(() => {
     heading.current?.focus({ preventScroll: true });
     heading.current?.scrollIntoView?.({ block: "start", behavior: "instant" });

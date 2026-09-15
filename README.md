@@ -162,7 +162,7 @@ the scripted fixture-mode demo twice to compare decision, evidence, graph, and t
 GNU Make target additionally runs frontend component/build/E2E checks when Playwright browsers are
 installed.
 
-## M4.1 end-to-end dossier workspace
+## M4.3 action-oriented dossier workspace
 
 The primary route `/` accepts the deterministic controlled-profile dossier and analyzes every
 supported PDF using uploaded `index.xml`, `m1/us/us-regional.xml`, lifecycle metadata, legacy MD5,
@@ -180,7 +180,8 @@ Generate the public synthetic package with
 `data/demo-dossiers/m4-2/regbridge-m4-2-public-standards.zip`; use this package for the current
 Analyzer and Baselines demo. Run `.\scripts\m4-2-verify.ps1` twice for the additive M4.2 gate.
 This validates only the declared bounded input profile, not a complete FDA submission.
-See `docs/DEMO_M4_2.md` for the current operator workflow. Uploaded inventories are opaque, bounded,
+See `docs/milestones/M4.3.md` for the current review workflow and configuration contract.
+`docs/DEMO_M4_2.md` retains the input-profile demonstration record. Uploaded inventories are opaque, bounded,
 expiring, memory-local records; ZIP bytes are discarded and records do not survive restart.
 On Vercel, the same records are stored in Neon/Postgres for the configured TTL so serverless
 invocations can share them. Authentication remains out of scope.
@@ -197,7 +198,8 @@ The frontend still proxies `/api` and `/health` through Vite when `VITE_API_BASE
 
 New product endpoints:
 
-- `GET /api/v1/models`
+- `GET /api/v1/config/product` (read-only active product configuration)
+- `GET /api/v1/models` (legacy read-only catalog, not a selection API)
 - `GET /api/v1/applications/{inventory_id}`
 - `POST/GET /api/v1/dossier-analyses[/{run_id}]`
 - `POST/GET /api/v1/comparisons[/{comparison_id}]`
@@ -222,3 +224,24 @@ The local server still binds to `127.0.0.1`. Production authentication and multi
 - `scripts/` — repeatable setup, verification, and local demo commands
 
 The authoritative implementation and research plan is [IMPLEMENTATION.md](./IMPLEMENTATION.md).
+
+### Product configuration (M4.3)
+
+Analyzer and Baselines show the active server configuration; there is no browser model selector.
+Set `PRODUCT_MODEL_PROFILE=gpt-5.5`. Keep `LLM_MODE=fixture` for offline tests and demonstrations.
+For opt-in live execution, configure `LLM_MODE=live`, `LLM_MODEL=gpt-5.5`, `LLM_BASE_URL`, and
+`LLM_API_KEY` on the server. Verification requires no live calls.
+`PRODUCT_EVIDENCE_DESTINATION=external_provider` discloses external transmission;
+`local_service` requires a private/loopback IP or localhost HTTP(S) endpoint. A local proxy's
+onward routing is the operator's responsibility; this setting does not validate a new model or
+activate Qwen. Do not embed credentials or query parameters in the endpoint URL.
+
+Restart the backend after changing configuration. New runs capture the resolved configuration;
+existing records retain their original requested/reported model, adapter, mode, prompt version,
+configuration fingerprint, usage, status, and attempt attribution. Unknown, disabled, unavailable,
+or invalid profiles produce a configuration/service error, with no silent fallback.
+
+Product POST bodies now contain `inventory_id`, `target_context`, and optional `leaf_ids` only.
+`model_id` and other undeclared request overrides return 422. The historical evaluation APIs
+and frozen attribution contracts are unchanged. Missing carried context starts with undecided
+metadata intent; review the effective intent in setup before running.

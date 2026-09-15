@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import time
@@ -16,7 +17,7 @@ from app.baselines.retrieval import BM25Retriever
 from app.baselines.runner import OmittedSemanticModel
 from app.config import Settings
 from app.domain.enums import Decision, Severity
-from app.domain.models import DossierEvidence
+from app.domain.models import DossierEvidence, EvidenceSpan
 from app.evaluation.models import DirectDecisionOutput
 from app.llm.protocol import StructuredModel
 from app.llm.responses import (
@@ -25,6 +26,7 @@ from app.llm.responses import (
     RetryableLiveModelError,
 )
 from app.llm.serialization import RequestAliases
+from app.product.explanation import explanation
 from app.product.models import (
     ComparisonCell,
     ComparisonRequest,
@@ -39,6 +41,7 @@ from app.product.services import (
     CaptureRepository,
     canonical_digest,
     execution_digest,
+    failure_execution,
     stable_run_id,
 )
 from app.standards.evidence import EvidenceRegistry
@@ -190,7 +193,7 @@ async def _direct_output(
         return output, ModelExecutionRecord(
             model_profile_id="gpt-5.5",
             requested_model_name="internal-package-derived-fixture",
-            provider_reported_model_name="internal-package-derived-fixture",
+            provider_reported_model_name=None,
             adapter_type="fixture",
             execution_mode="fixture",
             configuration_digest=hashlib.sha256(b"m4.1-internal-direct-fixture-v1").hexdigest(),
@@ -267,13 +270,15 @@ class ComparisonManager:
         self.runs = runs
         self.registry = registry
         self.settings = settings
+        self.bindings: dict[str, ModelProfileRegistry] = {}
         self.evidence = tuple(sorted(EvidenceRegistry().load(), key=lambda item: item.id))
         self.evidence_by_id = {item.id: item for item in self.evidence}
         self.retriever = BM25Retriever(self.evidence)
 
     def create(self, request: ComparisonRequest) -> ComparisonRun:
         inventory = self.inventories.get(request.inventory_id)
-        profile = self.registry.require(request.model_id)
+        bound = copy.deepcopy(self.registry)
+        profile = bound.active()
         available = {leaf.id for leaf in inventory.leaves}
         leaf_ids = request.leaf_ids or tuple(leaf.id for leaf in inventory.leaves)
         if not leaf_ids or len(leaf_ids) != len(set(leaf_ids)) or set(leaf_ids) - available:
@@ -293,11 +298,45 @@ class ComparisonManager:
             created_at=now,
             updated_at=now,
         )
+        self.bindings[run_id] = bound
+        while len(self.bindings) > self.settings.product_job_capacity:
+            self.bindings.pop(next(iter(self.bindings)))
         self.runs.put(run_id, run)
         return run
 
     async def execute(self, comparison_id: str) -> None:
         run = self.runs.get(comparison_id)
+        if run.state != "queued":
+            return
+        try:
+            await self._execute(comparison_id)
+        except Exception as error:
+            # A run-level dependency/contract failure must terminate without a decision.
+            failures = tuple(
+                DossierLeafFailure(
+                    leaf_id=leaf_id,
+                    stage="run_execution",
+                    cause=type(error).__name__,
+                    model=failure_execution(run.selected_model, None, error),
+                )
+                for leaf_id in run.requested_leaf_ids
+            )
+            self.runs.put(
+                comparison_id,
+                run.model_copy(
+                    update={
+                        "state": "failed",
+                        "updated_at": datetime.now(UTC),
+                        "failures": failures,
+                    }
+                ),
+            )
+        finally:
+            self.bindings.pop(comparison_id, None)
+
+    async def _execute(self, comparison_id: str) -> None:
+        run = self.runs.get(comparison_id)
+        bound = self.bindings.pop(comparison_id)
         inventory = self.inventories.get(run.inventory_id)
         run = run.model_copy(update={"state": "running", "updated_at": datetime.now(UTC)})
         self.runs.put(comparison_id, run)
@@ -336,9 +375,10 @@ class ComparisonManager:
                 output: DirectDecisionOutput | None = None
                 record: ModelExecutionRecord | None = None
                 terminal_error: Exception | None = None
+                model = None
                 try:
                     for attempt_index in range(3):
-                        model = self.registry.create(run.selected_model.model_id)
+                        model = bound.create(run.selected_model.model_id)
                         try:
                             output, record = await _direct_output(
                                 model, serialized, material, {item.id for item in selected}
@@ -379,15 +419,38 @@ class ComparisonManager:
                             human_review_required=output.human_review_required,
                             rationale=output.rationale,
                             evidence_ids=translated,
+                            explanation=explanation(
+                                evidence=tuple(
+                                    cast(EvidenceSpan | DossierEvidence, item)
+                                    for item in (
+                                        *selected,
+                                        *AnalysisService._dossier_evidence(
+                                            f"artifact-{leaf.id}", leaf
+                                        ),
+                                    )
+                                    if cast(EvidenceSpan | DossierEvidence, item).id in translated
+                                ),
+                                confidence=output.confidence,
+                            ),
                             retrieval=retrieval,
                             status="completed",
                         )
                     )
-                except (LiveModelInvalidOutput, RetryableLiveModelError, RuntimeError) as error:
+                except (
+                    LiveModelInvalidOutput,
+                    RetryableLiveModelError,
+                    RuntimeError,
+                    ValueError,
+                    KeyError,
+                    TypeError,
+                ) as error:
                     failures.append(
                         DossierLeafFailure(
                             leaf_id=leaf_id,
                             stage=f"{system}-model",
+                            model=failure_execution(
+                                run.selected_model, model, error, tuple(retry_causes)
+                            ),
                             cause=type(error).__name__,
                             retryable=isinstance(error, RetryableLiveModelError),
                         )
@@ -399,21 +462,8 @@ class ComparisonManager:
                             package_sha256=inventory.package_sha256,
                             selected_file_sha256=leaf.file_sha256,
                             package_input_digest=input_digest,
-                            model=ModelExecutionRecord(
-                                model_profile_id=run.selected_model.model_id,
-                                requested_model_name=run.selected_model.configured_model_name,
-                                adapter_type=(
-                                    run.selected_model.actual_adapter_type
-                                    or run.selected_model.adapter_type
-                                ),
-                                execution_mode=run.selected_model.execution_mode,
-                                configuration_digest=run.selected_model.configuration_digest,
-                                prompt_version="1.0.0",
-                                latency_ms=0,
-                                attempt_count=max(1, len(retry_causes)),
-                                retry_causes=tuple(retry_causes),
-                                status="failed",
-                                failure=type(error).__name__,
+                            model=failure_execution(
+                                run.selected_model, model, error, tuple(retry_causes)
                             ),
                             retrieval=retrieval,
                             status="invalid_output",
@@ -422,29 +472,30 @@ class ComparisonManager:
                     )
             for system in cast(tuple[Literal["B2", "RegBridge"], ...], ("B2", "RegBridge")):
                 retry_causes = []
-                semantic_model: object = OmittedSemanticModel()
+                semantic_model: object = None
                 try:
                     if system == "B2":
+                        semantic_model = OmittedSemanticModel()
                         result, capture = await _pipeline_output(
                             inventory=inventory,
                             leaf_id=leaf_id,
                             target=run.target_context,
                             semantic_model=semantic_model,
-                            settings=self.settings,
+                            settings=bound.settings,
                         )
                     else:
                         pipeline_terminal_error: Exception | None = None
                         result = None
                         capture = CaptureRepository()
                         for attempt_index in range(3):
-                            semantic_model = self.registry.create(run.selected_model.model_id)
+                            semantic_model = bound.create(run.selected_model.model_id)
                             try:
                                 result, capture = await _pipeline_output(
                                     inventory=inventory,
                                     leaf_id=leaf_id,
                                     target=run.target_context,
                                     semantic_model=semantic_model,
-                                    settings=self.settings,
+                                    settings=bound.settings,
                                 )
                                 break
                             except RetryableLiveModelError as error:
@@ -475,6 +526,8 @@ class ComparisonManager:
                         record = _execution_record(
                             run.selected_model, result, semantic_model, tuple(retry_causes)
                         )
+                    if record.status == "failed":
+                        raise RuntimeError("failed execution cannot publish a decision")
                     cells.append(
                         ComparisonCell(
                             leaf_id=leaf_id,
@@ -489,6 +542,7 @@ class ComparisonManager:
                             human_review_required=result.human_approval_required,
                             rationale=result.rationale,
                             evidence_ids=tuple(item.id for item in result.evidence),
+                            explanation=explanation(evidence=result.evidence, analysis=result),
                             rule_ids=result.triggered_rule_ids,
                             graph=capture.neighborhood,
                             trace=tuple(step.model_dump(mode="json") for step in result.trace),
@@ -500,12 +554,38 @@ class ComparisonManager:
                     RetryableLiveModelError,
                     AnalysisPipelineError,
                     ValueError,
+                    KeyError,
+                    TypeError,
                     RuntimeError,
                 ) as error:
+                    failed_execution = failure_execution(
+                        run.selected_model,
+                        semantic_model if system == "RegBridge" else None,
+                        error,
+                        tuple(retry_causes),
+                    )
+                    if system == "B2":
+                        failed_execution = failed_execution.model_copy(
+                            update={
+                                "model_profile_id": "model-free",
+                                "requested_model_name": None,
+                                "adapter_type": "model-free",
+                                "execution_mode": "disabled",
+                                "prompt_version": "not-applicable",
+                                "configuration_digest": canonical_digest(
+                                    {
+                                        "system": "B2",
+                                        "rules": "production",
+                                        "semantic": "omitted",
+                                    }
+                                ),
+                            }
+                        )
                     failures.append(
                         DossierLeafFailure(
                             leaf_id=leaf_id,
                             stage=f"{system}-analysis",
+                            model=failed_execution,
                             cause=type(error).__name__,
                             retryable=isinstance(error, RetryableLiveModelError),
                         )

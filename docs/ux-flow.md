@@ -13,7 +13,8 @@ focus. **Edit setup** retains the chosen file and options; **Back to home** star
 Leaving the page does not cancel work already submitted to the server.
 
 In Baselines, read a ZIP's document list or use the previous parsed inventory. Choose documents
-and an available model, then select **Run comparison**. Changing dossiers requires reading the
+and explicitly review target context and metadata intent, then select **Run comparison**.
+M4.3 replaces model selectors with a read-only server configuration disclosure. Changing dossiers requires reading the
 new document list before comparison. All systems receive the same selected inputs. The page
 reports differing decisions without scoring correctness or ranking systems.
 

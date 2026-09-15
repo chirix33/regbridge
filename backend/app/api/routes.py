@@ -50,13 +50,14 @@ from app.persistence.factory import create_product_stores
 from app.presentation.repository import load_m4_snapshot
 from app.product.comparison import ComparisonManager
 from app.product.models import (
+    ActiveProductConfiguration,
     ComparisonRequest,
     ComparisonRun,
     DossierAnalysisRequest,
     DossierAnalysisRun,
     ModelCatalog,
 )
-from app.product.models_registry import ModelProfileRegistry
+from app.product.models_registry import ModelProfileRegistry, ProductConfigurationError
 from app.product.services import DossierAnalysisManager
 from app.standards.operational import OperationalStatusRegistry
 from app.standards.registry import StandardsRegistry
@@ -266,6 +267,13 @@ def get_application(inventory_id: str) -> ApplicationInventory:
         raise HTTPException(status_code=404, detail="inventory not found or expired") from error
 
 
+@router.get(
+    "/api/v1/config/product", response_model=ActiveProductConfiguration, tags=["configuration"]
+)
+def active_product_configuration() -> ActiveProductConfiguration:
+    return _model_registry.active_configuration()
+
+
 @router.get("/api/v1/models", response_model=ModelCatalog, tags=["configuration"])
 def list_models() -> ModelCatalog:
     return _model_registry.catalog()
@@ -318,10 +326,10 @@ def create_dossier_analysis(
 ) -> DossierAnalysisRun:
     try:
         run = _dossier_manager.create(request)
+    except ProductConfigurationError as error:
+        raise HTTPException(status_code=503, detail=str(error)) from error
     except KeyError as error:
-        raise HTTPException(
-            status_code=404, detail="inventory or model profile not found"
-        ) from error
+        raise HTTPException(status_code=404, detail="inventory not found") from error
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
     background_tasks.add_task(_dossier_manager.execute, run.run_id)
@@ -352,10 +360,10 @@ def create_comparison(
 ) -> ComparisonRun:
     try:
         run = _comparison_manager.create(request)
+    except ProductConfigurationError as error:
+        raise HTTPException(status_code=503, detail=str(error)) from error
     except KeyError as error:
-        raise HTTPException(
-            status_code=404, detail="inventory or model profile not found"
-        ) from error
+        raise HTTPException(status_code=404, detail="inventory not found") from error
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
     background_tasks.add_task(_comparison_manager.execute, run.comparison_id)

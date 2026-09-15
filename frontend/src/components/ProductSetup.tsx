@@ -1,0 +1,14 @@
+import type { ActiveProductConfiguration, TargetContext } from "../api/contracts";
+
+export function ProductSetup({ value, onChange }: { value: TargetContext; onChange: (value: TargetContext) => void }) {
+  return <fieldset><legend>Target context and metadata intent</legend><p>FDA/CDER · NDA · selected Module 3 checks · prospective eCTD v3.2.2 → v4.0 reuse.</p>
+    <label>Scenario<select value={value.scenario_mode} onChange={e => onChange({ ...value, scenario_mode: e.target.value as TargetContext["scenario_mode"] })}><option value="prospective_forward_compatibility">Prospective forward compatibility</option><option value="current_operational">Current operational availability</option></select></label>
+    {value.scenario_mode === "current_operational" && <p>Forward compatibility is not operational. This mode reports availability without prospective rules or content inspection.</p>}
+    <label>How should metadata be handled?<select value={value.metadata_plan.intent} onChange={e => onChange({ ...value, metadata_plan: { ...value.metadata_plan, intent: e.target.value as TargetContext["metadata_plan"]["intent"] } })}><option value="unspecified">I'm not sure yet</option><option value="preserve-existing-lifecycle">Preserve the existing lifecycle and metadata</option><option value="normalize-metadata">Standardize metadata for the target context</option></select></label>
+    <p className="field-note">{value.metadata_plan.intent === "preserve-existing-lifecycle" ? "Effective intent: preserve existing lifecycle relationships and exact context metadata; review any recorded qualifications." : value.metadata_plan.intent === "normalize-metadata" ? "Effective intent: evaluate metadata changes for the target context. A new context or lifecycle action may require approval." : "Effective intent: undecided. Metadata recommendations may remain unresolved until you choose an intent."} Manufacturer grouping: {value.metadata_plan.manufacturer_partitioning}.</p>
+  </fieldset>;
+}
+export function ConfigurationDisclosure({ config }: { config: ActiveProductConfiguration }) {
+  const text = { not_transmitted: "Evidence is not transmitted. Fixture mode uses deterministic offline responses; no live AI call is made.", external_provider: "Document evidence is sent to the configured external provider.", local_service: "Document evidence is sent over the network to the configured local service.", unavailable: "Execution is unavailable. Contact the service operator to correct the configuration." };
+  return <aside className="configuration-disclosure"><strong>{config.execution_mode === "fixture" ? "Offline demonstration" : "Server-configured analysis"}</strong><p>{text[config.evidence_transmission]}</p><small>{config.profile_id} · {config.availability} · {config.execution_mode}</small></aside>;
+}

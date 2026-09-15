@@ -23,15 +23,15 @@ export default defineConfig({
   webServer: [
     {
       command:
-        "powershell -NoProfile -ExecutionPolicy Bypass -Command \"$env:LLM_MODE='fixture'; Remove-Item Env:LLM_API_KEY -ErrorAction SilentlyContinue; Remove-Item Env:LLM_BASE_URL -ErrorAction SilentlyContinue; Remove-Item Env:LLM_MODEL -ErrorAction SilentlyContinue; Set-Location ..\\backend; ..\\.venv\\Scripts\\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000\"",
+        "powershell -NoProfile -ExecutionPolicy Bypass -Command \"$env:LLM_MODE='fixture'; $env:PRODUCT_MODEL_PROFILE='gpt-5.5'; $env:REG_BRIDGE_DATABASE_PATH='../results/m43-e2e.sqlite3'; $env:REG_BRIDGE_DATABASE_URL=''; $env:DATABASE_URL=''; Remove-Item Env:LLM_API_KEY -ErrorAction SilentlyContinue; Remove-Item Env:LLM_BASE_URL -ErrorAction SilentlyContinue; Remove-Item Env:LLM_MODEL -ErrorAction SilentlyContinue; Set-Location ..\\backend; ..\\.venv\\Scripts\\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000\"",
       url: "http://127.0.0.1:8000/health",
-      reuseExistingServer: true,
+      reuseExistingServer: false,
       timeout: 60_000,
     },
     {
       command: "npm run dev -- --host 127.0.0.1 --port 5173",
       url: "http://127.0.0.1:5173",
-      reuseExistingServer: true,
+      reuseExistingServer: false,
       timeout: 60_000,
     },
   ],

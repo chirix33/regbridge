@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import hashlib
+import ipaddress
 import json
 import time
 from collections.abc import Callable
 from typing import Literal, TypeVar, cast
+from urllib.parse import urlsplit
 
 import tiktoken
 from pydantic import BaseModel
@@ -15,9 +17,18 @@ from app.domain.models import DossierEvidence, ModelRunRecord
 from app.llm.models import ModelCompletion, ModelRequest, SemanticFinding, SemanticRiskOutput
 from app.llm.protocol import StructuredModel
 from app.llm.responses import ResponsesStructuredModel
-from app.product.models import ModelAvailability, ModelCatalog, ModelProfile
+from app.product.models import (
+    ActiveProductConfiguration,
+    ModelAvailability,
+    ModelCatalog,
+    ModelProfile,
+)
 
 OutputT = TypeVar("OutputT", bound=BaseModel)
+
+
+class ProductConfigurationError(ValueError):
+    """Safe, public configuration error; never contains endpoint credentials."""
 
 
 def _digest(value: object) -> str:
@@ -86,6 +97,75 @@ class ModelProfileRegistry:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
 
+    def transmission(self) -> Literal["not_transmitted", "external_provider", "local_service"]:
+        if self.settings.llm_mode != LlmMode.LIVE:
+            return "not_transmitted"
+        endpoint = urlsplit(self.settings.llm_base_url or "")
+        if (
+            endpoint.scheme not in {"http", "https"}
+            or not endpoint.hostname
+            or endpoint.username
+            or endpoint.password
+            or endpoint.query
+            or endpoint.fragment
+        ):
+            raise ProductConfigurationError(
+                "Product endpoint must be an HTTP(S) URL without embedded credentials, "
+                "query, or fragment."
+            )
+        destination = self.settings.product_evidence_destination
+        if destination not in {"external_provider", "local_service"}:
+            raise ProductConfigurationError(
+                "PRODUCT_EVIDENCE_DESTINATION must identify external_provider or local_service."
+            )
+        if destination == "local_service":
+            try:
+                local = ipaddress.ip_address(endpoint.hostname).is_private
+            except ValueError:
+                local = endpoint.hostname == "localhost" or endpoint.hostname.endswith(".localhost")
+            if not local:
+                raise ProductConfigurationError(
+                    "Local-service disclosure requires a private/loopback IP or localhost endpoint."
+                )
+        return cast(Literal["external_provider", "local_service"], destination)
+
+    def active(self) -> ModelProfile:
+        try:
+            self.transmission()
+            profile = self.require(self.settings.product_model_profile)
+        except (KeyError, ValueError) as error:
+            raise ProductConfigurationError(
+                "Active product profile is unknown, unavailable, or misconfigured. "
+                "Check server configuration."
+            ) from error
+        if self.settings.llm_mode == LlmMode.LIVE and self.settings.llm_model != "gpt-5.5":
+            raise ProductConfigurationError(
+                "The validated live product profile requires LLM_MODEL=gpt-5.5."
+            )
+        return profile
+
+    def active_configuration(self) -> ActiveProductConfiguration:
+        try:
+            profile = self.active()
+            return ActiveProductConfiguration(
+                profile_id=profile.model_id,
+                availability=profile.availability,
+                execution_mode=profile.execution_mode,
+                evidence_transmission=self.transmission(),
+                configuration_digest=profile.configuration_digest,
+                detail="Server-owned product configuration. Changes require a server restart.",
+            )
+        except ProductConfigurationError as error:
+            return ActiveProductConfiguration(
+                profile_id=self.settings.product_model_profile,
+                availability="disabled"
+                if self.settings.llm_mode == LlmMode.DISABLED
+                else "misconfigured",
+                execution_mode=self.settings.llm_mode.value,
+                evidence_transmission="unavailable",
+                detail=str(error),
+            )
+
     def _gpt_profile(self) -> ModelProfile:
         live_config_complete = bool(
             self.settings.llm_base_url and self.settings.llm_api_key and self.settings.llm_model
@@ -110,6 +190,15 @@ class ModelProfileRegistry:
             configured = None
             display_name = "GPT-5.5 — disabled"
         configuration = {
+            "contract": "m4.3-product-v1",
+            "endpoint": self.settings.llm_base_url
+            if self.settings.llm_mode == LlmMode.LIVE
+            else None,
+            "timeout_seconds": self.settings.llm_timeout_seconds,
+            "evidence_destination": self.settings.product_evidence_destination
+            if self.settings.llm_mode == LlmMode.LIVE
+            else "not_transmitted",
+            "retry_policy": "transport-provider-only-3-attempts",
             "profile": "gpt-5.5",
             "declared_live_adapter": "responses",
             "actual_adapter": actual_adapter,

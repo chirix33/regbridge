@@ -181,7 +181,27 @@ export interface ModelExecutionRecord {
   failure: string | null;
 }
 
+export interface ActiveProductConfiguration {
+  contract_version: "1.0.0";
+  profile_id: string;
+  availability: ModelProfile["availability"];
+  execution_mode: ModelProfile["execution_mode"];
+  evidence_transmission: "not_transmitted" | "external_provider" | "local_service" | "unavailable";
+  configuration_digest: string | null;
+  detail: string;
+}
+export interface ProductExplanation {
+  version: "1.0.0";
+  findings: AnalysisResult["findings"] | null;
+  repair: AnalysisResult["repair"] | null;
+  evidence: EvidenceSpan[];
+  sources: Array<{ evidence_id: string; source_id: string; title: string; version: string; source_url: string; sha256: string }>;
+  uncertainty: string[] | null;
+  limitations: string[];
+  confidence: number | null;
+}
 export interface DossierLeafResult {
+  explanation?: ProductExplanation | null;
   leaf_id: string;
   analysis_ref: string;
   analysis: AnalysisResult;
@@ -190,6 +210,7 @@ export interface DossierLeafResult {
 }
 
 export interface DossierAnalysisRun {
+  target_context: TargetContext;
   run_id: string;
   state: "queued" | "running" | "completed" | "partial_failed" | "failed";
   inventory_id: string;
@@ -222,6 +243,7 @@ export interface DossierAnalysisRun {
 }
 
 export interface ComparisonCell {
+  explanation?: ProductExplanation | null;
   leaf_id: string;
   system: "B0" | "B1" | "B2" | "RegBridge";
   model: ModelExecutionRecord;
@@ -240,6 +262,7 @@ export interface ComparisonCell {
 }
 
 export interface ComparisonRun {
+  target_context: TargetContext;
   comparison_id: string;
   state: "queued" | "running" | "completed" | "partial_failed" | "failed";
   inventory_id: string;

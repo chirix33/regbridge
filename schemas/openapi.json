@@ -1,6 +1,75 @@
 {
   "components": {
     "schemas": {
+      "ActiveProductConfiguration": {
+        "additionalProperties": false,
+        "properties": {
+          "availability": {
+            "enum": [
+              "available",
+              "coming_soon",
+              "misconfigured",
+              "disabled"
+            ],
+            "title": "Availability",
+            "type": "string"
+          },
+          "configuration_digest": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Configuration Digest"
+          },
+          "contract_version": {
+            "const": "1.0.0",
+            "default": "1.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "evidence_transmission": {
+            "enum": [
+              "not_transmitted",
+              "external_provider",
+              "local_service",
+              "unavailable"
+            ],
+            "title": "Evidence Transmission",
+            "type": "string"
+          },
+          "execution_mode": {
+            "enum": [
+              "live",
+              "fixture",
+              "disabled"
+            ],
+            "title": "Execution Mode",
+            "type": "string"
+          },
+          "profile_id": {
+            "title": "Profile Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "profile_id",
+          "availability",
+          "execution_mode",
+          "evidence_transmission",
+          "detail"
+        ],
+        "title": "ActiveProductConfiguration",
+        "type": "object"
+      },
       "AnalysisRequest": {
         "additionalProperties": false,
         "properties": {
@@ -716,6 +785,16 @@
             "title": "Evidence Ids",
             "type": "array"
           },
+          "explanation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProductExplanation"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "failure": {
             "anyOf": [
               {
@@ -873,18 +952,12 @@
             ],
             "title": "Leaf Ids"
           },
-          "model_id": {
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
-            "title": "Model Id",
-            "type": "string"
-          },
           "target_context": {
             "$ref": "#/components/schemas/TargetContext"
           }
         },
         "required": [
           "inventory_id",
-          "model_id",
           "target_context"
         ],
         "title": "ComparisonRequest",
@@ -1142,18 +1215,12 @@
             ],
             "title": "Leaf Ids"
           },
-          "model_id": {
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
-            "title": "Model Id",
-            "type": "string"
-          },
           "target_context": {
             "$ref": "#/components/schemas/TargetContext"
           }
         },
         "required": [
           "inventory_id",
-          "model_id",
           "target_context"
         ],
         "title": "DossierAnalysisRequest",
@@ -1474,6 +1541,16 @@
             "title": "Leaf Id",
             "type": "string"
           },
+          "model": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModelExecutionRecord"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "retryable": {
             "default": false,
             "title": "Retryable",
@@ -1502,6 +1579,16 @@
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
             "title": "Analysis Ref",
             "type": "string"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProductExplanation"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "graph": {
             "$ref": "#/components/schemas/GraphNeighborhood"
@@ -2938,7 +3025,8 @@
               "responses",
               "chat_completions",
               "fixture",
-              "model-free"
+              "model-free",
+              "not-executed"
             ],
             "title": "Adapter Type",
             "type": "string"
@@ -4129,6 +4217,99 @@
         "title": "PresentationRate",
         "type": "object"
       },
+      "ProductExplanation": {
+        "additionalProperties": false,
+        "properties": {
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "evidence": {
+            "default": [],
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/EvidenceSpan"
+                },
+                {
+                  "$ref": "#/components/schemas/DossierEvidence"
+                }
+              ]
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "findings": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/Finding"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Findings"
+          },
+          "limitations": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "repair": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RuntimeRepairAction"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sources": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/SupportingSource"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uncertainty"
+          },
+          "version": {
+            "const": "1.0.0",
+            "default": "1.0.0",
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "title": "ProductExplanation",
+        "type": "object"
+      },
       "ProfileCheck": {
         "additionalProperties": false,
         "properties": {
@@ -4992,6 +5173,45 @@
           "sources"
         ],
         "title": "StandardsSnapshotResponse",
+        "type": "object"
+      },
+      "SupportingSource": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence_id": {
+            "title": "Evidence Id",
+            "type": "string"
+          },
+          "sha256": {
+            "title": "Sha256",
+            "type": "string"
+          },
+          "source_id": {
+            "title": "Source Id",
+            "type": "string"
+          },
+          "source_url": {
+            "title": "Source Url",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "evidence_id",
+          "source_id",
+          "title",
+          "version",
+          "source_url",
+          "sha256"
+        ],
+        "title": "SupportingSource",
         "type": "object"
       },
       "SystemPrediction": {
@@ -5873,6 +6093,27 @@
         "summary": "Get Comparison",
         "tags": [
           "product"
+        ]
+      }
+    },
+    "/api/v1/config/product": {
+      "get": {
+        "operationId": "active_product_configuration_api_v1_config_product_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActiveProductConfiguration"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Active Product Configuration",
+        "tags": [
+          "configuration"
         ]
       }
     },

@@ -1,4 +1,5 @@
 import type {
+  ActiveProductConfiguration,
   AnalysisResult,
   ApplicationInventory,
   FixtureListResponse,
@@ -77,6 +78,10 @@ export async function parseFixture(fixtureId: string): Promise<ApplicationInvent
   return responseJson<ApplicationInventory>(response);
 }
 
+export function getActiveProductConfiguration(): Promise<ActiveProductConfiguration> {
+  return getJson<ActiveProductConfiguration>("/api/v1/config/product");
+}
+
 export function getModels(): Promise<ModelCatalog> {
   return getJson<ModelCatalog>("/api/v1/models");
 }
@@ -106,14 +111,13 @@ export async function getProductDemoPackage(): Promise<File> {
 
 export async function createDossierAnalysis(
   inventoryId: string,
-  modelId: string,
   targetContext: TargetContext,
   leafIds?: string[],
 ): Promise<DossierAnalysisRun> {
   const response = await fetch(`${apiOrigin}/api/v1/dossier-analyses`, {
     method: "POST",
     headers: { Accept: "application/json", "Content-Type": "application/json" },
-    body: JSON.stringify({ inventory_id: inventoryId, model_id: modelId, target_context: targetContext, leaf_ids: leafIds ?? null }),
+    body: JSON.stringify({ inventory_id: inventoryId, target_context: targetContext, leaf_ids: leafIds ?? null }),
   });
   return responseJson<DossierAnalysisRun>(response);
 }
@@ -124,14 +128,13 @@ export function getDossierAnalysis(runId: string): Promise<DossierAnalysisRun> {
 
 export async function createComparison(
   inventoryId: string,
-  modelId: string,
   targetContext: TargetContext,
   leafIds?: string[],
 ): Promise<ComparisonRun> {
   const response = await fetch(`${apiOrigin}/api/v1/comparisons`, {
     method: "POST",
     headers: { Accept: "application/json", "Content-Type": "application/json" },
-    body: JSON.stringify({ inventory_id: inventoryId, model_id: modelId, target_context: targetContext, leaf_ids: leafIds ?? null }),
+    body: JSON.stringify({ inventory_id: inventoryId, target_context: targetContext, leaf_ids: leafIds ?? null }),
   });
   return responseJson<ComparisonRun>(response);
 }

@@ -240,8 +240,12 @@ def test_case_c_supported_mismatch_abstention_and_clean_paths() -> None:
 
 class RegistryDouble:
     def __init__(self, settings: Settings, factory: Any) -> None:
+        self.settings = settings
         self.base = ModelProfileRegistry(settings)
         self.factory = factory
+
+    def active(self) -> Any:
+        return self.base.active()
 
     def require(self, model_id: str) -> Any:
         return self.base.require(model_id)
@@ -269,7 +273,6 @@ def _manager(
     run = manager.create(
         DossierAnalysisRequest(
             inventory_id=envelope.inventory_id,
-            model_id="gpt-5.5",
             target_context=_target(),
             leaf_ids=leaf_ids,
         )

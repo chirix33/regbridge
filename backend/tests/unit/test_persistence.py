@@ -217,7 +217,6 @@ def test_postgres_inventory_and_jobs_round_trip() -> None:
     run = manager.create(
         DossierAnalysisRequest(
             inventory_id=local_envelope.inventory_id,
-            model_id="gpt-5.5",
             target_context=_target(),
             leaf_ids=(inventory.leaves[0].id,),
         )

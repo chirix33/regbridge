@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 from datetime import UTC, datetime
@@ -16,6 +17,7 @@ from app.llm.responses import (
 )
 from app.parsers.profile322 import CAPABILITY_BOUNDARY
 from app.parsers.public322 import PROFILE_ID as PUBLIC_PROFILE_ID
+from app.product.explanation import explanation
 from app.product.models import (
     DossierAnalysisRequest,
     DossierAnalysisRun,
@@ -82,7 +84,8 @@ def _execution_record(
     model: object,
     retry_causes: tuple[str, ...] = (),
 ) -> ModelExecutionRecord:
-    if result.model_run.mode != profile.execution_mode:
+    skipped = result.model_run.status == "not_applicable"
+    if not skipped and result.model_run.mode != profile.execution_mode:
         raise ValueError("model result execution mode differs from the selected profile")
     attempt = None
     if isinstance(model, ResponsesStructuredModel) and model.last_attempts:
@@ -95,10 +98,8 @@ def _execution_record(
     return ModelExecutionRecord(
         model_profile_id=profile.model_id,
         requested_model_name=profile.configured_model_name,
-        provider_reported_model_name=attempt.model_reported
-        if attempt
-        else result.model_run.model_name,
-        adapter_type=adapter,
+        provider_reported_model_name=attempt.model_reported if attempt else None,
+        adapter_type="not-executed" if skipped else adapter,
         execution_mode=cast(Literal["live", "fixture", "disabled"], result.model_run.mode),
         configuration_digest=profile.configuration_digest,
         prompt_version=result.model_run.prompt_template_version,
@@ -107,7 +108,7 @@ def _execution_record(
         output_tokens=result.model_run.output_tokens,
         reasoning_tokens=attempt.reasoning_tokens if attempt else None,
         latency_ms=result.model_run.latency_ms,
-        attempt_count=1 + len(retry_causes),
+        attempt_count=0 if skipped else 1 + len(retry_causes),
         retry_causes=retry_causes,
         status=cast(
             Literal["completed", "abstained", "failed", "not_applicable"],
@@ -118,6 +119,35 @@ def _execution_record(
         failure=(
             result.model_run.validation_error if result.model_run.status == "failed" else None
         ),
+    )
+
+
+def failure_execution(
+    profile: ModelProfile, model: object, error: Exception, retry_causes: tuple[str, ...] = ()
+) -> ModelExecutionRecord:
+    attempts = getattr(model, "last_attempts", ())
+    attempt = attempts[-1] if attempts else None
+    return ModelExecutionRecord(
+        model_profile_id=profile.model_id,
+        requested_model_name=profile.configured_model_name,
+        provider_reported_model_name=attempt.model_reported if attempt else None,
+        adapter_type=(profile.actual_adapter_type or "not-executed") if model else "not-executed",
+        execution_mode=profile.execution_mode,
+        configuration_digest=profile.configuration_digest,
+        prompt_version="1.0.0",
+        request_digest=attempt.request_digest if attempt else None,
+        input_tokens=attempt.input_tokens if attempt else None,
+        output_tokens=attempt.total_output_tokens if attempt else None,
+        reasoning_tokens=attempt.reasoning_tokens if attempt else None,
+        latency_ms=attempt.latency_ms if attempt else 0,
+        attempt_count=min(
+            3,
+            len(retry_causes)
+            + (1 if attempt and not isinstance(error, RetryableLiveModelError) else 0),
+        ),
+        retry_causes=retry_causes,
+        status="failed",
+        failure=type(error).__name__,
     )
 
 
@@ -134,10 +164,12 @@ class DossierAnalysisManager:
         self.runs = runs
         self.registry = registry
         self.settings = settings
+        self.bindings: dict[str, ModelProfileRegistry] = {}
 
     def create(self, request: DossierAnalysisRequest) -> DossierAnalysisRun:
         inventory = self.inventories.get(request.inventory_id)
-        profile = self.registry.require(request.model_id)
+        bound = copy.deepcopy(self.registry)
+        profile = bound.active()
         available = {leaf.id for leaf in inventory.leaves}
         leaf_ids = request.leaf_ids or tuple(leaf.id for leaf in inventory.leaves)
         if not leaf_ids or len(leaf_ids) != len(set(leaf_ids)) or set(leaf_ids) - available:
@@ -164,11 +196,45 @@ class DossierAnalysisManager:
                 else CAPABILITY_BOUNDARY
             ),
         )
+        self.bindings[run_id] = bound
+        while len(self.bindings) > self.settings.product_job_capacity:
+            self.bindings.pop(next(iter(self.bindings)))
         self.runs.put(run_id, run)
         return run
 
     async def execute(self, run_id: str) -> None:
         run = self.runs.get(run_id)
+        if run.state != "queued":
+            return
+        try:
+            await self._execute(run_id)
+        except Exception as error:
+            # A run-level dependency/contract failure must terminate without a decision.
+            failures = tuple(
+                DossierLeafFailure(
+                    leaf_id=leaf_id,
+                    stage="run_execution",
+                    cause=type(error).__name__,
+                    model=failure_execution(run.selected_model, None, error),
+                )
+                for leaf_id in run.requested_leaf_ids
+            )
+            self.runs.put(
+                run_id,
+                run.model_copy(
+                    update={
+                        "state": "failed",
+                        "updated_at": datetime.now(UTC),
+                        "failures": failures,
+                    }
+                ),
+            )
+        finally:
+            self.bindings.pop(run_id, None)
+
+    async def _execute(self, run_id: str) -> None:
+        run = self.runs.get(run_id)
+        bound = self.bindings.pop(run_id)
         inventory = self.inventories.get(run.inventory_id)
         run = run.model_copy(update={"state": "running", "updated_at": datetime.now(UTC)})
         self.runs.put(run_id, run)
@@ -177,12 +243,15 @@ class DossierAnalysisManager:
         for leaf_id in run.requested_leaf_ids:
             retry_causes: list[str] = []
             for attempt_index in range(3):
-                model = self.registry.create(run.selected_model.model_id)
-                capture = CaptureRepository()
-                service = AnalysisService(
-                    model=model, repository=cast(Any, capture), settings=self.settings
-                )
+                model: object = None
                 try:
+                    model = bound.create(run.selected_model.model_id)
+                    capture = CaptureRepository()
+                    service = AnalysisService(
+                        model=cast(Any, model),
+                        repository=cast(Any, capture),
+                        settings=bound.settings,
+                    )
                     result = await service.analyze_async(inventory, leaf_id, run.target_context)
                     if result.model_run.status == "failed":
                         raise AnalysisPipelineError(
@@ -198,6 +267,7 @@ class DossierAnalysisManager:
                             leaf_id=leaf_id,
                             analysis_ref=f"{run_id}-{leaf_id}",
                             analysis=result,
+                            explanation=explanation(evidence=result.evidence, analysis=result),
                             graph=capture.neighborhood,
                             model=_execution_record(
                                 run.selected_model, result, model, tuple(retry_causes)
@@ -216,6 +286,9 @@ class DossierAnalysisManager:
                             stage="transport",
                             cause=f"RetryableLiveModelError:{cause}",
                             failure_category="transport_or_provider_failure",
+                            model=failure_execution(
+                                run.selected_model, model, error, tuple(retry_causes)
+                            ),
                             retryable=False,
                         )
                     )
@@ -225,12 +298,17 @@ class DossierAnalysisManager:
                     AnalysisPipelineError,
                     ValueError,
                     KeyError,
+                    RuntimeError,
+                    TypeError,
                 ) as error:
                     stage = error.stage if isinstance(error, AnalysisPipelineError) else "analysis"
                     failures.append(
                         DossierLeafFailure(
                             leaf_id=leaf_id,
                             stage=stage,
+                            model=failure_execution(
+                                run.selected_model, model, error, tuple(retry_causes)
+                            ),
                             cause=type(error).__name__,
                             failure_category=(
                                 "invalid_structured_output"
