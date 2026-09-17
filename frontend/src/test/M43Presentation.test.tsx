@@ -48,14 +48,14 @@ describe("versioned product presentation", () => {
     expect(comparisonDocument(inventory.leaves.find(l => l.id === b2.leaf_id)!, b2).statuses).toContain("Inspection intentionally omitted");
   });
   it("retains multiple findings and groups only equivalent document conditions", () => {
-    const multi = { ...semantic, explanation: { ...semantic.explanation!, findings: [...semantic.explanation!.findings!, { ...semantic.explanation!.findings![0]!, id: "second-finding" }] } };
+    const multi = { ...semantic, explanation: { ...semantic.explanation!, observations: { ...semantic.explanation!.observations!, semantic_topics: [...semantic.explanation!.observations!.semantic_topics, { finding_id: "second-finding", category: "applicant_name_mismatch" }] }, findings: [...semantic.explanation!.findings!, { ...semantic.explanation!.findings![0]!, id: "second-finding" }] } };
     const another = { ...multi, leaf: { ...multi.leaf, id: "second-doc", href: "m3/another.pdf" } };
     const groups = groupReviewItems([multi, another]);
-    expect(groups).toHaveLength(1);
+    expect(groups).toHaveLength(2);
     expect(groups[0]!.documents).toHaveLength(2);
     expect(groups[0]!.documents[0]!.explanation!.findings).toHaveLength(2);
     const qualified = { ...another, explanation: { ...another.explanation, uncertainty: ["A distinct unresolved condition"] } };
-    expect(groupReviewItems([multi, qualified])).toHaveLength(2);
+    expect(groupReviewItems([multi, qualified])).toHaveLength(4);
   });
   it("retains unfamiliar recorded recommendations with a presentation limitation", () => {
     const d = projectDocument({ ...structural, action: "NEW_UNRECOGNIZED_ACTION" });
@@ -65,20 +65,23 @@ describe("versioned product presentation", () => {
   it("opens document identity and action before independent evidence and technical disclosures", () => {
     render(<ReviewWorkspace documents={[structural]}/>);
     expect(screen.getByRole("button", { name: "Needs attention" })).toHaveAttribute("aria-pressed", "true");
-    fireEvent.click(screen.getByRole("button", { name: "Context and metadata" }));
+    fireEvent.click(screen.getByRole("button", { name: "Document placement" }));
     expect(screen.getByText(structural.leaf.href)).toBeVisible();
-    expect(screen.getByText("Next step")).toBeVisible();
+    expect(screen.getAllByText("Next step")[0]).toBeVisible();
     expect(screen.getByText("View supporting evidence").closest("details")).not.toHaveAttribute("open");
     expect(screen.getByText("How RegBridge reached this result").closest("details")).not.toHaveAttribute("open");
     fireEvent.click(screen.getByText("View supporting evidence"));
     expect(screen.getAllByRole("link", { name: "Official source" }).length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole("button", { name: "Close document review" }));
-    expect(screen.getByRole("button", { name: "Context and metadata" })).toHaveFocus();
+    expect(screen.getByRole("button", { name: "Document placement" })).toHaveFocus();
   });
   it("does not attach RegBridge explanation to direct approaches", () => {
     const b0 = comparison.results.find(c => c.system === "B0")!;
     expect(b0.explanation!.findings).toBeNull();
     expect(b0.graph).toBeNull();
+    expect(b0.explanation!.observations!.placements).toEqual([]);
+    expect(b0.explanation!.observations!.semantic_topics).toEqual([]);
+    expect(b0.explanation!.observations!.keywords).toEqual([]);
     expect(b0.explanation!.evidence.map(e => e.id).sort()).toEqual([...b0.evidence_ids].sort());
     render(<DocumentReview document={comparisonDocument(inventory.leaves.find(l => l.id === b0.leaf_id)!, b0)}/>);
     expect(screen.getByText(b0.rationale!)).toBeVisible();

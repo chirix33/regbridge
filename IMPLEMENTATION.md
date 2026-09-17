@@ -1107,6 +1107,14 @@ findings, the overall recommendation, conditions, and citations. Unique document
 items are counted separately. Supporting evidence and technical reasoning are separate
 disclosures. Graph, accessible text, edge table, model record, trace, and digests remain available.
 
+The M4.3 refinement uses presentation version 1.1.0. Needs attention is a work queue of
+observations and limitations; All documents is a separate inventory with one row per leaf ID,
+including distinct leaves referencing the same physical file. Applied heading mappings,
+keyword associations, accepted semantic categories, and selected migration intent are retained
+in an additive product-only observations payload. Concrete raw metadata and cited dossier
+passages remain distinct from unresolved conditions. Every item retains the same overall
+document recommendation; item summaries do not create new repairs or regulatory conclusions.
+
 Analyzer and Baselines share presentation primitives and explicit target-context setup. Missing
 saved metadata intent is `unspecified`, never silently preservation. B0/B1 retain native
 explanations and actual citations; RegBridge/B2 retain available findings, repair descriptions,

@@ -1199,7 +1199,30 @@
             "The model abstained because the bounded evidence did not support a semantic conclusion."
           ],
           "limitations": [],
-          "confidence": 0.0
+          "confidence": 0.0,
+          "observations": {
+            "metadata_plan": {
+              "intent": "preserve-existing-lifecycle",
+              "manufacturer_partitioning": "unknown",
+              "replacement_manufacturer_value": null
+            },
+            "package_applicant_name": "RegBridge Synthetic Therapeutics LLC",
+            "placements": [
+              {
+                "finding_id": "m42-leaf-a-removed-heading",
+                "source_heading": "3.2.S.1.2",
+                "target_heading": "3.2.S.1",
+                "evidence_ids": [
+                  "ev-ctoc-321-remains",
+                  "ev-ctoc-3211-3213-removed",
+                  "ev-tcg-replacement-context-same",
+                  "ev-tcg-new-context-and-reuse"
+                ]
+              }
+            ],
+            "keywords": [],
+            "semantic_topics": []
+          }
         }
       },
       {
@@ -2204,7 +2227,27 @@
             "The model abstained because the bounded evidence did not support a semantic conclusion."
           ],
           "limitations": [],
-          "confidence": 0.0
+          "confidence": 0.0,
+          "observations": {
+            "metadata_plan": {
+              "intent": "preserve-existing-lifecycle",
+              "manufacturer_partitioning": "unknown",
+              "replacement_manufacturer_value": null
+            },
+            "package_applicant_name": "RegBridge Synthetic Therapeutics LLC",
+            "placements": [],
+            "keywords": [
+              {
+                "finding_id": "m42-leaf-b-fda-cder-m2-discouraged-manufacturer-all-001",
+                "keyword_name": "manufacturer"
+              },
+              {
+                "finding_id": "m42-leaf-b-fda-cder-m2-preserve-existing-context-002",
+                "keyword_name": "manufacturer"
+              }
+            ],
+            "semantic_topics": []
+          }
         }
       },
       {
@@ -2628,7 +2671,18 @@
             "The model abstained because the bounded evidence did not support a semantic conclusion."
           ],
           "limitations": [],
-          "confidence": 0.0
+          "confidence": 0.0,
+          "observations": {
+            "metadata_plan": {
+              "intent": "preserve-existing-lifecycle",
+              "manufacturer_partitioning": "unknown",
+              "replacement_manufacturer_value": null
+            },
+            "package_applicant_name": "RegBridge Synthetic Therapeutics LLC",
+            "placements": [],
+            "keywords": [],
+            "semantic_topics": []
+          }
         }
       }
     ],
@@ -4141,7 +4195,30 @@
           ],
           "uncertainty": [],
           "limitations": [],
-          "confidence": 0.9
+          "confidence": 0.9,
+          "observations": {
+            "metadata_plan": {
+              "intent": "preserve-existing-lifecycle",
+              "manufacturer_partitioning": "unknown",
+              "replacement_manufacturer_value": null
+            },
+            "package_applicant_name": "RegBridge Synthetic Therapeutics LLC",
+            "placements": [
+              {
+                "finding_id": "m42-leaf-a-removed-heading",
+                "source_heading": "3.2.S.1.2",
+                "target_heading": "3.2.S.1",
+                "evidence_ids": [
+                  "ev-ctoc-321-remains",
+                  "ev-ctoc-3211-3213-removed",
+                  "ev-tcg-replacement-context-same",
+                  "ev-tcg-new-context-and-reuse"
+                ]
+              }
+            ],
+            "keywords": [],
+            "semantic_topics": []
+          }
         }
       },
       {
@@ -5122,7 +5199,27 @@
           ],
           "uncertainty": [],
           "limitations": [],
-          "confidence": 0.9
+          "confidence": 0.9,
+          "observations": {
+            "metadata_plan": {
+              "intent": "preserve-existing-lifecycle",
+              "manufacturer_partitioning": "unknown",
+              "replacement_manufacturer_value": null
+            },
+            "package_applicant_name": "RegBridge Synthetic Therapeutics LLC",
+            "placements": [],
+            "keywords": [
+              {
+                "finding_id": "m42-leaf-b-fda-cder-m2-discouraged-manufacturer-all-001",
+                "keyword_name": "manufacturer"
+              },
+              {
+                "finding_id": "m42-leaf-b-fda-cder-m2-preserve-existing-context-002",
+                "keyword_name": "manufacturer"
+              }
+            ],
+            "semantic_topics": []
+          }
         }
       },
       {
@@ -5596,7 +5693,23 @@
             "Supported stale or ambiguous dossier evidence requires human review."
           ],
           "limitations": [],
-          "confidence": 0.0
+          "confidence": 0.0,
+          "observations": {
+            "metadata_plan": {
+              "intent": "preserve-existing-lifecycle",
+              "manufacturer_partitioning": "unknown",
+              "replacement_manufacturer_value": null
+            },
+            "package_applicant_name": "RegBridge Synthetic Therapeutics LLC",
+            "placements": [],
+            "keywords": [],
+            "semantic_topics": [
+              {
+                "finding_id": "finding-artifact-m42-leaf-c-applicant",
+                "category": "applicant_name_mismatch"
+              }
+            ]
+          }
         }
       }
     ],
@@ -6082,7 +6195,18 @@
           "limitations": [
             "This direct approach supplies a native explanation and citations; structured findings, document repair description, and uncertainty are unavailable."
           ],
-          "confidence": 0.9
+          "confidence": 0.9,
+          "observations": {
+            "metadata_plan": {
+              "intent": "preserve-existing-lifecycle",
+              "manufacturer_partitioning": "unknown",
+              "replacement_manufacturer_value": null
+            },
+            "package_applicant_name": "RegBridge Synthetic Therapeutics LLC",
+            "placements": [],
+            "keywords": [],
+            "semantic_topics": []
+          }
         }
       },
       {
@@ -6334,7 +6458,18 @@
           "limitations": [
             "This direct approach supplies a native explanation and citations; structured findings, document repair description, and uncertainty are unavailable."
           ],
-          "confidence": 0.9
+          "confidence": 0.9,
+          "observations": {
+            "metadata_plan": {
+              "intent": "preserve-existing-lifecycle",
+              "manufacturer_partitioning": "unknown",
+              "replacement_manufacturer_value": null
+            },
+            "package_applicant_name": "RegBridge Synthetic Therapeutics LLC",
+            "placements": [],
+            "keywords": [],
+            "semantic_topics": []
+          }
         }
       },
       {
@@ -7131,7 +7266,30 @@
           ],
           "uncertainty": [],
           "limitations": [],
-          "confidence": 1.0
+          "confidence": 1.0,
+          "observations": {
+            "metadata_plan": {
+              "intent": "preserve-existing-lifecycle",
+              "manufacturer_partitioning": "unknown",
+              "replacement_manufacturer_value": null
+            },
+            "package_applicant_name": "RegBridge Synthetic Therapeutics LLC",
+            "placements": [
+              {
+                "finding_id": "m42-leaf-a-removed-heading",
+                "source_heading": "3.2.S.1.2",
+                "target_heading": "3.2.S.1",
+                "evidence_ids": [
+                  "ev-ctoc-321-remains",
+                  "ev-ctoc-3211-3213-removed",
+                  "ev-tcg-replacement-context-same",
+                  "ev-tcg-new-context-and-reuse"
+                ]
+              }
+            ],
+            "keywords": [],
+            "semantic_topics": []
+          }
         }
       },
       {
@@ -7928,7 +8086,30 @@
           ],
           "uncertainty": [],
           "limitations": [],
-          "confidence": 0.9
+          "confidence": 0.9,
+          "observations": {
+            "metadata_plan": {
+              "intent": "preserve-existing-lifecycle",
+              "manufacturer_partitioning": "unknown",
+              "replacement_manufacturer_value": null
+            },
+            "package_applicant_name": "RegBridge Synthetic Therapeutics LLC",
+            "placements": [
+              {
+                "finding_id": "m42-leaf-a-removed-heading",
+                "source_heading": "3.2.S.1.2",
+                "target_heading": "3.2.S.1",
+                "evidence_ids": [
+                  "ev-ctoc-321-remains",
+                  "ev-ctoc-3211-3213-removed",
+                  "ev-tcg-replacement-context-same",
+                  "ev-tcg-new-context-and-reuse"
+                ]
+              }
+            ],
+            "keywords": [],
+            "semantic_topics": []
+          }
         }
       },
       {
@@ -8001,7 +8182,18 @@
           "limitations": [
             "This direct approach supplies a native explanation and citations; structured findings, document repair description, and uncertainty are unavailable."
           ],
-          "confidence": 0.85
+          "confidence": 0.85,
+          "observations": {
+            "metadata_plan": {
+              "intent": "preserve-existing-lifecycle",
+              "manufacturer_partitioning": "unknown",
+              "replacement_manufacturer_value": null
+            },
+            "package_applicant_name": "RegBridge Synthetic Therapeutics LLC",
+            "placements": [],
+            "keywords": [],
+            "semantic_topics": []
+          }
         }
       },
       {
@@ -8093,7 +8285,18 @@
           "limitations": [
             "This direct approach supplies a native explanation and citations; structured findings, document repair description, and uncertainty are unavailable."
           ],
-          "confidence": 0.85
+          "confidence": 0.85,
+          "observations": {
+            "metadata_plan": {
+              "intent": "preserve-existing-lifecycle",
+              "manufacturer_partitioning": "unknown",
+              "replacement_manufacturer_value": null
+            },
+            "package_applicant_name": "RegBridge Synthetic Therapeutics LLC",
+            "placements": [],
+            "keywords": [],
+            "semantic_topics": []
+          }
         }
       },
       {
@@ -8806,7 +9009,27 @@
           ],
           "uncertainty": [],
           "limitations": [],
-          "confidence": 1.0
+          "confidence": 1.0,
+          "observations": {
+            "metadata_plan": {
+              "intent": "preserve-existing-lifecycle",
+              "manufacturer_partitioning": "unknown",
+              "replacement_manufacturer_value": null
+            },
+            "package_applicant_name": "RegBridge Synthetic Therapeutics LLC",
+            "placements": [],
+            "keywords": [
+              {
+                "finding_id": "m42-leaf-b-fda-cder-m2-discouraged-manufacturer-all-001",
+                "keyword_name": "manufacturer"
+              },
+              {
+                "finding_id": "m42-leaf-b-fda-cder-m2-preserve-existing-context-002",
+                "keyword_name": "manufacturer"
+              }
+            ],
+            "semantic_topics": []
+          }
         }
       },
       {
@@ -9519,7 +9742,27 @@
           ],
           "uncertainty": [],
           "limitations": [],
-          "confidence": 0.9
+          "confidence": 0.9,
+          "observations": {
+            "metadata_plan": {
+              "intent": "preserve-existing-lifecycle",
+              "manufacturer_partitioning": "unknown",
+              "replacement_manufacturer_value": null
+            },
+            "package_applicant_name": "RegBridge Synthetic Therapeutics LLC",
+            "placements": [],
+            "keywords": [
+              {
+                "finding_id": "m42-leaf-b-fda-cder-m2-discouraged-manufacturer-all-001",
+                "keyword_name": "manufacturer"
+              },
+              {
+                "finding_id": "m42-leaf-b-fda-cder-m2-preserve-existing-context-002",
+                "keyword_name": "manufacturer"
+              }
+            ],
+            "semantic_topics": []
+          }
         }
       },
       {
@@ -9582,7 +9825,18 @@
           "limitations": [
             "This direct approach supplies a native explanation and citations; structured findings, document repair description, and uncertainty are unavailable."
           ],
-          "confidence": 0.95
+          "confidence": 0.95,
+          "observations": {
+            "metadata_plan": {
+              "intent": "preserve-existing-lifecycle",
+              "manufacturer_partitioning": "unknown",
+              "replacement_manufacturer_value": null
+            },
+            "package_applicant_name": "RegBridge Synthetic Therapeutics LLC",
+            "placements": [],
+            "keywords": [],
+            "semantic_topics": []
+          }
         }
       },
       {
@@ -9664,7 +9918,18 @@
           "limitations": [
             "This direct approach supplies a native explanation and citations; structured findings, document repair description, and uncertainty are unavailable."
           ],
-          "confidence": 0.95
+          "confidence": 0.95,
+          "observations": {
+            "metadata_plan": {
+              "intent": "preserve-existing-lifecycle",
+              "manufacturer_partitioning": "unknown",
+              "replacement_manufacturer_value": null
+            },
+            "package_applicant_name": "RegBridge Synthetic Therapeutics LLC",
+            "placements": [],
+            "keywords": [],
+            "semantic_topics": []
+          }
         }
       },
       {
@@ -9985,7 +10250,18 @@
           "sources": [],
           "uncertainty": [],
           "limitations": [],
-          "confidence": 1.0
+          "confidence": 1.0,
+          "observations": {
+            "metadata_plan": {
+              "intent": "preserve-existing-lifecycle",
+              "manufacturer_partitioning": "unknown",
+              "replacement_manufacturer_value": null
+            },
+            "package_applicant_name": "RegBridge Synthetic Therapeutics LLC",
+            "placements": [],
+            "keywords": [],
+            "semantic_topics": []
+          }
         }
       },
       {
@@ -10373,7 +10649,23 @@
             "Supported stale or ambiguous dossier evidence requires human review."
           ],
           "limitations": [],
-          "confidence": 0.0
+          "confidence": 0.0,
+          "observations": {
+            "metadata_plan": {
+              "intent": "preserve-existing-lifecycle",
+              "manufacturer_partitioning": "unknown",
+              "replacement_manufacturer_value": null
+            },
+            "package_applicant_name": "RegBridge Synthetic Therapeutics LLC",
+            "placements": [],
+            "keywords": [],
+            "semantic_topics": [
+              {
+                "finding_id": "finding-artifact-m42-leaf-c-applicant",
+                "category": "applicant_name_mismatch"
+              }
+            ]
+          }
         }
       }
     ],

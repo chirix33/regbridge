@@ -190,7 +190,15 @@ export interface ActiveProductConfiguration {
   configuration_digest: string | null;
   detail: string;
 }
+export interface ProductObservations {
+  metadata_plan: MetadataPlan | null;
+  package_applicant_name: string | null;
+  placements: Array<{ finding_id: string; source_heading: string; target_heading: string; evidence_ids: string[] }>;
+  keywords: Array<{ finding_id: string; keyword_name: string }>;
+  semantic_topics: Array<{ finding_id: string; category: string }>;
+}
 export interface ProductExplanation {
+  observations?: ProductObservations | null;
   version: "1.0.0";
   findings: AnalysisResult["findings"] | null;
   repair: AnalysisResult["repair"] | null;

@@ -15,7 +15,8 @@ export function WorkspaceFlow({ step, title, description, onBack, children }: {
   const showHomeLink = location.pathname !== "/" || step !== "setup";
   useEffect(() => {
     heading.current?.focus({ preventScroll: true });
-    heading.current?.scrollIntoView?.({ block: "start", behavior: "instant" });
+    const scrollTarget = step === "results" ? heading.current?.closest("main") : heading.current;
+    scrollTarget?.scrollIntoView?.({ block: "start", behavior: "instant" });
   }, [step]);
 
   return <main className={`product-workspace step-workspace step-${step}`} id="main-content">

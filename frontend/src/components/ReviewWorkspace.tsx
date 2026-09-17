@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { ReviewDocument } from "../api/presentation";
-import { groupReviewItems, nextStep, overviewFinding } from "../api/presentation";
+import { documentReviewItems, groupReviewItems, nextStep, statusLabel } from "../api/presentation";
 import { readable } from "../api/wording";
 import { GraphNeighborhood } from "./GraphNeighborhood";
 
@@ -8,7 +8,7 @@ export function DocumentReview({ document: d }: { document: ReviewDocument }) {
   const explanation = d.explanation;
   return <article className="document-review">
     <header><h3>{d.leaf.title}</h3><p className="document-filename">{d.leaf.href}</p><p>Source section {d.leaf.heading} · {d.leaf.source_locator}</p></header>
-    <p className="review-status">{d.statuses.join(" · ")}</p>
+    <p className="review-status">{d.statuses.map(statusLabel).join(" · ")}</p>
     <dl className="review-steps">
       <div><dt>Current</dt><dd>eCTD v3.2.2 section {d.leaf.heading}; recorded lifecycle operation: {d.leaf.operation}.
         {d.leaf.keywords.map(k => <span key={`${k.name}-${k.source_locator}`}> {k.name}: {k.raw_value}.</span>)}</dd></div>
@@ -17,6 +17,7 @@ export function DocumentReview({ document: d }: { document: ReviewDocument }) {
       <div><dt>Next step</dt><dd>{nextStep(d)}</dd></div>
     </dl>
     <p><strong>Human approval:</strong> {d.approval == null ? "Not assessed" : d.approval ? "Required before acting on the recommendation" : "Not required by the recorded result"}. No document edits or migration have been performed.</p>
+    {!!documentReviewItems(d).length && <section aria-label={`Review items for ${d.leaf.title} (${d.system ?? "RegBridge"}, ${d.leaf.id})`}><h4>Review items for this document</h4><ul className="document-review-items">{documentReviewItems(d).map(item => <li key={item.id}><strong>{item.area}</strong><p>{item.found}</p><p>Next step: {item.next}</p></li>)}</ul></section>}
     {d.statuses.includes("Incomplete inspection") && <p className="review-limitation"><strong>Inspection incomplete.</strong> Content inspection needs completion. This status does not mean stale content was found; any recorded structural recommendation still applies.</p>}
     {d.statuses.includes("Inspection intentionally omitted") && <p className="review-limitation">B2 intentionally checks rules without semantic inspection. This is neither an abstention nor content clearance.</p>}
     {d.statuses.includes("No change detected within evaluated checks") && <p>No change was detected within the selected FDA/CDER Module 3 checks and completed bounded inspection. This is not a full submission assessment.</p>}
@@ -47,26 +48,40 @@ export function DocumentReview({ document: d }: { document: ReviewDocument }) {
 export function ReviewWorkspace({ documents }: { documents: ReviewDocument[] }) {
   const [attentionOnly, setAttentionOnly] = useState(true);
   const [open, setOpen] = useState<string | null>(null);
-  const shown = documents.filter(d => !attentionOnly || d.attention);
-  const items = groupReviewItems(shown);
-  const affected = new Set(shown.map(d => d.leaf.href)).size;
-  const active = items.find(item => item.key === open);
+  const origin = useRef<HTMLButtonElement | null>(null);
+  const leaves = [...new Map(documents.map(d => [d.leaf.id, d])).values()];
+  const items = groupReviewItems(leaves);
+  const activeItem = attentionOnly ? items.find(item => item.key === open) : null;
+  const activeDocuments = attentionOnly ? activeItem?.documents : leaves.filter(d => d.leaf.id === open);
+  const affected = new Set(items.flatMap(item => item.documents.map(d => d.leaf.id))).size;
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => { if (open) heading.current?.focus(); }, [open]);
+  const toggle = (key: string, button: HTMLButtonElement) => { origin.current = button; setOpen(open === key ? null : key); };
   return <section className="panel action-workspace">
-    <h2>Review actions</h2>
+    <h2>{attentionOnly ? "Review actions" : "Document inventory"}</h2>
     <div className="review-filters" aria-label="Document view"><button aria-pressed={attentionOnly} onClick={() => { setAttentionOnly(true); setOpen(null); }}>Needs attention</button><button aria-pressed={!attentionOnly} onClick={() => { setAttentionOnly(false); setOpen(null); }}>All documents</button></div>
-    <p>{items.length} review items · {affected} unique {attentionOnly ? "affected documents" : "documents shown"}. Documents may appear in more than one review item or status.</p>
-    {!items.length && <p>No documents need attention in the recorded results. Open All documents to inspect the evaluated scope.</p>}
-    <div className="action-overview" role="table" aria-label="Action overview"><div className="action-row action-head" role="row">{["Area", "What was found", "Recommended next step", "Affected documents", "Status"].map(h => <span role="columnheader" key={h}>{h}</span>)}</div>
-      {items.map((item, i) => { const d = item.documents[0]!; return <div className="action-row" role="row" key={item.key}>
-        <div role="cell" data-label="Area"><button id={`review-action-${i}`} aria-describedby={`review-summary-${i}`} aria-expanded={open === item.key} onClick={() => setOpen(open === item.key ? null : item.key)}>{d.area}</button></div>
-        <div role="cell" id={`review-summary-${i}`} data-label="What was found">{overviewFinding(d)}</div>
-        <div role="cell" data-label="Recommended next step">{nextStep(d)}</div>
-        <div role="cell" data-label="Affected documents">{new Set(item.documents.map(doc => doc.leaf.href)).size}</div>
-        <div role="cell" data-label="Status">{d.statuses.join(" · ")}</div>
-      </div>; })}
-    </div>
-    {active && <section className="action-detail" aria-label="Affected document review"><h2 ref={heading} tabIndex={-1}>{active.documents[0]!.area}</h2>{active.documents.map(d => <DocumentReview key={d.leaf.id} document={d}/>)}<button onClick={() => { const i = items.indexOf(active); setOpen(null); document.getElementById(`review-action-${i}`)?.focus(); }}>Close document review</button></section>}
+    <p>{attentionOnly ? `${items.length} review items · ${affected} affected document leaves` : `${leaves.length} document leaves · ${items.length} review items`}. Review items and statuses may overlap. Separate leaves retain their own context even when they reference the same file.</p>
+    {attentionOnly ? <>
+      {!items.length && <p>No documents need attention in the recorded results. Open All documents to inspect the evaluated scope.</p>}
+      <div className="action-overview" role="table" aria-label="Action overview"><div className="action-row action-head" role="row">{["Area", "What was found", "Next step", "Documents", "Status"].map(h => <span role="columnheader" key={h}>{h}</span>)}</div>
+        {items.map((item, i) => <div className="action-row" role="row" key={item.key}>
+          <div role="cell" data-label="Area"><button aria-describedby={`review-summary-${i}`} aria-expanded={open === item.key} onClick={e => toggle(item.key, e.currentTarget)}>{item.area}</button></div>
+          <div role="cell" id={`review-summary-${i}`} data-label="What was found">{item.found}</div>
+          <div role="cell" data-label="Next step">{item.next}</div>
+          <div role="cell" data-label="Documents">{item.documents.length} {item.documents.length === 1 ? "leaf" : "leaves"}</div>
+          <div role="cell" data-label="Status"><ul className="review-status-list">{item.statuses.map(s => <li key={s}>{statusLabel(s)}</li>)}</ul></div>
+        </div>)}
+      </div>
+    </> : <div className="document-inventory" role="table" aria-label="Document inventory">
+      <div className="inventory-row action-head" role="row">{["Document", "Filename", "Source section", "Assessment status", "Review items"].map(h => <span role="columnheader" key={h}>{h}</span>)}</div>
+      {leaves.map(d => <div className="inventory-row" role="row" key={d.leaf.id}>
+        <div role="cell" data-label="Document"><button aria-expanded={open === d.leaf.id} onClick={e => toggle(d.leaf.id, e.currentTarget)}>{d.leaf.title}</button><small>Leaf ID: {d.leaf.id}</small></div>
+        <div role="cell" data-label="Filename">{d.leaf.href}</div>
+        <div role="cell" data-label="Source section">{d.leaf.heading}</div>
+        <div role="cell" data-label="Assessment status"><ul className="review-status-list">{d.statuses.map(s => <li key={s}>{statusLabel(s)}</li>)}</ul></div>
+        <div role="cell" data-label="Review items">{documentReviewItems(d).length} {documentReviewItems(d).length === 1 ? "review item" : "review items"}</div>
+      </div>)}
+    </div>}
+    {!!activeDocuments?.length && <section className="action-detail" aria-label="Affected document review"><h2 ref={heading} tabIndex={-1}>{attentionOnly ? activeItem?.area : "Document review"}</h2>{activeDocuments.map(d => <DocumentReview key={d.leaf.id} document={d}/>)}<button onClick={() => { setOpen(null); origin.current?.focus(); }}>Close document review</button></section>}
   </section>;
 }

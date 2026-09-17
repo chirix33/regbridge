@@ -26,7 +26,12 @@ from app.llm.responses import (
     RetryableLiveModelError,
 )
 from app.llm.serialization import RequestAliases
-from app.product.explanation import explanation
+from app.product.explanation import (
+    ObservationCapture,
+    ProductObservations,
+    explanation,
+    observations,
+)
 from app.product.models import (
     ComparisonCell,
     ComparisonRequest,
@@ -246,14 +251,26 @@ async def _pipeline_output(
     settings: Settings,
 ) -> tuple[Any, CaptureRepository]:
     capture = CaptureRepository()
+    observer = ObservationCapture(cast(StructuredModel, semantic_model))
     service = AnalysisService(
-        model=cast(StructuredModel, semantic_model),
+        model=observer,
         repository=cast(Any, capture),
         settings=settings,
     )
     result = await service.analyze_async(inventory, leaf_id, target)
     if capture.neighborhood is None:
         raise AnalysisPipelineError("persistence", RuntimeError("graph missing"))
+    capture.explanation = explanation(
+        evidence=result.evidence,
+        analysis=result,
+        observed=observations(
+            result,
+            inventory.applicant_name,
+            service.heading_rules,
+            observer.output,
+            service.metadata_rules,
+        ),
+    )
     return result, capture
 
 
@@ -431,6 +448,10 @@ class ComparisonManager:
                                     if cast(EvidenceSpan | DossierEvidence, item).id in translated
                                 ),
                                 confidence=output.confidence,
+                                observed=ProductObservations(
+                                    metadata_plan=run.target_context.metadata_plan,
+                                    package_applicant_name=inventory.applicant_name,
+                                ),
                             ),
                             retrieval=retrieval,
                             status="completed",
@@ -542,7 +563,7 @@ class ComparisonManager:
                             human_review_required=result.human_approval_required,
                             rationale=result.rationale,
                             evidence_ids=tuple(item.id for item in result.evidence),
-                            explanation=explanation(evidence=result.evidence, analysis=result),
+                            explanation=capture.explanation,
                             rule_ids=result.triggered_rule_ids,
                             graph=capture.neighborhood,
                             trace=tuple(step.model_dump(mode="json") for step in result.trace),

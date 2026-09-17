@@ -2369,6 +2369,25 @@
         "title": "HealthResponse",
         "type": "object"
       },
+      "KeywordObservation": {
+        "additionalProperties": false,
+        "properties": {
+          "finding_id": {
+            "title": "Finding Id",
+            "type": "string"
+          },
+          "keyword_name": {
+            "title": "Keyword Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "finding_id",
+          "keyword_name"
+        ],
+        "title": "KeywordObservation",
+        "type": "object"
+      },
       "LifecycleOperation": {
         "enum": [
           "new",
@@ -3830,6 +3849,38 @@
         "title": "ParsedLeaf",
         "type": "object"
       },
+      "PlacementObservation": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "finding_id": {
+            "title": "Finding Id",
+            "type": "string"
+          },
+          "source_heading": {
+            "title": "Source Heading",
+            "type": "string"
+          },
+          "target_heading": {
+            "title": "Target Heading",
+            "type": "string"
+          }
+        },
+        "required": [
+          "finding_id",
+          "source_heading",
+          "target_heading",
+          "evidence_ids"
+        ],
+        "title": "PlacementObservation",
+        "type": "object"
+      },
       "PresentationCasePrediction": {
         "additionalProperties": false,
         "properties": {
@@ -4268,6 +4319,16 @@
             "title": "Limitations",
             "type": "array"
           },
+          "observations": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProductObservations"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "repair": {
             "anyOf": [
               {
@@ -4308,6 +4369,62 @@
           }
         },
         "title": "ProductExplanation",
+        "type": "object"
+      },
+      "ProductObservations": {
+        "additionalProperties": false,
+        "description": "Recorded input and validated finding topics, never newly inferred conclusions.",
+        "properties": {
+          "keywords": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/KeywordObservation"
+            },
+            "title": "Keywords",
+            "type": "array"
+          },
+          "metadata_plan": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MetadataPlan"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "package_applicant_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Package Applicant Name"
+          },
+          "placements": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/PlacementObservation"
+            },
+            "title": "Placements",
+            "type": "array"
+          },
+          "semantic_topics": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/SemanticTopic"
+            },
+            "title": "Semantic Topics",
+            "type": "array"
+          }
+        },
+        "required": [
+          "metadata_plan"
+        ],
+        "title": "ProductObservations",
         "type": "object"
       },
       "ProfileCheck": {
@@ -4939,6 +5056,25 @@
           "limitations"
         ],
         "title": "ScopeResponse",
+        "type": "object"
+      },
+      "SemanticTopic": {
+        "additionalProperties": false,
+        "properties": {
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "finding_id": {
+            "title": "Finding Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "finding_id",
+          "category"
+        ],
+        "title": "SemanticTopic",
         "type": "object"
       },
       "Severity": {

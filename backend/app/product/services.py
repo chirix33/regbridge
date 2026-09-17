@@ -17,7 +17,12 @@ from app.llm.responses import (
 )
 from app.parsers.profile322 import CAPABILITY_BOUNDARY
 from app.parsers.public322 import PROFILE_ID as PUBLIC_PROFILE_ID
-from app.product.explanation import explanation
+from app.product.explanation import (
+    ObservationCapture,
+    ProductExplanation,
+    explanation,
+    observations,
+)
 from app.product.models import (
     DossierAnalysisRequest,
     DossierAnalysisRun,
@@ -43,6 +48,7 @@ class CaptureRepository:
     def __init__(self) -> None:
         self.result: AnalysisResult | None = None
         self.neighborhood: GraphNeighborhood | None = None
+        self.explanation: ProductExplanation | None = None
 
     def save(self, result: AnalysisResult, graph: GraphNeighborhood) -> None:
         validated_result = AnalysisResult.model_validate(result)
@@ -247,8 +253,9 @@ class DossierAnalysisManager:
                 try:
                     model = bound.create(run.selected_model.model_id)
                     capture = CaptureRepository()
+                    observer = ObservationCapture(cast(Any, model))
                     service = AnalysisService(
-                        model=cast(Any, model),
+                        model=observer,
                         repository=cast(Any, capture),
                         settings=bound.settings,
                     )
@@ -267,7 +274,17 @@ class DossierAnalysisManager:
                             leaf_id=leaf_id,
                             analysis_ref=f"{run_id}-{leaf_id}",
                             analysis=result,
-                            explanation=explanation(evidence=result.evidence, analysis=result),
+                            explanation=explanation(
+                                evidence=result.evidence,
+                                analysis=result,
+                                observed=observations(
+                                    result,
+                                    inventory.applicant_name,
+                                    service.heading_rules,
+                                    observer.output,
+                                    service.metadata_rules,
+                                ),
+                            ),
                             graph=capture.neighborhood,
                             model=_execution_record(
                                 run.selected_model, result, model, tuple(retry_causes)

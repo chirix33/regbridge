@@ -39,7 +39,7 @@ test("M4.2 uploads the public-standards ZIP and compares package-derived inputs"
   await expect(page.getByText(/fda-us-regional-dtd-v3-3 3.3 \(passed\)/)).toBeVisible();
   await expect(page.getByText(/Index-dtd-version-inferred/)).toBeVisible();
   await expect(page.getByRole("button", { name: "Needs attention" })).toHaveAttribute("aria-pressed", "true");
-  await page.getByRole("button", { name: "Context and metadata" }).click();
+  await page.getByRole("button", { name: "Document placement" }).click();
   const caseA = page.locator(".document-review").filter({ hasText: "Synthetic molecular structure" });
   await expect(caseA.getByText(/Proposed document recommendation: Reuse with a new context/)).toBeVisible();
   await expect(caseA.locator(".document-filename")).toContainText(".pdf");

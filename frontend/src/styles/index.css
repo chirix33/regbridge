@@ -2292,3 +2292,19 @@ h3 {
 .action-row button { padding: 10px 12px; border: 1px solid var(--color-border-default); background: var(--color-bg-raised); border-radius: var(--radius-control); text-align: start; }
 .review-filters button { padding: 10px 14px; border: 2px solid transparent; border-radius: var(--radius-control); }
 .action-detail > button { margin-block-start: 24px; padding: 10px 14px; border: 1px solid var(--color-border-default); border-radius: var(--radius-control); }
+
+/* Leaf inventory and review queue share readable cards, with distinct information hierarchy. */
+.inventory-row { display: grid; grid-template-columns: minmax(160px, 1.3fr) minmax(140px, 1.2fr) minmax(100px, .6fr) minmax(150px, 1fr) minmax(80px, .5fr); gap: 16px; padding-block: 20px; border-block-end: 1px solid var(--color-border-default); }
+.inventory-row > div { min-width: 0; overflow-wrap: anywhere; }
+.inventory-row small { display: block; margin-block-start: 8px; }
+.inventory-row button { padding: 10px 12px; border: 1px solid var(--color-border-default); background: var(--color-bg-raised); border-radius: var(--radius-control); text-align: start; }
+.review-status-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.document-review-items { padding-inline-start: 24px; display: grid; gap: 24px; }
+.document-review-items p { margin-block: 8px; }
+@media (max-width: 900px) {
+  .inventory-row { grid-template-columns: 1fr; }
+  .inventory-row.action-head { display: none; }
+  .inventory-row [data-label]::before { content: attr(data-label); display: block; font-size: .8rem; font-weight: 650; margin-block-end: 6px; }
+}
+
+.step-results, .step-results .flow-heading h1, .action-detail > h2 { scroll-margin-block-start: 7rem; }

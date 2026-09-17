@@ -15,10 +15,10 @@ it("shows hard mapping with incomplete inspection and a separate service failure
   fireEvent.click(screen.getByLabelText(/I confirm/));
   fireEvent.click(screen.getByRole("button", { name: "Parse and analyze" }));
   await screen.findByRole("heading", { name: "Review actions" });
-  fireEvent.click(screen.getByRole("button", { name: "Context and metadata" }));
+  fireEvent.click(screen.getByRole("button", { name: "Document placement" }));
   expect(screen.getByText(/This status does not mean stale content was found/)).toBeVisible();
   expect(screen.getByText(/Proposed document recommendation: Reuse with a new context/)).toBeVisible();
-  expect(screen.getByText("Next step")).toBeVisible();
+  expect(screen.getAllByText("Next step")[0]).toBeVisible();
   expect(screen.getByText(fixture.inventory.leaves[0]!.href)).toBeVisible();
   fireEvent.click(screen.getByRole("button", { name: "Analysis service" }));
   expect(screen.getByRole("heading", { name: failed.title })).toBeVisible();
