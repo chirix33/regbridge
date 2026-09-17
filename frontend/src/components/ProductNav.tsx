@@ -7,7 +7,7 @@ export function ProductNav() {
 
   return (
     <nav className="product-nav" data-menu-open={open} aria-label="RegBridge workspace navigation">
-      <Link className="brand" to="/" aria-label="RegBridge Analyzer home"><span className="brand-mark" aria-hidden="true">R</span><span>RegBridge</span></Link>
+      <Link className="brand" to="/" aria-label="RegBridge Analyzer home"><img className="brand-mark" src="/regbridge.svg" alt=""/><span>RegBridge</span></Link>
       <button
         className="mobile-nav-toggle"
         type="button"
@@ -21,8 +21,6 @@ export function ProductNav() {
       <div className="product-nav-links" id="product-nav-links" onClick={() => setOpen(false)}>
         <NavLink to="/" end>Analyzer</NavLink>
         <NavLink to="/baselines">Baselines</NavLink>
-        <NavLink to="/evaluation">Evaluation</NavLink>
-        <NavLink to="/demo/case-a">Guided cases</NavLink>
         <NavLink to="/about">About</NavLink>
       </div>
     </nav>

@@ -3,14 +3,14 @@ import { expect, test } from "@playwright/test";
 
 test("step screens stay readable, focused, and accessible", async ({ page }, testInfo) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Analyze a dossier" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Choose your dossier" })).toBeVisible();
   await expect(page.locator(".product-nav-links a").first()).toHaveCSS("text-transform", "none");
   await page.screenshot({ path: testInfo.outputPath("setup.png"), fullPage: true });
   expect((await new AxeBuilder({ page: page as never }).analyze()).violations).toEqual([]);
   await page.getByRole("button", { name: "Try a sample dossier" }).click();
   await expect(page.getByText(/Selected: regbridge/)).toBeVisible();
   await page.getByRole("button", { name: "Continue to options" }).click();
-  await expect(page.getByText("Offline demonstration", { exact: true })).toBeVisible();
+  await expect(page.getByText(/Offline demonstration/)).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("options.png"), fullPage: true });
   await page.getByLabel(/I confirm/).check();
   let release!: () => void;
@@ -48,8 +48,10 @@ test("step screens stay readable, focused, and accessible", async ({ page }, tes
   expect((await new AxeBuilder({ page: page as never }).analyze()).violations).toEqual([]);
   await page.screenshot({ path: testInfo.outputPath("results.png"), fullPage: true });
   expect(await page.evaluate("document.documentElement.scrollWidth <= innerWidth")).toBe(true);
+  await page.getByRole("button", { name: "Close document review" }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
   await page.getByRole("button", { name: "Edit setup" }).click();
-  await expect(page.getByRole("heading", { name: "Analyze a dossier" })).toBeFocused();
+  await expect(page.getByRole("heading", { name: "Choose your review options" })).toBeFocused();
   await expect(page.getByText(/Selected: regbridge/)).toBeVisible();
   await page.goto("/baselines");
   await page.getByRole("button", { name: "Run comparison" }).click();
@@ -58,5 +60,5 @@ test("step screens stay readable, focused, and accessible", async ({ page }, tes
   await page.screenshot({ path: testInfo.outputPath("comparison.png"), fullPage: true });
   expect(await page.evaluate("document.documentElement.scrollWidth <= innerWidth")).toBe(true);
   await page.getByRole("link", { name: "Back to home" }).click();
-  await expect(page.getByRole("heading", { name: "Analyze a dossier" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Choose your dossier" })).toBeVisible();
 });

@@ -1,7 +1,7 @@
 import type { ApplicationInventory, ComparisonCell, DossierAnalysisRun, ModelExecutionRecord, ParsedLeaf, ProductExplanation } from "./contracts";
 import { readable } from "./wording";
 
-export const PRESENTATION_VERSION = "1.1.0";
+export const PRESENTATION_VERSION = "1.2.0";
 export type ReviewStatus = "Required context/metadata action" | "Supported semantic concern" | "Incomplete inspection" | "Insufficient application history" | "Outside-policy coverage" | "Failed analysis" | "Not analyzed" | "Human review required" | "Inspection intentionally omitted" | "No change detected within evaluated checks" | "Presentation limitation" | "Intent unresolved" | "Partitioning unresolved" | "Advisory";
 export interface ReviewDocument {
   version: typeof PRESENTATION_VERSION;
@@ -41,7 +41,7 @@ export function projectDocument(input: Omit<ReviewDocument, "version" | "statuse
   if (leaf.policy_coverage_status === "OUTSIDE_ENCODED_POLICY_COVERAGE") statuses.push("Outside-policy coverage");
   if (model?.status === "abstained" || leaf.policy_coverage_status === "DOCUMENT_INSPECTION_INCOMPLETE" || action === "COMPLETE_DOCUMENT_INSPECTION") statuses.push("Incomplete inspection");
   if (model?.status === "not_applicable") statuses.push(model.model_profile_id === "model-free" ? "Inspection intentionally omitted" : "Incomplete inspection");
-  if (!failed && decision) {
+  if (!failed && model?.status !== "failed" && decision) {
     if (context && action !== "DECLARE_METADATA_MIGRATION_INTENT" && action !== "DECLARE_MANUFACTURER_PARTITIONING") statuses.push("Required context/metadata action");
     if (action === "DECLARE_METADATA_MIGRATION_INTENT") statuses.push("Intent unresolved");
     if (action === "DECLARE_MANUFACTURER_PARTITIONING") statuses.push("Partitioning unresolved");
@@ -77,13 +77,15 @@ export function nextStep(d: ReviewDocument): string {
   return d.explanation?.repair?.description ?? (d.action ? `Review the recorded recommendation: ${readable(d.action)}.` : "A next step was not supplied.");
 }
 
+export type ReviewArea = "Document placement" | "Manufacturer metadata" | "Applicant information" | "Document content" | "Recorded check" | "Document inspection" | "Policy coverage" | "Application history" | "Reuse review" | "Analysis service" | "Analysis pending";
 export interface DocumentReviewItem {
   id: string;
-  area: string;
+  area: ReviewArea;
   found: string;
   next: string;
   findingIds: string[];
   statuses: ReviewStatus[];
+  qualifications: Array<"inspection_incomplete" | "inspection_omitted" | "approval_required">;
 }
 export interface ReviewItem extends DocumentReviewItem { key: string; documents: ReviewDocument[] }
 
@@ -131,8 +133,25 @@ function intentObservation(d: ReviewDocument): string {
 export function documentReviewItems(d: ReviewDocument): DocumentReviewItem[] {
   if (!d.attention) return [];
   const items: DocumentReviewItem[] = [];
-  const add = (id: string, area: string, found: string, next = compactNextStep(d), findingIds: string[] = []) => {
-    items.push({ id, area, found, next, findingIds, statuses: d.statuses });
+  const add = (id: string, area: ReviewArea, found: string, next = compactNextStep(d), findingIds: string[] = []) => {
+    const findings = d.explanation?.findings?.filter(f => findingIds.includes(f.id)) ?? [];
+    const statuses: ReviewStatus[] = [];
+    if (area === "Analysis service") statuses.push("Failed analysis");
+    else if (!d.decision) statuses.push("Not analyzed");
+    else {
+      if (area === "Document placement" || (area === "Manufacturer metadata" && d.statuses.includes("Required context/metadata action"))) statuses.push("Required context/metadata action");
+      if (findings.some(f => f.enforcement_mode === "advisory")) statuses.push("Advisory");
+      if (findings.some(f => f.enforcement_mode === "semantic_signal" || f.verification_basis === "semantic_inference")) statuses.push("Supported semantic concern");
+      if (area === "Manufacturer metadata") statuses.push(...d.statuses.filter(s => s === "Intent unresolved" || s === "Partitioning unresolved"));
+      if (area === "Policy coverage") statuses.push("Outside-policy coverage");
+      if (area === "Application history") statuses.push("Insufficient application history");
+      statuses.push(...d.statuses.filter(s => s === "Incomplete inspection" || s === "Inspection intentionally omitted" || s === "Human review required" || s === "Presentation limitation"));
+    }
+    const qualifications: DocumentReviewItem["qualifications"] = [];
+    if (statuses.includes("Incomplete inspection")) qualifications.push("inspection_incomplete");
+    if (statuses.includes("Inspection intentionally omitted")) qualifications.push("inspection_omitted");
+    if (statuses.includes("Human review required")) qualifications.push("approval_required");
+    items.push({ id: `${d.system ?? "RegBridge"}:${d.leaf.id}:${id}`, area, found, next, findingIds, statuses, qualifications });
   };
   if (d.statuses.includes("Failed analysis")) {
     add("execution", "Analysis service", "Analysis failed. No regulatory decision was issued.");
@@ -164,8 +183,8 @@ export function documentReviewItems(d: ReviewDocument): DocumentReviewItem[] {
       applicant ? `${quoted || "Cited document text unavailable."} Package metadata applicant: ${observed?.package_applicant_name ? `“${observed.package_applicant_name}”.` : "unavailable."}` : quoted || finding.rationale,
       applicant ? "Verify the cited applicant information before reuse." : compactNextStep(d), [finding.id]);
   }
-  if (d.statuses.includes("Incomplete inspection") || d.statuses.includes("Inspection intentionally omitted")) {
-    add("inspection", "Document inspection", d.statuses.includes("Inspection intentionally omitted") ? "B2 intentionally omits content inspection." : "Content inspection is incomplete; no content concern is inferred from this limitation.", "Complete document inspection before deciding reuse.");
+  if (!items.length && (d.statuses.includes("Incomplete inspection") || d.statuses.includes("Inspection intentionally omitted"))) {
+    add("inspection", "Document inspection", d.statuses.includes("Inspection intentionally omitted") ? "B2 intentionally omits content inspection." : "Content inspection is incomplete; no content concern is inferred from this limitation.", d.statuses.includes("Inspection intentionally omitted") ? "Review the rules-only recommendation and its capability boundary." : "Complete document inspection before deciding reuse.");
   }
   for (const [status, area] of [["Outside-policy coverage", "Policy coverage"], ["Insufficient application history", "Application history"]] as const) {
     if (d.statuses.includes(status)) add(status, area, d.leaf.policy_coverage_basis);
@@ -190,12 +209,12 @@ export function groupReviewItems(documents: ReviewDocument[]): ReviewItem[] {
     const occurrences = new Map<string, number>();
     for (const item of documentReviewItems(d)) {
       // Equivalence requires the same observation AND complete recommendation/qualifications.
-      const signature = JSON.stringify([item.area, item.found, item.next, d.decision, d.action, d.rationale, d.approval, d.statuses, d.explanation?.repair, d.explanation?.uncertainty, d.explanation?.confidence, d.model?.reason_category, d.model?.status_detail, d.leaf.policy_coverage_basis, d.leaf.heading, d.leaf.keywords, d.explanation?.observations?.metadata_plan, d.explanation?.findings?.filter(f => item.findingIds.includes(f.id)).map(f => [f.rule_id, f.rationale, f.severity, f.verification_basis, f.enforcement_mode])]);
+      const signature = JSON.stringify([d.system ?? "RegBridge", item.area, item.found, item.next, item.statuses, item.qualifications, d.decision, d.action, d.rationale, d.approval, d.statuses, d.explanation?.repair, d.explanation?.uncertainty, d.explanation?.confidence, d.model?.reason_category, d.model?.status_detail, d.leaf.policy_coverage_basis, d.leaf.heading, d.leaf.keywords, d.explanation?.observations?.metadata_plan, d.explanation?.findings?.filter(f => item.findingIds.includes(f.id)).map(f => [f.rule_id, f.rationale, f.severity, f.verification_basis, f.enforcement_mode])]);
       const ordinal = occurrences.get(signature) ?? 0;
       occurrences.set(signature, ordinal + 1);
       const key = JSON.stringify([signature, ordinal]);
       const prior = groups.get(key);
-      if (prior && !prior.documents.some(doc => doc.leaf.id === d.leaf.id)) prior.documents.push(d);
+      if (prior && !prior.documents.some(doc => doc.leaf.id === d.leaf.id && doc.system === d.system)) prior.documents.push(d);
       else if (!prior) groups.set(key, { ...item, key, documents: [d] });
     }
   }

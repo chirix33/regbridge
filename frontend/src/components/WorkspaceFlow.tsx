@@ -1,5 +1,5 @@
 import { useEffect, useRef, type ReactNode } from "react";
-import { ArrowLeft, WarningTriangle } from "iconoir-react";
+import { ArrowLeft } from "iconoir-react";
 import { Link, useLocation } from "react-router-dom";
 import { ThinkingStatus } from "./ThinkingStatus";
 
@@ -16,7 +16,7 @@ export function WorkspaceFlow({ step, title, description, onBack, children }: {
   useEffect(() => {
     heading.current?.focus({ preventScroll: true });
     const scrollTarget = step === "results" ? heading.current?.closest("main") : heading.current;
-    scrollTarget?.scrollIntoView?.({ block: "start", behavior: "instant" });
+    scrollTarget?.scrollIntoView?.({ block: "start", behavior: window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   }, [step]);
 
   return <main className={`product-workspace step-workspace step-${step}`} id="main-content">
@@ -28,7 +28,7 @@ export function WorkspaceFlow({ step, title, description, onBack, children }: {
     </div>
     <header className="flow-heading"><h1 ref={heading} tabIndex={-1}>{title}</h1>{description && <p>{description}</p>}</header>
     {children}
-    {step !== "loading" && <aside className="flow-boundary"><WarningTriangle aria-hidden="true"/><p>FDA/CDER research prototype. Forward compatibility is currently unavailable. Findings support review and do not establish FDA acceptance or submission readiness. Not validated by a regulatory expert.</p></aside>}
+    {step === "setup" && location.pathname === "/" && <footer className="flow-boundary"><p>Research prototype for selected FDA/CDER reuse checks. This demonstration explores prospective forward compatibility, which is not currently operational. Results do not establish submission readiness or FDA acceptance and have not been validated by a regulatory expert.</p></footer>}
   </main>;
 }
 

@@ -1,9 +1,9 @@
 import { defaultTarget } from "../api/targetSetup";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Upload } from "iconoir-react";
+import { DossierPicker } from "../components/DossierPicker";
 
-import { createDossierAnalysis, getDossierAnalysis, getActiveProductConfiguration, getProductDemoPackage, parseUpload } from "../api/client";
+import { createDossierAnalysis, getDossierAnalysis, getActiveProductConfiguration, parseUpload } from "../api/client";
 import type { ApplicationInventory, DossierAnalysisRun } from "../api/contracts";
 import { ReviewWorkspace } from "../components/ReviewWorkspace";
 import { dossierDocuments } from "../api/presentation";
@@ -20,7 +20,6 @@ export function DossierWorkspace() {
   const [confirmed, setConfirmed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [presetBusy, setPresetBusy] = useState(false);
   const [optionsOpen, setOptionsOpen] = useState(false);
   const materialWarnings = inventory?.warnings.filter(w => w.code !== "index-dtd-version-inferred") ?? [];
   const terminal = run && ["completed", "partial_failed", "failed"].includes(run.state);
@@ -53,32 +52,27 @@ export function DossierWorkspace() {
   const processing = busy || Boolean(run && !terminal);
   const step = processing ? "loading" : terminal ? "results" : optionsOpen ? "options" : "setup";
   return (
-    <WorkspaceFlow step={step} title={processing ? "Reviewing your dossier" : terminal ? "Your dossier results" : "Analyze a dossier"}
-      description={processing ? undefined : terminal ? "Review each document's decision and what to do next." : "Upload your dossier, choose how to reuse its content, and review the risks."}
+    <WorkspaceFlow step={step} title={processing ? "Reviewing your dossier" : terminal ? "Your dossier results" : optionsOpen ? "Choose your review options" : "Choose your dossier"}
+      description={processing ? undefined : terminal ? "Review each document's decision and what to do next." : undefined}
       onBack={terminal ? () => { setRun(null); setInventory(null); setError(null); } : undefined}>
       {processing ? <FlowLoading label={busy ? "Checking your package" : "Analyzing your documents"} detail={busy ? "Reading the ZIP and checking its structure." : "Checking placement, metadata, and document content. Results will appear here when the run finishes."} error={error} onRetry={() => setError(null)}/> : !terminal && <section className="flow-form">
         <form className="panel upload-panel" onSubmit={(event) => { event.preventDefault(); if (optionsOpen) void submit(); else if (file) setOptionsOpen(true); }}>
           {!optionsOpen ? <>
-          <h2><Upload aria-hidden="true"/> Choose your dossier</h2>
-          <p>Use a public, synthetic, or de-identified FDA/CDER eCTD v3.2.2 ZIP containing one sequence.</p>
-          <button type="button" disabled={presetBusy} onClick={() => { setPresetBusy(true); setError(null); void getProductDemoPackage().then(setFile).catch((cause: unknown) => setError(errorMessage(cause))).finally(() => setPresetBusy(false)); }}>{presetBusy ? "Loading sample..." : "Try a sample dossier"}</button>
-          {file && <p className="field-note">Selected: {file.name}</p>}
-          <label>Dossier ZIP<input aria-label="Dossier ZIP" type="file" accept=".zip,application/zip" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /></label>
-          <button className="primary-button" disabled={!file || presetBusy}>Continue to options</button>
+          <DossierPicker file={file} onChange={next => { setFile(next); setContext(defaultTarget()); setConfirmed(false); }}/>
+          <button className="primary-button" disabled={!file}>Continue to options</button>
           </> : <>
           <div className="selected-dossier"><p>Selected: {file?.name}</p><button type="button" onClick={() => setOptionsOpen(false)}>Change dossier</button></div>
           {models.isPending && <p role="status">Loading analysis configuration...</p>}
           {models.isError && <div role="alert"><p>Analysis configuration is unavailable.</p><button type="button" onClick={() => void models.refetch()}>Reload configuration</button></div>}
-          {selectedProfile && <ConfigurationDisclosure config={selectedProfile}/>}
           <ProductSetup value={context} onChange={setContext}/>
           <label className="confirm-row"><input type="checkbox" checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)}/> I confirm this target context and that the upload is synthetic or de-identified.</label>
+          {selectedProfile && <ConfigurationDisclosure config={selectedProfile}/>}
           <button className="primary-button" disabled={!file || !confirmed || busy || selectedProfile?.availability !== "available"}>
             Parse and analyze
           </button>
           </>}
           {error && <p role="alert" className="error-copy">{error}</p>}
         </form>
-        <p className="field-note">The uploaded ZIP is discarded after parsing. Only supported package checks and document risks are assessed.</p>
       </section>}
       {inventory && terminal && (materialWarnings.length > 0 || ["failed", "unsupported"].includes(inventory.package_profile_status)) && <aside className="panel review-limitation" aria-label="Package limitations"><h2>Package limitations</h2><ul>{materialWarnings.map((w, i) => <li key={i}>{w.message}</li>)}</ul><p>Package check status: {readable(inventory.package_profile_status)}. Review package details when interpreting document recommendations.</p></aside>}
       {run && terminal && inventory && <ReviewWorkspace documents={dossierDocuments(inventory, run)}/>}
