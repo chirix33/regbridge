@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import fixture from "./fixtures/m43-product.json";
 import type { ApplicationInventory, ComparisonRun, DossierAnalysisRun } from "../api/contracts";
@@ -62,18 +62,18 @@ describe("versioned product presentation", () => {
     expect(d.limitation).toBeTruthy();
     expect(d.decision).toBe(structural.decision);
   });
-  it("opens document identity and action before independent evidence and technical disclosures", () => {
+  it("opens document identity and action before independent evidence and technical disclosures", async () => {
     render(<ReviewWorkspace documents={[structural]}/>);
     expect(screen.getByRole("button", { name: "Needs attention" })).toHaveAttribute("aria-pressed", "true");
     fireEvent.click(screen.getByRole("button", { name: "Document placement" }));
     expect(screen.getByText(structural.leaf.href)).toBeVisible();
     expect(screen.getAllByText("Next step")[0]).toBeVisible();
     expect(screen.getByText("View supporting evidence").closest("details")).not.toHaveAttribute("open");
-    expect(screen.getByText("How RegBridge reached this result").closest("details")).not.toHaveAttribute("open");
+    expect(screen.getByText("How this conclusion is supported").closest("details")).not.toHaveAttribute("open");
     fireEvent.click(screen.getByText("View supporting evidence"));
     expect(screen.getAllByRole("link", { name: "Official source" }).length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole("button", { name: "Close document review" }));
-    expect(screen.getByRole("button", { name: "Document placement" })).toHaveFocus();
+    await waitFor(() => expect(screen.getByRole("button", { name: "Document placement" })).toHaveFocus());
   });
   it("does not attach RegBridge explanation to direct approaches", () => {
     const b0 = comparison.results.find(c => c.system === "B0")!;
@@ -85,6 +85,9 @@ describe("versioned product presentation", () => {
     expect(b0.explanation!.evidence.map(e => e.id).sort()).toEqual([...b0.evidence_ids].sort());
     render(<DocumentReview document={comparisonDocument(inventory.leaves.find(l => l.id === b0.leaf_id)!, b0)}/>);
     expect(screen.getByText(b0.rationale!)).toBeVisible();
+    fireEvent.click(screen.getByText("View supporting evidence"));
+    expect(screen.getByText(/This approach supplies its own conclusion/)).toBeVisible();
+    expect(screen.queryByText(/The standards-based checks are author-adjudicated/)).toBeNull();
   });
   it("preserves matching target context and never substitutes preservation for absent context", () => {
     sessionStorage.clear();

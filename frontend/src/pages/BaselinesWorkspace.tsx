@@ -1,15 +1,16 @@
 import { defaultTarget, savedTarget } from "../api/targetSetup";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Upload } from "iconoir-react";
-import { createComparison, getComparison, getActiveProductConfiguration, getProductDemoPackage, parseUpload } from "../api/client";
+import { DossierPicker } from "../components/DossierPicker";
+import { createComparison, getComparison, getActiveProductConfiguration, parseUpload } from "../api/client";
 import type { ApplicationInventory, ComparisonCell, ComparisonRun } from "../api/contracts";
 import { errorMessage, readable } from "../api/wording";
 import { FlowLoading, WorkspaceFlow } from "../components/WorkspaceFlow";
 
 import { ConfigurationDisclosure, ProductSetup } from "../components/ProductSetup";
+import { ReviewDialog } from "../components/ReviewDialog";
 import { DocumentReview } from "../components/ReviewWorkspace";
-import { comparisonDocument } from "../api/presentation";
+import { comparisonDocument, statusLabel } from "../api/presentation";
 
 const systemNames: Record<string, string> = { B0: "B0 · Document agent", B1: "B1 · Retrieval agent", B2: "B2 · Rules only", RegBridge: "RegBridge" };
 
@@ -21,13 +22,13 @@ export function BaselinesWorkspace() {
       return saved && typeof saved.id === "string" && Array.isArray(saved.leaves) ? saved : null;
     } catch { return null; }
   });
+  const [openCell, setOpenCell] = useState<ComparisonCell | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [selected, setSelected] = useState<string[]>(inventory?.leaves.map((leaf) => leaf.id) ?? []);
   const [context, setContext] = useState(() => savedTarget(inventory?.id));
   const [run, setRun] = useState<ComparisonRun | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<"upload" | "compare" | null>(null);
-  const [presetBusy, setPresetBusy] = useState(false);
   const [choosingFile, setChoosingFile] = useState(!inventory);
   const terminal = run && ["completed", "partial_failed", "failed"].includes(run.state);
   const processing = Boolean(busy || (run && !terminal));
@@ -69,12 +70,8 @@ export function BaselinesWorkspace() {
     {processing ? <FlowLoading label={busy === "upload" ? "Checking your package" : "Running the comparison"} detail={busy === "upload" ? "Reading the document list so you can choose what to compare." : "Each approach receives the same selected documents. Results will appear here when the run finishes."} error={error} onRetry={() => setError(null)}/> : !terminal && <div className="flow-form">
       <section className="panel upload-panel">
         {choosingFile ? <>
-        <h2><Upload aria-hidden="true"/> Choose your dossier</h2>
-        <p>{inventory ? `${inventory.leaves.length} documents are available from your last upload.` : "Use a public, synthetic, or de-identified FDA/CDER eCTD v3.2.2 ZIP containing one sequence."}</p>
-        <button type="button" disabled={presetBusy} onClick={() => { setPresetBusy(true); setError(null); void getProductDemoPackage().then(setFile).catch((cause: unknown) => setError(errorMessage(cause))).finally(() => setPresetBusy(false)); }}>{presetBusy ? "Loading sample..." : "Try a sample dossier"}</button>
-        <label>Dossier ZIP<input aria-label="Comparison dossier ZIP" type="file" accept=".zip,application/zip" onChange={(event) => setFile(event.target.files?.[0] ?? null)}/></label>
-        {file && <p className="field-note">Selected: {file.name}. Read this package before comparing.</p>}
-        <button onClick={() => void upload()} disabled={!file}>Read document list</button>
+        <DossierPicker file={file} onChange={setFile} label="Comparison dossier ZIP"/>
+        <button className="primary-button" onClick={() => void upload()} disabled={!file}>Read document list</button>
         {inventory && <button onClick={() => { setFile(null); setChoosingFile(false); }}>Keep the previous dossier</button>}
         </> : <div className="selected-dossier"><p>{inventory?.leaves.length} documents are available from your last upload.</p><button onClick={() => setChoosingFile(true)}>Change dossier</button></div>}
         {!choosingFile && <>
@@ -84,9 +81,9 @@ export function BaselinesWorkspace() {
         </fieldset>}
         {models.isPending && <p role="status">Loading analysis configuration...</p>}
         {models.isError && <div role="alert"><p>Analysis configuration is unavailable.</p><button onClick={() => void models.refetch()}>Reload configuration</button></div>}
-        {profile && <ConfigurationDisclosure config={profile}/>}
         <ProductSetup value={context} onChange={setContext}/>
         <details><summary>What will be compared?</summary><p>B0 reads documents directly. B1 retrieves relevant evidence. B2 checks encoded rules without semantic inspection. RegBridge combines rules, a regulatory graph, and document inspection. B0, B1, and RegBridge use the same server configuration and selected target context.</p></details>
+        {profile && <ConfigurationDisclosure config={profile}/>}
         <button className="primary-button" onClick={() => void compare()} disabled={!inventory || !selected.length || Boolean(file) || profile?.availability !== "available"}>Run comparison</button>
         </>}
         {error && <p role="alert" className="error-copy">{error}</p>}
@@ -98,14 +95,20 @@ export function BaselinesWorkspace() {
       {Object.entries(grouped).map(([leafId, cells]) => <article className="panel" key={leafId}>
         <h2>{inventory?.leaves.find((leaf) => leaf.id === leafId)?.title ?? "Document"}</h2>
         <p>{readable(inventory?.leaves.find((leaf) => leaf.id === leafId)?.policy_coverage_status)}</p>
-        <div className="table-scroll" role="region" aria-label={`${inventory?.leaves.find((leaf) => leaf.id === leafId)?.title ?? leafId} system comparison`} tabIndex={0}><table className="metrics-table"><thead><tr><th>Approach</th><th>Decision</th><th>Severity</th><th>Next action</th><th>Human review</th><th>Evidence cited</th><th>Status</th><th>Time</th></tr></thead><tbody>{cells.map((cell) => <tr key={cell.system}>
-          <th>{systemNames[cell.system] ?? cell.system}</th><td>{cell.status !== "completed" ? "No decision issued" : readable(cell.decision)}</td><td>{readable(cell.severity)}</td><td>{readable(cell.action)}</td><td>{cell.human_review_required == null ? "Not assessed" : cell.human_review_required ? "Required" : "Not required"}</td><td>{cell.evidence_ids.length}</td><td>{readable(cell.status)}</td><td>{(cell.model.latency_ms / 1000).toFixed(1)} s</td>
+        <div className="table-scroll" role="region" aria-label={`${inventory?.leaves.find((leaf) => leaf.id === leafId)?.title ?? leafId} system comparison`} tabIndex={0}><table className="metrics-table comparison-table"><thead><tr><th>Approach</th><th>Decision</th><th>Severity</th><th>Next action</th><th>Human review</th><th>Evidence cited</th><th>Status</th><th>Time</th></tr></thead><tbody>{cells.map((cell) => <tr key={cell.system}>
+          <th scope="row">{systemNames[cell.system] ?? cell.system}</th>
+          <td data-label="Decision">{cell.status !== "completed" ? "No decision issued" : readable(cell.decision)}</td>
+          <td data-label="Severity">{readable(cell.severity)}</td>
+          <td data-label="Next action">{readable(cell.action)}</td>
+          <td data-label="Human review">{cell.human_review_required == null ? "Not assessed" : cell.human_review_required ? "Required" : "Not required"}</td>
+          <td data-label="Evidence cited">{cell.evidence_ids.length}</td>
+          <td data-label="Status">{readable(cell.status)}{inventory?.leaves.find(l => l.id === cell.leaf_id) && <ul className="review-status-list">{comparisonDocument(inventory.leaves.find(l => l.id === cell.leaf_id)!, cell).statuses.filter(s => s === "Incomplete inspection" || s === "Inspection intentionally omitted" || s === "Outside-policy coverage" || s === "Insufficient application history" || s === "Presentation limitation").map(s => <li key={s} data-status={s}>{statusLabel(s)}</li>)}</ul>}</td>
+          <td data-label="Time">{(cell.model.latency_ms / 1000).toFixed(1)} s</td>
         </tr>)}</tbody></table></div>
-        {cells.map((cell) => <details key={`${cell.system}-details`}><summary>{systemNames[cell.system] ?? cell.system}: explanation and evidence</summary>
-          {inventory?.leaves.find(l => l.id === cell.leaf_id) && <DocumentReview document={comparisonDocument(inventory.leaves.find(l => l.id === cell.leaf_id)!, cell)}/>}
-        </details>)}
+        <div className="comparison-review-actions">{cells.map(cell => <button className="area-pill" key={`${cell.system}:${cell.leaf_id}`} onClick={e => { e.currentTarget.focus({ preventScroll: true }); setOpenCell(cell); }}>{systemNames[cell.system] ?? cell.system}: explanation and evidence</button>)}</div>
       </article>)}
       {run.failures.map((failure, index) => <section className="panel" key={`${failure.leaf_id}-${index}`}><h2>Comparison could not finish</h2><p>{inventory?.leaves.find((leaf) => leaf.id === failure.leaf_id)?.title ?? "Document"}</p><p>{inventory?.leaves.find((leaf) => leaf.id === failure.leaf_id)?.href}</p><p>No decision was issued for this failed step. Return to setup to try again.</p><details><summary>Technical error details</summary><pre>{JSON.stringify(failure, null, 2)}</pre></details></section>)}
     </section>}
+    {openCell && inventory?.leaves.find(l => l.id === openCell.leaf_id) && <ReviewDialog title={`${systemNames[openCell.system]} · Document review`} onClose={() => setOpenCell(null)}><DocumentReview document={comparisonDocument(inventory.leaves.find(l => l.id === openCell.leaf_id)!, openCell)}/></ReviewDialog>}
   </WorkspaceFlow>;
 }

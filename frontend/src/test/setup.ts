@@ -9,3 +9,7 @@ Object.defineProperty(HTMLCanvasElement.prototype, "getContext", {
   value: vi.fn(() => null),
 });
 
+
+// jsdom has no native modal rendering; browser tests verify focus containment/inertness.
+HTMLDialogElement.prototype.showModal = function () { this.setAttribute("open", ""); this.querySelector<HTMLButtonElement>("button")?.focus(); };
+HTMLDialogElement.prototype.close = function () { this.removeAttribute("open"); };

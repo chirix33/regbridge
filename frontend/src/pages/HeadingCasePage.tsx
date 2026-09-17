@@ -21,13 +21,8 @@ import type {
   MetadataIntent,
   ScenarioMode,
 } from "../api/contracts";
-import { Disclaimer } from "../components/Disclaimer";
 import { GraphNeighborhood } from "../components/GraphNeighborhood";
 import { ThinkingStatus } from "../components/ThinkingStatus";
-
-const disclosure =
-  "Prospective FDA/CDER forward-compatibility research scenario. FDA forward compatibility " +
-  "is not operational, and this author-adjudicated demonstration is not regulatory-expert validated.";
 
 const routeConfig = {
   "case-a": {
@@ -134,7 +129,7 @@ export function HeadingCasePage() {
     if (!analysis || !resultsRef.current) {
       return;
     }
-    resultsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    resultsRef.current.scrollIntoView({ behavior: window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
     resultsRef.current.focus({ preventScroll: true });
   }, [analysis]);
 
@@ -178,7 +173,6 @@ export function HeadingCasePage() {
           <h1>{config.title}</h1>
           <p>{config.subtitle}</p>
         </section>
-        <Disclaimer text={disclosure} />
 
         <section className="case-controls" aria-labelledby="case-controls-title">
           <div>

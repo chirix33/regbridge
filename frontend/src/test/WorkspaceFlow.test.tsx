@@ -21,7 +21,7 @@ it("replaces setup with the loader and restores editable inputs after a rejected
   mount();
   fireEvent.change(screen.getByLabelText("Dossier ZIP"), { target: { files: [new File(["bad"], "invalid.zip")] } });
   fireEvent.click(screen.getByRole("button", { name: "Continue to options" }));
-  await screen.findByText("Offline demonstration");
+  await screen.findByText(/Offline demonstration/);
   fireEvent.click(screen.getByLabelText(/I confirm/));
   fireEvent.click(screen.getByRole("button", { name: "Parse and analyze" }));
   expect(screen.getByRole("status")).toHaveTextContent("Checking your package");
@@ -47,8 +47,8 @@ it("submits shared target intent without a model override, recovers polling with
   });
   vi.stubGlobal("fetch", fetchMock);
   mount(true);
-  await screen.findByText("Offline demonstration");
-  fireEvent.change(screen.getByLabelText("How should metadata be handled?"), { target: { value: "normalize-metadata" } });
+  await screen.findByText(/Offline demonstration/);
+  fireEvent.click(screen.getByRole("radio", { name: "Plan metadata changes" }));
   fireEvent.click(screen.getByRole("button", { name: "Run comparison" }));
   expect(screen.getByRole("status")).toHaveTextContent("Running the comparison");
   expect(screen.queryByLabelText("Analysis model")).not.toBeInTheDocument();
@@ -60,14 +60,14 @@ it("submits shared target intent without a model override, recovers polling with
   expect(JSON.parse(submissions[0]?.[1]?.body as string)).toMatchObject({ target_context: { metadata_plan: { intent: "normalize-metadata" } }, leaf_ids: [inventory.leaves[0]!.id] });
   expect(JSON.parse(submissions[0]?.[1]?.body as string)).not.toHaveProperty("model_id");
   fireEvent.click(screen.getByRole("button", { name: "Edit setup" }));
-  expect(screen.getByLabelText("How should metadata be handled?")).toHaveValue("normalize-metadata");
+  expect(screen.getByRole("radio", { name: "Plan metadata changes" })).toBeChecked();
 });
 
 it("requires reading a newly selected ZIP before comparing a previous inventory", async () => {
   sessionStorage.setItem("regbridge.inventory", JSON.stringify(inventory));
   vi.stubGlobal("fetch", vi.fn(() => Promise.resolve(json(catalog))));
   mount(true);
-  await screen.findByText("Offline demonstration");
+  await screen.findByText(/Offline demonstration/);
   expect(screen.getByRole("button", { name: "Run comparison" })).toBeEnabled();
   fireEvent.click(screen.getByRole("button", { name: "Change dossier" }));
   fireEvent.change(screen.getByLabelText("Comparison dossier ZIP"), { target: { files: [new File(["zip"], "new.zip")] } });

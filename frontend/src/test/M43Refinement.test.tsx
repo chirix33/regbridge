@@ -65,7 +65,7 @@ describe("concrete review observations and leaf inventory", () => {
     fireEvent.click(screen.getByRole("button", { name: "All documents" }));
     const table = screen.getByRole("table", { name: "Document inventory" });
     expect(within(table).getAllByRole("row")).toHaveLength(4);
-    expect(within(table).getByRole("button", { name: "Clean result" })).toBeVisible();
+    expect(within(table).getByRole("button", { name: "Review Clean result (clean)" })).toBeVisible();
     expect(within(table).getByText("Failed analysis")).toBeVisible();
     expect(within(table).getByText("0 review items")).toBeVisible();
     expect(within(table).getAllByText(applicant.leaf.href)).toHaveLength(3);
@@ -80,7 +80,7 @@ describe("concrete review observations and leaf inventory", () => {
     const table = screen.getByRole("table", { name: "Document inventory" });
     expect(within(table).getAllByRole("row")).toHaveLength(2);
     expect(within(table).getByText("2 review items")).toBeVisible();
-    fireEvent.click(within(table).getByRole("button", { name: multi.leaf.title }));
+    fireEvent.click(within(table).getByRole("button", { name: `Review ${multi.leaf.title} (${multi.leaf.id})` }));
     const detail = screen.getByRole("region", { name: /^Review items for/ });
     expect(within(detail).getByText("Document placement")).toBeVisible();
     expect(within(detail).getByText("Applicant information")).toBeVisible();
@@ -94,7 +94,7 @@ describe("concrete review observations and leaf inventory", () => {
     fireEvent.click(screen.getByRole("button", { name: "Document placement" }));
     expect(screen.getByText(d.explanation!.repair!.description, { selector: "dd" })).toBeVisible();
     expect(screen.getByText(/Required before acting on the recommendation/)).toBeVisible();
-    expect(screen.getByText("Inspection incomplete.")).toBeVisible();
+    expect(screen.getByText(/Incomplete inspection/, { selector: ".review-status" })).toBeVisible();
     expect(screen.getByText(d.leaf.href)).toBeVisible();
   });
 });

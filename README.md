@@ -227,7 +227,7 @@ The authoritative implementation and research plan is [IMPLEMENTATION.md](./IMPL
 
 ### Product configuration (M4.3)
 
-Analyzer and Baselines show the active server configuration; there is no browser model selector.
+Analyzer and Baselines disclose the active execution mode and evidence destination near the run action; there is no browser model selector. Full execution attribution remains in result technical details.
 Set `PRODUCT_MODEL_PROFILE=gpt-5.5`. Keep `LLM_MODE=fixture` for offline tests and demonstrations.
 For opt-in live execution, configure `LLM_MODE=live`, `LLM_MODEL=gpt-5.5`, `LLM_BASE_URL`, and
 `LLM_API_KEY` on the server. Verification requires no live calls.
@@ -245,3 +245,22 @@ Product POST bodies now contain `inventory_id`, `target_context`, and optional `
 `model_id` and other undeclared request overrides return 422. The historical evaluation APIs
 and frozen attribution contracts are unchanged. Missing carried context starts with undecided
 metadata intent; review the effective intent in setup before running.
+
+### Review workspace refinement
+
+Choose one uploaded ZIP or the synthetic sample, then continue to options. Product setup
+always uses the selected prospective FDA/CDER Module 3 scenario. Choose Preserve existing
+metadata, Plan metadata changes, or I’m not sure yet; the same inventory carries that intent
+into Baselines. Old saved current-operational context is made prospective for a new product
+run only. Historical records and guided scenario controls are unchanged.
+
+Needs attention organizes observations with their material qualifications. All documents is
+an inventory of leaf contexts, including clean and failed results. Area/Review buttons open
+an accessible dialog with document identity, the overall recommendation, supporting evidence,
+the existing graph/text/edge table, and separate technical records. Escape returns to the
+opening control. Navigation shows Analyzer, Baselines and About; the direct Evaluation and
+guided URLs listed above remain supported.
+
+The light theme bundles DM Mono under its included SIL OFL license and uses the supplied logo
+as SVG favicon with PNG fallback. No ICO conversion or runtime font network request is needed.
+Design settings, screenshots and current verification: [M4.3 UI refinement](docs/milestones/M4.3-ui-refinement.md).

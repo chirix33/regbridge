@@ -1107,13 +1107,28 @@ findings, the overall recommendation, conditions, and citations. Unique document
 items are counted separately. Supporting evidence and technical reasoning are separate
 disclosures. Graph, accessible text, edge table, model record, trace, and digests remain available.
 
-The M4.3 refinement uses presentation version 1.1.0. Needs attention is a work queue of
+The M4.3 refinement uses presentation version 1.2.0. Needs attention is a work queue of
 observations and limitations; All documents is a separate inventory with one row per leaf ID,
 including distinct leaves referencing the same physical file. Applied heading mappings,
 keyword associations, accepted semantic categories, and selected migration intent are retained
 in an additive product-only observations payload. Concrete raw metadata and cited dossier
 passages remain distinct from unresolved conditions. Every item retains the same overall
 document recommendation; item summaries do not create new repairs or regulatory conclusions.
+
+The visual refinement is documented in [M4.3 UI refinement](docs/milestones/M4.3-ui-refinement.md).
+Incomplete inspection qualifies an existing observation rather than duplicating it with a
+second generic queue row; an inspection-only outcome remains independently visible. Item
+statuses follow their finding/topic associations, while document details retain all recorded
+conditions. Shared near-full-screen dialogs provide identity, complete recommendations,
+supporting evidence, the unchanged bounded graph, and a separate technical disclosure.
+
+New product setup is explicitly prospective, with native metadata-intent radios, one selected
+ZIP, and a race-safe sample alternative. Existing historical and guided current-operational
+contracts remain intact. Only the home/upload step displays the global research note;
+record-specific governance and limitations remain available throughout. The light theme uses
+locally hosted licensed DM Mono and documented Utopia type/space/grid tokens. Primary
+navigation contains Analyzer, Baselines, About; Evaluation and guided routes remain directly
+accessible with their historical content unchanged.
 
 Analyzer and Baselines share presentation primitives and explicit target-context setup. Missing
 saved metadata intent is `unspecified`, never silently preservation. B0/B1 retain native

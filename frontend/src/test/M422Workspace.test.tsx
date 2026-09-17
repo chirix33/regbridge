@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import App from "../App";
 import fixture from "./fixtures/m43-product.json";
@@ -11,15 +11,17 @@ it("shows hard mapping with incomplete inspection and a separate service failure
   render(<App/>);
   fireEvent.change(screen.getByLabelText("Dossier ZIP"), { target: { files: [new File(["zip"], "synthetic.zip")] } });
   fireEvent.click(screen.getByRole("button", { name: "Continue to options" }));
-  await screen.findByText("Offline demonstration");
+  await screen.findByText(/Offline demonstration/);
   fireEvent.click(screen.getByLabelText(/I confirm/));
   fireEvent.click(screen.getByRole("button", { name: "Parse and analyze" }));
   await screen.findByRole("heading", { name: "Review actions" });
   fireEvent.click(screen.getByRole("button", { name: "Document placement" }));
-  expect(screen.getByText(/This status does not mean stale content was found/)).toBeVisible();
+  expect(screen.getByText(/Incomplete inspection/, { selector: ".review-status" })).toBeVisible();
   expect(screen.getByText(/Proposed document recommendation: Reuse with a new context/)).toBeVisible();
   expect(screen.getAllByText("Next step")[0]).toBeVisible();
   expect(screen.getByText(fixture.inventory.leaves[0]!.href)).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: "Close document review" }));
+  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
   fireEvent.click(screen.getByRole("button", { name: "Analysis service" }));
   expect(screen.getByRole("heading", { name: failed.title })).toBeVisible();
   expect(screen.getByText("No regulatory decision issued.")).toBeVisible();

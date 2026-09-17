@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { ThinkingOrb, type OrbSize, type OrbState } from "thinking-orbs";
 
 type ThinkingStatusProps = {
@@ -19,6 +20,13 @@ export function ThinkingStatus({
   paused = false,
   className = "",
 }: ThinkingStatusProps) {
+  const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false);
+  useEffect(() => {
+    const media = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+    const update = () => setReducedMotion(media?.matches ?? false);
+    media?.addEventListener("change", update);
+    return () => media?.removeEventListener("change", update);
+  }, []);
   const statusClass = ["thinking-status", size === 64 ? "thinking-status-large" : "", className]
     .filter(Boolean)
     .join(" ");
@@ -29,7 +37,7 @@ export function ThinkingStatus({
         state={state}
         size={size}
         speed={speed}
-        paused={paused}
+        paused={paused || reducedMotion}
         theme={dark ? "dark" : "light"}
         aria-hidden="true"
       />
